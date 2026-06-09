@@ -1,9 +1,9 @@
 local utf8 = require("unicode").utf8
 
 -- =========================================================================
--- 1. DICCIONARIOS CANÓNICOS DE UNIDADES CIENTÍFICAS Y FÍSICAS
+-- 1. CANONICAL DICTIONARIES FOR SCIENTIFIC AND PHYSICAL UNITS
 -- =========================================================================
-local mathcat_units = {
+local spintent_units = {
     ["°K"]   = "°K",
     ["A"]    = "A",    ["B"]    = "B",    ["Bq"]   = "Bq",   ["C"]    = "C",
     ["Da"]   = "Da",   ["F"]    = "F",    ["Gy"]   = "Gy",   ["H"]    = "H",
@@ -23,7 +23,7 @@ local mathcat_units = {
     ["Ω"]    = "Ω",    ["℧"]    = "℧",    ["′"]    = "′",    ["″"]    = "″",
     ["Å"]    = "Å",    ["µ"]    = "µ",
 
-    -- Unidades Imperiales y US Customary
+    -- Imperial and US Customary Units
     ["pulgada"]    = "in",    ["pulgas"]     = "in",
     ["pie"]        = "ft",    ["pies"]       = "ft",
     ["yarda"]      = "yd",    ["yardas"]     = "yd",
@@ -38,7 +38,7 @@ local mathcat_units = {
     ["bit"]        = "b",     ["byte"]       = "B",
     ["bytes"]      = "B",     ["fahrenheit"] = "°F",
 
-    -- Tabla de Alias de Palabras Unicode Completas
+    -- Word Alias Table for Full Unicodes
     ["kelvin"]   = "K",   ["Kelvin"]   = "K",
     ["ohmio"]    = "Ω",   ["ohm"]      = "Ω",   ["Omega"]    = "Ω",
     ["amperio"]  = "A",   ["ampere"]   = "A",
@@ -56,11 +56,11 @@ local mathcat_units = {
     ["celsius"]  = "°C",  ["degC"]     = "°C",  ["℃"]        = "°C",
     ["degF"]     = "°F",  ["℉"]        = "°F",  ["micro"]    = "µ",
 
-    -- Cirugía semántica
+    -- Semantic Surgery
     ["minmin"]   = "′",   ["segseg"]   = "″",   ["u-masa"]   = "u",
     ["mho"]      = "℧",
 
-    -- Mapeo de Compactos Unicode
+    -- Compact Unicode Mappings
     ["㎡"]   = "m^2",      ["㎢"]   = "km^2",     ["㎠"]   = "cm^2",     ["㎜²"]  = "mm^2",
     ["㎥"]   = "m^3",      ["㎦"]   = "km^3",     ["㎤"]   = "cm^3",     ["㎜³"]  = "mm^3",
     ["㎐"]   = "Hz",       ["㎑"]   = "kHz",      ["㎒"]   = "MHz",      ["㎓"]   = "GHz",      ["㎔"]   = "THz",
@@ -74,7 +74,7 @@ local mathcat_units = {
     ["㎨"]   = "m/s^2",    ["㎭"]   = "rad",      ["㎮"]   = "rad/s",    ["㎯"]   = "rad/s^2"
 }
 
-local unit_compact_spoken_names = {
+local spintent_unit_compact_spoken_names = {
     ["㎡"]      = "metro-cuadrado",
     ["㎥"]      = "metro-cúbico",
     ["㎢"]      = "kilómetro-cuadrado",
@@ -98,18 +98,18 @@ local unit_compact_spoken_names = {
     ["″"]      = "segundos"
 }
 
-local custom_spunit_spoken_names = {}
-local custom_spunit_aliases      = {}
+local spintent_custom_spunit_spoken_names = {}
+local spintent_custom_spunit_aliases      = {}
 
-local normalizations = {
+local spintent_normalizations = {
     ["K"] = "K", ["Ω"] = "Ω", ["ℓ"] = "l", ["μ"] = "µ", ["°K"] = "°K",
     ["'"]  = "′", ["''"] = "″", ['"']  = "″", ["minmin"] = "′", ["segseg"] = "″"
 }
 
 -- =========================================================================
--- 2. INFRAESTRUCTURA SEMÁNTICA AVANZADA PARA DIVISAS (\spmoney)
+-- 2. ADVANCED SEMANTIC INFRASTRUCTURE FOR CURRENCIES (\spmoney)
 -- =========================================================================
-local mathcat_currencies = {
+local spintent_internal_currencies = {
     ["$"]        = "$",         ["€"]        = "€",         ["£"]        = "£",         ["¥"]        = "¥",
     ["¢"]        = "¢",         ["₩"]        = "₩",         ["₪"]        = "₪",         ["₹"]        = "₹",
     ["₽"]        = "₽",         ["₺"]        = "₺",         ["₴"]        = "₴",
@@ -127,7 +127,7 @@ local mathcat_currencies = {
     ["grivna"]   = "₴",         ["grivnas"]  = "₴",         ["uah"]      = "₴",
 }
 
-local currency_grammatical_dict = {
+local spintent_currency_grammatical_dict = {
     ["$"]        = { sing = "peso",                  plur = "pesos",                  conde = "de-pesos" },
     ["peso"]     = { sing = "peso",                  plur = "pesos",                  conde = "de-pesos" },
     ["pesos"]    = { sing = "peso",                  plur = "pesos",                  conde = "de-pesos" },
@@ -162,7 +162,7 @@ local currency_grammatical_dict = {
     ["uah"]      = { sing = "grivna",                plur = "grivnas",                conde = "de-grivnas" },
 }
 
-local currency_subunits_matrix = {
+local spintent_currency_subunits_matrix = {
     ["pesos"]                   = { sing = "centavo", plur = "centavos" },
     ["pesos-chilenos"]          = nil,
     ["pesos-colombianos"]       = nil,
@@ -181,7 +181,7 @@ local currency_subunits_matrix = {
     ["grivnas"]                 = { sing = "kopek",   plur = "kopeks" }
 }
 
-local currency_spoken_names = {
+local spintent_currency_spoken_names = {
     ["$"]        = "pesos",                    ["peso"]    = "pesos",                    ["pesos"]   = "pesos",
     ["clp"]      = "pesos-chilenos",           ["mxn"]     = "pesos-mexicanos",
     ["dolar"]    = "dólares-estadounidenses",  ["dolares"] = "dólares-estadounidenses",  ["usd"]     = "dólares-estadounidenses",
@@ -199,7 +199,7 @@ local currency_spoken_names = {
 }
 
 -- =========================================================================
--- 3. MOTOR DE INFRAESTRUCTURA DE COMANDOS Y PARSERS (LPeg)
+-- 3. COMMAND INFRASTRUCTURE AND PARSERS MOTOR (LPeg)
 -- =========================================================================
 local function register_tex_cmd(name, func, args)
     name = "__spintent_" .. name .. ":" .. ("n"):rep(#args)
@@ -218,7 +218,7 @@ local function register_tex_cmd(name, func, args)
     token.set_lua(name, index, "global", "protected")
 end
 
-local number_pattern do
+local spintent_number_pattern do
     local _ENV = lpeg
     local sign             = S "+-"
     local decimal          = S ".," + P "{.}" + P "{,}"
@@ -228,7 +228,7 @@ local number_pattern do
     local num_part_req     = Cs(digit * ((math_space / "")^0 * digit)^0)
     local forbidden_in_extra = decimal + semi
 
-    number_pattern = Ct(
+    spintent_number_pattern = Ct(
         Cg(sign^-1, "sign")
         * Cg(num_part_req^-1, "integer")
         * (Cg(C(decimal), "decimal") * Cg(num_part_req, "fraction"))^-1
@@ -238,7 +238,7 @@ local number_pattern do
     )
 end
 
-local function format_groups(str_num, reverse)
+local function spintent_rae_format_digits(str_num, reverse)
     if not str_num or str_num == "" then return "" end
     str_num = tostring(str_num)
     local len = utf8.len(str_num) or #str_num
@@ -259,7 +259,7 @@ end
 
 register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     raw_string = raw_string:gsub("^%s*(.-)%s*$", "%1")
-    local result = number_pattern:match(raw_string) or {}
+    local result = spintent_number_pattern:match(raw_string) or {}
     local above = ""
     local below = ""
     local unit_status = "valid"
@@ -268,7 +268,7 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
 
     if result.extra then
         local extra = result.extra:gsub("^%s*(.-)%s*$", "%1")
-        if custom_spunit_aliases[extra] then extra = custom_spunit_aliases[extra] end
+        if spintent_custom_spunit_aliases[extra] then extra = spintent_custom_spunit_aliases[extra] end
 
         if extra ~= "" then
             has_units = "true"
@@ -321,8 +321,8 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     token.set_macro("l__spintent_luaset_only_part_int_str", result.integer or "")
     token.set_macro("l__spintent_luaset_only_part_dec_str", result.fraction or "")
     token.set_macro("l__spintent_luaset_only_part_period_str", result.period or "")
-    token.set_macro("l__spintent_luaset_format_part_int_str", format_groups(result.integer, false))
-    token.set_macro("l__spintent_luaset_format_part_dec_str", format_groups(result.fraction, true))
+    token.set_macro("l__spintent_luaset_format_part_int_str", spintent_rae_format_digits(result.integer, false))
+    token.set_macro("l__spintent_luaset_format_part_dec_str", spintent_rae_format_digits(result.fraction, true))
     token.set_macro("l__spintent_luaset_millons_str", is_million_clean)
     token.set_macro("l__spintent_luaset_decimal_and_period_str", dec_and_per)
     token.set_macro("l__spintent_luaset_decimal_not_period_str", dec_not_per)
@@ -336,16 +336,16 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     end
 end, { "string" })
 -- =========================================================================
--- 4. INTERFACES ADICIONALES DE UNIDADES Y UTILERÍAS SANEADORAS
+-- 4. ADDITIONAL UNIT INTERFACES AND SANITIZING UTILITIES
 -- =========================================================================
 register_tex_cmd("luafun_define_custom_unit", function(unit_name, spoken_reading)
     unit_name = unit_name:gsub("^%s*(.-)%s*$", "%1"):gsub("%s+", "")
     spoken_reading = spoken_reading:gsub("^%s*(.-)%s*$", "%1")
-    if mathcat_units[unit_name] or normalizations[unit_name] then
+    if spintent_units[unit_name] or spintent_normalizations[unit_name] then
         token.set_macro("l__spintent_spunit_luaset_register_status_str", "duplicate")
     else
-        mathcat_units[unit_name] = unit_name
-        custom_spunit_spoken_names[unit_name] = spoken_reading
+        spintent_units[unit_name] = unit_name
+        spintent_custom_spunit_spoken_names[unit_name] = spoken_reading
         token.set_macro("l__spintent_spunit_luaset_register_status_str", "success")
     end
 end, { "string", "string" })
@@ -355,15 +355,15 @@ register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
     local clean_exp_format = raw_unit_name:gsub("{", ""):gsub("}", "")
     token.set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "false")
 
-    local search_name = normalizations[clean_exp_format] or normalizations[raw_unit_name] or raw_unit_name
-    local canonical = mathcat_units[search_name] or mathcat_units[clean_exp_format]
+    local search_name = spintent_normalizations[clean_exp_format] or spintent_normalizations[raw_unit_name] or raw_unit_name
+    local canonical = spintent_units[search_name] or spintent_units[clean_exp_format]
 
     if canonical then
         local base_clean = canonical:gsub("%^%-?%d+", "")
-        local spoken = custom_spunit_spoken_names[base_clean]
-            or unit_compact_spoken_names[raw_unit_name]
-            or unit_compact_spoken_names[clean_exp_format]
-            or unit_compact_spoken_names[search_name]
+        local spoken = spintent_custom_spunit_spoken_names[base_clean]
+            or spintent_unit_compact_spoken_names[raw_unit_name]
+            or spintent_unit_compact_spoken_names[clean_exp_format]
+            or spintent_unit_compact_spoken_names[search_name]
             or ":unit"
 
         token.set_macro("l__spintent_spunit_luaset_read_str", spoken)
@@ -392,12 +392,12 @@ register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
     else
         local literal_base, literal_exp = clean_exp_format:match("([^%^]+)%^(%-?%d+)")
         if literal_base and literal_exp then
-            local canonical_base = mathcat_units[normalizations[literal_base] or literal_base]
+            local canonical_base = spintent_units[spintent_normalizations[literal_base] or literal_base]
             if canonical_base then
                 token.set_macro("l__spintent_spunit_luaset_canonical_str", canonical_base)
                 token.set_macro("l__spintent_spunit_luaset_compact_exp_str", literal_exp)
                 token.set_macro("l__spintent_spunit_luaset_is_compact_str", "true")
-                local spoken = custom_spunit_spoken_names[canonical_base] or ":unit"
+                local spoken = spintent_custom_spunit_spoken_names[canonical_base] or ":unit"
                 token.set_macro("l__spintent_spunit_luaset_read_str", spoken)
                 if canonical_base == "°" or canonical_base == "′" or canonical_base == "″" then
                     token.set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "true")
@@ -432,7 +432,7 @@ end, { "string" })
 register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_expression)
     alias_name = alias_name:gsub("^%s*(.-)%s*$", "%1"):gsub("%s+", "")
     unit_expression = unit_expression:gsub("^%s*(.-)%s*$", "%1")
-    if mathcat_units[alias_name] or normalizations[alias_name] or custom_spunit_aliases[alias_name] then
+    if spintent_units[alias_name] or spintent_normalizations[alias_name] or spintent_custom_spunit_aliases[alias_name] then
         token.set_macro("l__spintent_spunit_luaset_register_status_str", "duplicate")
         return
     end
@@ -443,37 +443,37 @@ register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_express
     if unit_expression:match("[^%a°ΩµÅℓ′″℧%*%/%^%-%d%s%'%\x22]") then is_valid = false end
     if is_valid then
         for unit_base in unit_expression:gmatch("[%a°ΩµÅℓ′″℧%'%\x22]+") do
-            if not (mathcat_units[unit_base] or normalizations[unit_base]) then is_valid = false; break end
+            if not (spintent_units[unit_base] or spintent_normalizations[unit_base]) then is_valid = false; break end
         end
     end
     if not is_valid then
         token.set_macro("l__spintent_spunit_luaset_register_status_str", "invalid-expr")
     else
-        custom_spunit_aliases[alias_name] = unit_expression
+        spintent_custom_spunit_aliases[alias_name] = unit_expression
         token.set_macro("l__spintent_spunit_luaset_register_status_str", "success")
     end
 end, { "string", "string" })
 
 -- =========================================================================
--- ALGORITMOS ARITMÉTICOS MCD / MCM
+-- GCD / LCM ARITHMETIC ALGORITHMS
 -- =========================================================================
-local function mcd_algoritmo(val_a, val_b)
+local function spintent_gcd_algorithm(val_a, val_b)
     while val_b ~= 0 do val_a, val_b = val_b, val_a % val_b end
     return val_a
 end
 
-local function mcm_algoritmo(val_a, val_b)
+local function spintent_lcm_algorithm(val_a, val_b)
     if val_a == 0 or val_b == 0 then return 0 end
-    return math.floor((val_a * val_b) / mcd_algoritmo(val_a, val_b))
+    return math.floor((val_a * val_b) / spintent_gcd_algorithm(val_a, val_b))
 end
 
-local function ejecutar_operacion_mc(raw_csv_list, tl_out, operacion_fn)
+local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
     local numbers = {}
     token.set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "false")
 
     for item in raw_csv_list:gmatch("([^,]+)") do
         local clean_item = item:gsub("^%s*(.-)%s*$", "%1")
-        local result = number_pattern:match(clean_item) or {}
+        local result = spintent_number_pattern:match(clean_item) or {}
         local es_natural = result.integer and (not result.sign or result.sign == "")
           and (not result.decimal or result.decimal == "") and (not result.period or result.period == "")
           and (not result.extra or result.extra:gsub("%s+", "") == "")
@@ -489,32 +489,32 @@ local function ejecutar_operacion_mc(raw_csv_list, tl_out, operacion_fn)
         return
     end
     local final_result = numbers[1]
-    for i = 2, #numbers do final_result = operacion_fn(final_result, numbers[i]) end
+    for i = 2, #numbers do final_result = operation_fn(final_result, numbers[i]) end
     token.set_macro(tl_out, string.format("%d", final_result))
 end
 
 register_tex_cmd("luafun_calculate_mcd", function(raw_csv_list)
-    ejecutar_operacion_mc(raw_csv_list, "l__spintent_spmcd_luaset_mcd_value_tl", mcd_algoritmo)
+    execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcd_luaset_mcd_value_tl", spintent_gcd_algorithm)
 end, { "string" })
 
 register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
-    ejecutar_operacion_mc(raw_csv_list, "l__spintent_spmcm_luaset_mcm_value_tl", mcm_algoritmo)
+    execute_mcm_mcd_result(raw_csv_list, "l__spintent_luaset_mcm_value_tl", spintent_lcm_algorithm)
 end, { "string" })
 
 -- =========================================================================
--- SISTEMA SEXAGESIMAL (LPeg Optimizado Real)
+-- SEXAGESIMAL SYSTEM (Real Optimized LPeg)
 -- =========================================================================
-local sexagesimal_pattern do
+local spintent_sexagesimal_pattern do
     local _ENV = lpeg
     local digit      = R "09"
-    local math_space = P"\\," + P"\\;" + P"\\:" + P"\\!" + P"\\>" + P"\\quad" + P"\\qquad"
+    local math_space = P"\\,-" + P"\\;" + P"\\:" + P"\\!" + P"\\>" + P"\\quad" + P"\\qquad"
     local chunk      = Cs(digit * ((math_space / "")^0 * digit)^0)
-    sexagesimal_pattern = Ct(Cg(chunk^-1, "a") * P ":" * Cg(chunk^-1, "b") * (P ":" * Cg(chunk^-1, "c"))^-1 * P(-1))
+    spintent_sexagesimal_pattern = Ct(Cg(chunk^-1, "a") * P ":" * Cg(chunk^-1, "b") * (P ":" * Cg(chunk^-1, "c"))^-1 * P(-1))
 end
 
 register_tex_cmd("luafun_parse_sexagesimal", function(raw_sexag_str)
     raw_sexag_str = raw_sexag_str:gsub("%s+", "")
-    local result = sexagesimal_pattern:match(raw_sexag_str)
+    local result = spintent_sexagesimal_pattern:match(raw_sexag_str)
 
     if not result then
         token.set_macro("l__spintent_spsexag_error_status_str", "true")
@@ -528,13 +528,13 @@ register_tex_cmd("luafun_parse_sexagesimal", function(raw_sexag_str)
 end, { "string" })
 
 -- =========================================================================
--- 5. INTERFACES CRÍTICAS DE METADATOS FINANCIEROS Y RESOLUCIÓN GRAMATICAL
+-- 5. CRITICAL FINANCIAL METADATA AND GRAMMATICAL RESOLUTION INTERFACES
 -- =========================================================================
 register_tex_cmd("luafun_spmoney_lookup_metadata", function(currency_name)
     local clean = currency_name:gsub("^%s*(.-)%s*$", "%1"):lower()
-    local resolved_symbol = mathcat_currencies[clean] or "$"
+    local resolved_symbol = spintent_internal_currencies[clean] or "$"
 
-    local gram_entry = currency_grammatical_dict[clean] or currency_grammatical_dict[resolved_symbol]
+    local gram_entry = spintent_currency_grammatical_dict[clean] or spintent_currency_grammatical_dict[resolved_symbol]
       or { sing = "peso", plur = "pesos", conde = "de-pesos" }
 
     local position = "pre"
@@ -547,7 +547,7 @@ register_tex_cmd("luafun_spmoney_lookup_metadata", function(currency_name)
         token.set_macro("l__spintent_spmoney_luaset_print_iso_str", "false")
     end
 
-    local sub_db = currency_subunits_matrix[gram_entry.plur]
+    local sub_db = spintent_currency_subunits_matrix[gram_entry.plur]
 
     token.set_macro("l__spintent_spmoney_luaset_resolved_symbol_str", resolved_symbol)
     token.set_macro("l__spintent_spmoney_luaset_resolved_position_str", position)
@@ -568,13 +568,13 @@ end, { "string" })
 
 register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
     local clean = raw_input:gsub("^%s*(.-)%s*$", "%1"):lower()
-    local resolved_symbol = mathcat_currencies[clean]
+    local resolved_symbol = spintent_internal_currencies[clean]
     local resolved_spoken = nil
 
     if resolved_symbol then
-        resolved_spoken = currency_spoken_names[clean] or currency_spoken_names[resolved_symbol]
+        resolved_spoken = spintent_currency_spoken_names[clean] or spintent_currency_spoken_names[resolved_symbol]
     else
-        resolved_spoken = currency_spoken_names[clean]
+        resolved_spoken = spintent_currency_spoken_names[clean]
     end
 
     if resolved_spoken then
@@ -587,22 +587,36 @@ register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
 end, { "string" })
 
 -- =========================================================================
--- SUBMÓDULO LUA: \spdate y \sptime
+-- LUA SUBMODULE: \spdate AND \sptime (Optimized LPeg Engine)
 -- =========================================================================
+local spintent_date_pattern do
+    local _ENV = lpeg
+    local digit      = R"09"
+    local math_space = P"\\," + P"\\;" + P"\\:" + P"\\!" + P"\\>" + P"\\quad" + P"\\qquad"
+    local num        = Cs(digit * ((math_space / "")^0 * digit)^0)
+    local sep        = S"/-"
+
+    spintent_date_pattern = Ct(
+        (Cg(num, "year") * sep * Cg(num, "month") * sep * Cg(num, "day") * P(-1)) +
+        (Cg(num, "day") * sep * Cg(num, "month") * sep * Cg(num, "year") * P(-1))
+    )
+end
+
 register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
     if not raw_date_input then return end
     local clean_str = raw_date_input:gsub("%s+", "")
+    local result = spintent_date_pattern:match(clean_str)
 
-    local is_v1 = clean_str:match("^%d%d/%d%d/%d%d%d%d$")   -- DD/MM/AAAA
-    local is_v2 = clean_str:match("^%d%d%-%d%d%-%d%d%d%d$") -- DD-MM-AAAA
-    local is_v3 = clean_str:match("^%d%d%d%d%-%d%d%-%d%d$") -- AAAA-MM-DD (ISO)
-
-    if is_v1 or is_v2 or is_v3 then
-        token.set_macro("l__spintent_spdate_luaset_error_str", "false")
-        token.set_macro("l__spintent_spdate_luaset_output_str", clean_str)
-    else
+    if not result then
         token.set_macro("l__spintent_spdate_luaset_error_str", "true")
+        return
     end
+
+    token.set_macro("l__spintent_spdate_luaset_error_str", "false")
+    token.set_macro("l__spintent_spdate_luaset_day_str", result.day)
+    token.set_macro("l__spintent_spdate_luaset_month_str", result.month)
+    token.set_macro("l__spintent_spdate_luaset_year_str", result.year)
+    token.set_macro("l__spintent_spdate_luaset_output_str", result.day .. "/" .. result.month .. "/" .. result.year)
 end, { "string" })
 
 register_tex_cmd("luafun_sptime_parse", function(raw_time_input)
@@ -658,21 +672,21 @@ register_tex_cmd("luafun_sptime_parse", function(raw_time_input)
 end, { "string" })
 
 -- =========================================================================
--- SUBMÓDULO LUA: \spsiglo
+-- LUA SUBMODULE: \spsiglo
 -- =========================================================================
-local arab_to_roman_map = {
+local spintent_arab_to_roman_map = {
   {1000, "m"}, {900, "cm"}, {500, "d"}, {400, "cd"},
   {100, "c"}, {90, "xc"}, {50, "l"}, {40, "xl"},
   {10, "x"}, {9, "ix"}, {5, "v"}, {4, "iv"}, {1, "i"}
 }
 
-local roman_to_arab_map = {
+local spintent_roman_to_arab_map = {
   i = 1, v = 5, x = 10, l = 50, c = 100, d = 500, m = 1000
 }
 
-local function arabic_to_roman(num)
+local function spintent_arabic_to_roman(num)
   local chunks = {}
-  for _, pair in ipairs(arab_to_roman_map) do
+  for _, pair in ipairs(spintent_arab_to_roman_map) do
     while num >= pair[1] do
       table.insert(chunks, pair[2])
       num = num - pair[1]
@@ -681,18 +695,18 @@ local function arabic_to_roman(num)
   return table.concat(chunks)
 end
 
-local function roman_to_arabic(str_roman)
+local function spintent_roman_to_arabic(str_roman)
   local total = 0
   local i = 1
   local len = #str_roman
 
   while i <= len do
     local c1 = str_roman:sub(i, i)
-    local v1 = roman_to_arab_map[c1] or 0
+    local v1 = spintent_roman_to_arab_map[c1] or 0
 
     if i + 1 <= len then
       local c2 = str_roman:sub(i + 1, i + 1)
-      local v2 = roman_to_arab_map[c2] or 0
+      local v2 = spintent_roman_to_arab_map[c2] or 0
 
       if v1 < v2 then
         total = total + (v2 - v1)
@@ -718,15 +732,15 @@ register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
   if clean:match("^%d+$") then
     arabic_val = tonumber(clean)
     if arabic_val > 0 and arabic_val <= 4000 then
-      roman_val = arabic_to_roman(arabic_val)
+      roman_val = spintent_arabic_to_roman(arabic_val)
     else
       is_error = true
     end
   elseif clean:match("^[ivxlcdm]+$") and clean ~= "" then
     roman_val = clean
-    arabic_val = roman_to_arabic(clean)
+    arabic_val = spintent_roman_to_arabic(clean)
 
-    if arabic_to_roman(arabic_val) ~= clean then
+    if spintent_arabic_to_roman(arabic_val) ~= clean then
       is_error = true
     end
   else
