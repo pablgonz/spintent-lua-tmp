@@ -279,7 +279,9 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
             else
                 above = parts[1] or ""
                 below = parts[2] or ""
-                if below ~= "" and string.match(below, "^%s*%d") then denom_has_numeric = "true" end
+                if below ~= "" and string.match(below, "^%s*%d") then
+                    denom_has_numeric = "true"
+                end
             end
         end
     end
@@ -287,17 +289,24 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     local is_million_clean = "false"
     if result.integer and result.integer ~= "" then
         local int_value = tonumber(result.integer)
-        if int_value and int_value > 999999 and (int_value % 1000000 == 0) then is_million_clean = "true" end
+        if int_value and int_value > 999999 and (int_value % 1000000 == 0) then
+            is_million_clean = "true"
+        end
     end
 
     local has_dec = (result.decimal and result.decimal ~= "") and true or false
     local has_per = (result.period and result.period ~= "") and true or false
     local dec_and_per, dec_not_per, not_dec_and_per, not_dec_not_per = "false", "false", "false", "false"
 
-    if has_dec and has_per then dec_and_per = "true"
-    elseif has_dec and not has_per then dec_not_per = "true"
-    elseif not has_dec and has_per then not_dec_and_per = "true"
-    else not_dec_not_per = "true" end
+    if has_dec and has_per then
+        dec_and_per = "true"
+    elseif has_dec and not has_per then
+        dec_not_per = "true"
+    elseif not has_dec and has_per then
+        not_dec_and_per = "true"
+    else
+        not_dec_not_per = "true"
+    end
 
     token.set_macro("l__spintent_luaset_sign_tl", result.sign or "")
     token.set_macro("l__spintent_luaset_part_int_tl", result.integer or "")
@@ -311,6 +320,7 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     token.set_macro("l__spintent_luaset_denom_has_numeric_coef_str", denom_has_numeric)
     token.set_macro("l__spintent_luaset_only_part_int_str", result.integer or "")
     token.set_macro("l__spintent_luaset_only_part_dec_str", result.fraction or "")
+    token.set_macro("l__spintent_luaset_only_part_period_str", result.period or "")
     token.set_macro("l__spintent_luaset_format_part_int_str", format_groups(result.integer, false))
     token.set_macro("l__spintent_luaset_format_part_dec_str", format_groups(result.fraction, true))
     token.set_macro("l__spintent_luaset_millons_str", is_million_clean)
@@ -325,7 +335,6 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
         token.set_macro("l__spintent_luaset_dec_is_all_zeros_str", "false")
     end
 end, { "string" })
-
 -- =========================================================================
 -- 4. INTERFACES ADICIONALES DE UNIDADES Y UTILERÍAS SANEADORAS
 -- =========================================================================
