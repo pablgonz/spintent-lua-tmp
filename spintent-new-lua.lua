@@ -9,16 +9,16 @@ local math_floor = math.floor
 local t_insert   = table.insert
 local t_concat   = table.concat
 
+-- Extracción directa de LPeg para evitar la sintaxis _ENV no soportada por LuaJIT
+local lpeg_base = lpeg or require("lpeg")
+local P, R, S, Cs, Ct, Cg, C = lpeg_base.P, lpeg_base.R, lpeg_base.S, lpeg_base.Cs, lpeg_base.Ct, lpeg_base.Cg, lpeg_base.C
+
 -- =========================================================================
 -- BLOQUES LPEG COMPARTIDOS (Optimización #1)
 -- =========================================================================
-local spintent_digit, spintent_math_space, spintent_num_chunk
-do
-    local _ENV = lpeg
-    spintent_digit = R"09"
-    spintent_math_space = P"\\," + P"\\-" + P"\\;" + P"\\:" + P"\\!" + P"\\>" + P"\\quad" + P"\\qquad"
-    spintent_num_chunk = Cs(spintent_digit * ((spintent_math_space / "")^0 * spintent_digit)^0)
-end
+local spintent_digit = R"09"
+local spintent_math_space = P"\\," + P"\\-" + P"\\;" + P"\\:" + P"\\!" + P"\\>" + P"\\quad" + P"\\qquad"
+local spintent_num_chunk = Cs(spintent_digit * ((spintent_math_space / "")^0 * spintent_digit)^0)
 
 -- =========================================================================
 -- 1. CANONICAL DICTIONARIES FOR SCIENTIFIC AND PHYSICAL UNITS
@@ -238,22 +238,19 @@ local function register_tex_cmd(name, func, args)
     token.set_lua(name, index, "global", "protected")
 end
 
-local spintent_number_pattern do
-    local _ENV = lpeg
-    local sign             = S "+-"
-    local decimal          = S ".," + P "{.}" + P "{,}"
-    local semi             = P ";"
-    local forbidden_in_extra = decimal + semi
+local spintent_num_sign             = S "+-"
+local spintent_num_decimal          = S ".," + P "{.}" + P "{,}"
+local spintent_num_semi             = P ";"
+local spintent_forbidden_in_extra   = spintent_num_decimal + spintent_num_semi
 
-    spintent_number_pattern = Ct(
-        Cg(sign^-1, "sign")
-        * Cg(spintent_num_chunk^-1, "integer")
-        * (Cg(C(decimal), "decimal") * Cg(spintent_num_chunk, "fraction"))^-1
-        * (semi * Cg(spintent_num_chunk, "period"))^-1
-        * Cg(Cs((spintent_math_space / "" + (P(1) - forbidden_in_extra))^0), "extra")
-        * P(-1)
-    )
-end
+local spintent_number_pattern = Ct(
+    Cg(spintent_num_sign^-1, "sign")
+    * Cg(spintent_num_chunk^-1, "integer")
+    * (Cg(C(spintent_num_decimal), "decimal") * Cg(spintent_num_chunk, "fraction"))^-1
+    * (spintent_num_semi * Cg(spintent_num_chunk, "period"))^-1
+    * Cg(Cs((spintent_math_space / "" + (P(1) - spintent_forbidden_in_extra))^0), "extra")
+    * P(-1)
+)
 
 local function spintent_rae_format_digits(str_num, reverse)
     if not str_num or str_num == "" then return "" end
@@ -277,7 +274,6 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     raw_string = raw_string:gsub("^%s*(.-)%s*$", "%1")
     local result = spintent_number_pattern:match(raw_string) or {}
 
-    -- Optimización #4: Caché local de índices
     local r_sign     = result.sign or ""
     local r_int      = result.integer or ""
     local r_dec      = result.decimal or ""
@@ -425,7 +421,7 @@ register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
                 token.set_macro("l__spintent_spunit_luaset_is_compact_str", "true")
                 local spoken = spintent_custom_spunit_spoken_names[canonical_base] or ":unit"
                 token.set_macro("l__spintent_spunit_luaset_read_str", spoken)
-                if canonical_base == "°" or canonical_base == "′" or canonical_base == "″" then
+                if canonical_base == "°" or canonical_base == "′" or canonical == "″" then
                     token.set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "true")
                 end
                 token.set_macro("l__spintent_spunit_luaset_lookup_status_str", "found")
@@ -534,14 +530,11 @@ register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
 end, { "string" })
 
 -- =========================================================================
--- SEXAGESIMAL SYSTEM (Real Optimized LPeg)
+-- SEXAGESIMAL SYSTEM
 -- =========================================================================
-local spintent_sexagesimal_pattern do
-    local _ENV = lpeg
-    spintent_sexagesimal_pattern = Ct(
-        Cg(spintent_num_chunk^-1, "a") * P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1 * P(-1)
-    )
-end
+local spintent_sexagesimal_pattern = Ct(
+    Cg(spintent_num_chunk^-1, "a") * P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1 * P(-1)
+)
 
 register_tex_cmd("luafun_parse_sexagesimal", function(raw_sexag_str)
     raw_sexag_str = raw_sexag_str:gsub("%s+", "")
@@ -618,17 +611,14 @@ register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
 end, { "string" })
 
 -- =========================================================================
--- LUA SUBMODULE: \spdate AND \sptime (Optimized LPeg Engine)
+-- LUA SUBMODULE: \spdate AND \sptime
 -- =========================================================================
-local spintent_date_pattern do
-    local _ENV = lpeg
-    local sep = S"/-"
+local spintent_date_sep = S"/-"
 
-    spintent_date_pattern = Ct(
-        (Cg(spintent_num_chunk, "year") * sep * Cg(spintent_num_chunk, "month") * sep * Cg(spintent_num_chunk, "day") * P(-1)) +
-        (Cg(spintent_num_chunk, "day") * sep * Cg(spintent_num_chunk, "month") * sep * Cg(spintent_num_chunk, "year") * P(-1))
-    )
-end
+local spintent_date_pattern = Ct(
+    (Cg(spintent_num_chunk, "year") * spintent_date_sep * Cg(spintent_num_chunk, "month") * spintent_date_sep * Cg(spintent_num_chunk, "day") * P(-1)) +
+    (Cg(spintent_num_chunk, "day") * spintent_date_sep * Cg(spintent_num_chunk, "month") * spintent_date_sep * Cg(spintent_num_chunk, "year") * P(-1))
+)
 
 register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
     if not raw_date_input then return end
@@ -647,12 +637,9 @@ register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
     token.set_macro("l__spintent_spdate_luaset_output_str", result.day .. "/" .. result.month .. "/" .. result.year)
 end, { "string" })
 
-local spintent_time_pattern do
-    local _ENV = lpeg
-    spintent_time_pattern = Ct(
-        Cg(spintent_num_chunk, "h") * P":" * Cg(spintent_num_chunk, "m") * (P":" * Cg(spintent_num_chunk, "s"))^-1 * P(-1)
-    )
-end
+local spintent_time_pattern = Ct(
+    Cg(spintent_num_chunk, "h") * P":" * Cg(spintent_num_chunk, "m") * (P":" * Cg(spintent_num_chunk, "s"))^-1 * P(-1)
+)
 
 register_tex_cmd("luafun_sptime_parse", function(raw_time_input)
     if not raw_time_input then return end
