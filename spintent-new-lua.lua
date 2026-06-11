@@ -13,9 +13,14 @@ local s_match    = string.match
 local s_gmatch   = string.gmatch
 local s_sub      = string.sub
 local s_gsub     = string.gsub
+local s_lower    = string.lower
+local s_upper    = string.upper
+local s_byte     = string.byte
 
 local u_len      = utf8.len
 local u_sub      = utf8.sub
+
+local token_set_macro = token.set_macro
 
 -- =========================================================================
 -- BLOQUES LPEG COMPARTIDOS (Planos, sin _ENV)
@@ -237,7 +242,6 @@ local function register_tex_cmd(name, func, args)
     end
 
     local scanning_func
-    -- Optimización: Despacho sin alocamiento de tablas para 1 o 2 argumentos
     if #scanners == 1 then
         local s1 = scanners[1]
         scanning_func = function() func(s1()) end
@@ -290,7 +294,7 @@ local function spintent_rae_format_digits(str_num, reverse)
 end
 
 register_tex_cmd("luafun_clean_split_arg", function(raw_string)
-    raw_string = s_gsub(raw_string, "^%s*(.-)%s*$", "%1")
+    raw_string = s_match(raw_string, "^%s*(.-)%s*$") or raw_string
     local result = spintent_number_pattern:match(raw_string) or {}
 
     local r_sign     = result.sign or ""
@@ -307,7 +311,7 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     local denom_has_numeric = "false"
 
     if r_extra then
-        local extra = s_gsub(r_extra, "^%s*(.-)%s*$", "%1")
+        local extra = s_match(r_extra, "^%s*(.-)%s*$") or r_extra
         if spintent_custom_spunit_aliases[extra] then extra = spintent_custom_spunit_aliases[extra] end
 
         if extra ~= "" then
@@ -348,31 +352,31 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
         not_dec_not_per = "true"
     end
 
-    token.set_macro("l__spintent_luaset_sign_tl", r_sign)
-    token.set_macro("l__spintent_luaset_part_int_tl", r_int)
-    token.set_macro("l__spintent_luaset_dec_sep_tl", r_dec)
-    token.set_macro("l__spintent_luaset_part_dec_tl", r_frac)
-    token.set_macro("l__spintent_luaset_part_period_tl", r_period)
-    token.set_macro("l__spintent_luaset_arg_above_tl", above)
-    token.set_macro("l__spintent_luaset_arg_below_tl", below)
-    token.set_macro("l__spintent_luaset_status_str", unit_status)
-    token.set_macro("l__spintent_luaset_has_units_str", has_units)
-    token.set_macro("l__spintent_luaset_denom_has_numeric_coef_str", denom_has_numeric)
-    token.set_macro("l__spintent_luaset_only_part_int_str", r_int)
-    token.set_macro("l__spintent_luaset_only_part_dec_str", r_frac)
-    token.set_macro("l__spintent_luaset_only_part_period_str", r_period)
-    token.set_macro("l__spintent_luaset_format_part_int_str", spintent_rae_format_digits(r_int, false))
-    token.set_macro("l__spintent_luaset_format_part_dec_str", spintent_rae_format_digits(r_frac, true))
-    token.set_macro("l__spintent_luaset_millons_str", is_million_clean)
-    token.set_macro("l__spintent_luaset_decimal_and_period_str", dec_and_per)
-    token.set_macro("l__spintent_luaset_decimal_not_period_str", dec_not_per)
-    token.set_macro("l__spintent_luaset_not_decimal_and_period_str", not_dec_and_per)
-    token.set_macro("l__spintent_luaset_not_decimal_not_period_str", not_dec_not_per)
+    token_set_macro("l__spintent_luaset_sign_tl", r_sign)
+    token_set_macro("l__spintent_luaset_part_int_tl", r_int)
+    token_set_macro("l__spintent_luaset_dec_sep_tl", r_dec)
+    token_set_macro("l__spintent_luaset_part_dec_tl", r_frac)
+    token_set_macro("l__spintent_luaset_part_period_tl", r_period)
+    token_set_macro("l__spintent_luaset_arg_above_tl", above)
+    token_set_macro("l__spintent_luaset_arg_below_tl", below)
+    token_set_macro("l__spintent_luaset_status_str", unit_status)
+    token_set_macro("l__spintent_luaset_has_units_str", has_units)
+    token_set_macro("l__spintent_luaset_denom_has_numeric_coef_str", denom_has_numeric)
+    token_set_macro("l__spintent_luaset_only_part_int_str", r_int)
+    token_set_macro("l__spintent_luaset_only_part_dec_str", r_frac)
+    token_set_macro("l__spintent_luaset_only_part_period_str", r_period)
+    token_set_macro("l__spintent_luaset_format_part_int_str", spintent_rae_format_digits(r_int, false))
+    token_set_macro("l__spintent_luaset_format_part_dec_str", spintent_rae_format_digits(r_frac, true))
+    token_set_macro("l__spintent_luaset_millons_str", is_million_clean)
+    token_set_macro("l__spintent_luaset_decimal_and_period_str", dec_and_per)
+    token_set_macro("l__spintent_luaset_decimal_not_period_str", dec_not_per)
+    token_set_macro("l__spintent_luaset_not_decimal_and_period_str", not_dec_and_per)
+    token_set_macro("l__spintent_luaset_not_decimal_not_period_str", not_dec_not_per)
 
     if r_frac ~= "" and s_match(r_frac, "^0+$") then
-        token.set_macro("l__spintent_luaset_dec_is_all_zeros_str", "true")
+        token_set_macro("l__spintent_luaset_dec_is_all_zeros_str", "true")
     else
-        token.set_macro("l__spintent_luaset_dec_is_all_zeros_str", "false")
+        token_set_macro("l__spintent_luaset_dec_is_all_zeros_str", "false")
     end
 end, { "string" })
 
@@ -380,21 +384,21 @@ end, { "string" })
 -- 4. ADDITIONAL UNIT INTERFACES AND SANITIZING UTILITIES
 -- =========================================================================
 register_tex_cmd("luafun_define_custom_unit", function(unit_name, spoken_reading)
-    unit_name = s_gsub(s_gsub(unit_name, "^%s*(.-)%s*$", "%1"), "%s+", "")
-    spoken_reading = s_gsub(spoken_reading, "^%s*(.-)%s*$", "%1")
+    unit_name = s_gsub(s_match(unit_name, "^%s*(.-)%s*$") or unit_name, "%s+", "")
+    spoken_reading = s_match(spoken_reading, "^%s*(.-)%s*$") or spoken_reading
     if spintent_units[unit_name] or spintent_normalizations[unit_name] then
-        token.set_macro("l__spintent_spunit_luaset_register_status_str", "duplicate")
+        token_set_macro("l__spintent_spunit_luaset_register_status_str", "duplicate")
     else
         spintent_units[unit_name] = unit_name
         spintent_custom_spunit_spoken_names[unit_name] = spoken_reading
-        token.set_macro("l__spintent_spunit_luaset_register_status_str", "success")
+        token_set_macro("l__spintent_spunit_luaset_register_status_str", "success")
     end
 end, { "string", "string" })
 
 register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
-    raw_unit_name = s_gsub(s_gsub(raw_unit_name, "^%s*(.-)%s*$", "%1"), "%s+", "")
+    raw_unit_name = s_gsub(s_match(raw_unit_name, "^%s*(.-)%s*$") or raw_unit_name, "%s+", "")
     local clean_exp_format = s_gsub(s_gsub(raw_unit_name, "{", ""), "}", "")
-    token.set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "false")
+    token_set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "false")
 
     local search_name = spintent_normalizations[clean_exp_format] or spintent_normalizations[raw_unit_name] or raw_unit_name
     local canonical = spintent_units[search_name] or spintent_units[clean_exp_format]
@@ -407,50 +411,50 @@ register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
             or spintent_unit_compact_spoken_names[search_name]
             or ":unit"
 
-        token.set_macro("l__spintent_spunit_luaset_read_str", spoken)
+        token_set_macro("l__spintent_spunit_luaset_read_str", spoken)
 
         if s_match(canonical, "%^") then
             local base, exp = s_match(canonical, "([^%^]+)%^(%-?%d+)")
             if base and exp then
-                token.set_macro("l__spintent_spunit_luaset_canonical_str", base)
-                token.set_macro("l__spintent_spunit_luaset_compact_exp_str", exp)
-                token.set_macro("l__spintent_spunit_luaset_is_compact_str", "true")
+                token_set_macro("l__spintent_spunit_luaset_canonical_str", base)
+                token_set_macro("l__spintent_spunit_luaset_compact_exp_str", exp)
+                token_set_macro("l__spintent_spunit_luaset_is_compact_str", "true")
             else
-                token.set_macro("l__spintent_spunit_luaset_canonical_str", canonical)
-                token.set_macro("l__spintent_spunit_luaset_is_compact_str", "false")
+                token_set_macro("l__spintent_spunit_luaset_canonical_str", canonical)
+                token_set_macro("l__spintent_spunit_luaset_is_compact_str", "false")
             end
         else
-            token.set_macro("l__spintent_spunit_luaset_canonical_str", canonical)
-            token.set_macro("l__spintent_spunit_luaset_is_compact_str", "false")
+            token_set_macro("l__spintent_spunit_luaset_canonical_str", canonical)
+            token_set_macro("l__spintent_spunit_luaset_is_compact_str", "false")
         end
 
         if canonical == "°" or canonical == "′" or canonical == "″" then
-            token.set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "true")
+            token_set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "true")
         else
-            token.set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "false")
+            token_set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "false")
         end
-        token.set_macro("l__spintent_spunit_luaset_lookup_status_str", "found")
+        token_set_macro("l__spintent_spunit_luaset_lookup_status_str", "found")
     else
         local literal_base, literal_exp = s_match(clean_exp_format, "([^%^]+)%^(%-?%d+)")
         if literal_base and literal_exp then
             local canonical_base = spintent_units[spintent_normalizations[literal_base] or literal_base]
             if canonical_base then
-                token.set_macro("l__spintent_spunit_luaset_canonical_str", canonical_base)
-                token.set_macro("l__spintent_spunit_luaset_compact_exp_str", literal_exp)
-                token.set_macro("l__spintent_spunit_luaset_is_compact_str", "true")
+                token_set_macro("l__spintent_spunit_luaset_canonical_str", canonical_base)
+                token_set_macro("l__spintent_spunit_luaset_compact_exp_str", literal_exp)
+                token_set_macro("l__spintent_spunit_luaset_is_compact_str", "true")
                 local spoken = spintent_custom_spunit_spoken_names[canonical_base] or ":unit"
-                token.set_macro("l__spintent_spunit_luaset_read_str", spoken)
+                token_set_macro("l__spintent_spunit_luaset_read_str", spoken)
                 if canonical_base == "°" or canonical_base == "′" or canonical_base == "″" then
-                    token.set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "true")
+                    token_set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "true")
                 end
-                token.set_macro("l__spintent_spunit_luaset_lookup_status_str", "found")
+                token_set_macro("l__spintent_spunit_luaset_lookup_status_str", "found")
             else
-                token.set_macro("l__spintent_spunit_luaset_is_compact_str", "false")
-                token.set_macro("l__spintent_spunit_luaset_lookup_status_str", "notfound")
+                token_set_macro("l__spintent_spunit_luaset_is_compact_str", "false")
+                token_set_macro("l__spintent_spunit_luaset_lookup_status_str", "notfound")
             end
         else
-            token.set_macro("l__spintent_spunit_luaset_is_compact_str", "false")
-            token.set_macro("l__spintent_spunit_luaset_lookup_status_str", "notfound")
+            token_set_macro("l__spintent_spunit_luaset_is_compact_str", "false")
+            token_set_macro("l__spintent_spunit_luaset_lookup_status_str", "notfound")
         end
     end
 end, { "string" })
@@ -465,14 +469,14 @@ register_tex_cmd("luafun_sanitize_read_arg", function(raw_accent_string)
     local clean = s_gsub(raw_accent_string, "[{}]", "")
     clean = s_gsub(clean, "\\[\'~\x22].", spintent_tex_accents)
     clean = s_gsub(clean, "%s+", "-")
-    token.set_macro("l__spintent_clean_arg_str", clean)
+    token_set_macro("l__spintent_clean_arg_str", clean)
 end, { "string" })
 
 register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_expression)
-    alias_name = s_gsub(s_gsub(alias_name, "^%s*(.-)%s*$", "%1"), "%s+", "")
-    unit_expression = s_gsub(unit_expression, "^%s*(.-)%s*$", "%1")
+    alias_name = s_gsub(s_match(alias_name, "^%s*(.-)%s*$") or alias_name, "%s+", "")
+    unit_expression = s_match(unit_expression, "^%s*(.-)%s*$") or unit_expression
     if spintent_units[alias_name] or spintent_normalizations[alias_name] or spintent_custom_spunit_aliases[alias_name] then
-        token.set_macro("l__spintent_spunit_luaset_register_status_str", "duplicate")
+        token_set_macro("l__spintent_spunit_luaset_register_status_str", "duplicate")
         return
     end
     local is_valid = true
@@ -486,10 +490,10 @@ register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_express
         end
     end
     if not is_valid then
-        token.set_macro("l__spintent_spunit_luaset_register_status_str", "invalid-expr")
+        token_set_macro("l__spintent_spunit_luaset_register_status_str", "invalid-expr")
     else
         spintent_custom_spunit_aliases[alias_name] = unit_expression
-        token.set_macro("l__spintent_spunit_luaset_register_status_str", "success")
+        token_set_macro("l__spintent_spunit_luaset_register_status_str", "success")
     end
 end, { "string", "string" })
 
@@ -508,10 +512,10 @@ end
 
 local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
     local numbers = {}
-    token.set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "false")
+    token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "false")
 
     for item in s_gmatch(raw_csv_list, "([^,]+)") do
-        local clean_item = s_gsub(item, "^%s*(.-)%s*$", "%1")
+        local clean_item = s_match(item, "^%s*(.-)%s*$") or item
         local result = spintent_number_pattern:match(clean_item) or {}
 
         local r_int  = result.integer
@@ -527,17 +531,17 @@ local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
         if es_natural then
             t_insert(numbers, tonumber(r_int))
         else
-            token.set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
+            token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
             return
         end
     end
     if #numbers == 0 then
-        token.set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
+        token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
         return
     end
     local final_result = numbers[1]
     for i = 2, #numbers do final_result = operation_fn(final_result, numbers[i]) end
-    token.set_macro(tl_out, string.format("%d", final_result))
+    token_set_macro(tl_out, string.format("%d", final_result))
 end
 
 register_tex_cmd("luafun_calculate_mcd", function(raw_csv_list)
@@ -560,21 +564,21 @@ register_tex_cmd("luafun_parse_sexagesimal", function(raw_sexag_str)
     local result = spintent_sexagesimal_pattern:match(raw_sexag_str)
 
     if not result then
-        token.set_macro("l__spintent_spsexag_error_status_str", "true")
+        token_set_macro("l__spintent_spsexag_error_status_str", "true")
         return
     end
 
-    token.set_macro("l__spintent_spsexag_error_status_str", "false")
-    token.set_macro("l__spintent_spsexag_luaset_grado_str", result.a or "")
-    token.set_macro("l__spintent_spsexag_luaset_minuto_str", result.b or "")
-    token.set_macro("l__spintent_spsexag_luaset_segundo_str", result.c or "")
+    token_set_macro("l__spintent_spsexag_error_status_str", "false")
+    token_set_macro("l__spintent_spsexag_luaset_grado_str", result.a or "")
+    token_set_macro("l__spintent_spsexag_luaset_minuto_str", result.b or "")
+    token_set_macro("l__spintent_spsexag_luaset_segundo_str", result.c or "")
 end, { "string" })
 
 -- =========================================================================
 -- 5. CRITICAL FINANCIAL METADATA AND GRAMMATICAL RESOLUTION INTERFACES
 -- =========================================================================
 register_tex_cmd("luafun_spmoney_lookup_metadata", function(currency_name)
-    local clean = s_gsub(currency_name, "^%s*(.-)%s*$", "%1"):lower()
+    local clean = s_lower(s_match(currency_name, "^%s*(.-)%s*$") or currency_name)
     local resolved_symbol = spintent_internal_currencies[clean] or "$"
 
     local gram_entry = spintent_currency_grammatical_dict[clean] or spintent_currency_grammatical_dict[resolved_symbol]
@@ -583,34 +587,34 @@ register_tex_cmd("luafun_spmoney_lookup_metadata", function(currency_name)
     local position = "pre"
     if resolved_symbol == "€" then position = "post" end
 
-    local raw_input = s_gsub(currency_name, "^%s*(.-)%s*$", "%1")
-    if raw_input == raw_input:upper() and s_match(raw_input, "^[A-Za-z]+$") then
-        token.set_macro("l__spintent_spmoney_luaset_print_iso_str", "true")
+    local raw_input = s_match(currency_name, "^%s*(.-)%s*$") or currency_name
+    if raw_input == s_upper(raw_input) and s_match(raw_input, "^[A-Za-z]+$") then
+        token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "true")
     else
-        token.set_macro("l__spintent_spmoney_luaset_print_iso_str", "false")
+        token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "false")
     end
 
     local sub_db = spintent_currency_subunits_matrix[gram_entry.plur]
 
-    token.set_macro("l__spintent_spmoney_luaset_resolved_symbol_str", resolved_symbol)
-    token.set_macro("l__spintent_spmoney_luaset_resolved_position_str", position)
-    token.set_macro("l__spintent_spmoney_luaset_resolved_sing_str", gram_entry.sing)
-    token.set_macro("l__spintent_spmoney_luaset_resolved_plur_str", gram_entry.plur)
-    token.set_macro("l__spintent_spmoney_luaset_resolved_conde_str", gram_entry.conde)
+    token_set_macro("l__spintent_spmoney_luaset_resolved_symbol_str", resolved_symbol)
+    token_set_macro("l__spintent_spmoney_luaset_resolved_position_str", position)
+    token_set_macro("l__spintent_spmoney_luaset_resolved_sing_str", gram_entry.sing)
+    token_set_macro("l__spintent_spmoney_luaset_resolved_plur_str", gram_entry.plur)
+    token_set_macro("l__spintent_spmoney_luaset_resolved_conde_str", gram_entry.conde)
 
     if sub_db then
-        token.set_macro("l__spintent_spmoney_luaset_has_subunits_tl", "true")
-        token.set_macro("l__spintent_spmoney_luaset_resolved_subsing_str", sub_db.sing)
-        token.set_macro("l__spintent_spmoney_luaset_resolved_subplur_str", sub_db.plur)
+        token_set_macro("l__spintent_spmoney_luaset_has_subunits_tl", "true")
+        token_set_macro("l__spintent_spmoney_luaset_resolved_subsing_str", sub_db.sing)
+        token_set_macro("l__spintent_spmoney_luaset_resolved_subplur_str", sub_db.plur)
     else
-        token.set_macro("l__spintent_spmoney_luaset_has_subunits_tl", "false")
-        token.set_macro("l__spintent_spmoney_luaset_resolved_subsing_str", "")
-        token.set_macro("l__spintent_spmoney_luaset_resolved_subplur_str", "")
+        token_set_macro("l__spintent_spmoney_luaset_has_subunits_tl", "false")
+        token_set_macro("l__spintent_spmoney_luaset_resolved_subsing_str", "")
+        token_set_macro("l__spintent_spmoney_luaset_resolved_subplur_str", "")
     end
 end, { "string" })
 
 register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
-    local clean = s_gsub(raw_input, "^%s*(.-)%s*$", "%1"):lower()
+    local clean = s_lower(s_match(raw_input, "^%s*(.-)%s*$") or raw_input)
     local resolved_symbol = spintent_internal_currencies[clean]
     local resolved_spoken = nil
 
@@ -621,11 +625,11 @@ register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
     end
 
     if resolved_spoken then
-        token.set_macro("l__spintent_spmoney_luaset_currency_arg_str", resolved_spoken)
-        token.set_macro("l__spintent_spmoney_luaset_lookup_status_str", "found")
+        token_set_macro("l__spintent_spmoney_luaset_currency_arg_str", resolved_spoken)
+        token_set_macro("l__spintent_spmoney_luaset_lookup_status_str", "found")
     else
-        token.set_macro("l__spintent_spmoney_luaset_currency_arg_str", raw_input)
-        token.set_macro("l__spintent_spmoney_luaset_lookup_status_str", "notfound")
+        token_set_macro("l__spintent_spmoney_luaset_currency_arg_str", raw_input)
+        token_set_macro("l__spintent_spmoney_luaset_lookup_status_str", "notfound")
     end
 end, { "string" })
 
@@ -645,15 +649,15 @@ register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
     local result = spintent_date_pattern:match(clean_str)
 
     if not result then
-        token.set_macro("l__spintent_spdate_luaset_error_str", "true")
+        token_set_macro("l__spintent_spdate_luaset_error_str", "true")
         return
     end
 
-    token.set_macro("l__spintent_spdate_luaset_error_str", "false")
-    token.set_macro("l__spintent_spdate_luaset_day_str", result.day)
-    token.set_macro("l__spintent_spdate_luaset_month_str", result.month)
-    token.set_macro("l__spintent_spdate_luaset_year_str", result.year)
-    token.set_macro("l__spintent_spdate_luaset_output_str", result.day .. "/" .. result.month .. "/" .. result.year)
+    token_set_macro("l__spintent_spdate_luaset_error_str", "false")
+    token_set_macro("l__spintent_spdate_luaset_day_str", result.day)
+    token_set_macro("l__spintent_spdate_luaset_month_str", result.month)
+    token_set_macro("l__spintent_spdate_luaset_year_str", result.year)
+    token_set_macro("l__spintent_spdate_luaset_output_str", result.day .. "/" .. result.month .. "/" .. result.year)
 end, { "string" })
 
 local spintent_time_pattern = Ct(
@@ -666,7 +670,7 @@ register_tex_cmd("luafun_sptime_parse", function(raw_time_input)
     local result = spintent_time_pattern:match(clean_str)
 
     if not result then
-        token.set_macro("l__spintent_sptime_luaset_error_str", "true")
+        token_set_macro("l__spintent_sptime_luaset_error_str", "true")
         return
     end
 
@@ -675,31 +679,31 @@ register_tex_cmd("luafun_sptime_parse", function(raw_time_input)
     local s = result.s and tonumber(result.s) or nil
 
     if not h or not m or h >= 24 or m >= 60 or (s and s >= 60) then
-        token.set_macro("l__spintent_sptime_luaset_error_str", "true")
+        token_set_macro("l__spintent_sptime_luaset_error_str", "true")
         return
     end
 
-    token.set_macro("l__spintent_sptime_luaset_error_str", "false")
-    token.set_macro("l__spintent_sptime_luaset_base_str", result.h .. ":" .. result.m)
+    token_set_macro("l__spintent_sptime_luaset_error_str", "false")
+    token_set_macro("l__spintent_sptime_luaset_base_str", result.h .. ":" .. result.m)
 
     if result.s then
-        token.set_macro("l__spintent_sptime_luaset_has_seconds_str", "true")
-        token.set_macro("l__spintent_sptime_luaset_seconds_str", result.s)
+        token_set_macro("l__spintent_sptime_luaset_has_seconds_str", "true")
+        token_set_macro("l__spintent_sptime_luaset_seconds_str", result.s)
 
         if result.m == "15" or result.m == "30" then
-            token.set_macro("l__spintent_sptime_luaset_is_fraction_str", "true")
+            token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "true")
         else
-            token.set_macro("l__spintent_sptime_luaset_is_fraction_str", "false")
+            token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "false")
         end
     else
-        token.set_macro("l__spintent_sptime_luaset_has_seconds_str", "false")
-        token.set_macro("l__spintent_sptime_luaset_seconds_str", "")
-        token.set_macro("l__spintent_sptime_luaset_is_fraction_str", "false")
+        token_set_macro("l__spintent_sptime_luaset_has_seconds_str", "false")
+        token_set_macro("l__spintent_sptime_luaset_seconds_str", "")
+        token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "false")
     end
 end, { "string" })
 
 -- =========================================================================
--- LUA SUBMODULE: \spsiglo (Optimizado sin alocamiento de tablas)
+-- LUA SUBMODULE: \spsiglo (Optimizado sin alocamiento de tablas y Bytes)
 -- =========================================================================
 local spintent_arab_to_roman_map = {
   {1000, "m"}, {900, "cm"}, {500, "d"}, {400, "cd"},
@@ -707,8 +711,14 @@ local spintent_arab_to_roman_map = {
   {10, "x"}, {9, "ix"}, {5, "v"}, {4, "iv"}, {1, "i"}
 }
 
-local spintent_roman_to_arab_map = {
-  i = 1, v = 5, x = 10, l = 50, c = 100, d = 500, m = 1000
+local spintent_roman_to_arab_byte_map = {
+  [105] = 1,   -- 'i'
+  [118] = 5,   -- 'v'
+  [120] = 10,  -- 'x'
+  [108] = 50,  -- 'l'
+  [99]  = 100, -- 'c'
+  [100] = 500, -- 'd'
+  [109] = 1000 -- 'm'
 }
 
 local function spintent_arabic_to_roman(num)
@@ -729,12 +739,10 @@ local function spintent_roman_to_arabic(str_roman)
   local len = #str_roman
 
   while i <= len do
-    local c1 = s_sub(str_roman, i, i)
-    local v1 = spintent_roman_to_arab_map[c1] or 0
+    local v1 = spintent_roman_to_arab_byte_map[s_byte(str_roman, i)] or 0
 
     if i + 1 <= len then
-      local c2 = s_sub(str_roman, i + 1, i + 1)
-      local v2 = spintent_roman_to_arab_map[c2] or 0
+      local v2 = spintent_roman_to_arab_byte_map[s_byte(str_roman, i + 1)] or 0
 
       if v1 < v2 then
         total = total + (v2 - v1)
@@ -752,7 +760,7 @@ local function spintent_roman_to_arabic(str_roman)
 end
 
 register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
-  local clean = s_gsub(raw_siglo_input, "%s+", ""):lower()
+  local clean = s_lower(s_gsub(raw_siglo_input, "%s+", ""))
   local arabic_val = nil
   local roman_val = nil
   local is_error = false
@@ -776,21 +784,20 @@ register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
   end
 
   if is_error then
-    token.set_macro("l__spintent_spsiglo_luaset_error_str", "true")
-    token.set_macro("l__spintent_spsiglo_luaset_arabic_str", "")
-    token.set_macro("l__spintent_spsiglo_luaset_roman_min_str", "")
+    token_set_macro("l__spintent_spsiglo_luaset_error_str", "true")
+    token_set_macro("l__spintent_spsiglo_luaset_arabic_str", "")
+    token_set_macro("l__spintent_spsiglo_luaset_roman_min_str", "")
   else
-    token.set_macro("l__spintent_spsiglo_luaset_error_str", "false")
-    token.set_macro("l__spintent_spsiglo_luaset_arabic_str", tostring(arabic_val))
-    token.set_macro("l__spintent_spsiglo_luaset_roman_min_str", roman_val)
+    token_set_macro("l__spintent_spsiglo_luaset_error_str", "false")
+    token_set_macro("l__spintent_spsiglo_luaset_arabic_str", tostring(arabic_val))
+    token_set_macro("l__spintent_spsiglo_luaset_roman_min_str", roman_val)
   end
 end, { "string" })
+
 -- =============================================================================
 -- SECCIÓN NUEVA: PROCESAMIENTO DE ABREVIATURAS, SIGLAS Y ORDINALES (RAE)
--- Incluir al final del archivo, utilizando tus bloques LPeg y funciones caché.
 -- =============================================================================
 
--- Diccionario semántico canónico con tu prefijo de arquitectura unificado
 local spintent_spshort_dict = {
   -- Abreviaturas regulares (linear_regular)
   ["pág."]    = { actualtext = "página",                   layout_type = "linear_regular", output = "pág." },
@@ -807,7 +814,6 @@ local spintent_spshort_dict = {
   ["op.cit."]  = { actualtext = "obra citada",             layout_type = "linear_regular", output = "op.\u{00A0}cit." },
   ["loc. cit."]= { actualtext = "lugar citado",            layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
   ["loc.cit."] = { actualtext = "lugar citado",            layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
-  -- Excepciones cortas
   ["v. gr."]   = { actualtext = "verbigracia",             layout_type = "linear_regular", output = "v.\u{00A0}gr." },
   ["v.gr."]    = { actualtext = "verbigracia",             layout_type = "linear_regular", output = "v.\u{00A0}gr." },
   ["i. e."]    = { actualtext = "esto es",                 layout_type = "linear_regular", output = "i.\u{00A0}e." },
@@ -834,7 +840,7 @@ local spintent_spshort_dict = {
   ["v. b."]    = { actualtext = "visto bueno",             layout_type = "linear_regular", output = "V.\u{00A0}B." },
   ["v.b."]     = { actualtext = "visto bueno",             layout_type = "linear_regular", output = "V.\u{00A0}B." },
 
-  -- Abreviaturas compuestas de caja alta y Plurales Duplicados (Espacio No Ruptura U+00A0)
+  -- Abreviaturas compuestas de caja alta y Plurales Duplicados
   ["s. a."]    = { actualtext = "sociedad anónima",         layout_type = "linear_caps",    output = "S.\u{00A0}A." },
   ["s.a."]     = { actualtext = "sociedad anónima",         layout_type = "linear_caps",    output = "S.\u{00A0}A." },
   ["ee. uu."]  = { actualtext = "estados unidos",          layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
@@ -854,13 +860,13 @@ local spintent_spshort_dict = {
   ["d. n. i."] = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
   ["d.n.i."]   = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
 
-  -- Excepciones de Caja Mixta (Con Espacio No Ruptura U+00A0)
+  -- Excepciones de Caja Mixta
   ["a. c."]    = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
   ["a.c."]     = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
   ["d. c."]    = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
   ["d.c."]     = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
 
-  -- Siglas candidatas a versalitas puras (small_caps_pure, <= 4 letras)
+  -- Siglas candidatas a versalitas puras
   ["onu"]      = { actualtext = "organización de las naciones unidas", layout_type = "small_caps_pure", output = "ONU" },
   ["rae"]      = { actualtext = "real academia española",             layout_type = "small_caps_pure", output = "RAE" },
   ["ong"]      = { actualtext = "organización no gubernamental",      layout_type = "small_caps_pure", output = "ONG" },
@@ -882,7 +888,7 @@ local spintent_spshort_dict = {
   ["rda"]      = { actualtext = "república democrática alemana",       layout_type = "small_caps_pure", output = "RDA" },
   ["dni"]      = { actualtext = "documento nacional de identidad",     layout_type = "small_caps_pure", output = "DNI" },
 
-  -- Acrónimos largos con mayúscula inicial fija (acronym_long, > 4 letras)
+  -- Acrónimos largos con mayúscula inicial fija
   ["unicef"]   = { actualtext = "unicef",                             layout_type = "acronym_long",   output = "Unicef" },
   ["unesco"]   = { actualtext = "unesco",                             layout_type = "acronym_long",   output = "Unesco" },
   ["mercosur"] = { actualtext = "mercado común del sur",               layout_type = "acronym_long",   output = "Mercosur" },
@@ -895,7 +901,6 @@ local spintent_spshort_dict = {
   ["conicet"]  = { actualtext = "consejo nacional de investigaciones", layout_type = "acronym_long",   output = "Conicet" }
 }
 
--- Mapeo estandarizado Unicode para la inyección del sufijo volado
 local spintent_spshort_ord_suffixes = {
   ["a"]  = "ª",
   ["o"]  = "º",
@@ -905,7 +910,7 @@ local spintent_spshort_ord_suffixes = {
 }
 
 -- =============================================================================
--- MOTOR SEMÁNTICO DINÁMICO DE ORDINALES (1 AL 99) PARA NVDA
+-- MOTOR SEMÁNTICO DINÁMICO DE ORDINALES (1 AL 99)
 -- =============================================================================
 local spintent_ord_units = {
   [1] = "primer", [2] = "segund", [3] = "tercer", [4] = "cuart", [5] = "quint",
@@ -917,7 +922,6 @@ local spintent_ord_tens = {
   [9] = "nonagésim"
 }
 
--- Función que ensambla la pronunciación ortográfica exacta
 local function get_semantic_ordinal(val, suffix)
   if val < 1 or val > 99 then
     return val .. (spintent_spshort_ord_suffixes[suffix] or suffix)
@@ -926,7 +930,6 @@ local function get_semantic_ordinal(val, suffix)
   local end_char = (suffix == "a" or suffix == "as") and "a" or "o"
   local plural = (suffix == "as" or suffix == "os") and "s" or ""
 
-  -- Si es apócope (.er), la palabra final es masculina singular por defecto
   if suffix == "er" then
     end_char = "o"
     plural = ""
@@ -935,25 +938,17 @@ local function get_semantic_ordinal(val, suffix)
   local ten_val = math.floor(val / 10)
   local unit_val = val % 10
 
-  -- CASOS ESPECIALES CRÍTICOS DE LA RAE: 11 y 12
-  -- Solo se usa undécimo/duodécimo si NO están apocopados (ej: 11.ª -> undécima; pero 11.er -> decimoprimer)
-  if val == 11 and suffix ~= "er" then
-    return "undécim" .. end_char .. plural
-  end
-  if val == 12 then
-    return "duodécim" .. end_char .. plural
-  end
+  if val == 11 and suffix ~= "er" then return "undécim" .. end_char .. plural end
+  if val == 12 then return "duodécim" .. end_char .. plural end
 
   local result = ""
   if ten_val > 0 then
-    -- Construye la decena (ej: "décimo", "vigésima")
     result = spintent_ord_tens[ten_val] .. end_char .. plural
   end
 
   if unit_val > 0 then
     local unit_str = spintent_ord_units[unit_val]
 
-    -- Ajuste de raíz semántica cuando van solas o compuestas (sin apócope .er)
     if unit_val == 1 and suffix ~= "er" then unit_str = "primer" end
     if unit_val == 3 and suffix ~= "er" then unit_str = "tercer" end
 
@@ -961,7 +956,6 @@ local function get_semantic_ordinal(val, suffix)
     local full_unit = unit_str .. unit_end
 
     if ten_val > 0 then
-      -- Combinación de decena y unidad (ej: "décimo primer", "vigésimo terceras")
       result = result .. " " .. full_unit
     else
       result = full_unit
@@ -992,80 +986,63 @@ local spintent_spshort_ord_grammar = P({
 -- FUNCIÓN PRINCIPAL DE PROCESAMIENTO
 -- =============================================================================
 local function spintent_spshort_execute_analysis(raw_input)
-  -- Saneamiento inicial
-  local clean_input = s_gsub(raw_input, "^%s*(.-)%s*$", "%1")
-  clean_input = clean_input:lower()
+  local clean_input = s_lower(s_match(raw_input, "^%s*(.-)%s*$") or raw_input)
 
-  -- CAMINO 1: Búsqueda elástica en Tabla Hash O(1)
-  -- Buscamos tal cual. Si no encuentra, normalizamos defensivamente la presencia/ausencia del punto
   local dict_match = spintent_spshort_dict[clean_input]
   if not dict_match then
     if s_sub(clean_input, -1) == "." then
-      -- Si el usuario mandó punto (prof.) pero en siglas se guardó sin punto (onu), probamos sin punto
       dict_match = spintent_spshort_dict[s_sub(clean_input, 1, -2)]
     else
-      -- Si el usuario no mandó punto (prof) pero la abreviatura lo requiere (prof.), probamos con punto
       dict_match = spintent_spshort_dict[clean_input .. "."]
     end
   end
 
   if dict_match then
-    token.set_macro("l__spintent_spshort_luaset_status_str",      "success")
-    token.set_macro("l__spintent_spshort_luaset_layout_str",      dict_match.layout_type)
-    token.set_macro("l__spintent_spshort_luaset_actualtext_str",  dict_match.actualtext)
-    token.set_macro("l__spintent_spshort_luaset_output_str",      dict_match.output)
+    token_set_macro("l__spintent_spshort_luaset_status_str",      "success")
+    token_set_macro("l__spintent_spshort_luaset_layout_str",      dict_match.layout_type)
+    token_set_macro("l__spintent_spshort_luaset_actualtext_str",  dict_match.actualtext)
+    token_set_macro("l__spintent_spshort_luaset_output_str",      dict_match.output)
     return
   end
 
-  -- Remoción defensiva del punto final SÓLO para evaluar el camino LPeg de ordinales
   local ordinal_input = clean_input
   if s_sub(ordinal_input, -1) == "." and not s_match(ordinal_input, "%d+%.%a+$") and not s_match(ordinal_input, "^%d+%.") then
     ordinal_input = s_sub(ordinal_input, 1, -2)
   end
 
-  -- CAMINO 2: LPeg para despiece de voladitas ordinales
   local num_part, suffix_part, is_illegal = spintent_spshort_ord_grammar:match(ordinal_input)
 
   if num_part and not is_illegal and spintent_spshort_ord_suffixes[suffix_part] then
 
-    -- Validación matemática para el apócope "er" (Cualquier número terminado en 1 o 3: 1, 3, 21, 23, 11)
     if suffix_part == "er" then
       local val = tonumber(num_part)
       local last_digit = val % 10
       if last_digit ~= 1 and last_digit ~= 3 then
-        token.set_macro("l__spintent_spshort_luaset_status_str", "error")
+        token_set_macro("l__spintent_spshort_luaset_status_str", "error")
         return
       end
     end
 
-    -- Generación de la lectura semántica dinámica limpia (NVDA)
     local semantic_read = get_semantic_ordinal(tonumber(num_part), suffix_part)
 
-    token.set_macro("l__spintent_spshort_luaset_status_str",      "success")
-    token.set_macro("l__spintent_spshort_luaset_layout_str",      "superscript")
-    token.set_macro("l__spintent_spshort_luaset_actualtext_str",  semantic_read)
-
-    -- Concatenación del punto abreviativo directo a la base numérica
-    token.set_macro("l__spintent_spshort_luaset_base_str",        num_part .. ".")
-    token.set_macro("l__spintent_spshort_luaset_suffix_str",      spintent_spshort_ord_suffixes[suffix_part])
+    token_set_macro("l__spintent_spshort_luaset_status_str",      "success")
+    token_set_macro("l__spintent_spshort_luaset_layout_str",      "superscript")
+    token_set_macro("l__spintent_spshort_luaset_actualtext_str",  semantic_read)
+    token_set_macro("l__spintent_spshort_luaset_base_str",        num_part .. ".")
+    token_set_macro("l__spintent_spshort_luaset_suffix_str",      spintent_spshort_ord_suffixes[suffix_part])
     return
   end
 
-  -- CAMINO 3: Fallback seguro para cadenas de texto genéricas limpias
   if s_match(raw_input, "^%a+$") then
-    token.set_macro("l__spintent_spshort_luaset_status_str",      "fallback")
-    token.set_macro("l__spintent_spshort_luaset_layout_str",      "none")
-    token.set_macro("l__spintent_spshort_luaset_actualtext_str",  raw_input)
-    token.set_macro("l__spintent_spshort_luaset_output_str",      raw_input)
+    token_set_macro("l__spintent_spshort_luaset_status_str",      "fallback")
+    token_set_macro("l__spintent_spshort_luaset_layout_str",      "none")
+    token_set_macro("l__spintent_spshort_luaset_actualtext_str",  raw_input)
+    token_set_macro("l__spintent_spshort_luaset_output_str",      raw_input)
   else
-    -- CAMINO 4: Fallo controlado ante entradas inválidas (ej. 4.to)
-    token.set_macro("l__spintent_spshort_luaset_status_str",      "error")
+    token_set_macro("l__spintent_spshort_luaset_status_str",      "error")
   end
 end
 
--- =============================================================================
--- REGISTRO DE COMANDO EN LUALATEX (Tu formato nativo exacto y verificado)
--- =============================================================================
 register_tex_cmd("luafun_spshort_process", function(raw_input)
   spintent_spshort_execute_analysis(raw_input)
 end, { "string" })
