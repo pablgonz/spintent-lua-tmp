@@ -785,3 +785,287 @@ register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
     token.set_macro("l__spintent_spsiglo_luaset_roman_min_str", roman_val)
   end
 end, { "string" })
+-- =============================================================================
+-- SECCIÓN NUEVA: PROCESAMIENTO DE ABREVIATURAS, SIGLAS Y ORDINALES (RAE)
+-- Incluir al final del archivo, utilizando tus bloques LPeg y funciones caché.
+-- =============================================================================
+
+-- Diccionario semántico canónico con tu prefijo de arquitectura unificado
+local spintent_spshort_dict = {
+  -- Abreviaturas regulares (linear_regular)
+  ["pág."]    = { actualtext = "página",                   layout_type = "linear_regular", output = "pág." },
+  ["pag."]    = { actualtext = "página",                   layout_type = "linear_regular", output = "pág." },
+  ["vol."]    = { actualtext = "volumen",                  layout_type = "linear_regular", output = "vol." },
+  ["etc."]    = { actualtext = "etcétera",                 layout_type = "linear_regular", output = "etc." },
+
+  -- Latinismos y Aparato Crítico (Bibliografía)
+  ["et al."]   = { actualtext = "y otros",                 layout_type = "linear_regular", output = "et\u{00A0}al." },
+  ["et. al."]  = { actualtext = "y otros",                 layout_type = "linear_regular", output = "et\u{00A0}al." },
+  ["ibíd."]    = { actualtext = "ibídem",                  layout_type = "linear_regular", output = "ibíd." },
+  ["ibid."]    = { actualtext = "ibídem",                  layout_type = "linear_regular", output = "ibíd." },
+  ["op. cit."] = { actualtext = "obra citada",             layout_type = "linear_regular", output = "op.\u{00A0}cit." },
+  ["op.cit."]  = { actualtext = "obra citada",             layout_type = "linear_regular", output = "op.\u{00A0}cit." },
+  ["loc. cit."]= { actualtext = "lugar citado",            layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
+  ["loc.cit."] = { actualtext = "lugar citado",            layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
+  -- Excepciones cortas
+  ["v. gr."]   = { actualtext = "verbigracia",             layout_type = "linear_regular", output = "v.\u{00A0}gr." },
+  ["v.gr."]    = { actualtext = "verbigracia",             layout_type = "linear_regular", output = "v.\u{00A0}gr." },
+  ["i. e."]    = { actualtext = "esto es",                 layout_type = "linear_regular", output = "i.\u{00A0}e." },
+  ["i.e."]     = { actualtext = "esto es",                 layout_type = "linear_regular", output = "i.\u{00A0}e." },
+  ["e. g."]    = { actualtext = "por ejemplo",             layout_type = "linear_regular", output = "e.\u{00A0}g." },
+  ["e.g."]     = { actualtext = "por ejemplo",             layout_type = "linear_regular", output = "e.\u{00A0}g." },
+  ["p. ej."]   = { actualtext = "por ejemplo",             layout_type = "linear_regular", output = "p.\u{00A0}ej." },
+  ["p.ej."]    = { actualtext = "por ejemplo",             layout_type = "linear_regular", output = "p.\u{00A0}ej." },
+
+  -- Tratamientos y Profesiones (Singulares y Plurales Estáticos)
+  ["sr."]      = { actualtext = "señor",                   layout_type = "linear_regular", output = "Sr." },
+  ["sra."]     = { actualtext = "señora",                  layout_type = "linear_regular", output = "Sra." },
+  ["srta."]    = { actualtext = "señorita",                layout_type = "linear_regular", output = "Srta." },
+  ["dr."]      = { actualtext = "doctor",                  layout_type = "linear_regular", output = "Dr." },
+  ["dra."]     = { actualtext = "doctora",                 layout_type = "linear_regular", output = "Dra." },
+  ["dres."]    = { actualtext = "doctores",                layout_type = "linear_regular", output = "Dres." },
+  ["dras."]    = { actualtext = "doctoras",                layout_type = "linear_regular", output = "Dras." },
+  ["prof."]    = { actualtext = "profesor",                layout_type = "linear_regular", output = "Prof." },
+  ["profa."]   = { actualtext = "profesora",               layout_type = "linear_regular", output = "Profa." },
+  ["profs."]   = { actualtext = "profesores",              layout_type = "linear_regular", output = "Profs." },
+  ["ing."]     = { actualtext = "ingeniero",               layout_type = "linear_regular", output = "Ing." },
+  ["ings."]    = { actualtext = "ingenieros",              layout_type = "linear_regular", output = "Ings." },
+  ["lic."]     = { actualtext = "licenciado",              layout_type = "linear_regular", output = "Lic." },
+  ["v. b."]    = { actualtext = "visto bueno",             layout_type = "linear_regular", output = "V.\u{00A0}B." },
+  ["v.b."]     = { actualtext = "visto bueno",             layout_type = "linear_regular", output = "V.\u{00A0}B." },
+
+  -- Abreviaturas compuestas de caja alta y Plurales Duplicados (Espacio No Ruptura U+00A0)
+  ["s. a."]    = { actualtext = "sociedad anónima",         layout_type = "linear_caps",    output = "S.\u{00A0}A." },
+  ["s.a."]     = { actualtext = "sociedad anónima",         layout_type = "linear_caps",    output = "S.\u{00A0}A." },
+  ["ee. uu."]  = { actualtext = "estados unidos",          layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
+  ["ee.uu."]   = { actualtext = "estados unidos",           layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
+  ["dd. hh."]  = { actualtext = "derechos humanos",        layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
+  ["dd.hh."]   = { actualtext = "derechos humanos",        layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
+  ["jj. oo."]  = { actualtext = "juegos olímpicos",        layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
+  ["jj.oo."]   = { actualtext = "juegos olímpicos",        layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
+  ["ff. aa."]  = { actualtext = "fuerzas armadas",         layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
+  ["ff.aa."]   = { actualtext = "fuerzas armadas",         layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
+  ["rr. ee."]  = { actualtext = "relaciones exteriores",   layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
+  ["rr.ee."]   = { actualtext = "relaciones exteriores",   layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
+  ["cc. aa."]  = { actualtext = "comunidades autónomas",   layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
+  ["cc.aa."]   = { actualtext = "comunidades autónomas",   layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
+  ["p. d."]    = { actualtext = "posdata",                 layout_type = "linear_caps",    output = "P.\u{00A0}D." },
+  ["p.d."]     = { actualtext = "posdata",                 layout_type = "linear_caps",    output = "P.\u{00A0}D." },
+  ["d. n. i."] = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
+  ["d.n.i."]   = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
+
+  -- Excepciones de Caja Mixta (Con Espacio No Ruptura U+00A0)
+  ["a. c."]    = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
+  ["a.c."]     = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
+  ["d. c."]    = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
+  ["d.c."]     = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
+
+  -- Siglas candidatas a versalitas puras (small_caps_pure, <= 4 letras)
+  ["onu"]      = { actualtext = "organización de las naciones unidas", layout_type = "small_caps_pure", output = "ONU" },
+  ["rae"]      = { actualtext = "real academia española",             layout_type = "small_caps_pure", output = "RAE" },
+  ["ong"]      = { actualtext = "organización no gubernamental",      layout_type = "small_caps_pure", output = "ONG" },
+  ["ongs"]     = { actualtext = "organizaciones no gubernamentales",  layout_type = "small_caps_pure", output = "ONGs" },
+  ["urss"]     = { actualtext = "unión de repúblicas socialistas soviéticas", layout_type = "small_caps_pure", output = "URSS" },
+  ["oea"]      = { actualtext = "organización de los estados americanos", layout_type = "small_caps_pure", output = "OEA" },
+  ["oms"]      = { actualtext = "organización mundial de la salud",    layout_type = "small_caps_pure", output = "OMS" },
+  ["fmi"]      = { actualtext = "fondo monetario internacional",      layout_type = "small_caps_pure", output = "FMI" },
+  ["bid"]      = { actualtext = "banco interamericano de desarrollo", layout_type = "small_caps_pure", output = "BID" },
+  ["otan"]     = { actualtext = "organización del tratado del atlántico norte", layout_type = "small_caps_pure", output = "OTAN" },
+  ["unam"]     = { actualtext = "universidad nacional autónoma de méxico", layout_type = "small_caps_pure", output = "UNAM" },
+  ["pib"]      = { actualtext = "producto interno bruto",             layout_type = "small_caps_pure", output = "PIB" },
+  ["ue"]       = { actualtext = "unión europea",                       layout_type = "small_caps_pure", output = "UE" },
+  ["eau"]      = { actualtext = "emiratos árabes unidos",              layout_type = "small_caps_pure", output = "EAU" },
+  ["ru"]       = { actualtext = "reino unido",                         layout_type = "small_caps_pure", output = "RU" },
+  ["rca"]      = { actualtext = "república centroafricana",            layout_type = "small_caps_pure", output = "RCA" },
+  ["rdc"]      = { actualtext = "república democrática del congo",     layout_type = "small_caps_pure", output = "RDC" },
+  ["rfa"]      = { actualtext = "república federal alemana",           layout_type = "small_caps_pure", output = "RFA" },
+  ["rda"]      = { actualtext = "república democrática alemana",       layout_type = "small_caps_pure", output = "RDA" },
+  ["dni"]      = { actualtext = "documento nacional de identidad",     layout_type = "small_caps_pure", output = "DNI" },
+
+  -- Acrónimos largos con mayúscula inicial fija (acronym_long, > 4 letras)
+  ["unicef"]   = { actualtext = "unicef",                             layout_type = "acronym_long",   output = "Unicef" },
+  ["unesco"]   = { actualtext = "unesco",                             layout_type = "acronym_long",   output = "Unesco" },
+  ["mercosur"] = { actualtext = "mercado común del sur",               layout_type = "acronym_long",   output = "Mercosur" },
+  ["cepal"]    = { actualtext = "comisión económica para américa latina", layout_type = "acronym_long",  output = "Cepal" },
+  ["celac"]    = { actualtext = "comunidad de estados latinoamericanos", layout_type = "acronym_long",  output = "Celac" },
+  ["unasur"]   = { actualtext = "unión de naciones suramericanas",     layout_type = "acronym_long",   output = "Unasur" },
+  ["acnur"]    = { actualtext = "alto comisionado de las naciones unidas", layout_type = "acronym_long",  output = "Acnur" },
+  ["mineduc"]  = { actualtext = "ministerio de educación",            layout_type = "acronym_long",   output = "Mineduc" },
+  ["senadis"]  = { actualtext = "servicio nacional de la discapacidad", layout_type = "acronym_long",  output = "Senadis" },
+  ["conicet"]  = { actualtext = "consejo nacional de investigaciones", layout_type = "acronym_long",   output = "Conicet" }
+}
+
+-- Mapeo estandarizado Unicode para la inyección del sufijo volado
+local spintent_spshort_ord_suffixes = {
+  ["a"]  = "ª",
+  ["o"]  = "º",
+  ["er"] = "er",
+  ["os"] = "os",
+  ["as"] = "as"
+}
+
+-- =============================================================================
+-- MOTOR SEMÁNTICO DINÁMICO DE ORDINALES (1 AL 99) PARA NVDA
+-- =============================================================================
+local spintent_ord_units = {
+  [1] = "primer", [2] = "segund", [3] = "tercer", [4] = "cuart", [5] = "quint",
+  [6] = "sext",   [7] = "séptim", [8] = "octav",  [9] = "noven"
+}
+local spintent_ord_tens = {
+  [1] = "décim",       [2] = "vigésim",     [3] = "trigésim",    [4] = "cuadragésim",
+  [5] = "quincuagésim",[6] = "sexagésim",   [7] = "septuagésim", [8] = "octogésim",
+  [9] = "nonagésim"
+}
+
+-- Función que ensambla la pronunciación ortográfica exacta
+local function get_semantic_ordinal(val, suffix)
+  if val < 1 or val > 99 then
+    return val .. (spintent_spshort_ord_suffixes[suffix] or suffix)
+  end
+
+  local end_char = (suffix == "a" or suffix == "as") and "a" or "o"
+  local plural = (suffix == "as" or suffix == "os") and "s" or ""
+
+  -- Si es apócope (.er), la palabra final es masculina singular por defecto
+  if suffix == "er" then
+    end_char = "o"
+    plural = ""
+  end
+
+  local ten_val = math.floor(val / 10)
+  local unit_val = val % 10
+
+  -- CASOS ESPECIALES CRÍTICOS DE LA RAE: 11 y 12
+  -- Solo se usa undécimo/duodécimo si NO están apocopados (ej: 11.ª -> undécima; pero 11.er -> decimoprimer)
+  if val == 11 and suffix ~= "er" then
+    return "undécim" .. end_char .. plural
+  end
+  if val == 12 then
+    return "duodécim" .. end_char .. plural
+  end
+
+  local result = ""
+  if ten_val > 0 then
+    -- Construye la decena (ej: "décimo", "vigésima")
+    result = spintent_ord_tens[ten_val] .. end_char .. plural
+  end
+
+  if unit_val > 0 then
+    local unit_str = spintent_ord_units[unit_val]
+
+    -- Ajuste de raíz semántica cuando van solas o compuestas (sin apócope .er)
+    if unit_val == 1 and suffix ~= "er" then unit_str = "primer" end
+    if unit_val == 3 and suffix ~= "er" then unit_str = "tercer" end
+
+    local unit_end = (suffix == "er") and "" or (end_char .. plural)
+    local full_unit = unit_str .. unit_end
+
+    if ten_val > 0 then
+      -- Combinación de decena y unidad (ej: "décimo primer", "vigésimo terceras")
+      result = result .. " " .. full_unit
+    else
+      result = full_unit
+    end
+  end
+
+  return result
+end
+
+-- =============================================================================
+-- EXTRACCIÓN LPEG Y GRAMÁTICA DE ORDINALES
+-- =============================================================================
+local spintent_spshort_V  = lpeg_base.V
+local spintent_spshort_Cc = lpeg_base.Cc
+
+local spintent_spshort_digits       = spintent_digit^1
+local spintent_spshort_dot          = P(".")
+local spintent_spshort_raw_suffix   = C(P("er") + P("os") + P("as") + P("a") + P("o"))
+local spintent_spshort_illegal_suff = C((R("az") + R("AZ"))^1)
+
+local spintent_spshort_ord_grammar = P({
+  "Entry",
+  Entry  = #spintent_digit * spintent_spshort_V("Main"),
+  Main   = C(spintent_spshort_digits) * spintent_spshort_dot * (spintent_spshort_raw_suffix + spintent_spshort_illegal_suff * Cg(spintent_spshort_Cc(true)))
+})
+
+-- =============================================================================
+-- FUNCIÓN PRINCIPAL DE PROCESAMIENTO
+-- =============================================================================
+local function spintent_spshort_execute_analysis(raw_input)
+  -- Saneamiento inicial
+  local clean_input = s_gsub(raw_input, "^%s*(.-)%s*$", "%1")
+  clean_input = clean_input:lower()
+
+  -- CAMINO 1: Búsqueda elástica en Tabla Hash O(1)
+  -- Buscamos tal cual. Si no encuentra, normalizamos defensivamente la presencia/ausencia del punto
+  local dict_match = spintent_spshort_dict[clean_input]
+  if not dict_match then
+    if s_sub(clean_input, -1) == "." then
+      -- Si el usuario mandó punto (prof.) pero en siglas se guardó sin punto (onu), probamos sin punto
+      dict_match = spintent_spshort_dict[s_sub(clean_input, 1, -2)]
+    else
+      -- Si el usuario no mandó punto (prof) pero la abreviatura lo requiere (prof.), probamos con punto
+      dict_match = spintent_spshort_dict[clean_input .. "."]
+    end
+  end
+
+  if dict_match then
+    token.set_macro("l__spintent_spshort_luaset_status_str",      "success")
+    token.set_macro("l__spintent_spshort_luaset_layout_str",      dict_match.layout_type)
+    token.set_macro("l__spintent_spshort_luaset_actualtext_str",  dict_match.actualtext)
+    token.set_macro("l__spintent_spshort_luaset_output_str",      dict_match.output)
+    return
+  end
+
+  -- Remoción defensiva del punto final SÓLO para evaluar el camino LPeg de ordinales
+  local ordinal_input = clean_input
+  if s_sub(ordinal_input, -1) == "." and not s_match(ordinal_input, "%d+%.%a+$") and not s_match(ordinal_input, "^%d+%.") then
+    ordinal_input = s_sub(ordinal_input, 1, -2)
+  end
+
+  -- CAMINO 2: LPeg para despiece de voladitas ordinales
+  local num_part, suffix_part, is_illegal = spintent_spshort_ord_grammar:match(ordinal_input)
+
+  if num_part and not is_illegal and spintent_spshort_ord_suffixes[suffix_part] then
+
+    -- Validación matemática para el apócope "er" (Cualquier número terminado en 1 o 3: 1, 3, 21, 23, 11)
+    if suffix_part == "er" then
+      local val = tonumber(num_part)
+      local last_digit = val % 10
+      if last_digit ~= 1 and last_digit ~= 3 then
+        token.set_macro("l__spintent_spshort_luaset_status_str", "error")
+        return
+      end
+    end
+
+    -- Generación de la lectura semántica dinámica limpia (NVDA)
+    local semantic_read = get_semantic_ordinal(tonumber(num_part), suffix_part)
+
+    token.set_macro("l__spintent_spshort_luaset_status_str",      "success")
+    token.set_macro("l__spintent_spshort_luaset_layout_str",      "superscript")
+    token.set_macro("l__spintent_spshort_luaset_actualtext_str",  semantic_read)
+
+    -- Concatenación del punto abreviativo directo a la base numérica
+    token.set_macro("l__spintent_spshort_luaset_base_str",        num_part .. ".")
+    token.set_macro("l__spintent_spshort_luaset_suffix_str",      spintent_spshort_ord_suffixes[suffix_part])
+    return
+  end
+
+  -- CAMINO 3: Fallback seguro para cadenas de texto genéricas limpias
+  if s_match(raw_input, "^%a+$") then
+    token.set_macro("l__spintent_spshort_luaset_status_str",      "fallback")
+    token.set_macro("l__spintent_spshort_luaset_layout_str",      "none")
+    token.set_macro("l__spintent_spshort_luaset_actualtext_str",  raw_input)
+    token.set_macro("l__spintent_spshort_luaset_output_str",      raw_input)
+  else
+    -- CAMINO 4: Fallo controlado ante entradas inválidas (ej. 4.to)
+    token.set_macro("l__spintent_spshort_luaset_status_str",      "error")
+  end
+end
+
+-- =============================================================================
+-- REGISTRO DE COMANDO EN LUALATEX (Tu formato nativo exacto y verificado)
+-- =============================================================================
+register_tex_cmd("luafun_spshort_process", function(raw_input)
+  spintent_spshort_execute_analysis(raw_input)
+end, { "string" })
