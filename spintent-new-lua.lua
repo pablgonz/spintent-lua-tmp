@@ -555,23 +555,23 @@ end, { "string" })
 -- =========================================================================
 -- SEXAGESIMAL SYSTEM
 -- =========================================================================
-local spintent_sexagesimal_pattern = Ct(
+local spintent_angle_sexag_pattern = Ct(
     Cg(spintent_num_chunk^-1, "a") * P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1 * P(-1)
 )
 
-register_tex_cmd("luafun_parse_sexagesimal", function(raw_sexag_str)
+register_tex_cmd("luafun_spangle_sexag_parse", function(raw_sexag_str)
     raw_sexag_str = s_gsub(raw_sexag_str, "%s+", "")
-    local result = spintent_sexagesimal_pattern:match(raw_sexag_str)
+    local result = spintent_angle_sexag_pattern:match(raw_sexag_str)
 
     if not result then
-        token_set_macro("l__spintent_spsexag_error_status_str", "true")
+        token_set_macro("l__spintent_spangle_sexag_luaset_error_str", "true")
         return
     end
 
-    token_set_macro("l__spintent_spsexag_error_status_str", "false")
-    token_set_macro("l__spintent_spsexag_luaset_grado_str", result.a or "")
-    token_set_macro("l__spintent_spsexag_luaset_minuto_str", result.b or "")
-    token_set_macro("l__spintent_spsexag_luaset_segundo_str", result.c or "")
+    token_set_macro("l__spintent_spangle_sexag_luaset_error_str", "false")
+    token_set_macro("l__spintent_spangle_sexag_luaset_grado_str", result.a or "")
+    token_set_macro("l__spintent_spangle_sexag_luaset_minuto_str", result.b or "")
+    token_set_macro("l__spintent_spangle_sexag_luaset_segundo_str", result.c or "")
 end, { "string" })
 
 -- =========================================================================
