@@ -271,6 +271,8 @@ local spintent_number_pattern = Ct(
     * Cg(spintent_num_chunk^-1, "integer")
     * (Cg(C(spintent_num_decimal), "decimal") * Cg(spintent_num_chunk, "fraction"))^-1
     * (spintent_num_semi * Cg(spintent_num_chunk, "period"))^-1
+    -- VAGÓN NUEVO: Captura 'e' o 'E', un signo opcional y el número del exponente
+    * (S"eE" * Cg(Cs(spintent_num_sign^-1 * spintent_num_chunk), "exponent"))^-1
     * Cg(Cs((spintent_math_space / "" + (P(1) - spintent_forbidden_in_extra))^0), "extra")
     * P(-1)
 )
@@ -303,6 +305,10 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     local r_frac     = result.fraction or ""
     local r_period   = result.period or ""
     local r_extra    = result.extra
+
+    -- NUEVO: Extracción del exponente (ej. "-2", "4", "+5")
+    local r_exp      = result.exponent or ""
+    local has_exponent = (r_exp ~= "") and "true" or "false"
 
     local above = ""
     local below = ""
@@ -372,6 +378,9 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     token_set_macro("l__spintent_luaset_decimal_not_period_str", dec_not_per)
     token_set_macro("l__spintent_luaset_not_decimal_and_period_str", not_dec_and_per)
     token_set_macro("l__spintent_luaset_not_decimal_not_period_str", not_dec_not_per)
+    -- NUEVO: Comunicación del exponente a expl3
+    token_set_macro("l__spintent_luaset_has_exponent_str", has_exponent)
+    token_set_macro("l__spintent_luaset_exponent_tl", r_exp)
 
     if r_frac ~= "" and s_match(r_frac, "^0+$") then
         token_set_macro("l__spintent_luaset_dec_is_all_zeros_str", "true")
@@ -799,46 +808,61 @@ end, { "string" })
 -- =============================================================================
 
 local spintent_spshort_dict = {
+  -- Tratamientos y palabras comunes con letras voladas (superscript)
+  ["dr.a"]   = { actualtext = "doctora",   layout_type = "superscript", base = "Dr.", suffix = "a" },
+  ["dr.as"]  = { actualtext = "doctoras",  layout_type = "superscript", base = "Dr.", suffix = "as" },
+  ["prof.a"] = { actualtext = "profesora", layout_type = "superscript", base = "Prof.", suffix = "a" },
+  ["d.a"]    = { actualtext = "doña",      layout_type = "superscript", base = "D.", suffix = "a" },
+  ["m.a"]    = { actualtext = "maría",     layout_type = "superscript", base = "M.", suffix = "a" },
+  ["n.o"]    = { actualtext = "número",    layout_type = "superscript", base = "N.", suffix = "o" },
+  ["n.os"]   = { actualtext = "números",   layout_type = "superscript", base = "N.", suffix = "os" },
+  ["c.ia"]   = { actualtext = "compañía",  layout_type = "superscript", base = "C.", suffix = "ia" },
+
+  -- Tolerancia para usuarios que escriban los caracteres Unicode directamente (º, ª)
+  ["dr.ª"] = { actualtext = "doctora", layout_type = "superscript", base = "Dr.", suffix = "a" },
+  ["d.ª"]  = { actualtext = "doña",    layout_type = "superscript", base = "D.", suffix = "a" },
+  ["n.º"]  = { actualtext = "número",  layout_type = "superscript", base = "N.", suffix = "o" },
+
   -- Abreviaturas regulares (linear_regular)
-  ["pág."]    = { actualtext = "página",                   layout_type = "linear_regular", output = "pág." },
-  ["pag."]    = { actualtext = "página",                   layout_type = "linear_regular", output = "pág." },
-  ["vol."]    = { actualtext = "volumen",                  layout_type = "linear_regular", output = "vol." },
-  ["etc."]    = { actualtext = "etcétera",                 layout_type = "linear_regular", output = "etc." },
+  ["pág."] = { actualtext = "página",   layout_type = "linear_regular", output = "pág." },
+  ["pag."] = { actualtext = "página",   layout_type = "linear_regular", output = "pág." },
+  ["vol."] = { actualtext = "volumen",  layout_type = "linear_regular", output = "vol." },
+  ["etc."] = { actualtext = "etcétera", layout_type = "linear_regular", output = "etc." },
 
   -- Latinismos y Aparato Crítico (Bibliografía)
-  ["et al."]   = { actualtext = "y otros",                 layout_type = "linear_regular", output = "et\u{00A0}al." },
-  ["et. al."]  = { actualtext = "y otros",                 layout_type = "linear_regular", output = "et\u{00A0}al." },
-  ["ibíd."]    = { actualtext = "ibídem",                  layout_type = "linear_regular", output = "ibíd." },
-  ["ibid."]    = { actualtext = "ibídem",                  layout_type = "linear_regular", output = "ibíd." },
-  ["op. cit."] = { actualtext = "obra citada",             layout_type = "linear_regular", output = "op.\u{00A0}cit." },
-  ["op.cit."]  = { actualtext = "obra citada",             layout_type = "linear_regular", output = "op.\u{00A0}cit." },
-  ["loc. cit."]= { actualtext = "lugar citado",            layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
-  ["loc.cit."] = { actualtext = "lugar citado",            layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
-  ["v. gr."]   = { actualtext = "verbigracia",             layout_type = "linear_regular", output = "v.\u{00A0}gr." },
-  ["v.gr."]    = { actualtext = "verbigracia",             layout_type = "linear_regular", output = "v.\u{00A0}gr." },
-  ["i. e."]    = { actualtext = "esto es",                 layout_type = "linear_regular", output = "i.\u{00A0}e." },
-  ["i.e."]     = { actualtext = "esto es",                 layout_type = "linear_regular", output = "i.\u{00A0}e." },
-  ["e. g."]    = { actualtext = "por ejemplo",             layout_type = "linear_regular", output = "e.\u{00A0}g." },
-  ["e.g."]     = { actualtext = "por ejemplo",             layout_type = "linear_regular", output = "e.\u{00A0}g." },
-  ["p. ej."]   = { actualtext = "por ejemplo",             layout_type = "linear_regular", output = "p.\u{00A0}ej." },
-  ["p.ej."]    = { actualtext = "por ejemplo",             layout_type = "linear_regular", output = "p.\u{00A0}ej." },
+  ["et al."]    = { actualtext = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
+  ["et. al."]   = { actualtext = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
+  ["ibíd."]     = { actualtext = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
+  ["ibid."]     = { actualtext = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
+  ["op. cit."]  = { actualtext = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
+  ["op.cit."]   = { actualtext = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
+  ["loc. cit."] = { actualtext = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
+  ["loc.cit."]  = { actualtext = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
+  ["v. gr."]    = { actualtext = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
+  ["v.gr."]     = { actualtext = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
+  ["i. e."]     = { actualtext = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
+  ["i.e."]      = { actualtext = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
+  ["e. g."]     = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
+  ["e.g."]      = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
+  ["p. ej."]    = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
+  ["p.ej."]     = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
 
   -- Tratamientos y Profesiones (Singulares y Plurales Estáticos)
-  ["sr."]      = { actualtext = "señor",                   layout_type = "linear_regular", output = "Sr." },
-  ["sra."]     = { actualtext = "señora",                  layout_type = "linear_regular", output = "Sra." },
-  ["srta."]    = { actualtext = "señorita",                layout_type = "linear_regular", output = "Srta." },
-  ["dr."]      = { actualtext = "doctor",                  layout_type = "linear_regular", output = "Dr." },
-  ["dra."]     = { actualtext = "doctora",                 layout_type = "linear_regular", output = "Dra." },
-  ["dres."]    = { actualtext = "doctores",                layout_type = "linear_regular", output = "Dres." },
-  ["dras."]    = { actualtext = "doctoras",                layout_type = "linear_regular", output = "Dras." },
-  ["prof."]    = { actualtext = "profesor",                layout_type = "linear_regular", output = "Prof." },
-  ["profa."]   = { actualtext = "profesora",               layout_type = "linear_regular", output = "Profa." },
-  ["profs."]   = { actualtext = "profesores",              layout_type = "linear_regular", output = "Profs." },
-  ["ing."]     = { actualtext = "ingeniero",               layout_type = "linear_regular", output = "Ing." },
-  ["ings."]    = { actualtext = "ingenieros",              layout_type = "linear_regular", output = "Ings." },
-  ["lic."]     = { actualtext = "licenciado",              layout_type = "linear_regular", output = "Lic." },
-  ["v. b."]    = { actualtext = "visto bueno",             layout_type = "linear_regular", output = "V.\u{00A0}B." },
-  ["v.b."]     = { actualtext = "visto bueno",             layout_type = "linear_regular", output = "V.\u{00A0}B." },
+  ["sr."]    = { actualtext = "señor",       layout_type = "linear_regular", output = "Sr." },
+  ["sra."]   = { actualtext = "señora",      layout_type = "linear_regular", output = "Sra." },
+  ["srta."]  = { actualtext = "señorita",    layout_type = "linear_regular", output = "Srta." },
+  ["dr."]    = { actualtext = "doctor",      layout_type = "linear_regular", output = "Dr." },
+  ["dra."]   = { actualtext = "doctora",     layout_type = "linear_regular", output = "Dra." },
+  ["dres."]  = { actualtext = "doctores",    layout_type = "linear_regular", output = "Dres." },
+  ["dras."]  = { actualtext = "doctoras",    layout_type = "linear_regular", output = "Dras." },
+  ["prof."]  = { actualtext = "profesor",    layout_type = "linear_regular", output = "Prof." },
+  ["profa."] = { actualtext = "profesora",   layout_type = "linear_regular", output = "Profa." },
+  ["profs."] = { actualtext = "profesores",  layout_type = "linear_regular", output = "Profs." },
+  ["ing."]   = { actualtext = "ingeniero",   layout_type = "linear_regular", output = "Ing." },
+  ["ings."]  = { actualtext = "ingenieros",  layout_type = "linear_regular", output = "Ings." },
+  ["lic."]   = { actualtext = "licenciado",  layout_type = "linear_regular", output = "Lic." },
+  ["v. b."]  = { actualtext = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
+  ["v.b."]   = { actualtext = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
 
   -- Abreviaturas compuestas de caja alta y Plurales Duplicados
   ["s. a."]    = { actualtext = "sociedad anónima",         layout_type = "linear_caps",    output = "S.\u{00A0}A." },
@@ -1001,7 +1025,15 @@ local function spintent_spshort_execute_analysis(raw_input)
     token_set_macro("l__spintent_spshort_luaset_status_str",      "success")
     token_set_macro("l__spintent_spshort_luaset_layout_str",      dict_match.layout_type)
     token_set_macro("l__spintent_spshort_luaset_actualtext_str",  dict_match.actualtext)
-    token_set_macro("l__spintent_spshort_luaset_output_str",      dict_match.output)
+
+    -- Si es una voladita de diccionario, exportamos la base y el sufijo para expl3
+    if dict_match.layout_type == "superscript" then
+      token_set_macro("l__spintent_spshort_luaset_base_str",   dict_match.base)
+      token_set_macro("l__spintent_spshort_luaset_suffix_str", dict_match.suffix)
+    else
+      -- Para el resto (linear, smallcaps, etc.), usamos el output directo
+      token_set_macro("l__spintent_spshort_luaset_output_str", dict_match.output)
+    end
     return
   end
 
