@@ -179,7 +179,6 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     token_set_macro("l__spintent_luaset_format_part_dec_str", spintent_rae_format_digits(r_frac, true))
     token_set_macro("l__spintent_luaset_millons_str", is_million_clean)
     token_set_macro("l__spintent_luaset_decimal_and_period_str", dec_and_per)
-    token_set_macro("l__spintent_luaset_decimal_not_period_str", dec_not_per)
     token_set_macro("l__spintent_luaset_not_decimal_and_period_str", not_dec_and_per)
     token_set_macro("l__spintent_luaset_not_decimal_not_period_str", not_dec_not_per)
     token_set_macro("l__spintent_luaset_has_exponent_str", has_exponent)
@@ -198,30 +197,30 @@ end, { "string" })
 -- =========================================================================
 local spintent_units = {
     ["°K"]   = "°K",
-    ["A"]    = "A",    ["B"]    = "B",    ["Bq"]   = "Bq",   ["C"]    = "C",
-    ["Da"]   = "Da",   ["F"]    = "F",    ["Gy"]   = "Gy",   ["H"]    = "H",
-    ["Hz"]   = "Hz",   ["J"]    = "J",    ["K"]    = "K",    ["l"]    = "l",
-    ["L"]    = "L",    ["ℓ"]    = "ℓ",    ["N"]    = "N",    ["Np"]   = "Np",
-    ["Pa"]   = "Pa",   ["S"]    = "S",    ["Sv"]   = "Sv",   ["T"]    = "T",
-    ["V"]    = "V",    ["W"]    = "W",    ["Wb"]   = "Wb",   ["a"]    = "a",
-    ["atm"]  = "atm",  ["au"]   = "au",   ["b"]    = "b",    ["bar"]  = "bar",
-    ["cal"]  = "cal",  ["cd"]   = "cd",   ["d"]    = "d",    ["dB"]   = "dB",
-    ["dyn"]  = "dyn",  ["eV"]   = "eV",   ["erg"]  = "erg",  ["g"]    = "g",
-    ["h"]    = "h",    ["ha"]   = "ha",   ["kat"]  = "kat",  ["kg"]   = "kg",
-    ["km"]   = "km",   ["lm"]   = "lm",   ["lx"]   = "lx",   ["m"]    = "m",
-    ["cm"]   = "cm",   ["min"]  = "min",  ["mm"]   = "mm",   ["mol"]  = "mol",
-    ["pc"]   = "pc",   ["rad"]  = "rad",  ["rpm"]  = "rpm",  ["s"]    = "s",
-    ["sr"]   = "sr",   ["t"]    = "t",    ["u"]    = "u",    ["w"]    = "w",
-    ["y"]    = "y",    ["°"]    = "°",    ["°C"]   = "°C",   ["°F"]   = "°F",
-    ["Ω"]    = "Ω",    ["℧"]    = "℧",    ["′"]    = "′",    ["″"]    = "″",
+    ["A"]    = "A",    ["B"]    = "B",     ["Bq"]   = "Bq",   ["C"]    = "C",
+    ["Da"]   = "Da",   ["F"]    = "F",     ["Gy"]   = "Gy",   ["H"]    = "H",
+    ["Hz"]   = "Hz",   ["J"]    = "J",     ["K"]    = "K",    ["l"]    = "l",
+    ["L"]    = "L",    ["ℓ"]    = "ℓ",     ["N"]    = "N",    ["Np"]   = "Np",
+    ["Pa"]   = "Pa",   ["S"]    = "S",     ["Sv"]   = "Sv",   ["T"]    = "T",
+    ["V"]    = "V",    ["W"]    = "W",     ["Wb"]   = "Wb",   ["a"]    = "a",
+    ["atm"]  = "atm",  ["au"]   = "au",    ["b"]    = "b",    ["bar"]  = "bar",
+    ["cal"]  = "cal",  ["cd"]   = "cd",    ["d"]    = "d",    ["dB"]   = "dB",
+    ["dyn"]  = "dyn",  ["eV"]   = "eV",    ["erg"]  = "erg",  ["g"]    = "g",
+    ["h"]    = "h",    ["ha"]   = "ha",    ["kat"]  = "kat",  ["kg"]   = "kg",
+    ["km"]   = "km",   ["lm"]   = "lm",    ["lx"]   = "lx",   ["m"]    = "m",
+    ["cm"]   = "cm",   ["min"]  = "min",   ["mm"]   = "mm",   ["mol"]  = "mol",
+    ["pc"]   = "pc",   ["rad"]  = "rad",   ["rpm"]  = "rpm",  ["s"]    = "s",
+    ["sr"]   = "sr",   ["t"]    = "t",     ["u"]    = "u",    ["w"]    = "w",
+    ["y"]    = "y",    ["°"]    = "°",     ["°C"]   = "°C",   ["°F"]   = "°F",
+    ["Ω"]    = "Ω",    ["℧"]    = "℧",     ["′"]    = "′",    ["″"]    = "″",
     ["Å"]    = "Å",    ["µ"]    = "µ",
-    ["pulgada"]    = "in",    ["pulgas"]     = "in",
-    ["pie"]        = "ft",    ["pies"]       = "ft",
-    ["yarda"]      = "yd",    ["yardas"]     = "yd",
-    ["milla"]      = "mi",    ["millas"]     = "mi",
-    ["libra"]      = "lb",    ["libras"]     = "lb",
-    ["onza"]       = "oz",    ["onzas"]      = "oz",
-    ["galon"]      = "gal",   ["galones"]    = "gal",
+    ["in"]  = "in",    ["pulgada"]  = "in",   ["pulgadas"]  = "in",
+    ["ft"]  = "ft",    ["pie"]      = "ft",   ["pies"]    = "ft",
+    ["yd"]  = "yd",    ["yarda"]    = "yd",   ["yardas"]  = "yd",
+    ["mi"]  = "mi",    ["milla"]    = "mi",   ["millas"]  = "mi",
+    ["lb"]  = "lb",    ["libra"]    = "lb",   ["libras"]  = "lb",
+    ["oz"]  = "oz",    ["onza"]     = "oz",   ["onzas"]   = "oz",
+    ["gal"] = "gal",   ["galon"]    = "gal",  ["galones"] = "gal",
     ["hora"]       = "h",     ["horas"]      = "h",
     ["dia"]        = "d",     ["dias"]       = "d",
     ["caloria"]    = "cal",   ["calorias"]   = "cal",
@@ -260,33 +259,33 @@ local spintent_units = {
 }
 
 local spintent_unit_compact_spoken_names = {
-    ["㎡"]      = "metro-cuadrado",
-    ["㎥"]      = "metro-cúbico",
-    ["㎢"]      = "kilómetro-cuadrado",
-    ["㎟"]      = "milímetro-cuadrado",
-    ["㎠"]      = "centímetro-cuadrado",
-    ["㎣"]      = "milímetro-cúbico",
-    ["㎤"]      = "centímetro-cúbico",
-    ["㎦"]      = "kilómetro-cúbico",
+    ["㎡"]     = "metro-cuadrado",
+    ["㎥"]     = "metro-cúbico",
+    ["㎢"]     = "kilómetro-cuadrado",
+    ["㎟"]     = "milímetro-cuadrado",
+    ["㎠"]     = "centímetro-cuadrado",
+    ["㎣"]     = "milímetro-cúbico",
+    ["㎤"]     = "centímetro-cúbico",
+    ["㎦"]     = "kilómetro-cúbico",
     ["¼"]      = "centímetro-cúbico",
-    ["㎧"]      = "metros-por-segundo",
-    ["㎨"]      = "metros-por-segundo-al-cuadrado",
-    ["㎐"]      = "hercio",
-    ["℃"]      = "grados-celsius",
-    ["℉"]      = "grados-fahrenheit",
+    ["㎧"]     = "metros-por-segundo",
+    ["㎨"]     = "metros-por-segundo-al-cuadrado",
+    ["㎐"]     = "hercio",
+    ["℃"]     = "grados-celsius",
+    ["℉"]     = "grados-fahrenheit",
     ["'"]      = "minutos",
     ["''"]     = "segundos",
     ['"']      = "segundos",
     ["minmin"] = "minutos",
     ["segseg"] = "segundos",
     ["′"]      = "minutos",
-    ["″"]      = "segundos"
+    ["″"]      = "segundos",
 }
 
 local spintent_custom_spunit_spoken_names = {}
 
 local spintent_normalizations = {
-    ["K"] = "K", ["Ω"] = "Ω", ["ℓ"] = "l", ["μ"] = "µ", ["°K"] = "°K",
+    ["K"] = "K", ["Ω"] = "Ω", ["ℓ"] = "\\ell", ["μ"] = "µ", ["°K"] = "°K",
     ["'"]  = "′", ["''"] = "″", ['"']  = "″", ["minmin"] = "′", ["segseg"] = "″"
 }
 
@@ -296,16 +295,27 @@ local spintent_tex_accents = {
     ["\\\"u"] = "ü", ["\\\"U"] = "Ü", ["\\~n"] = "ñ", ["\\~N"] = "Ñ"
 }
 
-register_tex_cmd("luafun_define_custom_unit", function(unit_name, spoken_reading)
-    unit_name = s_gsub(s_match(unit_name, "^%s*(.-)%s*$") or unit_name, "%s+", "")
-    spoken_reading = s_match(spoken_reading, "^%s*(.-)%s*$") or spoken_reading
-    if spintent_units[unit_name] or spintent_normalizations[unit_name] then
+local function sanitize_for_screen_reader(raw_string)
+    if not raw_string then return "" end
+    local clean = s_gsub(raw_string, "[{}]", "") -- quitamos llaves
+    clean = s_gsub(clean, "\\[\'~\x22].", spintent_tex_accents) -- resolvemos acentos
+    clean = s_gsub(clean, "%s+", "-") -- Aglutinamos en un solo token semántico (MathML oficial)
+    return clean
+end
+
+register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
+    if spintent_units[unit_symbol] or spintent_custom_spunit_spoken_names[unit_symbol] then
         token_set_macro("l__spintent_spunit_luaset_register_status_str", "duplicate")
-    else
-        spintent_units[unit_name] = unit_name
-        spintent_custom_spunit_spoken_names[unit_name] = spoken_reading
-        token_set_macro("l__spintent_spunit_luaset_register_status_str", "success")
+        return
     end
+
+    -- Sanitizamos y aglutinamos para MathCAT
+    local clean_spoken_name = sanitize_for_screen_reader(spoken_name)
+
+    spintent_custom_spunit_spoken_names[unit_symbol] = clean_spoken_name
+    spintent_custom_spunit_aliases[unit_symbol] = true
+
+    token_set_macro("l__spintent_spunit_luaset_register_status_str", "success")
 end, { "string", "string" })
 
 register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
@@ -370,13 +380,6 @@ register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
             token_set_macro("l__spintent_spunit_luaset_lookup_status_str", "notfound")
         end
     end
-end, { "string" })
-
-register_tex_cmd("luafun_sanitize_read_arg", function(raw_accent_string)
-    local clean = s_gsub(raw_accent_string, "[{}]", "")
-    clean = s_gsub(clean, "\\[\'~\x22].", spintent_tex_accents)
-    clean = s_gsub(clean, "%s+", "-")
-    token_set_macro("l__spintent_spunit_luaset_clean_arg_str", clean)
 end, { "string" })
 
 register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_expression)
@@ -523,11 +526,9 @@ register_tex_cmd("luafun_spmoney_lookup_metadata", function(currency_name)
     token_set_macro("l__spintent_spmoney_luaset_resolved_conde_str", gram_entry.conde)
 
     if sub_db then
-        token_set_macro("l__spintent_spmoney_luaset_has_subunits_tl", "true")
         token_set_macro("l__spintent_spmoney_luaset_resolved_subsing_str", sub_db.sing)
         token_set_macro("l__spintent_spmoney_luaset_resolved_subplur_str", sub_db.plur)
     else
-        token_set_macro("l__spintent_spmoney_luaset_has_subunits_tl", "false")
         token_set_macro("l__spintent_spmoney_luaset_resolved_subsing_str", "")
         token_set_macro("l__spintent_spmoney_luaset_resolved_subplur_str", "")
     end
