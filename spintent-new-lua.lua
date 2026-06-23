@@ -2,11 +2,9 @@
      Modulo script spintent.lua for spintent package
 --]]
 
-local utf8 = require("unicode").utf8
+-- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES (El Motor Base)
 
--- =========================================================================
--- 0. CACHÉ, LPEG Y HERRAMIENTAS GLOBALES (El Motor Base)
--- =========================================================================
+local utf8 = require("unicode").utf8
 local tonumber   = tonumber
 local tostring   = tostring
 local math_floor = math.floor
@@ -34,6 +32,8 @@ local spintent_spshort_Cc = lpeg_base.Cc
 local spintent_digit      = R"09"
 local spintent_math_space = P"\\," + P"\\-" + P"\\;" + P"\\:" + P"\\!" + P"\\>" + P"\\quad" + P"\\qquad"
 local spintent_num_chunk  = Cs(spintent_digit * ((spintent_math_space / "")^0 * spintent_digit)^0)
+
+-- Registro de las fucnciones para LaTeX (expl3)
 
 local function register_tex_cmd(name, func, args)
     name = "__spintent_" .. name .. ":" .. ("n"):rep(#args)
@@ -63,10 +63,8 @@ local function register_tex_cmd(name, func, args)
     token.set_lua(name, index, "global", "protected")
 end
 
+-- 1. MOTOR CENTRAL Y NÚMEROS (\spnum y \spunit) funciones compartidas
 
--- =========================================================================
--- 1. MOTOR CENTRAL Y NÚMEROS (\spnum)
--- =========================================================================
 local spintent_num_sign              = S "+-"
 local spintent_num_decimal           = S ".," + P "{.}" + P "{,}"
 local spintent_num_semi              = P ";"
@@ -150,15 +148,13 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
 
     local has_dec = r_dec ~= ""
     local has_per = r_period ~= ""
-    local dec_and_per, dec_not_per, not_dec_and_per, not_dec_not_per = "false", "false", "false", "false"
+    local dec_and_per, not_dec_and_per, not_dec_not_per = "false", "false", "false"
 
     if has_dec and has_per then
         dec_and_per = "true"
-    elseif has_dec and not has_per then
-        dec_not_per = "true"
     elseif not has_dec and has_per then
         not_dec_and_per = "true"
-    else
+    elseif not has_dec and not has_per then
         not_dec_not_per = "true"
     end
 
@@ -167,22 +163,22 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     token_set_macro("l__spintent_luaset_dec_sep_tl", r_dec)
     token_set_macro("l__spintent_luaset_part_dec_tl", r_frac)
     token_set_macro("l__spintent_luaset_part_period_tl", r_period)
-    token_set_macro("l__spintent_luaset_arg_above_tl", above)
-    token_set_macro("l__spintent_luaset_arg_below_tl", below)
-    token_set_macro("l__spintent_luaset_status_str", unit_status)
-    token_set_macro("l__spintent_luaset_has_units_str", has_units)
-    token_set_macro("l__spintent_luaset_denom_has_numeric_coef_str", denom_has_numeric)
     token_set_macro("l__spintent_luaset_only_part_int_str", r_int)
     token_set_macro("l__spintent_luaset_only_part_dec_str", r_frac)
     token_set_macro("l__spintent_luaset_only_part_period_str", r_period)
     token_set_macro("l__spintent_luaset_format_part_int_str", spintent_rae_format_digits(r_int, false))
     token_set_macro("l__spintent_luaset_format_part_dec_str", spintent_rae_format_digits(r_frac, true))
     token_set_macro("l__spintent_luaset_millons_str", is_million_clean)
-    token_set_macro("l__spintent_luaset_decimal_and_period_str", dec_and_per)
-    token_set_macro("l__spintent_luaset_not_decimal_and_period_str", not_dec_and_per)
+    token_set_macro("l__spintent_luaset_decimal_period_str", dec_and_per)
+    token_set_macro("l__spintent_luaset_not_decimal_period_str", not_dec_and_per)
     token_set_macro("l__spintent_luaset_not_decimal_not_period_str", not_dec_not_per)
     token_set_macro("l__spintent_luaset_has_exponent_str", has_exponent)
     token_set_macro("l__spintent_luaset_exponent_tl", r_exp)
+    token_set_macro("l__spintent_luaset_has_units_str", has_units)
+    token_set_macro("l__spintent_luaset_status_str", unit_status)
+    token_set_macro("l__spintent_luaset_arg_above_tl", above)
+    token_set_macro("l__spintent_luaset_arg_below_tl", below)
+    token_set_macro("l__spintent_luaset_denom_has_number_str", denom_has_numeric)
 
     if r_frac ~= "" and s_match(r_frac, "^0+$") then
         token_set_macro("l__spintent_luaset_dec_is_all_zeros_str", "true")
@@ -191,10 +187,8 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     end
 end, { "string" })
 
-
--- =========================================================================
 -- 2. UNIDADES FÍSICAS Y CIENTÍFICAS (\spunit)
--- =========================================================================
+
 local spintent_units = {
     ["°K"]   = "°K",
     ["A"]    = "A",    ["B"]    = "B",     ["Bq"]   = "Bq",   ["C"]    = "C",
@@ -221,12 +215,12 @@ local spintent_units = {
     ["lb"]  = "lb",    ["libra"]    = "lb",   ["libras"]  = "lb",
     ["oz"]  = "oz",    ["onza"]     = "oz",   ["onzas"]   = "oz",
     ["gal"] = "gal",   ["galon"]    = "gal",  ["galones"] = "gal",
-    ["hora"]       = "h",     ["horas"]      = "h",
-    ["dia"]        = "d",     ["dias"]       = "d",
-    ["caloria"]    = "cal",   ["calorias"]   = "cal",
-    ["faradio"]    = "F",     ["culombio"]   = "C",
-    ["bit"]        = "b",     ["byte"]       = "B",
-    ["bytes"]      = "B",     ["fahrenheit"] = "°F",
+    ["hora"]     = "h",   ["horas"]      = "h",
+    ["dia"]      = "d",   ["dias"]       = "d",
+    ["caloria"]  = "cal", ["calorias"]   = "cal",
+    ["faradio"]  = "F",   ["culombio"]   = "C",
+    ["bit"]      = "b",   ["byte"]       = "B",
+    ["bytes"]    = "B",   ["fahrenheit"] = "°F",
     ["kelvin"]   = "K",   ["Kelvin"]   = "K",
     ["ohmio"]    = "Ω",   ["ohm"]      = "Ω",   ["Omega"]    = "Ω",
     ["amperio"]  = "A",   ["ampere"]   = "A",
@@ -297,15 +291,15 @@ local spintent_tex_accents = {
 
 local function sanitize_for_screen_reader(raw_string)
     if not raw_string then return "" end
-    local clean = s_gsub(raw_string, "[{}]", "") -- quitamos llaves
-    clean = s_gsub(clean, "\\[\'~\x22].", spintent_tex_accents) -- resolvemos acentos
-    clean = s_gsub(clean, "%s+", "-") -- Aglutinamos en un solo token semántico (MathML oficial)
+    local clean = s_gsub(raw_string, "[{}]", "")
+    clean = s_gsub(clean, "\\[\'~\x22].", spintent_tex_accents)
+    clean = s_gsub(clean, "%s+", "-")
     return clean
 end
 
 register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
     if spintent_units[unit_symbol] or spintent_custom_spunit_spoken_names[unit_symbol] then
-        token_set_macro("l__spintent_spunit_luaset_register_status_str", "duplicate")
+        token_set_macro("l__spintent_spunit_luaset_status_str", "duplicate")
         return
     end
 
@@ -315,7 +309,7 @@ register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
     spintent_custom_spunit_spoken_names[unit_symbol] = clean_spoken_name
     spintent_custom_spunit_aliases[unit_symbol] = true
 
-    token_set_macro("l__spintent_spunit_luaset_register_status_str", "success")
+    token_set_macro("l__spintent_spunit_luaset_status_str", "success")
 end, { "string", "string" })
 
 register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
@@ -386,7 +380,7 @@ register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_express
     alias_name = s_gsub(s_match(alias_name, "^%s*(.-)%s*$") or alias_name, "%s+", "")
     unit_expression = s_match(unit_expression, "^%s*(.-)%s*$") or unit_expression
     if spintent_units[alias_name] or spintent_normalizations[alias_name] or spintent_custom_spunit_aliases[alias_name] then
-        token_set_macro("l__spintent_spunit_luaset_register_status_str", "duplicate")
+        token_set_macro("l__spintent_spunit_luaset_status_str", "duplicate")
         return
     end
     local is_valid = true
@@ -400,17 +394,15 @@ register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_express
         end
     end
     if not is_valid then
-        token_set_macro("l__spintent_spunit_luaset_register_status_str", "invalid-expr")
+        token_set_macro("l__spintent_spunit_luaset_status_str", "invalid-expr")
     else
         spintent_custom_spunit_aliases[alias_name] = unit_expression
-        token_set_macro("l__spintent_spunit_luaset_register_status_str", "success")
+        token_set_macro("l__spintent_spunit_luaset_status_str", "success")
     end
 end, { "string", "string" })
 
-
--- =========================================================================
 -- 3. DIVISAS Y MONEDAS (\spmoney)
--- =========================================================================
+
 local spintent_internal_currencies = {
     ["$"]        = "$",         ["€"]        = "€",         ["£"]        = "£",         ["¥"]        = "¥",
     ["¢"]        = "¢",         ["₩"]        = "₩",         ["₪"]        = "₪",         ["₹"]        = "₹",
@@ -519,18 +511,18 @@ register_tex_cmd("luafun_spmoney_lookup_metadata", function(currency_name)
 
     local sub_db = spintent_currency_subunits_matrix[gram_entry.plur]
 
-    token_set_macro("l__spintent_spmoney_luaset_resolved_symbol_str", resolved_symbol)
-    token_set_macro("l__spintent_spmoney_luaset_resolved_position_str", position)
-    token_set_macro("l__spintent_spmoney_luaset_resolved_sing_str", gram_entry.sing)
-    token_set_macro("l__spintent_spmoney_luaset_resolved_plur_str", gram_entry.plur)
-    token_set_macro("l__spintent_spmoney_luaset_resolved_conde_str", gram_entry.conde)
+    token_set_macro("l__spintent_spmoney_luaset_symbol_str", resolved_symbol)
+    token_set_macro("l__spintent_spmoney_luaset_position_str", position)
+    token_set_macro("l__spintent_spmoney_luaset_sing_str", gram_entry.sing)
+    token_set_macro("l__spintent_spmoney_luaset_plur_str", gram_entry.plur)
+    token_set_macro("l__spintent_spmoney_luaset_conde_str", gram_entry.conde)
 
     if sub_db then
-        token_set_macro("l__spintent_spmoney_luaset_resolved_subsing_str", sub_db.sing)
-        token_set_macro("l__spintent_spmoney_luaset_resolved_subplur_str", sub_db.plur)
+        token_set_macro("l__spintent_spmoney_luaset_subsing_str", sub_db.sing)
+        token_set_macro("l__spintent_spmoney_luaset_subplur_str", sub_db.plur)
     else
-        token_set_macro("l__spintent_spmoney_luaset_resolved_subsing_str", "")
-        token_set_macro("l__spintent_spmoney_luaset_resolved_subplur_str", "")
+        token_set_macro("l__spintent_spmoney_luaset_subsing_str", "")
+        token_set_macro("l__spintent_spmoney_luaset_subplur_str", "")
     end
 end, { "string" })
 
@@ -547,17 +539,15 @@ register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
 
     if resolved_spoken then
         token_set_macro("l__spintent_spmoney_luaset_currency_arg_str", resolved_spoken)
-        token_set_macro("l__spintent_spmoney_luaset_lookup_status_str", "found")
+        token_set_macro("l__spintent_spmoney_luaset_status_str", "found")
     else
         token_set_macro("l__spintent_spmoney_luaset_currency_arg_str", raw_input)
-        token_set_macro("l__spintent_spmoney_luaset_lookup_status_str", "notfound")
+        token_set_macro("l__spintent_spmoney_luaset_status_str", "notfound")
     end
 end, { "string" })
 
-
--- =========================================================================
 -- 4. MATEMÁTICAS: MCM Y MCD (\spmcm, \spmcd)
--- =========================================================================
+
 local function spintent_gcd_algorithm(val_a, val_b)
     while val_b ~= 0 do val_a, val_b = val_b, val_a % val_b end
     return val_a
@@ -610,33 +600,29 @@ register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
     execute_mcm_mcd_result(raw_csv_list, "l__spintent_luaset_mcm_value_tl", spintent_lcm_algorithm)
 end, { "string" })
 
-
--- =========================================================================
 -- 5. SISTEMA SEXAGESIMAL (\spangle)
--- =========================================================================
+
 local spintent_angle_sexag_pattern = Ct(
     Cg(spintent_num_chunk^-1, "a") * P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1 * P(-1)
 )
 
-register_tex_cmd("luafun_spang_sexag_parse", function(raw_sexag_str)
+register_tex_cmd("luafun_spang_parse", function(raw_sexag_str)
     raw_sexag_str = s_gsub(raw_sexag_str, "%s+", "")
     local result = spintent_angle_sexag_pattern:match(raw_sexag_str)
 
     if not result then
-        token_set_macro("l__spintent_spang_sexag_luaset_error_str", "true")
+        token_set_macro("l__spintent_spang_luaset_error_str", "true")
         return
     end
 
-    token_set_macro("l__spintent_spang_sexag_luaset_error_str", "false")
-    token_set_macro("l__spintent_spang_sexag_luaset_grado_str", result.a or "")
-    token_set_macro("l__spintent_spang_sexag_luaset_minuto_str", result.b or "")
-    token_set_macro("l__spintent_spang_sexag_luaset_segundo_str", result.c or "")
+    token_set_macro("l__spintent_spang_luaset_error_str", "false")
+    token_set_macro("l__spintent_spang_luaset_grado_str", result.a or "")
+    token_set_macro("l__spintent_spang_luaset_minuto_str", result.b or "")
+    token_set_macro("l__spintent_spang_luaset_segundo_str", result.c or "")
 end, { "string" })
 
-
--- =========================================================================
 -- 6. FECHA Y HORA (\spdate, \sptime)
--- =========================================================================
+
 local spintent_date_sep = S"/-"
 
 local spintent_date_pattern = Ct(
@@ -703,10 +689,8 @@ register_tex_cmd("luafun_sptime_parse", function(raw_time_input)
     end
 end, { "string" })
 
-
--- =========================================================================
 -- 7. SIGLOS Y NÚMEROS ROMANOS (\spsiglo)
--- =========================================================================
+
 local spintent_arab_to_roman_map = {
   {1000, "m"}, {900, "cm"}, {500, "d"}, {400, "cd"},
   {100, "c"}, {90, "xc"}, {50, "l"}, {40, "xl"},
@@ -796,10 +780,8 @@ register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
   end
 end, { "string" })
 
-
--- =========================================================================
 -- 8. ABREVIATURAS Y ORDINALES (\spshort)
--- =========================================================================
+
 local spintent_spshort_dict = {
   ["dr.a"]   = { actualtext = "doctora",   layout_type = "superscript", base = "Dr.", suffix = "a" },
   ["dr.as"]  = { actualtext = "doctoras",  layout_type = "superscript", base = "Dr.", suffix = "as" },
@@ -995,12 +977,12 @@ local function spintent_spshort_execute_analysis(raw_input)
   end
 
   if dict_match then
-    token_set_macro("l__spintent_spshort_luaset_status_str",      "success")
-    token_set_macro("l__spintent_spshort_luaset_layout_str",      dict_match.layout_type)
-    token_set_macro("l__spintent_spshort_luaset_actualtext_str",  dict_match.actualtext)
+    token_set_macro("l__spintent_spshort_luaset_status_str", "success")
+    token_set_macro("l__spintent_spshort_luaset_layout_str", dict_match.layout_type)
+    token_set_macro("l__spintent_spshort_luaset_actualtext_str", dict_match.actualtext)
 
     if dict_match.layout_type == "superscript" then
-      token_set_macro("l__spintent_spshort_luaset_base_str",   dict_match.base)
+      token_set_macro("l__spintent_spshort_luaset_base_str", dict_match.base)
       token_set_macro("l__spintent_spshort_luaset_suffix_str", dict_match.suffix)
     else
       token_set_macro("l__spintent_spshort_luaset_output_str", dict_match.output)
@@ -1028,21 +1010,21 @@ local function spintent_spshort_execute_analysis(raw_input)
 
     local semantic_read = get_semantic_ordinal(tonumber(num_part), suffix_part)
 
-    token_set_macro("l__spintent_spshort_luaset_status_str",      "success")
-    token_set_macro("l__spintent_spshort_luaset_layout_str",      "superscript")
-    token_set_macro("l__spintent_spshort_luaset_actualtext_str",  semantic_read)
-    token_set_macro("l__spintent_spshort_luaset_base_str",        num_part .. ".")
-    token_set_macro("l__spintent_spshort_luaset_suffix_str",      spintent_spshort_ord_suffixes[suffix_part])
+    token_set_macro("l__spintent_spshort_luaset_status_str", "success")
+    token_set_macro("l__spintent_spshort_luaset_layout_str", "superscript")
+    token_set_macro("l__spintent_spshort_luaset_actualtext_str", semantic_read)
+    token_set_macro("l__spintent_spshort_luaset_base_str", num_part .. ".")
+    token_set_macro("l__spintent_spshort_luaset_suffix_str", spintent_spshort_ord_suffixes[suffix_part])
     return
   end
 
   if s_match(raw_input, "^%a+$") then
-    token_set_macro("l__spintent_spshort_luaset_status_str",      "fallback")
-    token_set_macro("l__spintent_spshort_luaset_layout_str",      "none")
-    token_set_macro("l__spintent_spshort_luaset_actualtext_str",  raw_input)
-    token_set_macro("l__spintent_spshort_luaset_output_str",      raw_input)
+    token_set_macro("l__spintent_spshort_luaset_status_str", "fallback")
+    token_set_macro("l__spintent_spshort_luaset_layout_str", "none")
+    token_set_macro("l__spintent_spshort_luaset_actualtext_str", raw_input)
+    token_set_macro("l__spintent_spshort_luaset_output_str", raw_input)
   else
-    token_set_macro("l__spintent_spshort_luaset_status_str",      "error")
+    token_set_macro("l__spintent_spshort_luaset_status_str", "error")
   end
 end
 
