@@ -387,7 +387,7 @@ register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_express
     local _, slash_count = s_gsub(unit_expression, "/", "")
     if slash_count > 1 then is_valid = false end
 
-    if s_match(unit_expression, "[^%a°ΩµÅℓ′″℧%*%/%^%-%d%s%'%\x22]") then is_valid = false end
+    if s_match(unit_expression, "[^%a°ΩµÅℓ′″℧%*%/%^%-%d%s%'%\x22{}]") then is_valid = false end
     if is_valid then
         for unit_base in s_gmatch(unit_expression, "[%a°ΩµÅℓ′″℧%'%\x22]+") do
             if not (spintent_units[unit_base] or spintent_normalizations[unit_base]) then is_valid = false; break end
@@ -454,6 +454,16 @@ local spintent_currency_grammatical_dict = {
     ["try"]      = { sing = "lira",                  plur = "liras",                  conde = "de-liras" },
     ["grivna"]   = { sing = "grivna",                plur = "grivnas",                conde = "de-grivnas" },
     ["uah"]      = { sing = "grivna",                plur = "grivnas",                conde = "de-grivnas" },
+    -- nuevos
+    ["€"]        = { sing = "euro",                  plur = "euros",                  conde = "de-euros" },
+    ["£"]        = { sing = "libra",                 plur = "libras",                 conde = "de-libras" },
+    ["¥"]        = { sing = "yen",                   plur = "yenes",                  conde = "de-yenes" },
+    ["₩"]        = { sing = "won",                   plur = "wons",                   conde = "de-wons" },
+    ["₪"]        = { sing = "séquel",                plur = "séqueles",               conde = "de-séqueles" },
+    ["₹"]        = { sing = "rupia",                 plur = "rupias",                 conde = "de-rupias" },
+    ["₽"]        = { sing = "rublo",                 plur = "rublos",                 conde = "de-rublos" },
+    ["₺"]        = { sing = "lira",                  plur = "liras",                  conde = "de-liras" },
+    ["₴"]        = { sing = "grivna",                plur = "grivnas",                conde = "de-grivnas" },
 }
 
 local spintent_currency_subunits_matrix = {
@@ -490,6 +500,17 @@ local spintent_currency_spoken_names = {
     ["rublo"]    = "rublos",                   ["rub"]     = "rublos",
     ["lira"]     = "liras",                    ["try"]     = "liras",
     ["grivna"]   = "grivnas",                  ["uah"]     = "grivnas",
+    -- nuevos
+    ["€"]        = "euros",
+    ["£"]        = "libras",
+    ["¥"]        = "yenes",
+    ["¢"]        = "centavos",
+    ["₩"]        = "wons",
+    ["₪"]        = "séqueles",
+    ["₹"]        = "rupias",
+    ["₽"]        = "rublos",
+    ["₺"]        = "liras",
+    ["₴"]        = "grivnas",
 }
 
 register_tex_cmd("luafun_spmoney_lookup_metadata", function(currency_name)
@@ -544,6 +565,17 @@ register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
         token_set_macro("l__spintent_spmoney_luaset_currency_arg_str", raw_input)
         token_set_macro("l__spintent_spmoney_luaset_status_str", "notfound")
     end
+end, { "string" })
+
+register_tex_cmd("luafun_spmoney_prepare_input", function(raw_input)
+    -- Extrae solo la moneda (borra dígitos, signos, espacios y separadores numéricos)
+    local curr_part = s_gsub(raw_input, "[%d%s%+%-%.,{}%:%;]", "")
+
+    -- Extrae solo el número matemático puro
+    local num_part  = s_gsub(raw_input, "[^%d%s%+%-%.,{}%:%;]", "")
+
+    token_set_macro("l__spintent_spmoney_extracted_curr_str", curr_part)
+    token_set_macro("l__spintent_spmoney_extracted_num_tl", num_part)
 end, { "string" })
 
 -- 4. MATEMÁTICAS: MCM Y MCD (\spmcm, \spmcd)
