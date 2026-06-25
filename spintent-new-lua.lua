@@ -705,19 +705,20 @@ register_tex_cmd("luafun_sptime_parse", function(raw_time_input)
     token_set_macro("l__spintent_sptime_luaset_error_str", "false")
     token_set_macro("l__spintent_sptime_luaset_base_str", result.h .. ":" .. result.m)
 
+    -- LA LÓGICA VITAL RECUPERADA:
+    -- Solo es "fracción especial" si la hora es < 13 y los minutos son 15 o 30
+    if h < 13 and (m == 15 or m == 30) then
+        token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "true")
+    else
+        token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "false")
+    end
+
     if result.s then
         token_set_macro("l__spintent_sptime_luaset_has_seconds_str", "true")
         token_set_macro("l__spintent_sptime_luaset_seconds_str", result.s)
-
-        if result.m == "15" or result.m == "30" then
-            token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "true")
-        else
-            token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "false")
-        end
     else
         token_set_macro("l__spintent_sptime_luaset_has_seconds_str", "false")
         token_set_macro("l__spintent_sptime_luaset_seconds_str", "")
-        token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "false")
     end
 end, { "string" })
 
