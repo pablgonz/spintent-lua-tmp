@@ -655,28 +655,85 @@ end, { "string" })
 
 -- 6. FECHA Y HORA (\spdate, \sptime)
 
-local spintent_date_sep = S"/-"
+-- Capturamos el separador exacto usado (sea / o -)
+local spintent_date_sep = C(S"/-")
 
+-- Patrón neutro: 3 partes numéricas divididas por 2 separadores
 local spintent_date_pattern = Ct(
-    (Cg(spintent_num_chunk, "year") * spintent_date_sep * Cg(spintent_num_chunk, "month") * spintent_date_sep * Cg(spintent_num_chunk, "day") * P(-1)) +
-    (Cg(spintent_num_chunk, "day") * spintent_date_sep * Cg(spintent_num_chunk, "month") * spintent_date_sep * Cg(spintent_num_chunk, "year") * P(-1))
+    Cg(spintent_num_chunk, "p1") * Cg(spintent_date_sep, "sep1") * Cg(spintent_num_chunk, "p2") * Cg(spintent_date_sep, "sep2") * Cg(spintent_num_chunk, "p3") * P(-1)
 )
+
+-- Función auxiliar: Validar que el día y mes existan (¡incluyendo bisiestos!)
+local function is_valid_date(d, m, y)
+    if m < 1 or m > 12 then return false end
+    if d < 1 then return false end
+
+    local days_in_month = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+
+    -- Ajuste para febrero en años bisiestos
+    if m == 2 then
+        local is_leap = (y % 4 == 0 and y % 100 ~= 0) or (y % 400 == 0)
+        if is_leap then
+            return d <= 29
+        end
+    end
+    return d <= days_in_month[m]
+end
 
 register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
     if not raw_date_input then return end
     local clean_str = s_gsub(raw_date_input, "%s+", "")
     local result = spintent_date_pattern:match(clean_str)
 
-    if not result then
+    -- Si no encaja el patrón, o si el usuario mezcla separadores (ej. 2024-01/02) -> error
+    if not result or result.sep1 ~= result.sep2 then
         token_set_macro("l__spintent_spdate_luaset_error_str", "true")
         return
     end
 
+    local p1, p2, p3 = result.p1, result.p2, result.p3
+    local sep = result.sep1
+    local year, month, day
+
+    -- Como spintent_num_chunk elimina espacios, las longitudes son exactas
+    local p1_len = #p1
+    local p3_len = #p3
+
+    -- Lógica 1: Detección del Año
+    if p1_len == 4 and p3_len <= 2 then
+        year, month, day = p1, p2, p3
+    elseif p3_len == 4 and p1_len <= 2 then
+        day, month, year = p1, p2, p3
+    else
+        -- Si ninguno tiene 4 dígitos (ej. 12-10-81) o ambos lo tienen, hay ambigüedad
+        token_set_macro("l__spintent_spdate_luaset_error_str", "true")
+        return
+    end
+
+    local num_y, num_m, num_d = tonumber(year), tonumber(month), tonumber(day)
+
+    -- Lógica 2: Validación de calendario real
+    if not (num_y and num_m and num_d) or not is_valid_date(num_d, num_m, num_y) then
+        token_set_macro("l__spintent_spdate_luaset_error_str", "true")
+        return
+    end
+
+    -- Lógica 3: Reglas de renderizado visual
+    local output_str
+    if p1_len == 4 and sep == "/" then
+        -- Único caso a corregir: YYYY/MM/DD se invierte a DD/MM/YYYY
+        output_str = day .. "/" .. month .. "/" .. year
+    else
+        -- Para el resto, se devuelve EXACTAMENTE el mismo formato que ingresó
+        output_str = p1 .. sep .. p2 .. sep .. p3
+    end
+
+    -- Si sobrevivió a todo, pasamos las variables limpias a TeX
     token_set_macro("l__spintent_spdate_luaset_error_str", "false")
-    token_set_macro("l__spintent_spdate_luaset_day_str", result.day)
-    token_set_macro("l__spintent_spdate_luaset_month_str", result.month)
-    token_set_macro("l__spintent_spdate_luaset_year_str", result.year)
-    token_set_macro("l__spintent_spdate_luaset_output_str", result.day .. "/" .. result.month .. "/" .. result.year)
+    token_set_macro("l__spintent_spdate_luaset_day_str", day)
+    token_set_macro("l__spintent_spdate_luaset_month_str", month)
+    token_set_macro("l__spintent_spdate_luaset_year_str", year)
+    token_set_macro("l__spintent_spdate_luaset_output_str", output_str)
 end, { "string" })
 
 local spintent_time_pattern = Ct(
