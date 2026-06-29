@@ -578,299 +578,7 @@ register_tex_cmd("luafun_spmoney_prepare_input", function(raw_input)
     token_set_macro("l__spintent_spmoney_extracted_num_tl", num_part)
 end, { "string" })
 
--- 4. MATEMÁTICAS: MCM Y MCD (\spmcm, \spmcd)
-
-local function spintent_gcd_algorithm(val_a, val_b)
-    while val_b ~= 0 do val_a, val_b = val_b, val_a % val_b end
-    return val_a
-end
-
-local function spintent_lcm_algorithm(val_a, val_b)
-    if val_a == 0 or val_b == 0 then return 0 end
-    return math_floor((val_a * val_b) / spintent_gcd_algorithm(val_a, val_b))
-end
-
-local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
-    local numbers = {}
-    token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "false")
-
-    for item in s_gmatch(raw_csv_list, "([^,]+)") do
-        local clean_item = s_match(item, "^%s*(.-)%s*$") or item
-        local result = spintent_number_pattern:match(clean_item) or {}
-
-        local r_int  = result.integer
-        local r_sign = result.sign
-        local r_dec  = result.decimal
-        local r_per  = result.period
-        local r_ext  = result.extra
-
-        local es_natural = r_int and (not r_sign or r_sign == "")
-          and (not r_dec or r_dec == "") and (not r_per or r_per == "")
-          and (not r_ext or s_gsub(r_ext, "%s+", "") == "")
-
-        if es_natural then
-            t_insert(numbers, tonumber(r_int))
-        else
-            token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
-            return
-        end
-    end
-    if #numbers == 0 then
-        token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
-        return
-    end
-    local final_result = numbers[1]
-    for i = 2, #numbers do final_result = operation_fn(final_result, numbers[i]) end
-    token_set_macro(tl_out, string.format("%d", final_result))
-end
-
-register_tex_cmd("luafun_calculate_mcd", function(raw_csv_list)
-    execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcd_luaset_mcd_value_tl", spintent_gcd_algorithm)
-end, { "string" })
-
-register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
-    execute_mcm_mcd_result(raw_csv_list, "l__spintent_luaset_mcm_value_tl", spintent_lcm_algorithm)
-end, { "string" })
-
--- 5. SISTEMA SEXAGESIMAL (\spangle)
-
-local spintent_angle_sexag_pattern = Ct(
-    Cg(spintent_num_chunk^-1, "a") * P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1 * P(-1)
-)
-
-register_tex_cmd("luafun_spang_parse", function(raw_sexag_str)
-    raw_sexag_str = s_gsub(raw_sexag_str, "%s+", "")
-    local result = spintent_angle_sexag_pattern:match(raw_sexag_str)
-
-    if not result then
-        token_set_macro("l__spintent_spang_luaset_error_str", "true")
-        return
-    end
-
-    token_set_macro("l__spintent_spang_luaset_error_str", "false")
-    token_set_macro("l__spintent_spang_luaset_grado_str", result.a or "")
-    token_set_macro("l__spintent_spang_luaset_minuto_str", result.b or "")
-    token_set_macro("l__spintent_spang_luaset_segundo_str", result.c or "")
-end, { "string" })
-
--- 6. FECHA Y HORA (\spdate, \sptime)
-
--- Capturamos el separador exacto usado (sea / o -)
-local spintent_date_sep = C(S"/-")
-
--- Patrón neutro: 3 partes numéricas divididas por 2 separadores
-local spintent_date_pattern = Ct(
-    Cg(spintent_num_chunk, "p1") * Cg(spintent_date_sep, "sep1") * Cg(spintent_num_chunk, "p2") * Cg(spintent_date_sep, "sep2") * Cg(spintent_num_chunk, "p3") * P(-1)
-)
-
--- Función auxiliar: Validar que el día y mes existan (¡incluyendo bisiestos!)
-local function is_valid_date(d, m, y)
-    if m < 1 or m > 12 then return false end
-    if d < 1 then return false end
-
-    local days_in_month = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
-
-    -- Ajuste para febrero en años bisiestos
-    if m == 2 then
-        local is_leap = (y % 4 == 0 and y % 100 ~= 0) or (y % 400 == 0)
-        if is_leap then
-            return d <= 29
-        end
-    end
-    return d <= days_in_month[m]
-end
-
-register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
-    if not raw_date_input then return end
-    local clean_str = s_gsub(raw_date_input, "%s+", "")
-    local result = spintent_date_pattern:match(clean_str)
-
-    -- Si no encaja el patrón, o si el usuario mezcla separadores (ej. 2024-01/02) -> error
-    if not result or result.sep1 ~= result.sep2 then
-        token_set_macro("l__spintent_spdate_luaset_error_str", "true")
-        return
-    end
-
-    local p1, p2, p3 = result.p1, result.p2, result.p3
-    local sep = result.sep1
-    local year, month, day
-
-    -- Como spintent_num_chunk elimina espacios, las longitudes son exactas
-    local p1_len = #p1
-    local p3_len = #p3
-
-    -- Lógica 1: Detección del Año
-    if p1_len == 4 and p3_len <= 2 then
-        year, month, day = p1, p2, p3
-    elseif p3_len == 4 and p1_len <= 2 then
-        day, month, year = p1, p2, p3
-    else
-        -- Si ninguno tiene 4 dígitos (ej. 12-10-81) o ambos lo tienen, hay ambigüedad
-        token_set_macro("l__spintent_spdate_luaset_error_str", "true")
-        return
-    end
-
-    local num_y, num_m, num_d = tonumber(year), tonumber(month), tonumber(day)
-
-    -- Lógica 2: Validación de calendario real
-    if not (num_y and num_m and num_d) or not is_valid_date(num_d, num_m, num_y) then
-        token_set_macro("l__spintent_spdate_luaset_error_str", "true")
-        return
-    end
-
-    -- Lógica 3: Reglas de renderizado visual
-    local output_str
-    if p1_len == 4 and sep == "/" then
-        -- Único caso a corregir: YYYY/MM/DD se invierte a DD/MM/YYYY
-        output_str = day .. "/" .. month .. "/" .. year
-    else
-        -- Para el resto, se devuelve EXACTAMENTE el mismo formato que ingresó
-        output_str = p1 .. sep .. p2 .. sep .. p3
-    end
-
-    -- Si sobrevivió a todo, pasamos las variables limpias a TeX
-    token_set_macro("l__spintent_spdate_luaset_error_str", "false")
-    token_set_macro("l__spintent_spdate_luaset_day_str", day)
-    token_set_macro("l__spintent_spdate_luaset_month_str", month)
-    token_set_macro("l__spintent_spdate_luaset_year_str", year)
-    token_set_macro("l__spintent_spdate_luaset_output_str", output_str)
-end, { "string" })
-
-local spintent_time_pattern = Ct(
-    Cg(spintent_num_chunk, "h") * P":" * Cg(spintent_num_chunk, "m") * (P":" * Cg(spintent_num_chunk, "s"))^-1 * P(-1)
-)
-
-register_tex_cmd("luafun_sptime_parse", function(raw_time_input)
-    if not raw_time_input then return end
-    local clean_str = s_gsub(raw_time_input, "%s+", "")
-    local result = spintent_time_pattern:match(clean_str)
-
-    if not result then
-        token_set_macro("l__spintent_sptime_luaset_error_str", "true")
-        return
-    end
-
-    local h = tonumber(result.h)
-    local m = tonumber(result.m)
-    local s = result.s and tonumber(result.s) or nil
-
-    if not h or not m or h >= 24 or m >= 60 or (s and s >= 60) then
-        token_set_macro("l__spintent_sptime_luaset_error_str", "true")
-        return
-    end
-
-    token_set_macro("l__spintent_sptime_luaset_error_str", "false")
-    token_set_macro("l__spintent_sptime_luaset_base_str", result.h .. ":" .. result.m)
-
-    -- LA LÓGICA VITAL RECUPERADA:
-    -- Solo es "fracción especial" si la hora es < 13 y los minutos son 15 o 30
-    if h < 13 and (m == 15 or m == 30) then
-        token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "true")
-    else
-        token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "false")
-    end
-
-    if result.s then
-        token_set_macro("l__spintent_sptime_luaset_has_seconds_str", "true")
-        token_set_macro("l__spintent_sptime_luaset_seconds_str", result.s)
-    else
-        token_set_macro("l__spintent_sptime_luaset_has_seconds_str", "false")
-        token_set_macro("l__spintent_sptime_luaset_seconds_str", "")
-    end
-end, { "string" })
-
--- 7. SIGLOS Y NÚMEROS ROMANOS (\spsiglo)
-
-local spintent_arab_to_roman_map = {
-  {1000, "m"}, {900, "cm"}, {500, "d"}, {400, "cd"},
-  {100, "c"}, {90, "xc"}, {50, "l"}, {40, "xl"},
-  {10, "x"}, {9, "ix"}, {5, "v"}, {4, "iv"}, {1, "i"}
-}
-
-local spintent_roman_to_arab_byte_map = {
-  [105] = 1,   -- 'i'
-  [118] = 5,   -- 'v'
-  [120] = 10,  -- 'x'
-  [108] = 50,  -- 'l'
-  [99]  = 100, -- 'c'
-  [100] = 500, -- 'd'
-  [109] = 1000 -- 'm'
-}
-
-local function spintent_arabic_to_roman(num)
-  local result = ""
-  for i = 1, #spintent_arab_to_roman_map do
-    local pair = spintent_arab_to_roman_map[i]
-    while num >= pair[1] do
-      result = result .. pair[2]
-      num = num - pair[1]
-    end
-  end
-  return result
-end
-
-local function spintent_roman_to_arabic(str_roman)
-  local total = 0
-  local i = 1
-  local len = #str_roman
-
-  while i <= len do
-    local v1 = spintent_roman_to_arab_byte_map[s_byte(str_roman, i)] or 0
-
-    if i + 1 <= len then
-      local v2 = spintent_roman_to_arab_byte_map[s_byte(str_roman, i + 1)] or 0
-
-      if v1 < v2 then
-        total = total + (v2 - v1)
-        i = i + 2
-      else
-        total = total + v1
-        i = i + 1
-      end
-    else
-      total = total + v1
-      i = i + 1
-    end
-  end
-  return total
-end
-
-register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
-  local clean = s_lower(s_gsub(raw_siglo_input, "%s+", ""))
-  local arabic_val = nil
-  local roman_val = nil
-  local is_error = false
-
-  if s_match(clean, "^%d+$") then
-    arabic_val = tonumber(clean)
-    if arabic_val > 0 and arabic_val <= 4000 then
-      roman_val = spintent_arabic_to_roman(arabic_val)
-    else
-      is_error = true
-    end
-  elseif s_match(clean, "^[ivxlcdm]+$") and clean ~= "" then
-    roman_val = clean
-    arabic_val = spintent_roman_to_arabic(clean)
-
-    if spintent_arabic_to_roman(arabic_val) ~= clean then
-      is_error = true
-    end
-  else
-    is_error = true
-  end
-
-  if is_error then
-    token_set_macro("l__spintent_spsiglo_luaset_error_str", "true")
-    token_set_macro("l__spintent_spsiglo_luaset_arabic_str", "")
-    token_set_macro("l__spintent_spsiglo_luaset_roman_min_str", "")
-  else
-    token_set_macro("l__spintent_spsiglo_luaset_error_str", "false")
-    token_set_macro("l__spintent_spsiglo_luaset_arabic_str", tostring(arabic_val))
-    token_set_macro("l__spintent_spsiglo_luaset_roman_min_str", roman_val)
-  end
-end, { "string" })
-
--- 8. ABREVIATURAS Y ORDINALES (\spshort)
+-- 4. ABREVIATURAS Y ORDINALES (\spshort)
 
 local spintent_spshort_dict = {
   ["dr.a"]   = { actualtext = "doctora",   layout_type = "superscript", base = "Dr.", suffix = "a" },
@@ -1121,3 +829,363 @@ end
 register_tex_cmd("luafun_spshort_process", function(raw_input)
   spintent_spshort_execute_analysis(raw_input)
 end, { "string" })
+
+-- 5. SIGLOS Y NÚMEROS ROMANOS (\spsiglo)
+
+local spintent_arab_to_roman_map = {
+  {1000, "m"}, {900, "cm"}, {500, "d"}, {400, "cd"},
+  {100, "c"}, {90, "xc"}, {50, "l"}, {40, "xl"},
+  {10, "x"}, {9, "ix"}, {5, "v"}, {4, "iv"}, {1, "i"}
+}
+
+local spintent_roman_to_arab_byte_map = {
+  [105] = 1,   -- 'i'
+  [118] = 5,   -- 'v'
+  [120] = 10,  -- 'x'
+  [108] = 50,  -- 'l'
+  [99]  = 100, -- 'c'
+  [100] = 500, -- 'd'
+  [109] = 1000 -- 'm'
+}
+
+local function spintent_arabic_to_roman(num)
+  local result = ""
+  for i = 1, #spintent_arab_to_roman_map do
+    local pair = spintent_arab_to_roman_map[i]
+    while num >= pair[1] do
+      result = result .. pair[2]
+      num = num - pair[1]
+    end
+  end
+  return result
+end
+
+local function spintent_roman_to_arabic(str_roman)
+  local total = 0
+  local i = 1
+  local len = #str_roman
+
+  while i <= len do
+    local v1 = spintent_roman_to_arab_byte_map[s_byte(str_roman, i)] or 0
+
+    if i + 1 <= len then
+      local v2 = spintent_roman_to_arab_byte_map[s_byte(str_roman, i + 1)] or 0
+
+      if v1 < v2 then
+        total = total + (v2 - v1)
+        i = i + 2
+      else
+        total = total + v1
+        i = i + 1
+      end
+    else
+      total = total + v1
+      i = i + 1
+    end
+  end
+  return total
+end
+
+register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
+  local clean = s_lower(s_gsub(raw_siglo_input, "%s+", ""))
+  local arabic_val = nil
+  local roman_val = nil
+  local is_error = false
+
+  if s_match(clean, "^%d+$") then
+    arabic_val = tonumber(clean)
+    if arabic_val > 0 and arabic_val <= 4000 then
+      roman_val = spintent_arabic_to_roman(arabic_val)
+    else
+      is_error = true
+    end
+  elseif s_match(clean, "^[ivxlcdm]+$") and clean ~= "" then
+    roman_val = clean
+    arabic_val = spintent_roman_to_arabic(clean)
+
+    if spintent_arabic_to_roman(arabic_val) ~= clean then
+      is_error = true
+    end
+  else
+    is_error = true
+  end
+
+  if is_error then
+    token_set_macro("l__spintent_spsiglo_luaset_error_str", "true")
+    token_set_macro("l__spintent_spsiglo_luaset_arabic_str", "")
+    token_set_macro("l__spintent_spsiglo_luaset_roman_min_str", "")
+  else
+    token_set_macro("l__spintent_spsiglo_luaset_error_str", "false")
+    token_set_macro("l__spintent_spsiglo_luaset_arabic_str", tostring(arabic_val))
+    token_set_macro("l__spintent_spsiglo_luaset_roman_min_str", roman_val)
+  end
+end, { "string" })
+
+-- 6. FECHA Y HORA (\spdate, \sptime)
+
+local spintent_date_sep = C(S"/-")
+
+-- Patrón neutro: 3 partes numéricas divididas por 2 separadores
+local spintent_date_pattern = Ct(
+    Cg(spintent_num_chunk, "p1") * Cg(spintent_date_sep, "sep1") * Cg(spintent_num_chunk, "p2") * Cg(spintent_date_sep, "sep2") * Cg(spintent_num_chunk, "p3") * P(-1)
+)
+
+-- Función auxiliar: Validar que el día y mes existan (¡incluyendo bisiestos!)
+local function is_valid_date(d, m, y)
+    if m < 1 or m > 12 then return false end
+    if d < 1 then return false end
+
+    local days_in_month = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+
+    -- Ajuste para febrero en años bisiestos
+    if m == 2 then
+        local is_leap = (y % 4 == 0 and y % 100 ~= 0) or (y % 400 == 0)
+        if is_leap then
+            return d <= 29
+        end
+    end
+    return d <= days_in_month[m]
+end
+
+register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
+    if not raw_date_input then return end
+    local clean_str = s_gsub(raw_date_input, "%s+", "")
+    local result = spintent_date_pattern:match(clean_str)
+
+    -- Si no encaja el patrón, o si el usuario mezcla separadores (ej. 2024-01/02) -> error
+    if not result or result.sep1 ~= result.sep2 then
+        token_set_macro("l__spintent_spdate_luaset_error_str", "true")
+        return
+    end
+
+    local p1, p2, p3 = result.p1, result.p2, result.p3
+    local sep = result.sep1
+    local year, month, day
+
+    -- Como spintent_num_chunk elimina espacios, las longitudes son exactas
+    local p1_len = #p1
+    local p3_len = #p3
+
+    -- Lógica 1: Detección del Año
+    if p1_len == 4 and p3_len <= 2 then
+        year, month, day = p1, p2, p3
+    elseif p3_len == 4 and p1_len <= 2 then
+        day, month, year = p1, p2, p3
+    else
+        -- Si ninguno tiene 4 dígitos (ej. 12-10-81) o ambos lo tienen, hay ambigüedad
+        token_set_macro("l__spintent_spdate_luaset_error_str", "true")
+        return
+    end
+
+    local num_y, num_m, num_d = tonumber(year), tonumber(month), tonumber(day)
+
+    -- Lógica 2: Validación de calendario real
+    if not (num_y and num_m and num_d) or not is_valid_date(num_d, num_m, num_y) then
+        token_set_macro("l__spintent_spdate_luaset_error_str", "true")
+        return
+    end
+
+    -- Lógica 3: Reglas de renderizado visual
+    local output_str
+    if p1_len == 4 and sep == "/" then
+        -- Único caso a corregir: YYYY/MM/DD se invierte a DD/MM/YYYY
+        output_str = day .. "/" .. month .. "/" .. year
+    else
+        -- Para el resto, se devuelve EXACTAMENTE el mismo formato que ingresó
+        output_str = p1 .. sep .. p2 .. sep .. p3
+    end
+
+    -- Si sobrevivió a todo, pasamos las variables limpias a TeX
+    token_set_macro("l__spintent_spdate_luaset_error_str", "false")
+    token_set_macro("l__spintent_spdate_luaset_day_str", day)
+    token_set_macro("l__spintent_spdate_luaset_month_str", month)
+    token_set_macro("l__spintent_spdate_luaset_year_str", year)
+    token_set_macro("l__spintent_spdate_luaset_output_str", output_str)
+end, { "string" })
+
+local spintent_time_pattern = Ct(
+    Cg(spintent_num_chunk, "h") * P":" * Cg(spintent_num_chunk, "m") * (P":" * Cg(spintent_num_chunk, "s"))^-1 * P(-1)
+)
+
+register_tex_cmd("luafun_sptime_parse", function(raw_time_input)
+    if not raw_time_input then return end
+    local clean_str = s_gsub(raw_time_input, "%s+", "")
+    local result = spintent_time_pattern:match(clean_str)
+
+    if not result then
+        token_set_macro("l__spintent_sptime_luaset_error_str", "true")
+        return
+    end
+
+    local h = tonumber(result.h)
+    local m = tonumber(result.m)
+    local s = result.s and tonumber(result.s) or nil
+
+    if not h or not m or h >= 24 or m >= 60 or (s and s >= 60) then
+        token_set_macro("l__spintent_sptime_luaset_error_str", "true")
+        return
+    end
+
+    token_set_macro("l__spintent_sptime_luaset_error_str", "false")
+    token_set_macro("l__spintent_sptime_luaset_base_str", result.h .. ":" .. result.m)
+
+    -- Solo es "fracción especial" si la hora es < 13 y los minutos son 15 o 30
+    if h < 13 and (m == 15 or m == 30) then
+        token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "true")
+    else
+        token_set_macro("l__spintent_sptime_luaset_is_fraction_str", "false")
+    end
+
+    if result.s then
+        token_set_macro("l__spintent_sptime_luaset_has_seconds_str", "true")
+        token_set_macro("l__spintent_sptime_luaset_seconds_str", result.s)
+    else
+        token_set_macro("l__spintent_sptime_luaset_has_seconds_str", "false")
+        token_set_macro("l__spintent_sptime_luaset_seconds_str", "")
+    end
+end, { "string" })
+
+-- 7. MATEMÁTICAS: MCM Y MCD (\spmcm, \spmcd)
+
+local function spintent_gcd_algorithm(val_a, val_b)
+    while val_b ~= 0 do val_a, val_b = val_b, val_a % val_b end
+    return val_a
+end
+
+local function spintent_lcm_algorithm(val_a, val_b)
+    if val_a == 0 or val_b == 0 then return 0 end
+    return math_floor((val_a * val_b) / spintent_gcd_algorithm(val_a, val_b))
+end
+
+local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
+    local numbers = {}
+    token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "false")
+
+    for item in s_gmatch(raw_csv_list, "([^,]+)") do
+        local clean_item = s_match(item, "^%s*(.-)%s*$") or item
+        local result = spintent_number_pattern:match(clean_item) or {}
+
+        local r_int  = result.integer
+        local r_sign = result.sign
+        local r_dec  = result.decimal
+        local r_per  = result.period
+        local r_ext  = result.extra
+
+        local es_natural = r_int and (not r_sign or r_sign == "")
+          and (not r_dec or r_dec == "") and (not r_per or r_per == "")
+          and (not r_ext or s_gsub(r_ext, "%s+", "") == "")
+
+        if es_natural then
+            t_insert(numbers, tonumber(r_int))
+        else
+            token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
+            return
+        end
+    end
+    if #numbers == 0 then
+        token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
+        return
+    end
+    local final_result = numbers[1]
+    for i = 2, #numbers do final_result = operation_fn(final_result, numbers[i]) end
+    token_set_macro(tl_out, string.format("%d", final_result))
+end
+
+register_tex_cmd("luafun_calculate_mcd", function(raw_csv_list)
+    execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcd_luaset_mcd_value_tl", spintent_gcd_algorithm)
+end, { "string" })
+
+register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
+    execute_mcm_mcd_result(raw_csv_list, "l__spintent_luaset_mcm_value_tl", spintent_lcm_algorithm)
+end, { "string" })
+
+-- 8. SISTEMA SEXAGESIMAL (\spang)
+
+local spintent_angle_sexag_pattern = Ct(
+    Cg(spintent_num_chunk^-1, "a") * P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1 * P(-1)
+)
+
+register_tex_cmd("luafun_spang_parse", function(raw_sexag_str)
+    raw_sexag_str = s_gsub(raw_sexag_str, "%s+", "")
+    local result = spintent_angle_sexag_pattern:match(raw_sexag_str)
+
+    if not result then
+        token_set_macro("l__spintent_spang_luaset_error_str", "true")
+        return
+    end
+
+    token_set_macro("l__spintent_spang_luaset_error_str", "false")
+    token_set_macro("l__spintent_spang_luaset_grado_str", result.a or "")
+    token_set_macro("l__spintent_spang_luaset_minuto_str", result.b or "")
+    token_set_macro("l__spintent_spang_luaset_segundo_str", result.c or "")
+end, { "string" })
+
+-- 9. MATEMÁTICAS: MÚLTIPLOS Y DIVISORES (\spnM, \spnD)
+
+local function spintent_calculate_multiples(n_val, count)
+    local results = {}
+    for i = 1, count do
+        t_insert(results, tostring(n_val * i))
+    end
+    return t_concat(results, ", ")
+end
+
+local function spintent_calculate_divisors(n_val, limit)
+    local divisors = {}
+    -- Algoritmo optimizado de raíz cuadrada para divisores rápidos
+    for i = 1, math_floor(math.sqrt(n_val)) do
+        if n_val % i == 0 then
+            t_insert(divisors, i)
+            -- Si el cociente es diferente, agregarlo también
+            if i ~= (n_val / i) then
+                t_insert(divisors, math_floor(n_val / i))
+            end
+        end
+    end
+    -- Ordenar los divisores de menor a mayor
+    table.sort(divisors)
+
+    local results = {}
+    local actual_count = #divisors
+    local count_to_show = (limit > 0) and math.min(limit, actual_count) or actual_count
+
+    for i = 1, count_to_show do
+        t_insert(results, tostring(divisors[i]))
+    end
+
+    local is_truncated = (count_to_show < actual_count) and "true" or "false"
+    return t_concat(results, ", "), is_truncated
+end
+
+local function execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
+    -- Asumimos que expl3 ya usó luafun_clean_split_arg y garantizó que raw_n
+    -- es un número natural puro. ¡Solo convertimos y calculamos!
+    local num_n = tonumber(raw_n)
+
+    local clean_limit = s_lower(s_match(raw_limit, "^%s*(.-)%s*$") or raw_limit)
+    local num_limit = tonumber(clean_limit) or 0
+    if clean_limit == "all" or clean_limit == "" then
+        num_limit = 0
+    end
+
+    if is_multiple then
+        if num_limit <= 0 then num_limit = 2 end -- 2 múltiplos por defecto
+        local result_str = spintent_calculate_multiples(num_n, num_limit)
+
+        token_set_macro("l__spintent_spnM_luaset_result_tl", result_str)
+        token_set_macro("l__spintent_spnM_luaset_is_truncated_str", "true") -- Siempre infinitos
+    else
+        local result_str, is_truncated = spintent_calculate_divisors(num_n, num_limit)
+
+        token_set_macro("l__spintent_spnD_luaset_result_tl", result_str)
+        token_set_macro("l__spintent_spnD_luaset_is_truncated_str", is_truncated)
+    end
+end
+
+register_tex_cmd("luafun_calcular_nM", function(raw_n, raw_limit)
+    execute_spnM_spnD_result(raw_n, raw_limit, true)
+end, { "string", "string" })
+
+register_tex_cmd("luafun_calcular_nD", function(raw_n, raw_limit)
+    execute_spnM_spnD_result(raw_n, raw_limit, false)
+end, { "string", "string" })
