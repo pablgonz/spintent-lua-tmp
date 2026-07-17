@@ -1,8 +1,8 @@
 --[[
-     Modulo script spintent.lua for spintent package
+    Modulo script spintent.lua for spintent package
 --]]
 
--- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES (El Motor Base)
+-- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
 
 local utf8 = require("unicode").utf8
 local tonumber   = tonumber
@@ -10,7 +10,7 @@ local tostring   = tostring
 local math_floor = math.floor
 local t_insert   = table.insert
 local t_concat   = table.concat
-
+local t_unpack   = table.unpack or unpack
 local s_match    = string.match
 local s_gmatch   = string.gmatch
 local s_sub      = string.sub
@@ -18,22 +18,57 @@ local s_gsub     = string.gsub
 local s_lower    = string.lower
 local s_upper    = string.upper
 local s_byte     = string.byte
-
 local u_len      = utf8.len
 local u_sub      = utf8.sub
 
 local token_set_macro = token.set_macro
+local luatexbase_new  = luatexbase.new_luafunction
 
 local lpeg_base = lpeg or require("lpeg")
-local P, R, S, Cs, Ct, Cg, C = lpeg_base.P, lpeg_base.R, lpeg_base.S, lpeg_base.Cs, lpeg_base.Ct, lpeg_base.Cg, lpeg_base.C
+local P, R, S, Cs, Ct, Cg, C, Cc =
+    lpeg_base.P,
+    lpeg_base.R,
+    lpeg_base.S,
+    lpeg_base.Cs,
+    lpeg_base.Ct,
+    lpeg_base.Cg,
+    lpeg_base.C,
+    lpeg_base.Cc
+
 local spintent_spshort_V  = lpeg_base.V
 local spintent_spshort_Cc = lpeg_base.Cc
+local spintent_digit = R"09"
 
-local spintent_digit      = R"09"
-local spintent_math_space = P"\\," + P"\\-" + P"\\;" + P"\\:" + P"\\!" + P"\\>" + P"\\quad" + P"\\qquad"
-local spintent_num_chunk  = Cs(spintent_digit * ((spintent_math_space / "")^0 * spintent_digit)^0)
+local spintent_math_space =
+    P"\\,"
+    + P"\\-"
+    + P"\\;"
+    + P"\\:"
+    + P"\\!"
+    + P"\\>"
+    + P"\\quad"
+    + P"\\qquad"
+    + P"~"
+    + P"\\ "
+    + P"\\thinspace"
+    + P"\\nobreakspace"
 
--- Registro de las fucnciones para LaTeX (expl3)
+local spintent_discard_space = (S" \t\r\n" + spintent_math_space) / ""
+local spintent_opt_spaces = spintent_discard_space^0
+
+-- Versión limpia: elimina espacios matemáticos para cálculos internos
+local spintent_num_chunk = Cs(
+    spintent_digit
+    * (spintent_opt_spaces * spintent_digit)^0
+)
+
+-- Versión conservada: mantiene \, y otros separadores para salida TeX
+local spintent_num_chunk_keep = Cs(
+    spintent_digit
+    * (spintent_math_space * spintent_digit + spintent_digit)^0
+)
+
+-- Registro de las fucnciones para LaTeX (expl3) Max Chernoff style (https://chat.stackexchange.com/transcript/message/68993656#68993656)
 
 local function register_tex_cmd(name, func, args)
     name = "__spintent_" .. name .. ":" .. ("n"):rep(#args)
@@ -63,55 +98,99 @@ local function register_tex_cmd(name, func, args)
     token.set_lua(name, index, "global", "protected")
 end
 
--- 1. MOTOR CENTRAL Y NÚMEROS (\spnum y \spunit) funciones compartidas
+-- 1. MOTOR CENTRAL Y NÚMEROS (\spnum y \spunit)
 
-local spintent_num_sign              = S "+-"
-local spintent_num_decimal           = S ".," + P "{.}" + P "{,}"
-local spintent_num_semi              = P ";"
-local spintent_forbidden_in_extra    = spintent_num_decimal + spintent_num_semi
-local spintent_custom_spunit_aliases = {} -- <-- AÑADE ESTA LÍNEA AQUÍ
+local spintent_num_sign = S "+-"
+local spintent_num_decimal = S ".," + P "{.}" + P "{,}"
+local spintent_num_semi = P ";"
+local spintent_forbidden_in_extra = spintent_num_decimal + spintent_num_semi
+local spintent_custom_spunit_aliases = {}
+
+-- Un espacio matemático seguido de un dígito continúa formando parte del número.
+-- Ejemplo: 1\,00\,0  => NO debe terminar como unidad.
+local spintent_extra_char =
+    (spintent_math_space * #spintent_digit) * P(false)
+    + (P(1) - spintent_forbidden_in_extra - spintent_digit)
 
 local spintent_number_pattern = Ct(
     Cg(spintent_num_sign^-1, "sign")
-    * Cg(spintent_num_chunk^-1, "integer")
-    * (Cg(C(spintent_num_decimal), "decimal") * Cg(spintent_num_chunk, "fraction"))^-1
-    * (spintent_num_semi * Cg(spintent_num_chunk, "period"))^-1
-    * (S"eE" * Cg(Cs(spintent_num_sign^-1 * spintent_num_chunk), "exponent"))^-1
-    * Cg(Cs((spintent_math_space / "" + (P(1) - spintent_forbidden_in_extra))^0), "extra")
+    * spintent_opt_spaces
+    * Cg(spintent_num_chunk_keep^-1, "integer")
+    * (
+        spintent_opt_spaces
+        * Cg(C(spintent_num_decimal), "decimal")
+        * spintent_opt_spaces
+        * Cg(spintent_num_chunk_keep, "fraction")
+    )^-1
+    * (
+        spintent_opt_spaces
+        * spintent_num_semi
+        * spintent_opt_spaces
+        * Cg(spintent_num_chunk_keep, "period")
+    )^-1
+    * (
+        spintent_opt_spaces
+        * S"eE"
+        * spintent_opt_spaces
+        * Cg(
+            Cs(spintent_num_sign^-1 * spintent_num_chunk),
+            "exponent"
+        )
+    )^-1
+    * spintent_opt_spaces
+    * Cg(Cs(spintent_extra_char^0), "extra")
     * P(-1)
 )
 
 local function spintent_rae_format_digits(str_num, reverse)
-    if not str_num or str_num == "" then return "" end
+    if not str_num or str_num == "" then
+        return ""
+    end
+
     str_num = tostring(str_num)
     local len = u_len(str_num) or #str_num
-    if len <= 4 then return str_num end
+    if len <= 4 then
+        return str_num
+    end
 
     local chunks = {}
     if reverse then
-        for i = 1, len, 3 do t_insert(chunks, u_sub(str_num, i, i + 2)) end
+        for i = 1, len, 3 do
+            t_insert(chunks, u_sub(str_num, i, i + 2))
+        end
     else
         local first = len % 3
-        if first == 0 then first = 3 end
+        if first == 0 then
+            first = 3
+        end
         t_insert(chunks, u_sub(str_num, 1, first))
-        for i = first + 1, len, 3 do t_insert(chunks, u_sub(str_num, i, i + 2)) end
+
+        for i = first + 1, len, 3 do
+            t_insert(chunks, u_sub(str_num, i, i + 2))
+        end
     end
+
     return t_concat(chunks, "\\,")
 end
 
-register_tex_cmd("luafun_clean_split_arg", function(raw_string)
+register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
     raw_string = s_match(raw_string, "^%s*(.-)%s*$") or raw_string
+
     local result = spintent_number_pattern:match(raw_string) or {}
+    local r_sign = result.sign or ""
 
-    local r_sign     = result.sign or ""
-    local r_int      = result.integer or ""
-    local r_dec      = result.decimal or ""
-    local r_frac     = result.fraction or ""
-    local r_period   = result.period or ""
-    local r_extra    = result.extra
-    local r_exp      = result.exponent or ""
+    -- Conservan separadores TeX del usuario
+    local r_int  = result.integer or ""
+    local r_frac = result.fraction or ""
+
+    -- Versiones matemáticas limpias usadas solamente para cálculos internos
+    local r_int_clean  = s_gsub(r_int, "\\,", "")
+    local r_frac_clean = s_gsub(r_frac, "\\,", "")
+    local r_dec    = result.decimal or ""
+    local r_period = result.period or ""
+    local r_extra  = result.extra
+    local r_exp    = result.exponent or ""
     local has_exponent = (r_exp ~= "") and "true" or "false"
-
     local above = ""
     local below = ""
     local unit_status = "valid"
@@ -120,17 +199,24 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
 
     if r_extra then
         local extra = s_match(r_extra, "^%s*(.-)%s*$") or r_extra
-        if spintent_custom_spunit_aliases[extra] then extra = spintent_custom_spunit_aliases[extra] end
+
+        if spintent_custom_spunit_aliases[extra] then
+            extra = spintent_custom_spunit_aliases[extra]
+        end
 
         if extra ~= "" then
             has_units = "true"
             local parts = {}
-            for part in s_gmatch(extra, "[^/]+") do t_insert(parts, part) end
+            for part in s_gmatch(extra, "[^/]+") do
+                t_insert(parts, part)
+            end
+
             if #parts > 2 or s_match(extra, "/%s*/") then
                 unit_status = "multislash"
             else
                 above = parts[1] or ""
                 below = parts[2] or ""
+
                 if below ~= "" and s_match(below, "^%s*%d") then
                     denom_has_numeric = "true"
                 end
@@ -139,8 +225,8 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     end
 
     local is_million_clean = "false"
-    if r_int ~= "" then
-        local int_value = tonumber(r_int)
+    if r_int_clean ~= "" then
+        local int_value = tonumber(r_int_clean)
         if int_value and int_value > 999999 and (int_value % 1000000 == 0) then
             is_million_clean = "true"
         end
@@ -148,7 +234,10 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
 
     local has_dec = r_dec ~= ""
     local has_per = r_period ~= ""
-    local dec_and_per, not_dec_and_per, not_dec_not_per = "false", "false", "false"
+
+    local dec_and_per      = "false"
+    local not_dec_and_per  = "false"
+    local not_dec_not_per  = "false"
 
     if has_dec and has_per then
         dec_and_per = "true"
@@ -158,16 +247,36 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
         not_dec_not_per = "true"
     end
 
-    token_set_macro("l__spintent_luaset_sign_tl", r_sign)
+    local has_integer = "false"
+    local has_natural = "false"
+
+    if r_int_clean ~= ""
+       and r_dec == ""
+       and r_frac_clean == ""
+       and r_period == ""
+       and has_exponent == "false"
+       and has_units == "false" then
+
+        has_integer = "true"
+
+        if r_sign == "" then
+            local int_val = tonumber(r_int_clean)
+            if int_val and int_val > 0 then
+                has_natural = "true"
+            end
+        end
+    end
+
     token_set_macro("l__spintent_luaset_part_int_tl", r_int)
-    token_set_macro("l__spintent_luaset_dec_sep_tl", r_dec)
     token_set_macro("l__spintent_luaset_part_dec_tl", r_frac)
+    token_set_macro("l__spintent_luaset_sign_tl", r_sign)
+    token_set_macro("l__spintent_luaset_dec_sep_tl", r_dec)
     token_set_macro("l__spintent_luaset_part_period_tl", r_period)
-    token_set_macro("l__spintent_luaset_only_part_int_str", r_int)
-    token_set_macro("l__spintent_luaset_only_part_dec_str", r_frac)
-    token_set_macro("l__spintent_luaset_only_part_period_str", r_period)
-    token_set_macro("l__spintent_luaset_format_part_int_str", spintent_rae_format_digits(r_int, false))
-    token_set_macro("l__spintent_luaset_format_part_dec_str", spintent_rae_format_digits(r_frac, true))
+    token_set_macro("l__spintent_luaset_only_part_int_str", r_int_clean)
+    token_set_macro("l__spintent_luaset_only_part_dec_str", r_frac_clean)
+    token_set_macro("l__spintent_luaset_only_part_period_str", result.period or "")
+    token_set_macro("l__spintent_luaset_format_part_int_str", spintent_rae_format_digits(r_int_clean, false))
+    token_set_macro("l__spintent_luaset_format_part_dec_str", spintent_rae_format_digits(r_frac_clean, true))
     token_set_macro("l__spintent_luaset_millons_str", is_million_clean)
     token_set_macro("l__spintent_luaset_decimal_period_str", dec_and_per)
     token_set_macro("l__spintent_luaset_not_decimal_period_str", not_dec_and_per)
@@ -179,8 +288,10 @@ register_tex_cmd("luafun_clean_split_arg", function(raw_string)
     token_set_macro("l__spintent_luaset_arg_above_tl", above)
     token_set_macro("l__spintent_luaset_arg_below_tl", below)
     token_set_macro("l__spintent_luaset_denom_has_number_str", denom_has_numeric)
+    token_set_macro("l__spintent_luaset_has_integer_str", has_integer)
+    token_set_macro("l__spintent_luaset_has_natural_str", has_natural)
 
-    if r_frac ~= "" and s_match(r_frac, "^0+$") then
+    if r_frac_clean ~= "" and s_match(r_frac_clean, "^0+$") then
         token_set_macro("l__spintent_luaset_dec_is_all_zeros_str", "true")
     else
         token_set_macro("l__spintent_luaset_dec_is_all_zeros_str", "false")
@@ -1096,7 +1207,7 @@ register_tex_cmd("luafun_calculate_mcd", function(raw_csv_list)
 end, { "string" })
 
 register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
-    execute_mcm_mcd_result(raw_csv_list, "l__spintent_luaset_mcm_value_tl", spintent_lcm_algorithm)
+    execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcm_luaset_mcm_value_tl", spintent_lcm_algorithm)
 end, { "string" })
 
 -- 8. SISTEMA SEXAGESIMAL (\spang)
@@ -1158,7 +1269,7 @@ local function spintent_calculate_divisors(n_val, limit)
 end
 
 local function execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
-    -- Asumimos que expl3 ya usó luafun_clean_split_arg y garantizó que raw_n
+    -- Asumimos que expl3 ya usó luafun_clean_split_and_set y garantizó que raw_n
     -- es un número natural puro. ¡Solo convertimos y calculamos!
     local num_n = tonumber(raw_n)
 
