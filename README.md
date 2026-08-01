@@ -30,11 +30,12 @@ $ luatex spintent.ins
 and move all files to appropriate locations:
 
 ```
-  spintent.sty  ->  TDS:tex/latex/spintent/spintent.sty
-  spintent.pdf  ->  TDS:doc/latex/spintent/spintent.pdf
-  README.md     ->  TDS:doc/latex/spintent/README.md
-  spintent.dtx  ->  TDS:source/latex/spintent/spintent.dtx
-  spintent.ins  ->  TDS:source/latex/spintent/spintent.ins
+  spintent.sty  ->  TDS:tex/luatex/spintent/spintent.sty
+  spintent.lua  ->  TDS:tex/luatex/spintent/spintent.lua
+  spintent.pdf  ->  TDS:doc/luatex/spintent/spintent.pdf
+  README.md     ->  TDS:doc/luatex/spintent/README.md
+  spintent.dtx  ->  TDS:source/luatex/spintent/spintent.dtx
+  spintent.ins  ->  TDS:source/luatex/spintent/spintent.ins
 ```
 
 then run `mktexlsr`. To produce the documentation with source code run `arara spintent.dtx`.
@@ -83,6 +84,7 @@ conditions of the [LaTeX Project Public License](https://www.latex-project.org/l
     ├── CTANREADME.md
     ├── spintent.dtx
     ├── spintent.ins
+    ├── spintent.lua
     ├── spintent.sty
     └── test-pkg
         ├── spintent-01.tex
@@ -96,4 +98,4 @@ conditions of the [LaTeX Project Public License](https://www.latex-project.org/l
 
 ## Copyright
 
-Copyright &#169; 2024-2026 by Pablo González L <pablgonz@educarchile.cl>
+Copyright &#169; 2026 by Pablo González L <pablgonz@educarchile.cl>

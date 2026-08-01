@@ -68,18 +68,26 @@ function update_tag(file,content,tagname,tagdate)
   end
 
   if string.match(file, "spintent.dtx") then
+    -- Documentation
     content = string.gsub(content,
                           "\\def\\fileversion{(.-)}",
                           "\\def\\fileversion{v"..tagname.."}")
     content = string.gsub(content,
                           "\\def\\filedate{(.-)}",
                           "\\def\\filedate{"..tagdate.."}")
+    -- Implementation
     content = string.gsub(content,
                           "\\ProvidesExplPackage %{spintent%} %{[^}]+%} %{[^}]+%}",
                           "\\ProvidesExplPackage {spintent} {"..tagdate.."} {"..tagname.."}")
     content = string.gsub(content,
                           "\\NeedsTeXFormat%{LaTeX2e%}%[%d%d%d%d%-%d%d%-%d%d%]",
                           "\\NeedsTeXFormat{LaTeX2e}["..ltxrelease.."]")
+  end
+  -- Static files in repo
+  if string.match(file, "spintent.lua") then
+    content = string.gsub(content,
+                          "%- v%d+.%d+%a* %[%d%d%d%d%-%d%d%-%d%d%]",
+                          "- v" ..tagname.. " [" .. tagdate .. "]")
   end
   if string.match(file, "spintent.sty") then
     content = string.gsub(content,

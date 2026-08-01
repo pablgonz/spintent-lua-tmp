@@ -1,4 +1,4 @@
-## enumext — Enumerate exercise sheets
+## spintent — Spanish parse intent
 
 Release v0.95 \[2026-31-07\]
 
@@ -12,55 +12,56 @@ using <code>&langle;multicol&rangle;</code> package.
 ## Requirements
 
 The minimum requirement is LaTeX release 2026-11-01. Loads and depend
-on updated version of [multicol](https://ctan.org/pkg/multicol).
+on updated version of [unicode-math](https://ctan.org/pkg/unicode-math).
 
 ## Installation
 
-The <code>&langle;enumext&rangle;</code> package is present in TeX Live and MiKTeX, use the
+The <code>&langle;spintent&rangle;</code> package is present in TeX Live and MiKTeX, use the
 package manager to install.
 
-For manual installation, download [enumext.zip](http://mirrors.ctan.org/macros/latex/contrib/enumext.zip) and unzip it,
+For manual installation, download [spintent.zip](http://mirrors.ctan.org/macros/latex/contrib/spintent.zip) and unzip it,
 then run:
 
 ```
-$ luatex enumext.ins
+$ luatex spintent.ins
 ```
 
 and move all files to appropriate locations:
 
 ```
-  enumext.sty  ->  TDS:tex/latex/enumext/enumext.sty
-  enumext.pdf  ->  TDS:doc/latex/enumext/enumext.pdf
-  README.md    ->  TDS:doc/latex/enumext/README.md
-  enumext.dtx  ->  TDS:source/latex/enumext/enumext.dtx
-  enumext.ins  ->  TDS:source/latex/enumext/enumext.ins
+  spintent.sty  ->  TDS:tex/luatex/spintent/spintent.sty
+  spintent.lua  ->  TDS:tex/luatex/spintent/spintent.lua
+  spintent.pdf  ->  TDS:doc/luatex/spintent/spintent.pdf
+  README.md     ->  TDS:doc/luatex/spintent/README.md
+  spintent.dtx  ->  TDS:source/luatex/spintent/spintent.dtx
+  spintent.ins  ->  TDS:source/luatex/spintent/spintent.ins
 ```
 
-then run `mktexlsr`. To produce the documentation with source code run `arara enumext.dtx`.
+then run `mktexlsr`. To produce the documentation with source code run `arara spintent.dtx`.
 
 ## Examples
 
-The file <code>&langle;enumext.pdf&rangle;</code> contains attached examples, which can be extracted
+The file <code>&langle;spintent.pdf&rangle;</code> contains attached examples, which can be extracted
 from the PDF viewer or from the command line by running:
 
 ```
-$ pdfdetach -saveall enumext.pdf
+$ pdfdetach -saveall spintent.pdf
 ```
 
 and then you can use the excellent `arara` tool to compile them.
 
 ## License
 
-The <code>&langle;enumext&rangle;</code> package may be modified and distributed under the terms and
+The <code>&langle;spintent&rangle;</code> package may be modified and distributed under the terms and
 conditions of the [LaTeX Project Public License](https://www.latex-project.org/lppl/), version 1.3c or greater.
 
 ## Contents
 
 - README.md \(this file\)
-- enumext.pdf \(documentation\)
-- enumext.dtx \(master file that produced all files\)
-- enumext.ins \(installer to extract all files\)
+- spintent.pdf \(documentation\)
+- spintent.dtx \(master file that produced all files\)
+- spintent.ins \(installer to extract all files\)
 
 ## Author and copyright
 
-Copyright &#169; 2024 — 2026 by Pablo González L <pablgonz@educarchile.cl>
+Copyright &#169; 2026 by Pablo González L <pablgonz@educarchile.cl>
