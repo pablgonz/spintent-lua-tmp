@@ -1,5 +1,5 @@
 --[[
-    Modulo script spintent.lua for spintent package
+     Lua module spintent.lua for spintent package - v0.99 [2026-06-01]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -56,19 +56,26 @@ local spintent_math_space =
 local spintent_discard_space = (S" \t\r\n" + spintent_math_space) / ""
 local spintent_opt_spaces = spintent_discard_space^0
 
--- Versión limpia: elimina espacios matemáticos para cálculos internos
+-- Eliminación de espacios matemáticos para cálculos
 local spintent_num_chunk = Cs(
     spintent_digit
     * (spintent_opt_spaces * spintent_digit)^0
 )
 
--- Versión conservada: mantiene \, y otros separadores para salida TeX
-local spintent_num_chunk_keep = Cs(
-    spintent_digit
-    * (spintent_math_space * spintent_digit + spintent_digit)^0
+local spintent_num_sep_keep = (
+        spintent_opt_spaces
+        * #spintent_digit
 )
 
--- Registro de las fucnciones para LaTeX (expl3) Max Chernoff style (https://chat.stackexchange.com/transcript/message/68993656#68993656)
+local spintent_num_chunk_keep = Cs(
+    spintent_digit
+    * (
+        ((S" \t\r\n" + spintent_math_space)^0 * #spintent_digit)
+        * spintent_digit
+    )^0
+)
+
+-- Registro de las funciones para expl3; Max Chernoff style (https://chat.stackexchange.com/transcript/message/68993656#68993656)
 
 local function register_tex_cmd(name, func, args)
     name = "__spintent_" .. name .. ":" .. ("n"):rep(#args)
@@ -107,10 +114,7 @@ local spintent_forbidden_in_extra = spintent_num_decimal + spintent_num_semi
 local spintent_custom_spunit_aliases = {}
 
 -- Un espacio matemático seguido de un dígito continúa formando parte del número.
--- Ejemplo: 1\,00\,0  => NO debe terminar como unidad.
-local spintent_extra_char =
-    (spintent_math_space * #spintent_digit) * P(false)
-    + (P(1) - spintent_forbidden_in_extra - spintent_digit)
+local spintent_extra_char = P(1) - spintent_forbidden_in_extra
 
 local spintent_number_pattern = Ct(
     Cg(spintent_num_sign^-1, "sign")
@@ -179,11 +183,24 @@ register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
     local result = spintent_number_pattern:match(raw_string) or {}
     local r_sign = result.sign or ""
 
-    -- Conservan separadores TeX del usuario
+    -- Conservan los espacios TeX del usuario
     local r_int  = result.integer or ""
     local r_frac = result.fraction or ""
 
-    -- Versiones matemáticas limpias usadas solamente para cálculos internos
+    -- Versiones limpias para cálculos
+    local r_int_clean = r_int
+    local r_frac_clean = r_frac
+
+    for _, sep in ipairs({
+    "\\,", "\\-", "\\;", "\\:", "\\!",
+    "\\>", "\\quad", "\\qquad",
+    "~", "\\ ", "\\thinspace", "\\nobreakspace"
+    }) do
+    r_int_clean  = s_gsub(r_int_clean, sep, "")
+    r_frac_clean = s_gsub(r_frac_clean, sep, "")
+    end
+
+    -- Versiones matemáticas limpias usadas para cálculos internos
     local r_int_clean  = s_gsub(r_int, "\\,", "")
     local r_frac_clean = s_gsub(r_frac, "\\,", "")
     local r_dec    = result.decimal or ""
@@ -298,7 +315,7 @@ register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
     end
 end, { "string" })
 
--- 2. UNIDADES FÍSICAS Y CIENTÍFICAS (\spunit)
+-- 2. UNIDADES FÍSÍCAS Y CIENTÍFICAS (\spunit)
 
 local spintent_units = {
     ["°K"]   = "°K",
@@ -624,7 +641,7 @@ local spintent_currency_spoken_names = {
     ["₴"]        = "grivnas",
 }
 
-register_tex_cmd("luafun_spmoney_lookup_metadata", function(currency_name)
+register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local clean = s_lower(s_match(currency_name, "^%s*(.-)%s*$") or currency_name)
     local resolved_symbol = spintent_internal_currencies[clean] or "$"
 
@@ -759,14 +776,23 @@ local spintent_spshort_dict = {
   ["cc.aa."]   = { actualtext = "comunidades autónomas",   layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
   ["p. d."]    = { actualtext = "posdata",                 layout_type = "linear_caps",    output = "P.\u{00A0}D." },
   ["p.d."]     = { actualtext = "posdata",                 layout_type = "linear_caps",    output = "P.\u{00A0}D." },
+
+-- Solo por compatibilidad (no deben llevar punto acorde a la RAE)
   ["d. n. i."] = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
   ["d.n.i."]   = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
+  ["r. u. t."] = { actualtext = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
+  ["r.u.t."]   = { actualtext = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
+  ["r. u. n."] = { actualtext = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
+  ["r.u.n."]   = { actualtext = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
 
   ["a. c."]    = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
   ["a.c."]     = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
   ["d. c."]    = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
   ["d.c."]     = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
 
+  ["dni"]      = { actualtext = "documento nacional de identidad",     layout_type = "small_caps_pure", output = "DNI" },
+  ["run"]      = { actualtext = "rol único nacional",                  layout_type = "small_caps_pure", output = "RUN" },
+  ["rut"]      = { actualtext = "rol único tributario",                layout_type = "small_caps_pure", output = "RUT" },
   ["onu"]      = { actualtext = "organización de las naciones unidas", layout_type = "small_caps_pure", output = "ONU" },
   ["rae"]      = { actualtext = "real academia española",             layout_type = "small_caps_pure", output = "RAE" },
   ["ong"]      = { actualtext = "organización no gubernamental",      layout_type = "small_caps_pure", output = "ONG" },
@@ -786,10 +812,9 @@ local spintent_spshort_dict = {
   ["rdc"]      = { actualtext = "república democrática del congo",     layout_type = "small_caps_pure", output = "RDC" },
   ["rfa"]      = { actualtext = "república federal alemana",           layout_type = "small_caps_pure", output = "RFA" },
   ["rda"]      = { actualtext = "república democrática alemana",       layout_type = "small_caps_pure", output = "RDA" },
-  ["dni"]      = { actualtext = "documento nacional de identidad",     layout_type = "small_caps_pure", output = "DNI" },
 
-  ["unicef"]   = { actualtext = "unicef",                              layout_type = "acronym_long",   output = "Unicef" },
-  ["unesco"]   = { actualtext = "unesco",                              layout_type = "acronym_long",   output = "Unesco" },
+  ["unicef"]   = { actualtext = "fondo de las naciones unidas para la infancia", layout_type = "acronym_long",   output = "Unicef" },
+  ["unesco"]   = { actualtext = "organización de las naciones unidas para la educación, la ciencia y la cultura", layout_type = "acronym_long",   output = "Unesco" },
   ["mercosur"] = { actualtext = "mercado común del sur",               layout_type = "acronym_long",   output = "Mercosur" },
   ["cepal"]    = { actualtext = "comisión económica para américa latina", layout_type = "acronym_long",  output = "Cepal" },
   ["celac"]    = { actualtext = "comunidad de estados latinoamericanos", layout_type = "acronym_long",  output = "Celac" },
@@ -888,7 +913,7 @@ local function spintent_spshort_execute_analysis(raw_input)
   if dict_match then
     token_set_macro("l__spintent_spshort_luaset_status_str", "success")
     token_set_macro("l__spintent_spshort_luaset_layout_str", dict_match.layout_type)
-    token_set_macro("l__spintent_spshort_luaset_actualtext_str", dict_match.actualtext)
+    token_set_macro("l__spintent_spshort_luaset_expanded_str", dict_match.actualtext)
 
     if dict_match.layout_type == "superscript" then
       token_set_macro("l__spintent_spshort_luaset_base_str", dict_match.base)
@@ -921,7 +946,7 @@ local function spintent_spshort_execute_analysis(raw_input)
 
     token_set_macro("l__spintent_spshort_luaset_status_str", "success")
     token_set_macro("l__spintent_spshort_luaset_layout_str", "superscript")
-    token_set_macro("l__spintent_spshort_luaset_actualtext_str", semantic_read)
+    token_set_macro("l__spintent_spshort_luaset_expanded_str", semantic_read)
     token_set_macro("l__spintent_spshort_luaset_base_str", num_part .. ".")
     token_set_macro("l__spintent_spshort_luaset_suffix_str", spintent_spshort_ord_suffixes[suffix_part])
     return
@@ -930,7 +955,7 @@ local function spintent_spshort_execute_analysis(raw_input)
   if s_match(raw_input, "^%a+$") then
     token_set_macro("l__spintent_spshort_luaset_status_str", "fallback")
     token_set_macro("l__spintent_spshort_luaset_layout_str", "none")
-    token_set_macro("l__spintent_spshort_luaset_actualtext_str", raw_input)
+    token_set_macro("l__spintent_spshort_luaset_expanded_str", raw_input)
     token_set_macro("l__spintent_spshort_luaset_output_str", raw_input)
   else
     token_set_macro("l__spintent_spshort_luaset_status_str", "error")
@@ -941,7 +966,7 @@ register_tex_cmd("luafun_spshort_process", function(raw_input)
   spintent_spshort_execute_analysis(raw_input)
 end, { "string" })
 
--- 5. SIGLOS Y NÚMEROS ROMANOS (\spsiglo)
+-- 5. SÍGLOS Y NÚMEROS ROMANOS (\spsiglo)
 
 local spintent_arab_to_roman_map = {
   {1000, "m"}, {900, "cm"}, {500, "d"}, {400, "cd"},
@@ -1210,7 +1235,7 @@ register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
     execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcm_luaset_mcm_value_tl", spintent_lcm_algorithm)
 end, { "string" })
 
--- 8. SISTEMA SEXAGESIMAL (\spang)
+-- 8. SÍSTEMA SEXAGESIMAL (\spang)
 
 local spintent_angle_sexag_pattern = Ct(
     Cg(spintent_num_chunk^-1, "a") * P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1 * P(-1)
@@ -1300,3 +1325,86 @@ end, { "string", "string" })
 register_tex_cmd("luafun_calcular_nD", function(raw_n, raw_limit)
     execute_spnM_spnD_result(raw_n, raw_limit, false)
 end, { "string", "string" })
+
+-- 10. NÚMEROS MIXTOS, code for \spmQ (see https://tex.stackexchange.com/q/764828)
+
+local spintent_factor = nil
+local glyph_id = node.id("glyph")
+local font_cache = {}
+
+local function is_digit(n)
+    return n.char >= 48 and n.char <= 57
+end
+
+local function get_scaled_font(id, factor)
+    local key = tostring(id) .. ":" .. tostring(factor)
+    if font_cache[key] then
+        return font_cache[key]
+    end
+
+    local old_font = font.getfont(id)
+    if not old_font then
+        return id
+    end
+
+    local spec = {}
+
+    for k, v in pairs(old_font.specification) do
+        spec[k] = v
+    end
+
+    spec.size = math.floor(old_font.size * factor)
+    local ok, data = pcall(fonts.definers.loadfont, spec)
+
+    if not ok or not data then
+        return id
+    end
+
+    local new_id = font.define(data)
+    font_cache[key] = new_id
+    -- texio.write_nl("new font = " .. tostring(new_id))
+    return new_id
+end
+
+local function scale_glyphs(head, factor)
+    for n in node.traverse_glyph(head) do
+        if is_digit(n) then
+            -- texio.write_nl("glyph = " .. n.char .. " font = " .. n.font)
+            local new_id = get_scaled_font(n.font, factor)
+            n.font = new_id
+            local f = font.getfont(new_id)
+            if f and f.characters then
+                local c = f.characters[n.char]
+                if c then
+                   n.width = c.width
+                   n.height = c.height
+                   n.depth = c.depth
+                end
+            end
+        end
+    end
+
+    return head
+end
+
+luatexbase.add_to_callback("post_mlist_to_hlist_filter",
+    function(head)
+        if not spintent_factor then
+            return head
+        end
+        local factor = spintent_factor
+        spintent_factor = nil
+        -- texio.write_nl("MATH factor = " .. tostring(factor))
+        return scale_glyphs(head, factor)
+    end, "spintent-math-scale"
+)
+
+register_tex_cmd("luafun_spmQ_send_factor", function(value)
+    local numerator, denominator = value:match("^(%d+)/(%d+)$")
+    if numerator and denominator then
+        spintent_factor = tonumber(numerator) / tonumber(denominator)
+    else
+        spintent_factor = tonumber(value)
+    end
+    -- texio.write_nl("LUA factor = " .. tostring(spintent_factor))
+end,{"string"})
