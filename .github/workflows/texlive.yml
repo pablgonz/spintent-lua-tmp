@@ -25,10 +25,11 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup TeX Live ${{ matrix.version }}
-        uses: uses: zauguin/install-texlive@v4
+        uses: zauguin/install-texlive@v4
         with:
-          package-file: |
-            .github/tl_packages
+          # List the required TeX Live packages in a separate file to allow reuse in
+          # different workflows.
+          package_file: .github/tl_packages
 
       - name: Install spintent package
         run: l3build install
