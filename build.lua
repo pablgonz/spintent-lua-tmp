@@ -22,7 +22,7 @@
 -- General package identification
 module     = "spintent"
 pkgversion = "0.95"
-pkgdate    = "2026-31-07"
+pkgdate    = "2026-01-08"
 ltxrelease = "2026-11-01"
 
 -- Configuration of files for build and installation
@@ -44,7 +44,6 @@ tdslocations  = {
 unpackfiles = { "spintent.ins" }
 unpackopts  = "--interaction=batchmode"
 unpackexe   = "luatex"
-
 
 -- Update package date and version
 tagfiles = {"sources/spintent.dtx", "sources/spintent.sty", "sources/spintent.lua", "sources/CTANREADME.md", "ctan.ann"}
@@ -82,6 +81,10 @@ function update_tag(file,content,tagname,tagdate)
     content = string.gsub(content,
                           "\\NeedsTeXFormat%{LaTeX2e%}%[%d%d%d%d%-%d%d%-%d%d%]",
                           "\\NeedsTeXFormat{LaTeX2e}["..ltxrelease.."]")
+    -- Module spintent.lua are in spintent.dtx
+    content = string.gsub(content,
+                          "%- v%d+.%d+%a* %[%d%d%d%d%-%d%d%-%d%d%]",
+                          "- v" ..tagname.. " [" .. tagdate .. "]")
   end
   -- Static files in repo
   if string.match(file, "spintent.lua") then
@@ -103,15 +106,10 @@ function update_tag(file,content,tagname,tagdate)
                           "Release v"..tagname.." \\["..tagdate.."\\]")
   end
   if string.match(file,"ctan.ann") then
---    content = string.gsub(content,
---                          "v%d%.%d%w? %d%d%d%d%-%d%d%-%d%d",
---                          "v"..tagname..' '..tagdate)
     content = string.gsub(content, "v%d%.%d%w?", "v"..tagname)
   end
   return content
 end
-
---]]
 
 -- Configuration for ctan
 ctanreadme = "CTANREADME.md"
@@ -130,7 +128,7 @@ uploadconfig = {
   pkg          = ctanpkg,
   version      = pkgversion,
   license      = "lppl1.3c",
-  summary      = "Enumerate exercise sheets",
+  summary      = "Spanish parse intents",
   description  =[[This package provides enumerated list environments compatible with tagging PDF for creating
                   “simple exercise sheets” along with “multiple choice questions”, storing the “answers” to these in memory using
                    multicol package.]],
@@ -144,7 +142,20 @@ uploadconfig = {
   update       = true
 }
 
---[[
+-- Typesetting spintent documentation step by step :)
+typesetfiles  = {"spintent.dtx"}
+
+function typeset(file)
+  print("** Running: arara "..file..".dtx")
+  local file = jobname(sourcefiledir.."/spintent.dtx")
+  local errorlevel = runcmd("arara "..file..".dtx", typesetdir, {"TEXINPUTS","LUAINPUTS"})
+  if errorlevel ~= 0 then
+    error("Error!!: Typesetting "..file..".dtx")
+    return errorlevel
+  end
+  return 0
+end
+
 -- Line length in 80 characters
 local function os_message(text)
   local mymax = 77 - string.len(text) - string.len("done")
@@ -152,10 +163,7 @@ local function os_message(text)
   return print(msg)
 end
 
--- Generating documentation
-typesetfiles  = {"spintent.dtx"}
-
--- Typesetting spintent documentation step by step :)
+--[[
 function docinit_hook()
   local errorlevel = (cp("*.tex", unpackdir, typesetdir) + cp("*.sty", unpackdir, typesetdir))
   if errorlevel ~= 0 then
@@ -164,18 +172,12 @@ function docinit_hook()
   end
   return 0
 end
+--]]
 
-function typeset(file)
-  print("** Running: arara "..file..".dtx")
-  local file = jobname(sourcefiledir.."/spintent.dtx")
-  local errorlevel = runcmd("arara "..file..".dtx", typesetdir, {"TEXINPUTS","LUAINPUTS"})
-  if errorlevel ~= 0 then
-    error("Error!!: Typesetting "..file..".tex")
-    return errorlevel
-  end
-  return 0
-end
 
+
+
+--[[
 -- Create check_marked_tags() function
 local function check_marked_tags()
   local f = assert(io.open("sources/spintent.dtx", "r"))
@@ -354,6 +356,8 @@ if options["target"] == "examples" then
   os.exit(0)
 end
 
+--]]
+
 -- Clean repo
 if options["target"] == "clean" then
   print("Clean files in repo")
@@ -429,4 +433,4 @@ if options["target"] == "release" then
   os.exit(0)
 end
 
---]]
+
