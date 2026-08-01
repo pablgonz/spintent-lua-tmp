@@ -70,10 +70,10 @@ function update_tag(file,content,tagname,tagdate)
   if string.match(file, "spintent.dtx") then
     content = string.gsub(content,
                           "\\def\\fileversion{(.-)}",
-                          "\\def\\fileversion{"..tagname.."}")
+                          "\\def\\fileversion{v"..tagname.."}")
     content = string.gsub(content,
                           "\\def\\filedate{(.-)}",
-                          "\\def\\filedate{v"..tagdate.."}")
+                          "\\def\\filedate{"..tagdate.."}")
     content = string.gsub(content,
                           "\\ProvidesExplPackage %{spintent%} %{[^}]+%} %{[^}]+%}",
                           "\\ProvidesExplPackage {spintent} {"..tagdate.."} {"..tagname.."}")
