@@ -345,7 +345,7 @@
     \IfBooleanTF{#1}
       {
         \pkglogo
-        \MYSortIndex{packages}{Packages :>\texttt{#2}}
+        %%%%\MYSortIndex{packages}{Packages :>\texttt{#2}}
       }
       {
         \textcolor{OrangeRed}{\texttt{#2}}%
@@ -787,9 +787,9 @@
 % \maketitle
 %
 % \begin{abstract}
-%  El paquete \mypkg*{spintent} provee una serie de utilidades para
-%  docentes de primaria y secundaria que necesiten crean documentos
-%  \texttt{PDF} \emph{accesibles} (\emph{tagged} \texttt{PDF})  en español
+%  El paquete \mypkg*{spintent} proporciona una serie de utilidades para
+%  docentes de educación primaria y secundaria que necesiten crean documentos
+%  \texttt{PDF} \emph{accesibles} (\emph{tagged} \texttt{PDF}) en español
 %  usando \hologo{LuaLaTeX}.
 % \end{abstract}
 %
@@ -797,52 +797,62 @@
 %
 % \section*{Motivación y agradecimientos}
 %
-% Desde que desarrollé \mypkg{scontents}\cite{scontents} en 2019 y
-% posteriormente \mypkg{enumext}\cite{enumext} en 2024, me he
-% interiorizando en la \emph{«accesibilidad»} \texttt{PDF}, un tema
-% bastante desconocido para mí por decirlo de alguna forma, hasta que
-% comprendí su importancia.
-% El  equipo del proyecto de \hologo{LaTeX}\cite{tagged-project} ha dado
-% pasos enormes en este campo; sin embargo, aunque hoy podamos generar y
-% validar documentos con
+% Desde que desarrollé \mypkg{scontents}\cite{scontents} en 2019 y, más
+% tarde, \mypkg{enumext}\cite{enumext} en 2024, me he ido interesando
+% cada vez más por la accesibilidad en los documentos \texttt{PDF}. Al
+% principio era un tema prácticamente desconocido para mí, pero a medida
+% que fui aprendiendo sobre él comprendí la importancia que tiene,
+% especialmente en el ámbito educativo.
+%
+% \smallskip
+%
+%
+% El equipo del proyecto de \hologo{LaTeX}\cite{tagged-project} ha
+% realizado un trabajo extraordinario en este campo. Hoy es posible
+% generar documentos etiquetados, validarlos con herramientas como
 % \href{https://dev.verapdf-rest.duallab.com}{\texttt{veraPDF}}\cite{verapdf}
-% o ver la salida con
-% \href{https://ngpdf.com}{\texttt{ngpdf}}\cite{ngpdf},  siempre me quedó
-% la duda: ¿Está \mynvmath{NVDA}\cite{nvda} junto a
-% \mynvmath{MathCAT}\cite{mathcat} verbalizando exactamente lo que quiero?
+% o inspeccionar su estructura con
+% \href{https://ngpdf.com}{\texttt{ngpdf}}\cite{ngpdf}. Sin embargo,
+% siempre me quedó una duda: cuando un estudiante utiliza \mynvmath{NVDA}\cite{nvda}
+% junto con \mynvmath{MathCAT}\cite{mathcat}, ¿realmente escucha lo que
+% el o la docente quiso expresar?
 %
 % \smallskip
 %
-% Si generas un documento accesible siguiendo las instrucciones de \href{https://latex3.github.io/tagging-project/}{\texttt{The LaTeX Tagged PDF Project}}
-% y luego ejecutas \mynvmath{NVDA/MathCAT} uno se percata de que la
-% verbalización de la salida no es lo que esperas, lo cual es
-% esperable nuestro idioma tiene sus normas y reglas acorde al contexto
-% en el cual se dan y si estamos trabajando en matemáticas se complica
-% aún más.
+% Basta con generar un documento accesible siguiendo las recomendaciones
+% de \href{https://latex3.github.io/tagging-project/}{\texttt{The LaTeX
+% Tagged PDF Project}} y escucharlo con \mynvmath{NVDA/MathCAT} para darse
+% cuenta de que, en muchos casos, la \emph{verbalización} no coincide con lo
+% que uno espera. Esto no resulta extraño: las reglas del español, y en
+% particular el lenguaje matemático, dependen en gran medida del contexto
+% en que se utilizan.
 %
 % \smallskip
 %
-% El objetivo del paquete \mypkg*{spintent} es dar al docente  las
-% herramientas necesarias para poder controlar el \emph{«contexto»}, demarcando
-% el código fuente \hologo{LaTeX} para generar un archivo \texttt{PDF}
-% \emph{«accesible»} para \mynvmath{NVDA/MathCAT} que tenga una
-% verbalización adecuada para el estudiante.
+% El objetivo de \mypkg*{spintent} nace precisamente de esta necesidad:
+% proporcionar herramientas para que el o la docente pueda indicar
+% explícitamente el contexto de determinadas expresiones matemáticas
+% desde el propio código fuente de \hologo{LaTeX}, de modo que el
+% documento \texttt{PDF} resultante no solo sea \emph{accesible}, sino que
+% también produzca una \emph{verbalización más natural} y adecuada para el
+% estudiante al utilizar \mynvmath{NVDA/MathCAT}
 %
 % \smallskip
 %
-% El nuevo estándar \texttt{PDF} |2.0|\cite{pdf20,pdf20-impact, pdf20-errata},
-% las especificaciones de \texttt{WTPDF}\cite{wtpdf} y la publicación más
-% reciente de \href{https://pdfa.org/resource/best-practice-guide-math-in-PDF/}%
-% {\texttt{PDF} Association} del archivo «Best Practice Guide: Math in
-% \texttt{PDF}»\cite{bpg-math} establece que el camino correcto para la
-% \emph{accesibilidad matemática} es usar \mynvmath{MathML} y que mejor que usar \hologo{LuaLaTeX}.
-%
+% El nuevo estándar \texttt{PDF} |2.0|\cite{pdf20,pdf20-impact,pdf20-errata},
+% las especificaciones de \texttt{WTPDF}\cite{wtpdf} y la guía más reciente de la
+% \texttt{PDF} Association, «Best Practice Guide: Math in
+% \texttt{PDF}»\cite{bpg-math},
+% coinciden en que el camino hacia una accesibilidad matemática de calidad
+% pasa por el uso de \mynvmath{MathML}. En ese contexto,
+% \hologo{LuaLaTeX} ofrece una plataforma especialmente adecuada para
+% incorporar esta tecnología.
 %
 % \thispagestyle{plain}
 %
 % \section*{Licencia y requerimientos}
 %
-% El paquete \mypkg*{spintent} carga y requiere el paquete \mypkg{luamml}\cite{luamml}
+% El paquete \mypkg*{spintent} carga y requiere el paquete \mypkg{unicode-math}\cite{unicode-math}
 % y que se ejecute bajo \hologo{LuaLaTeX} por lo que es necesario contar con
 % una distribución moderna de \hologo{TeX} como \hologo{TeX} Live 2026. Ha sido probado con las clases estándar
 % proporcionadas por \hologo{LaTeX}: \myclass{book}, \myclass{report}, \myclass{article} y
@@ -853,10 +863,12 @@
 % Se otorga permiso para copiar, distribuir y/o modificar este paquete bajo
 % los términos de \LaTeX{} Project Public License (\textsc{lppl}), versión
 % 1.3 o posterior (\url{https://www.latex-project.org/lppl.txt}). El paquete
-% tiene la condición de mantenido al estilo \emph{«A Work in Progress\footnote{\emph{«A Work in
-% Progress»} de Neil Peart, baterista legendario de RUSH
-% ($\ast$~1952--\textdied~2020), que me acompaña mientras desarrollo
-% \mypkg*{spintent}.}»}.
+% tiene la condición de mantenido al estilo \emph{«A Work in Progress\footnote{%
+% \emph{A Work in Progress} es un álbum en vivo de Neil Peart
+% ($\ast$~1952--\textdied~2020), baterista y principal letrista de Rush.
+% El nombre no pretende formar parte de la terminología de la
+% \textsc{lppl}; simplemente describe el estado permanente de este paquete
+% mientras sigo aprendiendo sobre \emph{accesibilidad} en \texttt{PDF}.}»}
 %
 % \smallskip
 %
@@ -894,12 +906,13 @@
 %
 % \section{Descripción}
 %
-% El paquete \mypkg*{spintent} se puede traducir como \emph{«Spanish parse
-% intent»} o como \emph{«School parse intent»} y es lo que trata de
-% representar el enfoque para los usuarios para los que fue creado:
-% \emph{«Docentes de primaria y secundaria»}.
+% El nombre \mypkg*{spintent} puede entenderse como \emph{«Spanish Parse
+% Intent»} o también como \emph{«School Parse Intent»}. Ambas
+% interpretaciones reflejan el objetivo del paquete y el público para el
+% que fue diseñado: docentes de educación primaria y secundaria.
+%
 % Está pensado para crear \emph{«apuntes»}, \emph{«hojas de ejercicios»},
-% \emph{«clases escritas»} enfocadas en el alumno objetivo. Solo un docente sabe cual es
+% \emph{«clases escritas»} enfocadas en el estudiante. Solo un docente sabe cual es
 % el nivel de aprendizaje del estudiante. El paquete intenta sobrescribir
 % muchas de las reglas dictadas por la heurística de \mynvmath{NVDA/MathCAT}
 % teniendo esto presente.
@@ -1770,7 +1783,7 @@
 % Establece la \emph{verbalización del argumento} \mymarg{comandos \textnormal{\hologo{LaTeX}}}
 % de la nueva \mymarg{abreviatura}, \mymarg{acrónimo} o \mymarg{número ordinal} para \mynvmath{NVDA}.
 % El valor de esta llave \emph{siempre} debe pasarse entre `|{ }|’. Por ejemplo:
-% |\spshort[small-caps=false, read-arg={octavo}]{8.\textsuperscript{\emph{avo}}}|
+% |\spshort[read-arg={octavo}]{8.\textsuperscript{\emph{avo}}}|
 % creará una nueva \mymarg{abreviatura} que imprimirá `8.\textsuperscript{\emph{avo}}'
 % en la salida \texttt{PDF} y \mynvmath{NVDA} verbalizará \emph{«octavo»}.
 %
@@ -1780,12 +1793,12 @@
 % \smallskip
 % Establece si se usarán \emph{versalitas} para imprimir \mymarg{acrónimos}
 % y para la \emph{«letra volada»} en \mymarg{abreviaturas} y \mymarg{números ordinales}
-% respetando las reglas de la \textsc{rae} para su uso de estas. Si se establece en |true|,
+% respetando las reglas de la \textsc{rae} para el uso de estas. Si se establece en |true|,
 % las abreviaturas con mayúscula como \texttt{EE.~UU.} y los acrónimos
 % de cinco o más letras como \texttt{Unicef} no se verán afectados; si se
-% establece en |false|, no se aplicarán \emph{versalitas}.
-%^^A El valor de esta llave se aplica sobre \mymarg{comandos \hologo{LaTeX}}
-%^^A cuando se establece en |true|.
+% establece en |false|, no se aplicarán \emph{versalitas}. Por ejemplo:
+% |\spshort[small-caps=true]{dr.a}| imprimirá `Dr.\textsuperscript{\textsc{a}}'
+% en la salida \texttt{PDF} y \mynvmath{NVDA} verbalizará \emph{«doctora»}.
 %
 % \subsubsection{Argumentos para \cs[no-index]{spshort}}\label{subsec:arg-spshort}
 %
@@ -2201,7 +2214,7 @@
 % |multiplicado-por|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«multiplicado por»}
 % y si se establece en |veces|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«veces»}.
 %
-% \keyexampcmd*{read-only}{valor prohibido}{no usado}[spmsym]
+% \keyexampcmd{not-print}{true \textnormal{\textcolor{lightgray}{\textbar}} false}{false}[spmsym]
 % \smallskip
 % Deshabilita la \emph{impresión} del \emph{símbolo de multiplicación}.
 % Cuando se establece esta llave, \mynvmath{NVDA/MathCAT}
@@ -2696,10 +2709,18 @@
 %     \ics*{spmQ}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
 %   \end{syntax}
 %   El comando \ics*{spmQ} trabaja en \emph{modo matemático} y recibe
-%   tres \emph{argumentos} obligatorios: \mymarg{número entero}, \mymarg{numerador}
-%   y \mymarg{denominador}. Los procesa internamente bajo el comando |\spnum|
-%   y devuelve un \emph{«número mixto»}. Este comando está dedicado exclusivamente al
-%   manejo de \emph{«números mixtos»} y a cómo los verbaliza \mynvmath{NVDA/MathCAT}.
+%   \emph{tres argumentos} obligatorios: \mymarg{número entero}, \mymarg{numerador}
+%   y \mymarg{denominador}, los procesa internamente y devuelve un \emph{«número mixto»}.
+%^^A Los procesa internamente bajo el comando |\spnum| y devuelve un \emph{«número mixto»}.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%  |$\spmQ{2}{5}{7}$| imprimirá `$\scalerel{2}{\frac{5}{7}}$'
+%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%  \emph{«dos y cinco séptimos»}.
+%
+%^^A Este comando está dedicado exclusivamente al manejo de \emph{«números mixtos»} y a cómo los verbaliza \mynvmath{NVDA/MathCAT}.
 % \end{function}
 %
 % \smallskip
@@ -2983,22 +3004,6 @@
 %    \end{macrocode}
 %
 % \subsection{Declaration of the package}
-%
-% \iffalse
-%<*example>
-% \fi
-\begin{examplecode}[frame=single]
-% \DocumentMetadata{...}
-\documentclass{article}
-\usepackage[spanish]{babel}
-\usepackage[osf,nomath,mono=false]{libertinus-otf}
-\usepackage[osf,semibold]{sourcecodepro}
-\usepackage[no-text]{fourier-otf}
-\usepackage{spintent}
-\end{examplecode}
-% \iffalse
-%</example>
-% \fi
 %
 % First we will make sure we have a minimum (super updated) version of
 % \hologo{LaTeX} to work correctly.
@@ -5179,11 +5184,7 @@
   }
 \cs_new_protected:Nn \@@_spshort_render_bypass:n
   {
-    \@@_spshort_tag_span:en { \l_@@_spshort_read_arg_str }
-      {
-        \bool_if:NTF \l_@@_spshort_smallcaps_bool
-          { \textsc{#1} } { #1 }
-      }
+    \@@_spshort_tag_span:en { \l_@@_spshort_read_arg_str } { #1 }
   }
 \cs_new_protected:Nn \@@_spshort_render_error:n
   {

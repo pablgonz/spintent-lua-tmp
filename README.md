@@ -3,15 +3,13 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date/pablgonz/spintent)
 ![GitHub last commit](https://img.shields.io/github/last-commit/pablgonz/spintent)
 
-## Description
+## Descripción
 
-This package provides enumerated list environments compatible with
-_tagging_ PDF for creating “simple exercise sheets” along with
-“multiple choice questions”, storing the “answers” to these in memory
-using <code>&langle;multicol&rangle;</code> package.
+El paquete <code>&langle;spintent&rangle;</code> proporciona una serie de utilidades para docentes de educación
+primaria y secundaria que necesiten crear documentos `PDF` _accesibles_ \(_tagged_ PDF\)
+en español utilizando `LuaLaTeX`.
 
-
-## Requirements
+## Requerimientos
 
 The minimum requirement is `LaTeX` release 2026-11-01. Loads and depend on updated version of [unicode-math](https://ctan.org/pkg/unicode-math).
 
