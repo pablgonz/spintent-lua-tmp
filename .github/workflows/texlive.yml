@@ -13,6 +13,9 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    name: Update TeX Live cache
+    outputs:
+      cache_key: ${{ steps.texlive.outputs.cache_key }}
     strategy:
       matrix:
         version:
@@ -38,12 +41,11 @@ jobs:
         run: l3build ${{ matrix.command }}
 
       # If fail some test, upload test and log file
-      - name: Upload error files
-        uses: actions/upload-artifact@v4
-        if: failure()
+      - name: Archive failed test output
+        # what does this do exactly? << runs even if build fails
+        if: ${{ always() }}
+        uses: zauguin/l3build-failure-artifacts@v1
         with:
-          name: github-error-files
-          path: |
-            ./*.log
-            ./*.tex
-          retention-days: 2
+          name: testfiles-fillwith
+          # Decide how long to keep the test output artifact:
+          retention-days: 3
