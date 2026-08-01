@@ -17,7 +17,6 @@ colorprofiles
 latex-lab
 tagpdf
 bookmark
-# pdfmanagement-testphase
 pdfmanagement
 luamml
 xcolor
@@ -43,11 +42,12 @@ atveryend
 auxhook
 babel
 babel-english
+babel-spanish
 bigintcalc
 bitset
 booktabs
 caption
-catchfile
+# catchfile
 cm
 collectbox
 colordoc
@@ -71,7 +71,7 @@ filehook
 float
 fontawesome5
 fontspec
-fvextra
+# fvextra
 geometry
 gettitlestring
 grfext
@@ -106,8 +106,8 @@ ltxcmds
 lualatex-math
 microtype
 unicode-math
-scontents
-siunitx
+# scontents
+# siunitx
 mwe
 ragged2e
 pdfescape
