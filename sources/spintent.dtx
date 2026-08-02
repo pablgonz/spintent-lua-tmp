@@ -868,7 +868,7 @@
 % ($\ast$~1952--\textdied~2020), baterista y principal letrista de Rush.
 % El nombre no pretende formar parte de la terminología de la
 % \textsc{lppl}; simplemente describe el estado permanente de este paquete
-% mientras sigo aprendiendo sobre \emph{accesibilidad} en \texttt{PDF}.}»}
+% mientras sigo aprendiendo sobre \emph{accesibilidad} en \texttt{PDF}.}»}.
 %
 % \smallskip
 %
@@ -6949,9 +6949,8 @@
 \msg_new:nnnn { spintent } { spnz-not-integer }
   { The~value~'#1'~is~not~a~valid~integer. }
   {
-    Command~\spnZ~only~accepts~integers~without~decimals~or~units.\\
-    For~decimal~numbers~or~quantities~with~units,~use~\spnum~or~\spunit.
-  }
+    Command~\token_to_str:N \spnZ~only~accepts~integers.\\
+   }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -7044,6 +7043,8 @@
 %     \l_@@_spmQ_join_word_str,
 %     \l_@@_spmQ_math_style_tl,
 %     \l_@@_spnQ_intent_read_sign_str,
+%     \l_@@_spnQ_wrap_parens_l_tl,
+%     \l_@@_spnQ_wrap_parens_r_tl
 %     \l_@@_spmQ_part_int_box,
 %     \l_@@_spmQ_part_frac_box,
 %     \l_@@_spmQ_raise_part_int_dim,
@@ -7071,6 +7072,12 @@
 %
 % \smallskip
 %
+% The variable \mycs{l_@@_spnQ_wrap_parens_l_tl} and \mycs{l_@@_spnQ_wrap_parens_r_tl}
+% stores the size parens set by the function \mycs{@@_spmQ_set_wrap_parens_size:}
+% used by the key \mykey{wrap-parens}.
+%
+% \smallskip
+%
 % The remaining variables are used to scale the integer part of the mixed
 % number used by the functions \mycs{@@_spmQ_scale_int:nn},
 % \mycs{@@_spmQ_scale_int:nnn} and \mycs{@@_spmQ_print_scaled_int:}.
@@ -7078,6 +7085,8 @@
 \str_new:N \l_@@_spmQ_join_word_str
 \tl_new:N  \l_@@_spmQ_math_style_tl
 \str_new:N \l_@@_spnQ_intent_read_sign_str
+\tl_new:N  \l_@@_spnQ_wrap_parens_l_tl
+\tl_new:N  \l_@@_spnQ_wrap_parens_r_tl
 \box_new:N \l_@@_spmQ_part_int_box
 \box_new:N \l_@@_spmQ_part_frac_box
 \dim_new:N \l_@@_spmQ_raise_part_int_dim
@@ -7095,23 +7104,24 @@
 %   when the integer part is not actually an integer.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spmQ-zero-denominator }
-  { Zero~denominator~in~\spmQ. }
+  { Zero~denominator~in~\token_to_str:N \spmQ. }
   {
     The~denominator~of~a~fraction~cannot~be~zero.\\
-    Please~provide~a~valid~non-zero~integer~argument.
   }
 \msg_new:nnnn { spintent } { spmQ-not-integer }
   { The~value~'#1'~is~not~a~valid~integer. }
   {
-    Command~\token_to_str:N \spnQ~only~accepts~integers.\\
+    Command~\token_to_str:N \spnQ \c_space_tl only~accepts~integers.\\
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spmQ}}
 %
-% \begin{macro}[int]{join-word, print-dfrac, unknown}
-%   Now we add the keys \mykey[spmQ]{join-word} and \mykey[spmQ]{print-dfrac}.
+% \begin{macro}[int]{join-word, use-spnZ,wrap-parens, read-parens,
+%                    print-dfrac, unknown}
+%   Now we add the keys \mykey[spmQ]{join-word}, \mykey[spmQ]{use-spnZ},
+%   \mykey[spmQ]{wrap-parens}, \mykey[spmQ]{read-parens} and \mykey[spmQ]{print-dfrac}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spmQ }
   {
@@ -7130,9 +7140,18 @@
     join-word/unknown .code:n =
       \msg_error:nneee { spintent } { unknown-choice }
         { join-word } { entero, ~enteros, ~y } { \exp_not:n {#1} },
+    use-spnZ          .bool_set:N = \l_@@_spmQ_use_spnZ_bool,
+    use-spnZ          .initial:n = true,
+    use-spnZ          .value_required:n = true,
     print-dfrac       .bool_set:N = \l_@@_spmQ_print_dfrac_bool,
     print-dfrac       .initial:n = false,
     print-dfrac       .value_required:n = true,
+    wrap-parens       .bool_set:N = \l_@@_spnQ_wrap_parens_bool,
+    wrap-parens       .initial:n  = false,
+    wrap-parens       .value_required:n = true,
+    read-parens       .bool_set:N = \l_@@_spnQ_read_parens_bool,
+    read-parens       .initial:n  = true,
+    read-parens       .value_required:n = true,
     unknown           .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spmQ }
@@ -7144,11 +7163,125 @@
 %
 % \subsubsection{Internal functions for \cs[no-index]{spmQ}}
 %
+% \begin{macro}[int]{\@@_spmQ_match_sign:,}
+%  The function \mycs{@@_spmQ_match_sign:} captures the `$\mathcolor{red}{+}$' or
+% `$\mathcolor{red}{-}$' for integer part sign and sets the |:intent| to
+% |\MathMLintent| \mymarg{argument} if present.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spmQ_match_sign:
+  {
+    \tl_if_empty:NF \l_@@_luaset_sign_tl
+      {
+        \str_if_eq:VnTF \l_@@_luaset_sign_tl { + }
+          {
+            \str_set:Nn \l_@@_spnQ_intent_read_sign_str { _más:prefix $(e) }
+          }
+          {
+            \str_set:Nn \l_@@_spnQ_intent_read_sign_str { _menos:prefix $(e) }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spmQ_set_wrap_parens_size:,}
+%   The function \mycs{@@_spmQ_set_wrap_parens_size:} capture the current
+%   \emph{mathematical style} using the primitive |\mathstyle| from
+%   \hologo{LuaTeX} and sets the variables \cs{l_@@_spnQ_wrap_parens_l_tl}
+%   and \cs{l_@@_spnQ_wrap_parens_r_tl} with the appropriate size for the
+%   parentheses.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spmQ_set_wrap_parens_size:
+  {
+    \int_case:nnF { \mathstyle }
+      {
+        { 0 }
+          {
+            % \displaystyle
+            \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
+          }
+        { 1 }
+          {
+            % \displaystyle
+            \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
+          }
+        { 2 }
+          {
+            % \textstyle
+            \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
+          }
+        { 3 }
+          {
+            % \textstyle
+            \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
+          }
+      }
+      {
+        % \scriptstyle y \scriptscriptstyle
+        \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \lparen }
+        \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \rparen }
+      }
+%    \end{macrocode}
+%   If the key \mykey{print-dfrac} is active, we must reset the variables
+%   \cs{l_@@_spnQ_wrap_parens_l_tl} and \cs{l_@@_spnQ_wrap_parens_r_tl}.
+%    \begin{macrocode}
+    \bool_if:NT \l_@@_spmQ_print_dfrac_bool
+      {
+        \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
+        \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spmQ_start_wrap_parens:,
+%                    \@@_spmQ_stop_wrap_parens:}
+%   The functions \mycs{@@_spmQ_start_wrap_parens:} and \mycs{@@_spmQ_stop_wrap_parens:}
+%   print with the appropriate size for the parentheses set by the key
+%   \mykey{wrap-parens}. Only if the variable \cs{l_@@_spnQ_read_parens_bool}
+%   handled by the key \mykey{read-parens} is false, we will execute
+%   |\MathMLintent{:silent}|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spmQ_start_wrap_parens:
+  {
+    \bool_if:NT \l_@@_spnQ_wrap_parens_bool
+      {
+        \@@_spmQ_set_wrap_parens_size:
+        \bool_if:NTF \l_@@_spnQ_read_parens_bool
+          {
+            \l_@@_spnQ_wrap_parens_l_tl
+          }
+          {
+            \MathMLintent { :silent } { \l_@@_spnQ_wrap_parens_l_tl }
+          }
+      }
+  }
+\cs_new_protected:Nn \@@_spmQ_stop_wrap_parens:
+  {
+    \bool_if:NT \l_@@_spnQ_wrap_parens_bool
+      {
+        \@@_spmQ_set_wrap_parens_size:
+        \bool_if:NTF \l_@@_spnQ_read_parens_bool
+          {
+            \l_@@_spnQ_wrap_parens_r_tl
+          }
+          {
+            \MathMLintent { :silent } { \l_@@_spnQ_wrap_parens_r_tl }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}[int]{\@@_spmQ_wrap_math:n, \@@_spmQ_wrap_math:V,
 %                    \@@_spmQ_capture_math_style:}
-% The functions \mycs{@@_spmQ_wrap_math:n}, \mycs{@@_spmQ_wrap_math:V}
-% and \mycs{@@_spmQ_capture_math_style:} capture the current
-% \emph{mathematical style} using the primitive |\mathstyle| from \hologo{LuaTeX}.
+%   The functions \mycs{@@_spmQ_wrap_math:n} and \mycs{@@_spmQ_capture_math_style:}
+%   capture the current \emph{mathematical style} using the primitive
+%  |\mathstyle| from \hologo{LuaTeX}.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_wrap_math:n
   {
@@ -7176,65 +7309,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmQ_match_sign:,}
-%  The function \mycs{@@_spmQ_match_sign:} captures the `$\mathcolor{red}{+}$' or
-% `$\mathcolor{red}{-}$' for integer part sign and sets the |:intent| to
-% |\MathMLintent| \mymarg{argument} if present.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_match_sign:
-  {
-    \tl_if_empty:NF \l_@@_luaset_sign_tl
-      {
-        \str_if_eq:VnTF \l_@@_luaset_sign_tl { + }
-          {
-            \str_set:Nn \l_@@_spnQ_intent_read_sign_str { más:prefix $(e) }
-          }
-          {
-            \str_set:Nn \l_@@_spnQ_intent_read_sign_str { menos:prefix $(e) }
-          }
-      }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spmQ_print_int:nnn}
-%   The function \mycs{@@_spmQ_print_int:nnn} takes as its arguments the
-%   integer part passed in `|#1|' and the fractional parts in `|#2|' and
-%   `|#3|'. First, the function \mycs{@@_luafun_clean_split_and_set:n}
-%   executes on `|#1|' and checks the status of the variable
-%   \mycs{l_@@_luaset_has_integer_str}. If it is |true|, the function
-%   \cs{@@_spmQ_match_sign:} executes; otherwise, it returns an invalid input
-%   error. Then, the function \cs{@@_spmQ_scale_int:nn} scales the integer
-%   part stored in the variable \mycs{l_@@_luaset_part_int_tl} according to
-%   the values passed in `|#2|' and `|#3|'.
-%
-%   \smallskip
-%
-%   Finally, it checks if the variable \mycs{l_@@_luaset_sign_tl} is \emph{empty}
-%   and calls the function \cs{@@_spmQ_print_scaled_int:} to print the
-%   scaled integer part; otherwise, it uses |\MathMLintent| to print the
-%   sign first and then the scaled integer part.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_print_int:nnn
-  {
-    \@@_luafun_clean_split_and_set:n { \exp_not:n {#1} }
-    \str_if_eq:VnTF \l_@@_luaset_has_integer_str { true }
-      { \@@_spmQ_match_sign: }
-      { \msg_error:nnn { spintent } { spnQ-not-integer } {#1} }
-    \@@_spmQ_scale_int:nn {#2} {#3}
-    \str_if_empty:NTF \l_@@_luaset_sign_tl
-      { \@@_spmQ_print_scaled_int: }
-      {
-        \MathMLintent { \l_@@_spnQ_intent_read_sign_str }
-          {
-            \l_@@_luaset_sign_tl \@@_invisible_sep:
-            \MathMLarg { e } { \@@_spmQ_print_scaled_int: }
-          }
-      }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
 % \begin{macro}[int]{\@@_spmQ_scale_int:nn}
 %   The function \mycs{@@_spmQ_scale_int:nn} scales the integer part of the
 %   mixed number. First, it executes \mycs{@@_spmQ_capture_math_style:} to
@@ -7245,7 +7319,7 @@
 %   analyzing the state of \cs{l_@@_spmQ_print_dfrac_bool}, controlled by
 %   the key \mykey{print-dfrac}.
 %    \begin{macrocode}
-\cs_generate_variant:Nn \@@_luafun_spmQ_send_factor:n { V }
+\cs_generate_variant:Nn \@@_luafun_spmQ_send_factor:n { V } % mover arriba
 \cs_new_protected:Nn \@@_spmQ_scale_int:nn
   {
     \@@_spmQ_capture_math_style:
@@ -7270,8 +7344,8 @@
         \box_ht_plus_dp:N \l_@@_spmQ_part_frac_box
       }
 %    \end{macrocode}
-%   Now we calculate the scaling factor and store it in the variable
-%   \mycs{l_@@_spmQ_int_scale_val_tl} to pass it to the function
+%   Now we calculate the scaling factor and store it in
+%   \cs{l_@@_spmQ_int_scale_val_tl} to pass it to the function
 %   \mycs{@@_luafun_spmQ_send_factor:V} defined in the Lua module \myluamod{}
 %   which will be responsible for scaling the font.
 %    \begin{macrocode}
@@ -7312,15 +7386,43 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}[int]{\@@_spmQ_print_spnZ_dfrac:nn,}
+%   The function \mycs{@@_spmQ_print_spnZ_dfrac:nn} checks the state of the
+%   variable \cs{l_@@_spmQ_use_spnZ_bool} handled by the key \mykey{use-spnZ}
+%   along with the variable \cs{l_@@_spmQ_print_dfrac_bool} handled by
+%   the key \mykey{print-dfrac}. According to their values, it prints
+%   |\frac| or |\dfrac| using |\spnZ| when necessary.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spmQ_print_spnZ_dfrac:nn
+  {
+    \bool_if:NTF \l_@@_spmQ_use_spnZ_bool
+      {
+        \use:c { \bool_if:NT \l_@@_spmQ_print_dfrac_bool { d } frac }
+          { \spnZ { #1 } } { \spnZ { #2 } }
+      }
+      {
+        \use:c { \bool_if:NT \l_@@_spmQ_print_dfrac_bool { d } frac }
+          { #1 } { #2 }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}[int]{\@@_spmQ_render:nnn}
 %   The function \mycs{@@_spmQ_render:nnn} takes three arguments: the
 %   integer part `|#1|', the numerator `|#2|', and the denominator `|#3|'.
-%   It forwards these parts down to |\spnZ| to verify mathematical validity,
-%   selects and embeds localized \emph{\enquote{join-words}} set by \mykey{join-words} key
-%   inside \mynvmath{MathML} and prints the fractional part. The rendering
-%   of the fraction uses either |\dfrac| or |\frac| depending on the
-%   boolean variable \cs{l_@@_spmQ_print_dfrac_bool} managed by the key
-%   \mykey{print-dfrac}.
+%   First, we call the function \mycs{@@_spmQ_print_int:nnn} which will
+%   scale the integer part passed in `|#1|' and print it. Then, we inject
+%   the \enquote{word} that \emph{joins} the integer part with the fraction
+%   handled by the key \mykey{join-word}.
+%
+% \smallskip
+%
+%   Finally, we call the function \mycs{@@_spmQ_print_spnZ_dfrac:nn} which
+%   is responsible for printing the fraction using the keys \mykey{print-dfrac}
+%   and \mykey{use-spnZ}, then executes the function \cs{@@_spmQ_stop_wrap_parens:}
+%   handled by the key \mykey{wrap-parens} to close the parentheses if they
+%   are active.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_render:nnn
   {
@@ -7340,12 +7442,51 @@
             \MathMLintent { _y } { \@@_invisible_sep: }
           }
       }
-    \bool_if:NTF \l_@@_spmQ_print_dfrac_bool
+    \@@_spmQ_print_spnZ_dfrac:nn { #2 } { #3 }
+    \@@_spmQ_stop_wrap_parens:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spmQ_print_int:nnn}
+%   The function \mycs{@@_spmQ_print_int:nnn} takes as its arguments the
+%   integer part passed in `|#1|' and the fractional parts in `|#2|' and
+%   `|#3|'. First, the function \mycs{@@_luafun_clean_split_and_set:n}
+%   executes on `|#1|' and checks the status of the variable
+%   \mycs{l_@@_luaset_has_integer_str}. If it is |true|, the function
+%   \cs{@@_spmQ_match_sign:} executes; otherwise, it returns an invalid input
+%   \enquote{error}. Then, the function \cs{@@_spmQ_scale_int:nn} scales
+%   the integer part stored in the variable \cs{l_@@_luaset_part_int_tl}
+%   according to the values passed in `|#2|' and `|#3|'.
+%
+%   \smallskip
+%
+%   Finally, it checks if the variable \mycs{l_@@_luaset_sign_tl} is \emph{empty}
+%   and calls the functions \cs{@@_spmQ_start_wrap_parens:} handled by
+%   the key \mykey{wrap-parens} to open the parentheses and
+%   \cs{@@_spmQ_print_scaled_int:} to print the scaled integer part; otherwise,
+%   it uses |\MathMLintent| to print the parentheses and sign first, then
+%   the scaled integer part.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spmQ_print_int:nnn
+  {
+    \@@_luafun_clean_split_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnTF \l_@@_luaset_has_integer_str { true }
+      { \@@_spmQ_match_sign: }
+      { \msg_error:nnn { spintent } { spnQ-not-integer } {#1} }
+    \@@_spmQ_scale_int:nn {#2} {#3}
+    \str_if_empty:NTF \l_@@_luaset_sign_tl
       {
-        \dfrac { \spnZ { #2 } } { \spnZ { #3 } }
+        \@@_spmQ_start_wrap_parens:
+        \@@_spmQ_print_scaled_int:
       }
       {
-        \frac { \spnZ { #2 } } { \spnZ { #3 } }
+        \MathMLintent { \l_@@_spnQ_intent_read_sign_str }
+          {
+            \@@_spmQ_start_wrap_parens:
+            \l_@@_luaset_sign_tl \@@_invisible_sep:
+            \MathMLarg { e } { \@@_spmQ_print_scaled_int: }
+          }
       }
   }
 %    \end{macrocode}
@@ -7356,12 +7497,15 @@
 %   the optional \mymeta{keys} `|#1|', the integer `|#2|', the numerator `|#3|',
 %   and the denominator `|#4|'. First sets the optional \mymeta{keys}
 %   from `|#1|', then, processes the denominator input in `|#4|' using
-%   \mycs{@@_luafun_clean_split_and_set:n} and checks the status of
-%   \mycs{l_@@_luaset_has_integer_str}. If the status of this variable
-%   is |true| and the integer part is exactly zero, it issues the
-%   |spmQ-zero-denominator| error. Otherwise, if the status is |false|
-%   or the integer part is non-zero, it calls \mycs{@@_spmQ_render:nnn}
-%   to format the fraction, leaving further validation to |\spnZ|.
+%   \mycs{@@_luafun_clean_split_and_set:n}.
+%
+%   \smallskip
+%
+%   Now checks the status of \mycs{l_@@_luaset_has_integer_str}. If the
+%   status of this variable is |true| and the integer part is exactly zero,
+%   it issues the |spmQ-zero-denominator| \enquote{error}. Otherwise, if
+%   the status is |false| or the integer part is \emph{non-zero}, it calls
+%   the function \mycs{@@_spmQ_render:nnn} to format the \emph{\enquote{mixed number}}.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_process:nnnn
   {
