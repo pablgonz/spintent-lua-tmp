@@ -569,7 +569,8 @@
                     triangleright, diamond, circ, parleft, star, centering, ast, sptext, luamml_attribute, luamml_annotate, href, %
                     mathord, invisibletimes, tl_rescan, tl_set_rescan, MathMLintent, parallel, mathstyle, setmathfont, %
                     .choice, .code, .meta, text, textsuperscript, cs_to_str, c_zero_skip, MathMLarg, keys_define, %
-                    mode_leave_vertical, Umathchardef, _str, _tl, mathrm, mathbf, textstyle, addfontfeatures,   },%
+                    mode_leave_vertical, Umathchardef, _str, _tl, mathrm, mathbf, textstyle, addfontfeatures, %
+                    left, right, Uleft, Uright,  },%
 % Other words 3
     keywordstyle  = [3]{\color{optcolor!85}},%
     keywords      = [3]{document,article,setlength,pagestyle,definecolor, chapter,},%,
@@ -577,7 +578,7 @@
     keywordstyle  = [4]{\color{pkgcolor}},%
     keywords      = [4]{spintent,spnum, spunit, spmoney, spshort, spdiv, spang, sptime, spdate, spsiglo, spmcm, spnD, spnM, %
                     spmcd, spmul, spread, spdsym, spmsym, spnewunit, spunitalias, spnZ, spmQ , setspintent, spreadsym,
-                    babel, libertinus-otf, fourier-otf, sourcecodepro, hyperref, Erewhon-Math, },%
+                    babel, libertinus-otf, fourier-otf, sourcecodepro, hyperref, Erewhon-Math, spusep, },%
 % Reserved words 5 (plain TeX or internal)
     keywordstyle  = [5]{\color{red}},%
     keywords      = [5]{makeatletter,makeatother,let,verb,def,prevdepth,glue, if@minipage,% if@noitemarg
@@ -592,7 +593,7 @@
                     multiplicado-por, veces, cross, dot, asterisk, sample-arg, lang, pdfversion, tagging, tagging-setup, cifras-sep, %
                     osf,nomath,mono, ScaleSF, ScaleRM, spanish,shorthands, no-text, semibold, colorlinks, pdftitle, pdfdisplaydoctitle, %
                     pdfstartview, FitH, pdfinfo, Title, Subject, range, StylisticSet, small-caps, read-arg, píxeles, px, caudal,
-                    read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, },%
+                    read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, silent, },%
 % Reserved words 7 (intent values)
     keywordstyle  = [7]{\color{MediumOrchid}},%
     keywords      = [7]{number,intent,test,sample,above,below, phase-III, ActualText, Span, E, cal,bfcal,%
@@ -5787,6 +5788,184 @@
 % glyph wrapped in its corresponding regional \mynvmath{MathCAT} intent. This
 % grants teachers absolute control when building complex algebraic
 % expressions, mixed numbers, or fraction divisions.
+%
+% \subsection{The command \cs{spusep}}\label{cmd:spusep}
+%
+% For the use of parentheses, we will provide the command |\spusep| with
+% only two \mymeta{keys} |size| and |silent|. Most of the time we can use
+% |\left| and |\right| or |\Uleft| and |\Uright|, but both forms create a
+% group, and this hinders the code for \emph{tagged} \texttt{PDF} when we
+% want to interrupt something between them.
+%
+% \begin{macro}[int]{spusep-empty-arg, spusep-invalid-arg}
+%   The first \enquote{error} message |spusep-empty-arg| is raised when |\spusep|
+%   receives an empty or blank \mymarg{argument}, the second this is when
+%   an input is invalid.
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spusep-empty-arg }
+  { Empty~argument~in~\token_to_str:N \spusep. }
+  { \token_to_str:N \spusep~requires~a~non-empty~argument. }
+\msg_new:nnn { spintent } { spusep-invalid-arg }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spusep.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{variable}[int]{\l_@@_spusep_arg_tl, \l_@@_spusep_left_tl, \l_@@_spusep_right_tl}
+%   The variable \cs{l_@@_spusep_arg_tl} stores the \mymarg{argument},
+%   the variable \cs{l_@@_spusep_left_tl} and \cs{l_@@_spusep_right_tl}
+%   stores the parentheses.
+%    \begin{macrocode}
+\tl_new:N \l_@@_spusep_arg_tl
+\tl_new:N \l_@@_spusep_left_tl
+\tl_new:N \l_@@_spusep_right_tl
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{macro}[int]{size, silent, unknown}
+%   We define the \mymeta{keys} \mykey[spusep]{size} and \mykey[spusep]{silent}.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spusep }
+  {
+    size           .choices:nn =
+      { none , big , Big, bigg, Bigg }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            { 1 }
+              {
+                \tl_clear:N \l_@@_spusep_left_tl
+                \tl_clear:N \l_@@_spusep_right_tl
+              }
+            { 2 }
+              {
+                \tl_set:Nn \l_@@_spusep_left_tl  { \bigl }
+                \tl_set:Nn \l_@@_spusep_right_tl { \bigr }
+              }
+            { 3 }
+              {
+                \tl_set:Nn \l_@@_spusep_left_tl  { \Bigl }
+                \tl_set:Nn \l_@@_spusep_right_tl { \Bigr }
+              }
+            { 4 }
+              {
+                \tl_set:Nn \l_@@_spusep_left_tl  { \biggl }
+                \tl_set:Nn \l_@@_spusep_right_tl { \biggr }
+              }
+            { 5 }
+              {
+                \tl_set:Nn \l_@@_spusep_left_tl  { \Biggl }
+                \tl_set:Nn \l_@@_spusep_right_tl { \Biggr }
+              }
+          }
+      },
+    size           .initial:n  = none,
+    size           .value_required:n = true,
+    size / unknown .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { size } { none,~big,~Big,~bigg,~Bigg } { \exp_not:n {#1} },
+    silent         .bool_set:N = \l_@@_spusep_silent_bool,
+    silent         .initial:n = false,
+    silent         .value_required:n = true,
+    unknown        .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spusep }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}[int]{\@@_spusep_set_parens:nn,}
+%   The function \mycs{@@_spusep_set_parens:nn} will place the argument
+%   passed in `|#2|' to the right of the variables \cs{l_@@_spusep_left_tl}
+%   and \cs{l_@@_spusep_right_tl} and then check the state of the variable
+%   \cs{l_@@_spusep_silent_bool} handled by the key \mykey{silent} to
+%   print.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spusep_set_parens:nn
+  {
+    \tl_put_right:cn { l_@@_spusep_ #1 _tl } { #2 }
+    \bool_if:NTF \l_@@_spusep_silent_bool
+      {
+         \MathMLintent { :silent } { \tl_use:c { l_@@_spusep_ #1 _tl } }
+      }
+      {
+        \tl_use:c { l_@@_spusep_ #1 _tl }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spusep_convert:n,}
+%   The function \mycs{@@_spusep_convert:n} captures and stores the
+%   \mymarg{argument} passed in `|#1|` in the variable \cs{l_@@_spusep_arg_tl},
+%   validates the cases by converting them to the macros provided by
+%   \mypkg{unicode-math}, and passes them to the function \mycs{@@_spusep_set_parens:nn}
+%   for printing. If the input is not supported or is empty, we return an \enquote{error}.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spusep_convert:n
+  {
+    \tl_set:Ne \l_@@_spusep_arg_tl { \tl_trim_spaces:n {#1} }
+    \tl_if_empty:NT \l_@@_spusep_arg_tl
+      {
+        \msg_error:nnn { spintent } { spusep-invalid-arg } {#1}
+      }
+    \str_case:VnF \l_@@_spusep_arg_tl
+      {
+        { (  }
+          {
+            \@@_spusep_set_parens:nn { left } { \lparen }
+          }
+        { )  }
+          {
+            \@@_spusep_set_parens:nn { right } { \rparen }
+          }
+        { [  }
+          {
+            \@@_spusep_set_parens:nn { left } { \lbrack }
+          }
+        { ]  }
+          {
+            \@@_spusep_set_parens:nn { right } { \rbrack }
+          }
+        { \{ }
+          {
+            \@@_spusep_set_parens:nn { left } { \lbrace }
+          }
+        { \} }
+          {
+            \@@_spusep_set_parens:nn { right } { \rbrace }
+          }
+      }
+      {
+        \msg_error:nnn { spintent } { spusep-invalid-arg } {#1}
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spusep}
+%   The command |\spusep| checks that it is running in math mode, opens a
+%   local group, sets the keys passed in `|#1|' and processes the
+%   \mymarg{argument} passed in `|#2|' by means of the function
+%   \mycs{@@_spusep_convert:n}.
+%    \begin{macrocode}
+\NewDocumentCommand \spusep { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \keys_set:nn { spintent / spusep } {#1}
+          \@@_spusep_convert:n {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spusep } }
+  }
+%    \end{macrocode}
+% \end{macro}
 %
 % \subsubsection{The command \cs{spread}}\label{cmd:spread}
 %
