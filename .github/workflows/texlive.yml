@@ -13,24 +13,24 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    name: Check and Build # Mejor nombre, ya que hace más que solo actualizar caché
+    name: Check and Build
     strategy:
       fail-fast: false
       matrix:
         version:
-          - 2026 # Cambia esto a la versión real de TeX Live que necesites
+          - 2026
         command:
           - doc
     steps:
       - name: Checkout
-        uses: actions/checkout@v4 # Corregido a v4
+        uses: actions/checkout@v6
 
       - name: Setup TeX Live ${{ matrix.version }}
-        # Aquí se encarga del caché automáticamente
+        # caché automáticamente
         uses: zauguin/install-texlive@v4
         with:
           package_file: .github/tl_packages
-          texlive_version: ${{ matrix.version }} # Conecta la versión de la matriz con la acción
+          texlive_version: ${{ matrix.version }} # TL version
 
       - name: Install spintent package
         run: l3build install
