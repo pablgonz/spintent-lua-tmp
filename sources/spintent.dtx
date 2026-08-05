@@ -556,7 +556,7 @@
     keywords      = [1]{begin,end,Verbatim,env,myseq,NewDocumentCommand, the, red, blue, gray,%
                         settowidth, dimeval, dimexpr, IfBooleanTF,DocumentMetadata, hypersetup, %
                         IfDocumentMetadataTF, IfDocumentMetadataF, RenewDocumentCommand, pt, em, %
-                        , N, NN, J, D, Nee, Nnn, nn, Ne, w, n, m, een, en,  %
+                        , N, NN, J, D, Nee, Nnn, nn, Ne, w, n, m, een, en, mi, mo, mrow, %
                     },%
 % Other words 2
     keywordstyle  = [2]{\color{blue!75}},%
@@ -684,7 +684,7 @@
 % Get file info
 \GetFileInfo{spintent.sty} % not work here :(
 \def\fileversion{v0.95}
-\def\filedate{2026-01-08}
+\def\filedate{2026-05-08}
 \def\fileinfo{Spanish parse intents}
 % Config hyperref
 \hypersetup
@@ -3013,7 +3013,7 @@
 %    \end{macrocode}
 % Now declare the \mypkg*{spintent} package.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-01-08} {0.95} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-05-08} {0.95} {Spanish parse intents}
 %    \end{macrocode}
 % We check if the requirements for running the \mypkg*{spintent} package
 % are met; that is: |\DocumentMetadata| must be active, \hologo{LuaTeX}
@@ -3079,14 +3079,14 @@
 % \begin{macro}[int]
 %  {
 %    \@@_luafun_spunit_lookup_alias:V,
-%    \@@_luafun_clean_split_and_set:V,
-%    \@@_luafun_spmQ_send_factor:V,
 %    \@@_luafun_spmoney_lookup_data:V,
+%    \@@_luafun_spmQ_scale_int:Vn,
+%    \@@_luafun_clean_split_and_set:V,
 %  }
 % Now we load the Lua module \myluamod{} and generate the variants for the
 % functions \mycs{@@_luafun_spunit_lookup_alias:n} used by |\spunit| (\S\ref{cmd:spunit}),
 % \mycs{@@_luafun_spmoney_lookup_data:V} used by |\spmoney| (\S\ref{cmd:spmoney}),
-% \mycs{@@_luafun_spmQ_send_factor:V} used by |\spmQ| (\S\ref{cmd:spmQ}) and
+% \mycs{@@_luafun_spmQ_scale_int:Vn} used by |\spmQ| (\S\ref{cmd:spmQ}) and
 % \mycs{@@_luafun_clean_split_and_set:V} used by |\spnum| (\S\ref{cmd:spnum})
 % defined in it.
 % \iffalse
@@ -3096,38 +3096,53 @@
 \lua_load_module:n { spintent.lua }
 \cs_generate_variant:Nn \@@_luafun_spunit_lookup_alias:n { V }
 \cs_generate_variant:Nn \@@_luafun_spmoney_lookup_data:n { V }
-\cs_generate_variant:Nn \@@_luafun_spmQ_send_factor:n { V }
+\cs_generate_variant:Nn \@@_luafun_spmQ_scale_int:nn { VV, Vn }
 \cs_generate_variant:Nn \@@_luafun_clean_split_and_set:n { V }
 %    \end{macrocode}
 % \end{macro}
 %
 % \subsection{Internal copy of the unicode invisible separator}
 %
-% \begin{macro}[int]{\@@_invisible_sep:,}
-%  Internal copy of the unicode invisible separator |U-2063| using
-%  |\luamml_annotate:en| from \mypkg{luamml}\cite{luamml} package.
-%
-% \begin{important}*
-% It is defined almost identically to the definition provided for
-% |\invisibletimes| in \mypkg{latex-lab-mathintent} and we will use it
-% for different purposes within the implementation.
-% \end{important}
-%
+% \begin{macro}[int]{\@@_invisible_sep:, \c_@@_invisible_sep_tl}
+%   The function \mycs{@@_invisible_sep:} is an internal copy of the
+%   Unicode invisible separator |U-2063| that uses |\luamml_annotate:en|
+%   from the package \mypkg{luamml}\cite{luamml} and let \lstinline+<mo>...</mo>+ in
+%   the \mynvmath{MathML} structure embedded in the \texttt{PDF} output.
 % \iffalse
-%% Internal copy of invisible separator U-2063.
+%% Internal copy of invisible separator U-2063 => <mo>...</mo>.
 % \fi
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_invisible_sep:
   {
     \luamml_annotate:en
       {
-        core = {[0] = 'mo', "^^^^2063"} % intent=":silent",
+        core = {[0] = 'mo', intent=':silent', "^^^^2063"}
       }
       {
         \latelua{}
       }
   }
 %    \end{macrocode}
+%   The token list constant \mycs{c_@@_invisible_sep_tl} is an internal
+%   copy of the Unicode invisible separator |U-2063| using the primitive
+%   |\Umathchardef| from \hologo{LuaTeX} which leaves \lstinline+<mi>...</mi>+ in the
+%   structure \mynvmath{MathML} embedded in the output \texttt{PDF}.
+% \iffalse
+%% Internal copy of invisible separator U-2063 => <mi>...</mi>.
+% \fi
+%    \begin{macrocode}
+\hook_gput_code:nnn { begindocument } { spintent }
+  {
+    \Umathchardef \c_@@_invisible_sep_tl = "0 "0 "2063
+  }
+%    \end{macrocode}
+% \begin{important}*
+%   Both copies are used for different purposes, the function
+%   \mycs{@@_invisible_sep:} will be used to force the start of a \lstinline+<mrow>+
+%   in the structure \mynvmath{MathML}, the token list constant
+%   \mycs{c_@@_invisible_sep_tl} will be used to inject text into the
+%   structure \mynvmath{MathML} when we use |\MathMLintent|\mymarg{text}.
+% \end{important}
 % \end{macro}
 %
 % \subsection{Normalize argument and affixes}
@@ -7223,13 +7238,8 @@
 %     \l_@@_spmQ_math_style_tl,
 %     \l_@@_spnQ_intent_read_sign_str,
 %     \l_@@_spnQ_wrap_parens_l_tl,
-%     \l_@@_spnQ_wrap_parens_r_tl
-%     \l_@@_spmQ_part_int_box,
-%     \l_@@_spmQ_part_frac_box,
-%     \l_@@_spmQ_raise_part_int_dim,
-%     \l_@@_spmQ_part_int_ht_dp_dim,
-%     \l_@@_spmQ_part_frac_ht_dp_dim,
-%     \l_@@_spmQ_int_scale_val_tl,
+%     \l_@@_spnQ_wrap_parens_r_tl,
+%     \l_@@_saved_luamml_flag_int.
 %   }
 % The variable \mycs{l_@@_spmQ_join_word_str} stores the value set by the
 % key \mykey[spmQ]{join-word} which will be verbalized by
@@ -7254,24 +7264,13 @@
 % The variable \mycs{l_@@_spnQ_wrap_parens_l_tl} and \mycs{l_@@_spnQ_wrap_parens_r_tl}
 % stores the size parens set by the function \mycs{@@_spmQ_set_wrap_parens_size:}
 % used by the key \mykey{wrap-parens}.
-%
-% \smallskip
-%
-% The remaining variables are used to scale the integer part of the mixed
-% number used by the functions \mycs{@@_spmQ_scale_int:nn},
-% \mycs{@@_spmQ_scale_int:nnn} and \mycs{@@_spmQ_print_scaled_int:}.
 %    \begin{macrocode}
 \str_new:N \l_@@_spmQ_join_word_str
 \tl_new:N  \l_@@_spmQ_math_style_tl
 \str_new:N \l_@@_spnQ_intent_read_sign_str
 \tl_new:N  \l_@@_spnQ_wrap_parens_l_tl
 \tl_new:N  \l_@@_spnQ_wrap_parens_r_tl
-\box_new:N \l_@@_spmQ_part_int_box
-\box_new:N \l_@@_spmQ_part_frac_box
-\dim_new:N \l_@@_spmQ_raise_part_int_dim
-\dim_new:N \l_@@_spmQ_part_int_ht_dp_dim
-\dim_new:N \l_@@_spmQ_part_frac_ht_dp_dim
-\tl_new:N  \l_@@_spmQ_int_scale_val_tl
+\int_new:N \l_@@_saved_luamml_flag_int
 %    \end{macrocode}
 % \end{variable}
 %
@@ -7342,27 +7341,6 @@
 %
 % \subsubsection{Internal functions for \cs[no-index]{spmQ}}
 %
-% \begin{macro}[int]{\@@_spmQ_match_sign:,}
-%  The function \mycs{@@_spmQ_match_sign:} captures the `$\mathcolor{red}{+}$' or
-% `$\mathcolor{red}{-}$' for integer part sign and sets the |:intent| to
-% |\MathMLintent| \mymarg{argument} if present.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_match_sign:
-  {
-    \tl_if_empty:NF \l_@@_luaset_sign_tl
-      {
-        \str_if_eq:VnTF \l_@@_luaset_sign_tl { + }
-          {
-            \str_set:Nn \l_@@_spnQ_intent_read_sign_str { _más:prefix $(e) }
-          }
-          {
-            \str_set:Nn \l_@@_spnQ_intent_read_sign_str { _menos:prefix $(e) }
-          }
-      }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
 % \begin{macro}[int]{\@@_spmQ_set_wrap_parens_size:,}
 %   The function \mycs{@@_spmQ_set_wrap_parens_size:} capture the current
 %   \emph{mathematical style} using the primitive |\mathstyle| from
@@ -7376,31 +7354,26 @@
       {
         { 0 }
           {
-            % \displaystyle
             \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
             \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
           }
         { 1 }
           {
-            % \displaystyle
             \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
             \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
           }
         { 2 }
           {
-            % \textstyle
             \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
             \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
           }
         { 3 }
           {
-            % \textstyle
             \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
             \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
           }
       }
       {
-        % \scriptstyle y \scriptscriptstyle
         \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \lparen }
         \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \rparen }
       }
@@ -7417,8 +7390,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmQ_start_wrap_parens:,
-%                    \@@_spmQ_stop_wrap_parens:}
+% \begin{macro}[int]{\@@_spmQ_start_wrap_parens:, \@@_spmQ_stop_wrap_parens:}
 %   The functions \mycs{@@_spmQ_start_wrap_parens:} and \mycs{@@_spmQ_stop_wrap_parens:}
 %   print with the appropriate size for the parentheses set by the key
 %   \mykey{wrap-parens}. Only if the variable \cs{l_@@_spnQ_read_parens_bool}
@@ -7456,112 +7428,29 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmQ_wrap_math:n, \@@_spmQ_wrap_math:V,
-%                    \@@_spmQ_capture_math_style:}
-%   The functions \mycs{@@_spmQ_wrap_math:n} and \mycs{@@_spmQ_capture_math_style:}
-%   capture the current \emph{mathematical style} using the primitive
-%  |\mathstyle| from \hologo{LuaTeX}.
+% \begin{macro}[int]{\@@_spmQ_join_word:,}
+%  The function \mycs{@@_spmQ_join_word:} captures the `$\mathcolor{red}{+}$' or
+% `$\mathcolor{red}{-}$' for integer part sign and sets the |:intent| to
+% |\MathMLintent| \mymarg{argument} if present.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_wrap_math:n
+\cs_new_protected:Nn \@@_spmQ_set_join_word:
   {
-    $ \l_@@_spmQ_math_style_tl #1 $
-  }
-\cs_generate_variant:Nn \@@_spmQ_wrap_math:n { V }
-\cs_new_protected:Nn \@@_spmQ_capture_math_style:
-  {
-    \tl_set:Ne \l_@@_spmQ_math_style_tl
+    \str_case:Vn \l_@@_spmQ_join_word_str
       {
-        \int_case:nnF { \mathstyle }
+        { entero  }
           {
-            { 0 } { \exp_not:N \displaystyle }
-            { 1 } { \exp_not:N \displaystyle }
-            { 2 } { \exp_not:N \textstyle }
-            { 3 } { \exp_not:N \textstyle }
-            { 4 } { \exp_not:N \scriptstyle }
-            { 5 } { \exp_not:N \scriptstyle }
-            { 6 } { \exp_not:N \scriptscriptstyle }
-            { 7 } { \exp_not:N \scriptscriptstyle }
+            \MathMLintent { _entero } { \c_@@_invisible_sep_tl }
           }
-          { \exp_not:N \textstyle }
-      }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spmQ_scale_int:nn}
-%   The function \mycs{@@_spmQ_scale_int:nn} scales the integer part of the
-%   mixed number. First, it executes \mycs{@@_spmQ_capture_math_style:} to
-%   detect the current math style. Then, it stores the integer part, which is
-%   in the variable \mycs{l_@@_luaset_part_int_tl}, in the box
-%   \cs{l_@@_spmQ_part_int_box}, and the fractional part, passed in the
-%   arguments `|#1|' and `|#2|', in the box \cs{l_@@_spmQ_part_frac_box} by
-%   analyzing the state of \cs{l_@@_spmQ_print_dfrac_bool}, controlled by
-%   the key \mykey{print-dfrac}.
-%    \begin{macrocode}
-\cs_generate_variant:Nn \@@_luafun_spmQ_send_factor:n { V } % mover arriba
-\cs_new_protected:Nn \@@_spmQ_scale_int:nn
-  {
-    \@@_spmQ_capture_math_style:
-    \hbox_set:Nn \l_@@_spmQ_part_int_box
-      { \@@_spmQ_wrap_math:V \l_@@_luaset_part_int_tl }
-    \hbox_set:Nn \l_@@_spmQ_part_frac_box
-      {
-        \bool_if:NTF \l_@@_spmQ_print_dfrac_bool
+        { enteros }
           {
-            \@@_spmQ_wrap_math:n { \dfrac { #1 } { #2 } }
+            \MathMLintent { _enteros } { \c_@@_invisible_sep_tl }
           }
+        { y       }
           {
-            \@@_spmQ_wrap_math:n { \frac { #1 } { #2 } }
+            \MathMLintent { _y } { \c_@@_invisible_sep_tl }
           }
       }
-    \dim_set:Nn \l_@@_spmQ_part_int_ht_dp_dim
-      {
-        \box_ht_plus_dp:N \l_@@_spmQ_part_int_box
-      }
-    \dim_set:Nn \l_@@_spmQ_part_frac_ht_dp_dim
-      {
-        \box_ht_plus_dp:N \l_@@_spmQ_part_frac_box
-      }
-%    \end{macrocode}
-%   Now we calculate the scaling factor and store it in
-%   \cs{l_@@_spmQ_int_scale_val_tl} to pass it to the function
-%   \mycs{@@_luafun_spmQ_send_factor:V} defined in the Lua module \myluamod{}
-%   which will be responsible for scaling the font.
-%    \begin{macrocode}
-    \dim_compare:nNnTF
-      { \l_@@_spmQ_part_int_ht_dp_dim } = { \c_zero_dim }
-      { \tl_set:Nn \l_@@_spmQ_int_scale_val_tl { 1 } }
-      {
-        \tl_set:Ne \l_@@_spmQ_int_scale_val_tl
-          {
-            \dim_ratio:nn
-              { \l_@@_spmQ_part_frac_ht_dp_dim }
-              { \l_@@_spmQ_part_int_ht_dp_dim }
-          }
-      }
-    \@@_luafun_spmQ_send_factor:V \l_@@_spmQ_int_scale_val_tl
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spmQ_print_scaled_int:,}
-%   The function \mycs{@@_spmQ_print_scaled_int:} will print the
-%   integer part scaled and aligned correctly.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_print_scaled_int:
-  {
-    \luamml_annotate:en
-      {
-        nucleus = false,
-        core={[0]='mn','\l_@@_luaset_part_int_tl'}
-      }
-      {
-        \raisebox { -\box_dp:N \l_@@_spmQ_part_frac_box }
-          {
-             \@@_spmQ_wrap_math:V \l_@@_luaset_part_int_tl
-          }
-      }
-  }
+   }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -7574,6 +7463,11 @@
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_print_spnZ_dfrac:nn
   {
+    \@@_luafun_clean_split_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnT \l_@@_luaset_has_integer_str { false }
+      {
+        \msg_error:nn { spintent } { spmQ-not-integer }
+      }
     \bool_if:NTF \l_@@_spmQ_use_spnZ_bool
       {
         \use:c { \bool_if:NT \l_@@_spmQ_print_dfrac_bool { d } frac }
@@ -7587,11 +7481,81 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmQ_render:nnn}
+% \begin{macro}[int]{\@@_spmQ_print_scaled_int:,}
+%   The function \mycs{@@_spmQ_print_scaled_int:} will print the
+%   integer part scaled and aligned correctly.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spmQ_print_scale_int:
+  {
+    % Deshabilitar luamml mientras se inyecta el noad del entero.
+    % Esto evita el <math> fantasma del sub_box procesado en solitario
+    % antes de que \frac se expanda.
+    % Flag 0 = skip completamente.
+    %%\int_set:Nn \l__luamml_flag_int { 0 }
+    \int_set_eq:Nc \l_@@_saved_luamml_flag_int { l__luamml_flag_int }
+    \int_set:Nn \l__luamml_flag_int { 0 }
+    \bool_if:NTF \l_@@_spmQ_print_dfrac_bool
+      {
+        \@@_luafun_spmQ_scale_int:Vn \l_@@_luaset_part_int_tl {dfrac}
+      }
+      {
+        \@@_luafun_spmQ_scale_int:Vn \l_@@_luaset_part_int_tl {frac}
+      }
+    % Restaurar flag normal (11 = mathml-SE: bits 0,1,3)
+    % \int_set:Nn \l__luamml_flag_int { 11 }
+    \int_set_eq:cN { l__luamml_flag_int } \l_@@_saved_luamml_flag_int
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spmQ_print_sacle_int:n,}
+%   The function \mycs{@@_spmQ_print_int:n} takes as its arguments the
+%   integer part passed in `|#1|'. First, the function \mycs{@@_luafun_clean_split_and_set:n}
+%   executes on `|#1|' and checks the status of the variable
+%   \mycs{l_@@_luaset_has_integer_str}. If it is |true|, checks if the
+%   variable \mycs{l_@@_luaset_sign_tl} is  \emph{empty} and calls the
+%   function \mycs{@@_spmQ_print_scale_int:} to print the scaled integer
+%   part; otherwise, captures the `$\mathcolor{red}{+}$'  or `$\mathcolor{red}{-}$'
+%   for integer part sign, sets the |:intent| to |\MathMLintent| and print.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spmQ_print_sacle_int:n
+  {
+    \@@_luafun_clean_split_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnTF \l_@@_luaset_has_integer_str { true }
+      {
+        \tl_if_empty:NTF \l_@@_luaset_sign_tl
+          {
+            \@@_spmQ_print_scale_int:
+          }
+          {
+            \str_if_eq:VnTF \l_@@_luaset_sign_tl { + }
+              {
+                \str_set:Nn
+                  \l_@@_spnQ_intent_read_sign_str { _más:prefix $(e) }
+              }
+              {
+                 \str_set:Nn
+                   \l_@@_spnQ_intent_read_sign_str { _menos:prefix $(e) }
+              }
+            \MathMLintent { \l_@@_spnQ_intent_read_sign_str }
+              {
+                \l_@@_luaset_sign_tl  \@@_invisible_sep: % need
+                \MathMLarg { e } { \@@_spmQ_print_scale_int: }
+              }
+          }
+      }
+      { \msg_error:nn { spintent } { spmQ-not-integer } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spmQ_print:nnn}
 %   The function \mycs{@@_spmQ_render:nnn} takes three arguments: the
 %   integer part `|#1|', the numerator `|#2|', and the denominator `|#3|'.
-%   First, we call the function \mycs{@@_spmQ_print_int:nnn} which will
-%   scale the integer part passed in `|#1|' and print it. Then, we inject
+%   First, executes the function \cs{@@_spmQ_tart_wrap_parens:}
+%   handled by the key \mykey{wrap-parens} to open the parentheses if they
+%   are active, then we call the function \mycs{@@_spmQ_print_sacle_int:n}
+%   which will scale the integer part passed in `|#1|' and print it. Then, we inject
 %   the \enquote{word} that \emph{joins} the integer part with the fraction
 %   handled by the key \mykey{join-word}.
 %
@@ -7603,76 +7567,19 @@
 %   handled by the key \mykey{wrap-parens} to close the parentheses if they
 %   are active.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_render:nnn
+\cs_new_protected:Nn \@@_spmQ_print:nnn
   {
-    \@@_spmQ_print_int:nnn { #1 } { #2 } { #3 }
-    \str_case:Vn \l_@@_spmQ_join_word_str
-      {
-        { entero  }
-          {
-            \MathMLintent { _entero } { \@@_invisible_sep: }
-          }
-        { enteros }
-          {
-            \MathMLintent { _enteros } { \@@_invisible_sep: }
-          }
-        { y       }
-          {
-            \MathMLintent { _y } { \@@_invisible_sep: }
-          }
-      }
+    \@@_spmQ_start_wrap_parens:
+    \@@_spmQ_print_sacle_int:n { #1 }
+    \@@_spmQ_set_join_word:
     \@@_spmQ_print_spnZ_dfrac:nn { #2 } { #3 }
     \@@_spmQ_stop_wrap_parens:
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmQ_print_int:nnn}
-%   The function \mycs{@@_spmQ_print_int:nnn} takes as its arguments the
-%   integer part passed in `|#1|' and the fractional parts in `|#2|' and
-%   `|#3|'. First, the function \mycs{@@_luafun_clean_split_and_set:n}
-%   executes on `|#1|' and checks the status of the variable
-%   \mycs{l_@@_luaset_has_integer_str}. If it is |true|, the function
-%   \cs{@@_spmQ_match_sign:} executes; otherwise, it returns an invalid input
-%   \enquote{error}. Then, the function \cs{@@_spmQ_scale_int:nn} scales
-%   the integer part stored in the variable \cs{l_@@_luaset_part_int_tl}
-%   according to the values passed in `|#2|' and `|#3|'.
-%
-%   \smallskip
-%
-%   Finally, it checks if the variable \mycs{l_@@_luaset_sign_tl} is \emph{empty}
-%   and calls the functions \cs{@@_spmQ_start_wrap_parens:} handled by
-%   the key \mykey{wrap-parens} to open the parentheses and
-%   \cs{@@_spmQ_print_scaled_int:} to print the scaled integer part; otherwise,
-%   it uses |\MathMLintent| to print the parentheses and sign first, then
-%   the scaled integer part.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_print_int:nnn
-  {
-    \@@_luafun_clean_split_and_set:n { \exp_not:n {#1} }
-    \str_if_eq:VnTF \l_@@_luaset_has_integer_str { true }
-      { \@@_spmQ_match_sign: }
-      { \msg_error:nnn { spintent } { spnQ-not-integer } {#1} }
-    \@@_spmQ_scale_int:nn {#2} {#3}
-    \str_if_empty:NTF \l_@@_luaset_sign_tl
-      {
-        \@@_spmQ_start_wrap_parens:
-        \@@_spmQ_print_scaled_int:
-      }
-      {
-        \MathMLintent { \l_@@_spnQ_intent_read_sign_str }
-          {
-            \@@_spmQ_start_wrap_parens:
-            \l_@@_luaset_sign_tl \@@_invisible_sep:
-            \MathMLarg { e } { \@@_spmQ_print_scaled_int: }
-          }
-      }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spmQ_process:nnnn}
-%   The internal function \mycs{@@_spmQ_process:nnnn} takes four arguments:
+% \begin{macro}[int]{\@@_spmQ_exec:nnnn}
+%   The internal function \mycs{@@_spmQ_exec:nnnn} takes four arguments:
 %   the optional \mymeta{keys} `|#1|', the integer `|#2|', the numerator `|#3|',
 %   and the denominator `|#4|'. First sets the optional \mymeta{keys}
 %   from `|#1|', then, processes the denominator input in `|#4|' using
@@ -7680,13 +7587,13 @@
 %
 %   \smallskip
 %
-%   Now checks the status of \mycs{l_@@_luaset_has_integer_str}. If the
+%   Now checks the status of \cs{l_@@_luaset_has_integer_str}. If the
 %   status of this variable is |true| and the integer part is exactly zero,
 %   it issues the |spmQ-zero-denominator| \enquote{error}. Otherwise, if
 %   the status is |false| or the integer part is \emph{non-zero}, it calls
-%   the function \mycs{@@_spmQ_render:nnn} to format the \emph{\enquote{mixed number}}.
+%   the function \mycs{@@_spmQ_print:nnn} to format the \emph{\enquote{mixed number}}.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_process:nnnn
+\cs_new_protected:Nn \@@_spmQ_exec:nnnn
   {
     \keys_set:nn { spintent / spmQ } { #1 }
     \@@_luafun_clean_split_and_set:n { \exp_not:n { #4 } }
@@ -7694,9 +7601,9 @@
       {
         \int_compare:nNnTF { \l_@@_luaset_part_int_tl } = { 0 }
           { \msg_error:nn { spintent } { spmQ-zero-denominator } }
-          { \@@_spmQ_render:nnn { #2 } { #3 } { #4 } }
+          { \@@_spmQ_print:nnn { #2 } { #3 } { #4 } }
       }
-      { \@@_spmQ_render:nnn { #2 } { #3 } { #4 } }
+      { \@@_spmQ_print:nnn { #2 } { #3 } { #4 } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -7704,7 +7611,7 @@
 % \begin{macro}{\spmQ}
 %   The command |\spmQ| is the public interface for formatting mixed
 %   numbers. It first checks if it is being used in math mode, issuing
-%   an error if not. Inside a local group, it calls \mycs{@@_spmQ_process:nnnn}
+%   an error if not. Inside a local group, it calls \mycs{@@_spmQ_exec:nnnn}
 %   to process the optional \mymeta{keys} and the \mymarg{arguments}.
 %    \begin{macrocode}
 \NewDocumentCommand \spmQ { O{} m m m }
@@ -7712,7 +7619,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \@@_spmQ_process:nnnn { #1 } { #2 } { #3 } { #4 }
+          \@@_spmQ_exec:nnnn { #1 } { #2 } { #3 } { #4 }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmQ } }
@@ -7734,7 +7641,7 @@
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.95 [2026-01-08]
+     Lua module spintent.lua for spintent package - v0.95 [2026-05-08]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -9064,9 +8971,8 @@ end, { "string", "string" })
 
 -- 10. NÚMEROS MIXTOS, code for \spmQ (see https://tex.stackexchange.com/q/764828)
 
-local spintent_factor = nil
-local glyph_id = node.id("glyph")
-local font_cache = {}
+local font_cache         = {}
+local spintent_measuring = false
 
 local function is_digit(n)
     return n.char >= 48 and n.char <= 57
@@ -9074,76 +8980,156 @@ end
 
 local function get_scaled_font(id, factor)
     local key = tostring(id) .. ":" .. tostring(factor)
-    if font_cache[key] then
-        return font_cache[key]
-    end
-
+    if font_cache[key] then return font_cache[key] end
     local old_font = font.getfont(id)
-    if not old_font then
-        return id
-    end
-
+    if not old_font then return id end
     local spec = {}
-
-    for k, v in pairs(old_font.specification) do
-        spec[k] = v
-    end
-
+    for k, v in pairs(old_font.specification) do spec[k] = v end
     spec.size = math.floor(old_font.size * factor)
     local ok, data = pcall(fonts.definers.loadfont, spec)
-
-    if not ok or not data then
-        return id
-    end
-
+    if not ok or not data then return id end
     local new_id = font.define(data)
+    fonts.hashes.identifiers[new_id] = data
     font_cache[key] = new_id
-    -- texio.write_nl("new font = " .. tostring(new_id))
     return new_id
 end
 
 local function scale_glyphs(head, factor)
+    if spintent_measuring then return head end
     for n in node.traverse_glyph(head) do
         if is_digit(n) then
-            -- texio.write_nl("glyph = " .. n.char .. " font = " .. n.font)
             local new_id = get_scaled_font(n.font, factor)
             n.font = new_id
             local f = font.getfont(new_id)
             if f and f.characters then
                 local c = f.characters[n.char]
                 if c then
-                   n.width = c.width
-                   n.height = c.height
-                   n.depth = c.depth
+                    n.width  = c.width
+                    n.height = c.height
+                    n.depth  = c.depth
                 end
             end
         end
     end
-
     return head
 end
 
-luatexbase.add_to_callback("post_mlist_to_hlist_filter",
-    function(head)
-        if not spintent_factor then
-            return head
-        end
-        local factor = spintent_factor
-        spintent_factor = nil
-        -- texio.write_nl("MATH factor = " .. tostring(factor))
-        return scale_glyphs(head, factor)
-    end, "spintent-math-scale"
-)
-
-register_tex_cmd("luafun_spmQ_send_factor", function(value)
-    local numerator, denominator = value:match("^(%d+)/(%d+)$")
-    if numerator and denominator then
-        spintent_factor = tonumber(numerator) / tonumber(denominator)
-    else
-        spintent_factor = tonumber(value)
+local function build_char_noads(str)
+    local head, tail
+    for i = 1, #str do
+        local kernel = node.new("math_char")
+        kernel.char  = str:byte(i)
+        kernel.fam   = 0
+        local n      = node.new("noad")
+        n.subtype    = 0
+        n.nucleus    = kernel
+        if not head then head = n tail = n
+        else tail.next = n tail = n end
     end
-    -- texio.write_nl("LUA factor = " .. tostring(spintent_factor))
-end,{"string"})
+    return head
+end
+
+local function build_submlist_noad(str)
+    local mlist  = node.new("sub_mlist")
+    mlist.head   = build_char_noads(str)
+    local noad   = node.new("noad")
+    noad.subtype = 0
+    noad.nucleus = mlist
+    return noad
+end
+
+register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
+
+    local styles = {
+        [0] = "display",      [1] = "display",
+        [2] = "text",         [3] = "text",
+        [4] = "script",       [5] = "script",
+        [6] = "scriptscript", [7] = "scriptscript",
+    }
+
+    local display_type = (frac_cmd == "dfrac") and "display" or
+        (styles[tonumber(tex.mathstyle)] or "text")
+
+    local function build_entero_mlist_noad()
+        return build_submlist_noad(entero)
+    end
+
+    local function medir_frac(dt, cmd)
+        spintent_measuring = true
+        tex.runtoks(function()
+            tex.sprint(
+                "\\setbox0\\hbox{$\\" .. dt .. "style" ..
+                "\\" .. cmd .. "{0}{0}$}"
+            )
+        end)
+        spintent_measuring = false
+        local h  = tex.box[0].height
+        local dp = tex.box[0].depth
+        tex.box[0] = nil
+        return h, dp
+    end
+
+    -- 1. Medir fracción
+    local frac_height, frac_depth = medir_frac(display_type, frac_cmd)
+    local ht_frac_real = frac_height + frac_depth
+
+    -- 2. Medir entero
+    spintent_measuring = true
+    local h_med = node.mlist_to_hlist(build_entero_mlist_noad(), display_type, false)
+    spintent_measuring = false
+    local ht_entero = h_med.height + h_med.depth
+
+    -- 3. Factor
+    local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
+
+    -- 4. Hlist escalada
+    local h_esc = node.mlist_to_hlist(build_entero_mlist_noad(), display_type, false)
+    scale_glyphs(h_esc.list, factor)
+
+    local ancho = 0
+    for n in node.traverse_glyph(h_esc.list) do ancho = ancho + n.width end
+    h_esc.width  = ancho
+    h_esc.height = frac_height
+    h_esc.depth  = frac_depth
+    h_esc.shift  = math.floor(frac_depth + 0.5)
+
+    -- 5. Glyph nodes físicos
+    local glyph_nodes = {}
+    for n in node.traverse_glyph(h_esc.list) do
+        if is_digit(n) then glyph_nodes[#glyph_nodes + 1] = n end
+    end
+
+    -- 6. sub_box con mathml_filter
+    local sub    = node.new("sub_box")
+    sub.head     = h_esc
+    local noad   = node.new("noad")
+    noad.subtype = 0
+    noad.nucleus = sub
+
+    local mml_mn = {
+        [0]         = 'mn',
+        entero,
+        [':nodes']  = glyph_nodes,
+        [':actual'] = entero,
+    }
+    local properties = node.get_properties_table()
+    local p = properties[sub] or {}
+    p.mathml_filter = function(_mml, _core)
+        return mml_mn, mml_mn
+    end
+    properties[sub] = p
+
+    -- 7. Inyectar el noad con luamml deshabilitado temporalmente.
+    --    node.write aquí solo deposita el noad en la lista matemática
+    --    actual; el callback de luamml se dispara al CERRAR el grupo
+    --    matemático (al final de $ o \]). Por tanto deshabilitar el
+    --    flag aquí NO suprime el procesamiento del noad — luamml lo
+    --    verá igual cuando procese la lista completa.
+    --    Lo que sí suprime es cualquier callback intermedio espurio
+    --    que pudiera dispararse durante el node.write mismo.
+    node.write(noad)
+
+end, {"string", "string"})
 % \iffalse
 %</spintentlua>
 % \fi

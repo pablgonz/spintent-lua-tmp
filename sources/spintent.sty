@@ -29,7 +29,7 @@
 %% for those people who are interested.
 %% 
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage {spintent} {2026-01-08} {0.95} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-05-08} {0.95} {Spanish parse intents}
 \IfDocumentMetadataTF
   {
     \sys_if_engine_luatex:TF
@@ -75,18 +75,23 @@
 \lua_load_module:n { spintent.lua }
 \cs_generate_variant:Nn \__spintent_luafun_spunit_lookup_alias:n { V }
 \cs_generate_variant:Nn \__spintent_luafun_spmoney_lookup_data:n { V }
-\cs_generate_variant:Nn \__spintent_luafun_spmQ_send_factor:n { V }
+\cs_generate_variant:Nn \__spintent_luafun_spmQ_scale_int:nn { VV, Vn }
 \cs_generate_variant:Nn \__spintent_luafun_clean_split_and_set:n { V }
-%% Internal copy of invisible separator U-2063.
+%% Internal copy of invisible separator U-2063 => <mo>...</mo>.
 \cs_new_protected:Nn \__spintent_invisible_sep:
   {
     \luamml_annotate:en
       {
-        core = {[0] = 'mo', "^^^^2063"} % intent=":silent",
+        core = {[0] = 'mo', intent=':silent', "^^^^2063"}
       }
       {
         \latelua{}
       }
+  }
+%% Internal copy of invisible separator U-2063 => <mi>...</mi>.
+\hook_gput_code:nnn { begindocument } { spintent }
+  {
+    \Umathchardef \c__spintent_invisible_sep_tl = "0 "0 "2063
   }
 \cs_new_protected:Nn \__spintent_collapse_hyphens:N
   {
@@ -1143,11 +1148,7 @@
   }
 \cs_new_protected:Nn \__spintent_spshort_render_bypass:n
   {
-    \__spintent_spshort_tag_span:en { \l__spintent_spshort_read_arg_str }
-      {
-        \bool_if:NTF \l__spintent_spshort_smallcaps_bool
-          { \textsc{#1} } { #1 }
-      }
+    \__spintent_spshort_tag_span:en { \l__spintent_spshort_read_arg_str } { #1 }
   }
 \cs_new_protected:Nn \__spintent_spshort_render_error:n
   {
@@ -1477,6 +1478,124 @@
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spdate } }
+  }
+\msg_new:nnnn { spintent } { spusep-empty-arg }
+  { Empty~argument~in~\token_to_str:N \spusep. }
+  { \token_to_str:N \spusep~requires~a~non-empty~argument. }
+\msg_new:nnn { spintent } { spusep-invalid-arg }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spusep.
+  }
+\tl_new:N \l__spintent_spusep_arg_tl
+\tl_new:N \l__spintent_spusep_left_tl
+\tl_new:N \l__spintent_spusep_right_tl
+\keys_define:nn { spintent / spusep }
+  {
+    size           .choices:nn =
+      { none , big , Big, bigg, Bigg }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            { 1 }
+              {
+                \tl_clear:N \l__spintent_spusep_left_tl
+                \tl_clear:N \l__spintent_spusep_right_tl
+              }
+            { 2 }
+              {
+                \tl_set:Nn \l__spintent_spusep_left_tl  { \bigl }
+                \tl_set:Nn \l__spintent_spusep_right_tl { \bigr }
+              }
+            { 3 }
+              {
+                \tl_set:Nn \l__spintent_spusep_left_tl  { \Bigl }
+                \tl_set:Nn \l__spintent_spusep_right_tl { \Bigr }
+              }
+            { 4 }
+              {
+                \tl_set:Nn \l__spintent_spusep_left_tl  { \biggl }
+                \tl_set:Nn \l__spintent_spusep_right_tl { \biggr }
+              }
+            { 5 }
+              {
+                \tl_set:Nn \l__spintent_spusep_left_tl  { \Biggl }
+                \tl_set:Nn \l__spintent_spusep_right_tl { \Biggr }
+              }
+          }
+      },
+    size           .initial:n  = none,
+    size           .value_required:n = true,
+    size / unknown .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { size } { none,~big,~Big,~bigg,~Bigg } { \exp_not:n {#1} },
+    silent         .bool_set:N = \l__spintent_spusep_silent_bool,
+    silent         .initial:n = false,
+    silent         .value_required:n = true,
+    unknown        .code:n =
+      {
+        \str_set:Nn \l__spintent_command_name_str { spusep }
+        \__spintent_unknown_keys_cmd:n {#1}
+      },
+  }
+\cs_new_protected:Nn \__spintent_spusep_set_parens:nn
+  {
+    \tl_put_right:cn { l__spintent_spusep_ #1 _tl } { #2 }
+    \bool_if:NTF \l__spintent_spusep_silent_bool
+      {
+         \MathMLintent { :silent } { \tl_use:c { l__spintent_spusep_ #1 _tl } }
+      }
+      {
+        \tl_use:c { l__spintent_spusep_ #1 _tl }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spusep_convert:n
+  {
+    \tl_set:Ne \l__spintent_spusep_arg_tl { \tl_trim_spaces:n {#1} }
+    \tl_if_empty:NT \l__spintent_spusep_arg_tl
+      {
+        \msg_error:nnn { spintent } { spusep-invalid-arg } {#1}
+      }
+    \str_case:VnF \l__spintent_spusep_arg_tl
+      {
+        { (  }
+          {
+            \__spintent_spusep_set_parens:nn { left } { \lparen }
+          }
+        { )  }
+          {
+            \__spintent_spusep_set_parens:nn { right } { \rparen }
+          }
+        { [  }
+          {
+            \__spintent_spusep_set_parens:nn { left } { \lbrack }
+          }
+        { ]  }
+          {
+            \__spintent_spusep_set_parens:nn { right } { \rbrack }
+          }
+        { \{ }
+          {
+            \__spintent_spusep_set_parens:nn { left } { \lbrace }
+          }
+        { \} }
+          {
+            \__spintent_spusep_set_parens:nn { right } { \rbrace }
+          }
+      }
+      {
+        \msg_error:nnn { spintent } { spusep-invalid-arg } {#1}
+      }
+  }
+\NewDocumentCommand \spusep { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \keys_set:nn { spintent / spusep } {#1}
+          \__spintent_spusep_convert:n {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spusep } }
   }
 \msg_new:nnnn { spintent } { spread-empty-args }
   { Empty~argument~in~\token_to_str:N \spread. }
@@ -2142,9 +2261,8 @@
 \msg_new:nnnn { spintent } { spnz-not-integer }
   { The~value~'#1'~is~not~a~valid~integer. }
   {
-    Command~\spnZ~only~accepts~integers~without~decimals~or~units.\\
-    For~decimal~numbers~or~quantities~with~units,~use~\spnum~or~\spunit.
-  }
+    Command~\token_to_str:N \spnZ~only~accepts~integers.\\
+   }
 \cs_new_protected:Nn \__spintent_spnz_render_parens:
   {
     \bool_if:NTF \l__spintent_spnz_read_parens_bool
@@ -2186,22 +2304,18 @@
 \str_new:N \l__spintent_spmQ_join_word_str
 \tl_new:N  \l__spintent_spmQ_math_style_tl
 \str_new:N \l__spintent_spnQ_intent_read_sign_str
-\box_new:N \l__spintent_spmQ_part_int_box
-\box_new:N \l__spintent_spmQ_part_frac_box
-\dim_new:N \l__spintent_spmQ_raise_part_int_dim
-\dim_new:N \l__spintent_spmQ_part_int_ht_dp_dim
-\dim_new:N \l__spintent_spmQ_part_frac_ht_dp_dim
-\tl_new:N  \l__spintent_spmQ_int_scale_val_tl
+\tl_new:N  \l__spintent_spnQ_wrap_parens_l_tl
+\tl_new:N  \l__spintent_spnQ_wrap_parens_r_tl
+\int_new:N \l__spintent_saved_luamml_flag_int
 \msg_new:nnnn { spintent } { spmQ-zero-denominator }
-  { Zero~denominator~in~\spmQ. }
+  { Zero~denominator~in~\token_to_str:N \spmQ. }
   {
     The~denominator~of~a~fraction~cannot~be~zero.\\
-    Please~provide~a~valid~non-zero~integer~argument.
   }
 \msg_new:nnnn { spintent } { spmQ-not-integer }
   { The~value~'#1'~is~not~a~valid~integer. }
   {
-    Command~\token_to_str:N \spnQ~only~accepts~integers.\\
+    Command~\token_to_str:N \spnQ \c_space_tl only~accepts~integers.\\
   }
 \keys_define:nn { spintent / spmQ }
   {
@@ -2220,146 +2334,179 @@
     join-word/unknown .code:n =
       \msg_error:nneee { spintent } { unknown-choice }
         { join-word } { entero, ~enteros, ~y } { \exp_not:n {#1} },
+    use-spnZ          .bool_set:N = \l__spintent_spmQ_use_spnZ_bool,
+    use-spnZ          .initial:n = true,
+    use-spnZ          .value_required:n = true,
     print-dfrac       .bool_set:N = \l__spintent_spmQ_print_dfrac_bool,
     print-dfrac       .initial:n = false,
     print-dfrac       .value_required:n = true,
+    wrap-parens       .bool_set:N = \l__spintent_spnQ_wrap_parens_bool,
+    wrap-parens       .initial:n  = false,
+    wrap-parens       .value_required:n = true,
+    read-parens       .bool_set:N = \l__spintent_spnQ_read_parens_bool,
+    read-parens       .initial:n  = true,
+    read-parens       .value_required:n = true,
     unknown           .code:n =
       {
         \str_set:Nn \l__spintent_command_name_str { spmQ }
         \__spintent_unknown_keys_cmd:n {#1}
       },
   }
-\cs_new_protected:Nn \__spintent_spmQ_wrap_math:n
+\cs_new_protected:Nn \__spintent_spmQ_set_wrap_parens_size:
   {
-    $ \l__spintent_spmQ_math_style_tl #1 $
-  }
-\cs_generate_variant:Nn \__spintent_spmQ_wrap_math:n { V }
-\cs_new_protected:Nn \__spintent_spmQ_capture_math_style:
-  {
-    \tl_set:Ne \l__spintent_spmQ_math_style_tl
+    \int_case:nnF { \mathstyle }
       {
-        \int_case:nnF { \mathstyle }
+        { 0 }
           {
-            { 0 } { \exp_not:N \displaystyle }
-            { 1 } { \exp_not:N \displaystyle }
-            { 2 } { \exp_not:N \textstyle }
-            { 3 } { \exp_not:N \textstyle }
-            { 4 } { \exp_not:N \scriptstyle }
-            { 5 } { \exp_not:N \scriptstyle }
-            { 6 } { \exp_not:N \scriptscriptstyle }
-            { 7 } { \exp_not:N \scriptscriptstyle }
+            \tl_set:Nn \l__spintent_spnQ_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn \l__spintent_spnQ_wrap_parens_r_tl { \Bigr \rparen }
           }
-          { \exp_not:N \textstyle }
-      }
-  }
-\cs_new_protected:Nn \__spintent_spmQ_match_sign:
-  {
-    \tl_if_empty:NF \l__spintent_luaset_sign_tl
-      {
-        \str_if_eq:VnTF \l__spintent_luaset_sign_tl { + }
+        { 1 }
           {
-            \str_set:Nn \l__spintent_spnQ_intent_read_sign_str { más:prefix $(e) }
+            \tl_set:Nn  \l__spintent_spnQ_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn  \l__spintent_spnQ_wrap_parens_r_tl { \Bigr \rparen }
           }
+        { 2 }
           {
-            \str_set:Nn \l__spintent_spnQ_intent_read_sign_str { menos:prefix $(e) }
+            \tl_set:Nn  \l__spintent_spnQ_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn  \l__spintent_spnQ_wrap_parens_r_tl { \bigr \rparen }
+          }
+        { 3 }
+          {
+            \tl_set:Nn  \l__spintent_spnQ_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn  \l__spintent_spnQ_wrap_parens_r_tl { \bigr \rparen }
           }
       }
-  }
-\cs_new_protected:Nn \__spintent_spmQ_print_int:nnn
-  {
-    \__spintent_luafun_clean_split_and_set:n { \exp_not:n {#1} }
-    \str_if_eq:VnTF \l__spintent_luaset_has_integer_str { true }
-      { \__spintent_spmQ_match_sign: }
-      { \msg_error:nnn { spintent } { spnQ-not-integer } {#1} }
-    \__spintent_spmQ_scale_int:nn {#2} {#3}
-    \str_if_empty:NTF \l__spintent_luaset_sign_tl
-      { \__spintent_spmQ_print_scaled_int: }
       {
-        \MathMLintent { \l__spintent_spnQ_intent_read_sign_str }
+        \tl_set:Nn \l__spintent_spnQ_wrap_parens_l_tl { \lparen }
+        \tl_set:Nn \l__spintent_spnQ_wrap_parens_r_tl { \rparen }
+      }
+    \bool_if:NT \l__spintent_spmQ_print_dfrac_bool
+      {
+        \tl_set:Nn  \l__spintent_spnQ_wrap_parens_l_tl { \Bigl \lparen }
+        \tl_set:Nn  \l__spintent_spnQ_wrap_parens_r_tl { \Bigr \rparen }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spmQ_start_wrap_parens:
+  {
+    \bool_if:NT \l__spintent_spnQ_wrap_parens_bool
+      {
+        \__spintent_spmQ_set_wrap_parens_size:
+        \bool_if:NTF \l__spintent_spnQ_read_parens_bool
           {
-            \l__spintent_luaset_sign_tl \__spintent_invisible_sep:
-            \MathMLarg { e } { \__spintent_spmQ_print_scaled_int: }
+            \l__spintent_spnQ_wrap_parens_l_tl
+          }
+          {
+            \MathMLintent { :silent } { \l__spintent_spnQ_wrap_parens_l_tl }
           }
       }
   }
-\cs_generate_variant:Nn \__spintent_luafun_spmQ_send_factor:n { V }
-\cs_new_protected:Nn \__spintent_spmQ_scale_int:nn
+\cs_new_protected:Nn \__spintent_spmQ_stop_wrap_parens:
   {
-    \__spintent_spmQ_capture_math_style:
-    \hbox_set:Nn \l__spintent_spmQ_part_int_box
-      { \__spintent_spmQ_wrap_math:V \l__spintent_luaset_part_int_tl }
-    \hbox_set:Nn \l__spintent_spmQ_part_frac_box
+    \bool_if:NT \l__spintent_spnQ_wrap_parens_bool
       {
-        \bool_if:NTF \l__spintent_spmQ_print_dfrac_bool
+        \__spintent_spmQ_set_wrap_parens_size:
+        \bool_if:NTF \l__spintent_spnQ_read_parens_bool
           {
-            \__spintent_spmQ_wrap_math:n { \dfrac { #1 } { #2 } }
+            \l__spintent_spnQ_wrap_parens_r_tl
           }
           {
-            \__spintent_spmQ_wrap_math:n { \frac { #1 } { #2 } }
-          }
-      }
-    \dim_set:Nn \l__spintent_spmQ_part_int_ht_dp_dim
-      {
-        \box_ht_plus_dp:N \l__spintent_spmQ_part_int_box
-      }
-    \dim_set:Nn \l__spintent_spmQ_part_frac_ht_dp_dim
-      {
-        \box_ht_plus_dp:N \l__spintent_spmQ_part_frac_box
-      }
-    \dim_compare:nNnTF
-      { \l__spintent_spmQ_part_int_ht_dp_dim } = { \c_zero_dim }
-      { \tl_set:Nn \l__spintent_spmQ_int_scale_val_tl { 1 } }
-      {
-        \tl_set:Ne \l__spintent_spmQ_int_scale_val_tl
-          {
-            \dim_ratio:nn
-              { \l__spintent_spmQ_part_frac_ht_dp_dim }
-              { \l__spintent_spmQ_part_int_ht_dp_dim }
-          }
-      }
-    \__spintent_luafun_spmQ_send_factor:V \l__spintent_spmQ_int_scale_val_tl
-  }
-\cs_new_protected:Nn \__spintent_spmQ_print_scaled_int:
-  {
-    \luamml_annotate:en
-      {
-        nucleus = false,
-        core={[0]='mn','\l__spintent_luaset_part_int_tl'}
-      }
-      {
-        \raisebox { -\box_dp:N \l__spintent_spmQ_part_frac_box }
-          {
-             \__spintent_spmQ_wrap_math:V \l__spintent_luaset_part_int_tl
+            \MathMLintent { :silent } { \l__spintent_spnQ_wrap_parens_r_tl }
           }
       }
   }
-\cs_new_protected:Nn \__spintent_spmQ_render:nnn
+\cs_new_protected:Nn \__spintent_spmQ_set_join_word:
   {
-    \__spintent_spmQ_print_int:nnn { #1 } { #2 } { #3 }
     \str_case:Vn \l__spintent_spmQ_join_word_str
       {
         { entero  }
           {
-            \MathMLintent { _entero } { \__spintent_invisible_sep: }
+            \MathMLintent { _entero } { \c__spintent_invisible_sep_tl }
           }
         { enteros }
           {
-            \MathMLintent { _enteros } { \__spintent_invisible_sep: }
+            \MathMLintent { _enteros } { \c__spintent_invisible_sep_tl }
           }
         { y       }
           {
-            \MathMLintent { _y } { \__spintent_invisible_sep: }
+            \MathMLintent { _y } { \c__spintent_invisible_sep_tl }
           }
       }
-    \bool_if:NTF \l__spintent_spmQ_print_dfrac_bool
+   }
+\cs_new_protected:Nn \__spintent_spmQ_print_spnZ_dfrac:nn
+  {
+    \__spintent_luafun_clean_split_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnT \l__spintent_luaset_has_integer_str { false }
       {
-        \dfrac { \spnZ { #2 } } { \spnZ { #3 } }
+        \msg_error:nn { spintent } { spmQ-not-integer }
+      }
+    \bool_if:NTF \l__spintent_spmQ_use_spnZ_bool
+      {
+        \use:c { \bool_if:NT \l__spintent_spmQ_print_dfrac_bool { d } frac }
+          { \spnZ { #1 } } { \spnZ { #2 } }
       }
       {
-        \frac { \spnZ { #2 } } { \spnZ { #3 } }
+        \use:c { \bool_if:NT \l__spintent_spmQ_print_dfrac_bool { d } frac }
+          { #1 } { #2 }
       }
   }
-\cs_new_protected:Nn \__spintent_spmQ_process:nnnn
+\cs_new_protected:Nn \__spintent_spmQ_print_scale_int:
+  {
+    % Deshabilitar luamml mientras se inyecta el noad del entero.
+    % Esto evita el <math> fantasma del sub_box procesado en solitario
+    % antes de que \frac se expanda.
+    % Flag 0 = skip completamente.
+    %%\int_set:Nn \l__luamml_flag_int { 0 }
+    \int_set_eq:Nc \l__spintent_saved_luamml_flag_int { l__luamml_flag_int }
+    \int_set:Nn \l__luamml_flag_int { 0 }
+    \bool_if:NTF \l__spintent_spmQ_print_dfrac_bool
+      {
+        \__spintent_luafun_spmQ_scale_int:Vn \l__spintent_luaset_part_int_tl {dfrac}
+      }
+      {
+        \__spintent_luafun_spmQ_scale_int:Vn \l__spintent_luaset_part_int_tl {frac}
+      }
+    % Restaurar flag normal (11 = mathml-SE: bits 0,1,3)
+    % \int_set:Nn \l__luamml_flag_int { 11 }
+    \int_set_eq:cN { l__luamml_flag_int } \l__spintent_saved_luamml_flag_int
+  }
+\cs_new_protected:Nn \__spintent_spmQ_print_sacle_int:n
+  {
+    \__spintent_luafun_clean_split_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnTF \l__spintent_luaset_has_integer_str { true }
+      {
+        \tl_if_empty:NTF \l__spintent_luaset_sign_tl
+          {
+            \__spintent_spmQ_print_scale_int:
+          }
+          {
+            \str_if_eq:VnTF \l__spintent_luaset_sign_tl { + }
+              {
+                \str_set:Nn
+                  \l__spintent_spnQ_intent_read_sign_str { _más:prefix $(e) }
+              }
+              {
+                 \str_set:Nn
+                   \l__spintent_spnQ_intent_read_sign_str { _menos:prefix $(e) }
+              }
+            \MathMLintent { \l__spintent_spnQ_intent_read_sign_str }
+              {
+                \l__spintent_luaset_sign_tl  \__spintent_invisible_sep: % need
+                \MathMLarg { e } { \__spintent_spmQ_print_scale_int: }
+              }
+          }
+      }
+      { \msg_error:nn { spintent } { spmQ-not-integer } }
+  }
+\cs_new_protected:Nn \__spintent_spmQ_print:nnn
+  {
+    \__spintent_spmQ_start_wrap_parens:
+    \__spintent_spmQ_print_sacle_int:n { #1 }
+    \__spintent_spmQ_set_join_word:
+    \__spintent_spmQ_print_spnZ_dfrac:nn { #2 } { #3 }
+    \__spintent_spmQ_stop_wrap_parens:
+  }
+\cs_new_protected:Nn \__spintent_spmQ_exec:nnnn
   {
     \keys_set:nn { spintent / spmQ } { #1 }
     \__spintent_luafun_clean_split_and_set:n { \exp_not:n { #4 } }
@@ -2367,16 +2514,16 @@
       {
         \int_compare:nNnTF { \l__spintent_luaset_part_int_tl } = { 0 }
           { \msg_error:nn { spintent } { spmQ-zero-denominator } }
-          { \__spintent_spmQ_render:nnn { #2 } { #3 } { #4 } }
+          { \__spintent_spmQ_print:nnn { #2 } { #3 } { #4 } }
       }
-      { \__spintent_spmQ_render:nnn { #2 } { #3 } { #4 } }
+      { \__spintent_spmQ_print:nnn { #2 } { #3 } { #4 } }
   }
 \NewDocumentCommand \spmQ { O{} m m m }
   {
     \mode_if_math:TF
       {
         \group_begin:
-          \__spintent_spmQ_process:nnnn { #1 } { #2 } { #3 } { #4 }
+          \__spintent_spmQ_exec:nnnn { #1 } { #2 } { #3 } { #4 }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmQ } }

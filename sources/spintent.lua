@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.95 [2026-01-08]
+     Lua module spintent.lua for spintent package - v0.95 [2026-05-08]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -1328,9 +1328,8 @@ end, { "string", "string" })
 
 -- 10. NÚMEROS MIXTOS, code for \spmQ (see https://tex.stackexchange.com/q/764828)
 
-local spintent_factor = nil
-local glyph_id = node.id("glyph")
-local font_cache = {}
+local font_cache         = {}
+local spintent_measuring = false
 
 local function is_digit(n)
     return n.char >= 48 and n.char <= 57
@@ -1338,73 +1337,153 @@ end
 
 local function get_scaled_font(id, factor)
     local key = tostring(id) .. ":" .. tostring(factor)
-    if font_cache[key] then
-        return font_cache[key]
-    end
-
+    if font_cache[key] then return font_cache[key] end
     local old_font = font.getfont(id)
-    if not old_font then
-        return id
-    end
-
+    if not old_font then return id end
     local spec = {}
-
-    for k, v in pairs(old_font.specification) do
-        spec[k] = v
-    end
-
+    for k, v in pairs(old_font.specification) do spec[k] = v end
     spec.size = math.floor(old_font.size * factor)
     local ok, data = pcall(fonts.definers.loadfont, spec)
-
-    if not ok or not data then
-        return id
-    end
-
+    if not ok or not data then return id end
     local new_id = font.define(data)
+    fonts.hashes.identifiers[new_id] = data
     font_cache[key] = new_id
-    -- texio.write_nl("new font = " .. tostring(new_id))
     return new_id
 end
 
 local function scale_glyphs(head, factor)
+    if spintent_measuring then return head end
     for n in node.traverse_glyph(head) do
         if is_digit(n) then
-            -- texio.write_nl("glyph = " .. n.char .. " font = " .. n.font)
             local new_id = get_scaled_font(n.font, factor)
             n.font = new_id
             local f = font.getfont(new_id)
             if f and f.characters then
                 local c = f.characters[n.char]
                 if c then
-                   n.width = c.width
-                   n.height = c.height
-                   n.depth = c.depth
+                    n.width  = c.width
+                    n.height = c.height
+                    n.depth  = c.depth
                 end
             end
         end
     end
-
     return head
 end
 
-luatexbase.add_to_callback("post_mlist_to_hlist_filter",
-    function(head)
-        if not spintent_factor then
-            return head
-        end
-        local factor = spintent_factor
-        spintent_factor = nil
-        -- texio.write_nl("MATH factor = " .. tostring(factor))
-        return scale_glyphs(head, factor)
-    end, "spintent-math-scale"
-)
-
-register_tex_cmd("luafun_spmQ_send_factor", function(value)
-    local numerator, denominator = value:match("^(%d+)/(%d+)$")
-    if numerator and denominator then
-        spintent_factor = tonumber(numerator) / tonumber(denominator)
-    else
-        spintent_factor = tonumber(value)
+local function build_char_noads(str)
+    local head, tail
+    for i = 1, #str do
+        local kernel = node.new("math_char")
+        kernel.char  = str:byte(i)
+        kernel.fam   = 0
+        local n      = node.new("noad")
+        n.subtype    = 0
+        n.nucleus    = kernel
+        if not head then head = n tail = n
+        else tail.next = n tail = n end
     end
-    -- texio.write_nl("LUA factor = " .. tostring(spintent_factor))
-end,{"string"})
+    return head
+end
+
+local function build_submlist_noad(str)
+    local mlist  = node.new("sub_mlist")
+    mlist.head   = build_char_noads(str)
+    local noad   = node.new("noad")
+    noad.subtype = 0
+    noad.nucleus = mlist
+    return noad
+end
+
+register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
+
+    local styles = {
+        [0] = "display",      [1] = "display",
+        [2] = "text",         [3] = "text",
+        [4] = "script",       [5] = "script",
+        [6] = "scriptscript", [7] = "scriptscript",
+    }
+
+    local display_type = (frac_cmd == "dfrac") and "display" or
+        (styles[tonumber(tex.mathstyle)] or "text")
+
+    local function build_entero_mlist_noad()
+        return build_submlist_noad(entero)
+    end
+
+    local function medir_frac(dt, cmd)
+        spintent_measuring = true
+        tex.runtoks(function()
+            tex.sprint(
+                "\\setbox0\\hbox{$\\" .. dt .. "style" ..
+                "\\" .. cmd .. "{0}{0}$}"
+            )
+        end)
+        spintent_measuring = false
+        local h  = tex.box[0].height
+        local dp = tex.box[0].depth
+        tex.box[0] = nil
+        return h, dp
+    end
+
+    -- 1. Medir fracción
+    local frac_height, frac_depth = medir_frac(display_type, frac_cmd)
+    local ht_frac_real = frac_height + frac_depth
+
+    -- 2. Medir entero
+    spintent_measuring = true
+    local h_med = node.mlist_to_hlist(build_entero_mlist_noad(), display_type, false)
+    spintent_measuring = false
+    local ht_entero = h_med.height + h_med.depth
+
+    -- 3. Factor
+    local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
+
+    -- 4. Hlist escalada
+    local h_esc = node.mlist_to_hlist(build_entero_mlist_noad(), display_type, false)
+    scale_glyphs(h_esc.list, factor)
+
+    local ancho = 0
+    for n in node.traverse_glyph(h_esc.list) do ancho = ancho + n.width end
+    h_esc.width  = ancho
+    h_esc.height = frac_height
+    h_esc.depth  = frac_depth
+    h_esc.shift  = math.floor(frac_depth + 0.5)
+
+    -- 5. Glyph nodes físicos
+    local glyph_nodes = {}
+    for n in node.traverse_glyph(h_esc.list) do
+        if is_digit(n) then glyph_nodes[#glyph_nodes + 1] = n end
+    end
+
+    -- 6. sub_box con mathml_filter
+    local sub    = node.new("sub_box")
+    sub.head     = h_esc
+    local noad   = node.new("noad")
+    noad.subtype = 0
+    noad.nucleus = sub
+
+    local mml_mn = {
+        [0]         = 'mn',
+        entero,
+        [':nodes']  = glyph_nodes,
+        [':actual'] = entero,
+    }
+    local properties = node.get_properties_table()
+    local p = properties[sub] or {}
+    p.mathml_filter = function(_mml, _core)
+        return mml_mn, mml_mn
+    end
+    properties[sub] = p
+
+    -- 7. Inyectar el noad con luamml deshabilitado temporalmente.
+    --    node.write aquí solo deposita el noad en la lista matemática
+    --    actual; el callback de luamml se dispara al CERRAR el grupo
+    --    matemático (al final de $ o \]). Por tanto deshabilitar el
+    --    flag aquí NO suprime el procesamiento del noad — luamml lo
+    --    verá igual cuando procese la lista completa.
+    --    Lo que sí suprime es cualquier callback intermedio espurio
+    --    que pudiera dispararse durante el node.write mismo.
+    node.write(noad)
+
+end, {"string", "string"})
