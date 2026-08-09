@@ -1,6 +1,6 @@
 ## spintent — Spanish parse intent
 
-Release v0.95 \[2026-05-08\]
+Release v0.95 \[2026-08-09\]
 
 ## Description
 
@@ -29,12 +29,12 @@ $ luatex spintent.ins
 and move all files to appropriate locations:
 
 ```
-  spintent.sty  ->  TDS:tex/luatex/spintent/spintent.sty
-  spintent.lua  ->  TDS:tex/luatex/spintent/spintent.lua
-  spintent.pdf  ->  TDS:doc/luatex/spintent/spintent.pdf
-  README.md     ->  TDS:doc/luatex/spintent/README.md
-  spintent.dtx  ->  TDS:source/luatex/spintent/spintent.dtx
-  spintent.ins  ->  TDS:source/luatex/spintent/spintent.ins
+  spintent.sty  ->  TDS:tex/lualatex/spintent/spintent.sty
+  spintent.lua  ->  TDS:tex/lualatex/spintent/spintent.lua
+  spintent.pdf  ->  TDS:doc/lualatex/spintent/spintent.pdf
+  README.md     ->  TDS:doc/lualatex/spintent/README.md
+  spintent.dtx  ->  TDS:source/lualatex/spintent/spintent.dtx
+  spintent.ins  ->  TDS:source/lualatex/spintent/spintent.ins
 ```
 
 then run `mktexlsr`. To produce the documentation with source code run `arara spintent.dtx`.
