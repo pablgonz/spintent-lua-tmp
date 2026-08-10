@@ -1923,9 +1923,9 @@
   {
     \keys_define:nn { spintent / sp #1 }
       {
-        result       .bool_set:c = l__spintent_sp #1 _print_result_bool,
-        result       .initial:n  = false,
-        result       .value_required:n = true,
+        result             .bool_set:c = { l__spintent_sp #1 _print_result_bool },
+        result             .initial:n  = false,
+        result             .value_required:n = true,
         prefix             .code:n =
           { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
         prefix             .initial:n = ,
@@ -1944,13 +1944,13 @@
         read-cmd / unknown .code:n =
           \msg_error:nneee { spintent } { unknown-choice }
             { read-cmd } { terse , ~clear } { \exp_not:n {##1} },
-        upper-case         .bool_set:c = l__spintent_sp #1 _print_upper_bool,
+        upper-case         .bool_set:c = { l__spintent_sp #1 _print_upper_bool },
         upper-case         .initial:n  = false,
         upper-case         .value_required:n = true,
-        sample-arg         .bool_set:c = l__spintent_sp #1 _sample_arg_bool,
+        sample-arg         .bool_set:c = { l__spintent_sp #1 _sample_arg_bool },
         sample-arg         .initial:n  = false,
         sample-arg         .value_required:n = true,
-        silent-cmd         .bool_set:c = l__spintent_sp #1 _silent_cmd_bool,
+        silent-cmd         .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
         silent-cmd         .initial:n  = false,
         silent-cmd         .value_required:n = true,
         unknown            .code:n =
@@ -2056,25 +2056,25 @@
     \bool_new:c { l__spintent_sp #1 _print_result_bool       }
     \bool_new:c { l__spintent_sp #1 _silent_cmd_bool         }
     \tl_new:c   { l__spintent_sp #1 _prefix_tl               }
-    \tl_new:c   { l__spintent_sp #1 _print_result_num_tl        }
+    \tl_new:c   { l__spintent_sp #1 _print_result_num_tl     }
   }
 \clist_map_inline:nn { nM , nD }
   {
     \keys_define:nn { spintent / sp #1 }
       {
-        result     .bool_set:c = l__spintent_sp #1 _print_result_bool,
+        result     .bool_set:c = { l__spintent_sp #1 _print_result_bool },
         result     .initial:n  = false,
         result     .value_required:n = true,
-        silent-cmd .bool_set:c = l__spintent_sp #1 _silent_cmd_bool,
+        silent-cmd .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
         silent-cmd .initial:n  = false,
         silent-cmd .value_required:n = true,
-        result-num .tl_set:c   = l__spintent_sp #1 _print_result_num_tl,
+        result-num .tl_set:c   = { l__spintent_sp #1 _print_result_num_tl },
         result-num .initial:n  = ,
         prefix     .code:n =
           { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
         prefix     .initial:n = ,
         prefix     .value_required:n = true,
-        sample-arg .bool_set:c = l__spintent_sp #1 _sample_arg_bool,
+        sample-arg .bool_set:c = { l__spintent_sp #1 _sample_arg_bool },
         sample-arg .initial:n  = false,
         sample-arg .value_required:n = true,
         unknown    .code:n =
