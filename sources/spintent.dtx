@@ -47,6 +47,10 @@
 \usepackage[top=0.5in,bottom=0.3in,left=1.70in,right=0.7in,footskip=0.2in,headheight=1cm,headsep=0.27cm]{geometry}
 \usepackage[osf,nomath,mono=false,ScaleSF=0.95,ScaleRM=0.95]{libertinus-otf}
 % Set Monospace font, fix 'quotes' in verbatim
+%\RenewDocumentCommand{ \MacroFont }{}
+%  {
+%    \ttfamily\small
+%  }
 \usepackage{sourcecodepro}
 \defaultfontfeatures[\ttfamily]
   {
@@ -645,7 +649,7 @@
 % Get file info
 \GetFileInfo{spintent.sty} % not work here :(
 \def\fileversion{v0.95}
-\def\filedate{2026-08-09}
+\def\filedate{2026-08-11}
 \def\fileinfo{Spanish parse intents}
 % Config hyperref
 \hypersetup
@@ -718,27 +722,38 @@
 \makeatother
 
 \begin{filecontents*}[overwrite]{mylhmc.lua}
--- mylhmc.lua v1.0 [2025-08-09] (Optimized for LuaTeX 2026)
+-- mylhmc.lua v1.2 [2026-08-11] (Optimized for LuaTeX 2026)
 -- LuaLaTeX syntax highlighter for l3doc macrocode environments
+-- Includes exact font scaling detection and safe Semibold/Bold fallback via luaotfload bracket notation
 
--- Local references for standard libraries (Performance)
-local s_sub = string.sub
-local s_find = string.find
-local s_match = string.match
+-- Local references for standard libraries (Performance & GC optimization)
+local s_sub    = string.sub
+local s_find   = string.find
+local s_match  = string.match
 local s_format = string.format
+local s_gsub   = string.gsub
+local s_gmatch = string.gmatch
+local s_byte   = string.byte
+local s_lower  = string.lower
+local s_rep    = string.rep
 local t_unpack = table.unpack or unpack
-local u_codes = utf8.codes
-local n_new = node.new
-local n_write = node.write
+local tonumber = tonumber
+local ipairs   = ipairs
+local pairs    = pairs
+local u_codes  = utf8.codes
+local n_new    = node.new
+local n_copy   = node.copy
+local n_write  = node.write
 local f_current = font.current
 local f_getfont = font.getfont
-local f_define = font.define
+local f_define  = font.define
+local f_max     = font.max
 local t_get_macro = token.get_macro
 local t_set_macro = token.set_macro
 
--- Register TeX commands (Max style:)
+-- Register TeX commands
 local function register_tex_cmd(name, func, args)
-  name = "__mylhmc_" .. name .. ":" .. ("n"):rep(#args)
+  name = "__mylhmc_" .. name .. ":" .. s_rep("n", #args)
   local scanners = {}
   for i = 1, #args do
     local scan_type = (args[i] == "string" and "scan_argument") or "scan_" .. args[i]
@@ -774,8 +789,7 @@ local digit = lpeg.digit
 -- Grammar
 local sig_chars  = S"NnVvoxefpTFwDcq"
 local hex_chars  = S"0123456789abcdefABCDEF"
-local name_chars    = alpha + S"_@"
-local name_chars_no_at = alpha + S"_"
+local name_chars = alpha + S"_@"
 local var_prefix = P"\\" * S"lg"
 
 local structure_names =
@@ -793,11 +807,19 @@ local ltcmd_names =
   P"RenewDocumentCommand" + P"RenewDocumentEnvironment" +
   P"ProvideDocumentCommand" + P"ProvideDocumentEnvironment"
 
-local gen_variant_suffix = P"cs_generate_variant:" * S"Nc" * P"n"
+local gen_variant_suffix =
+  P"cs_generate_variant:" * S"Nc" * P"n" +
+  P"prg_generate_conditional_variant:" * S"Nc" * P"nn" +
+  P"prg_new_conditional:" * S"N" * P"pnn" +
+  P"prg_new_conditional:" * S"N" * P"nn" +
+  P"prg_new_protected_conditional:" * S"N" * P"pnn" +
+  P"prg_new_protected_conditional:" * S"N" * P"nn" +
+  P"prg_new_eq_conditional:" * S"N" * P"Nn"
 
 local cs_w   = P"cs:w"
 local cs_end = P"cs_end:"
 
+-- CAUTION: Avoid TeX catcode 7 reader errors completely (\x5e)
 local code_rules = {
   {24, P"#" ^ 1 * digit},
   {1,  P"#" ^ 1},
@@ -805,8 +827,8 @@ local code_rules = {
   {21, P"$"},
   {21, P"\\" * S"(["},
   {21, P"\\" * S")]"},
-  {18, P(("^"):rep(4)) * hex_chars * hex_chars * hex_chars * hex_chars},
-  {18, P"\\" ^ -1 * P"^^" * P(1) * P(1) ^ -1},
+  {18, P"\x5e\x5e\x5e\x5e" * hex_chars * hex_chars * hex_chars * hex_chars},
+  {18, P"\\" ^ -1 * P"\x5e\x5e" * P(1) * P(1) ^ -1},
   {18, P"~"},
   {22, P" " * (P"<=" + P">=" + P"!=" + P"<" + P">" + P"=" + P"/") * P" "},
   {22, P" " * P"=" * (P"\\" + -P(1))},
@@ -822,8 +844,7 @@ local code_rules = {
   {20, P"\\" * P"c_"  * (alpha + S"@") * name_chars ^ 0},
   {2,  var_prefix * P"__" * name_chars ^ 1},
   {4,  var_prefix * P"_" * (alpha + S"@") * name_chars ^ 0},
-  {32, P"@"},
-  {15, P"\\" * (alpha ^ 0 * P"@" * alpha ^ 0) ^ 1},
+  {15, P"\\" * (alpha ^ 0 * (P"@" + P"!" + P"&") * alpha ^ 0) ^ 1},
   {5,  P"\\" * P"__" * name_chars ^ 1 * (P":" * sig_chars ^ 0) ^ -1},
   {26, P"\\" * gen_variant_suffix},
   {30, P"\\" * cs_w},
@@ -834,10 +855,10 @@ local code_rules = {
   {28, P"'" },
   {28, P'"' },
   {23, P"\\\\" },
-  {23, P"\\" * S",:;!>~|/*+-={}#$_&%^"},
+  {23, P"\\" * S",:;!>~|/*+-={}#$_&%\x5e"},
   {12, digit ^ 1},
-  {6,  P"\\" * alpha * name_chars_no_at ^ 0 * P":" * sig_chars ^ 0},
-  {23, P"\\" * alpha * name_chars_no_at ^ 0},
+  {6,  P"\\" * alpha * name_chars ^ 0 * P":" * sig_chars ^ 0},
+  {23, P"\\" * alpha * name_chars ^ 0},
   {8,  S"{}"},
   {3,  S"[]"},
   {9,  P"%" * (P(1) - S"\r\n") ^ 0 * (S"\r\n" + -1)},
@@ -861,26 +882,89 @@ local function find_match(str, pos)
   return s, e, t
 end
 
--- Color table
-local colors = {}
+-- Cache para guardar la asociación: fid_regular -> fid_bold
+local bold_cache = {}
+
+local function get_bold_fid(fid)
+  if bold_cache[fid] then return bold_cache[fid] end
+
+  local f = f_getfont(fid)
+  if not f or not f.name then
+    bold_cache[fid] = fid
+    return fid
+  end
+
+  -- Extraer la familia base (Ej: "[SourceCodePro-Regular.otf]" -> "SourceCodePro")
+  local base_family = s_match(f.name, '^%[?([^%-]+)')
+  if not base_family then base_family = f.name end
+
+  local best_match_id = nil
+  local min_diff = math.huge
+
+  -- ESCANEO INTELIGENTE EN MEMORIA
+  -- Buscamos la Semibold/Bold que tenga el tamaño más cercano al texto actual
+  for i = 1, f_max() do
+    local bf = f_getfont(i)
+    if bf and bf.name and bf.name ~= f.name then
+      -- ¿Es de la misma familia?
+      if s_find(bf.name, base_family, 1, true) then
+        local lower_name = s_lower(bf.name)
+        local is_semi = s_find(lower_name, 'semibold') or s_find(lower_name, 'semi') or s_find(lower_name, 'demi')
+        local is_bold = s_find(lower_name, 'bold')
+
+        if is_semi or is_bold then
+          local size_diff = math.abs(bf.size - f.size)
+
+          -- Si encontramos EL TAMAÑO EXACTO (0 de diferencia), es un match perfecto
+          if size_diff == 0 then
+            bold_cache[fid] = i
+            return i
+          end
+
+          -- Si no es exacto, guardamos el ID del que tenga el tamaño más parecido
+          if size_diff < min_diff then
+            min_diff = size_diff
+            best_match_id = i
+          end
+        end
+      end
+    end
+  end
+
+  -- Si no encontramos el tamaño exacto pero sí uno parecido, usamos ese (Fallback seguro)
+  if best_match_id then
+    bold_cache[fid] = best_match_id
+    return best_match_id
+  end
+
+  -- Fallback final si la familia no tiene absolutamente ninguna negrita cargada
+  bold_cache[fid] = fid
+  return fid
+end
+
+-- Node Builders & Colors
+local color_data = {}
 
 register_tex_cmd("set_color", function(name, spec)
   local r, g, b = s_match(spec, '([%d%.]+)%s+([%d%.]+)%s+([%d%.]+)')
-  if r then colors[name] = { tonumber(r), tonumber(g), tonumber(b) } end
+  if r then
+    local nr, ng, nb = tonumber(r), tonumber(g), tonumber(b)
+    color_data[name] = s_format('%.4f %.4f %.4f rg %.4f %.4f %.4f RG', nr, ng, nb, nr, ng, nb)
+  end
 end, {"string", "string"})
 
--- Node builders
-local function colorstack_push(r, g, b)
+local function colorstack_push(color_name)
   local n = n_new('whatsit', 'pdf_colorstack')
   n.stack, n.command = 0, 1
-  n.data = s_format('%.4f %.4f %.4f rg %.4f %.4f %.4f RG', r,g,b,r,g,b)
+  n.data = color_data[color_name]
   return n
 end
 
+local pop_template = n_new('whatsit', 'pdf_colorstack')
+pop_template.stack, pop_template.command, pop_template.data = 0, 2, ''
+
 local function colorstack_pop()
-  local n = n_new('whatsit', 'pdf_colorstack')
-  n.stack, n.command, n.data = 0, 2, ''
-  return n
+  return n_copy(pop_template)
 end
 
 local function append(rh, rt, h, t)
@@ -913,15 +997,18 @@ end
 local function colored_str(str, color_name, fid)
   local h, t = str_to_nodes(str, fid)
   if not h then return nil, nil end
-  local c = colors[color_name]
-  if c then
-    local push = colorstack_push(c[1], c[2], c[3])
+  if color_data[color_name] then
+    local push = colorstack_push(color_name)
     local pop  = colorstack_pop()
     push.next = h; h.prev = push
     t.next = pop; pop.prev = t
     return push, pop
   end
   return h, t
+end
+
+local function colored_str_bold(str, color_name, fid)
+  return colored_str(str, color_name, get_bold_fid(fid))
 end
 
 -- Type color table
@@ -935,14 +1022,17 @@ local type_colors = {
   [20]='constant',   [21]='math',       [22]='compare',
   [23]='latex_cmd',  [24]='argument',   [25]='structure',
   [26]='publicfun',  [28]='quote',      [29]='brace',
-  [30]='publicfun',  [31]='publicfun',  [32]='escape',
+  [30]='publicfun',  [31]='publicfun',
 }
 
 -- csname state
-local csname_positions = {}
-local arg_counter      = 0
-local in_csname        = false
-local csname_base_color = nil
+local csname_positions      = {}
+local arg_counter           = 0
+local in_csname             = false
+local csname_base_color     = nil
+local variant_braces_remaining = 0
+local skip_variant_braces      = 0
+local in_variant_group         = false
 
 local function reset_csname_state()
   for k in pairs(csname_positions) do csname_positions[k] = nil end
@@ -962,7 +1052,7 @@ local function emit_with_signature(chunk, base_color, fid)
 
   reset_csname_state()
   local pos = 0
-  for ch in string.gmatch(sig, '.') do
+  for ch in s_gmatch(sig, '.') do
     if s_match(ch, '[NnVvoxefpTFwDcq]') then
       pos = pos + 1
       if ch == 'c' or ch == 'v' then
@@ -997,10 +1087,43 @@ local function csname_color_from_prefix(text)
   return 'latex_cmd'
 end
 
+-- Emit text inside csname context, splitting @, !, &, ^ into escape color
+local function emit_csname_text(text, base_color, fid, rh, rt)
+  local has_special = false
+  local len = #text
+  for i = 1, len do
+    local b = s_byte(text, i)
+    if b == 64 or b == 33 or b == 38 or b == 94 then has_special = true; break end
+  end
+
+  if not has_special then
+    local h, t = colored_str(text, base_color, fid)
+    return append(rh, rt, h, t)
+  end
+
+  local cur = 1
+  for i = 1, len do
+    local b = s_byte(text, i)
+    if b == 64 or b == 33 or b == 38 or b == 94 then
+      if i > cur then
+        local h, t = colored_str(s_sub(text, cur, i-1), base_color, fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      local h, t = colored_str(s_sub(text, i, i), 'escape', fid)
+      rh, rt = append(rh, rt, h, t)
+      cur = i + 1
+    end
+  end
+  if cur <= len then
+    local h, t = colored_str(s_sub(text, cur), base_color, fid)
+    rh, rt = append(rh, rt, h, t)
+  end
+  return rh, rt
+end
+
 -- colorize_code
 local function colorize_code(line, fid)
   local rh, rt = nil, nil
-  local next_brace_is_variant = false
   local pos = 1
   local line_len = #line
 
@@ -1009,11 +1132,12 @@ local function colorize_code(line, fid)
     if b == -1 then
       local remainder = s_sub(line, pos)
       local h, tl
-      if next_brace_is_variant then
+      if in_variant_group then
         h, tl = colored_str(remainder, 'sigargs', fid)
       elseif in_csname then
         csname_base_color = csname_base_color or csname_color_from_prefix(remainder)
-        h, tl = colored_str(remainder, csname_base_color, fid)
+        rh, rt = emit_csname_text(remainder, csname_base_color, fid, rh, rt)
+        h, tl = nil, nil
       else
         h, tl = str_to_nodes(remainder, fid)
       end
@@ -1024,11 +1148,12 @@ local function colorize_code(line, fid)
     if b > pos then
       local prefix = s_sub(line, pos, b - 1)
       local h, tl
-      if next_brace_is_variant then
+      if in_variant_group then
         h, tl = colored_str(prefix, 'sigargs', fid)
       elseif in_csname then
         csname_base_color = csname_base_color or csname_color_from_prefix(prefix)
-        h, tl = colored_str(prefix, csname_base_color, fid)
+        rh, rt = emit_csname_text(prefix, csname_base_color, fid, rh, rt)
+        h, tl = nil, nil
       else
         h, tl = str_to_nodes(prefix, fid)
       end
@@ -1041,9 +1166,6 @@ local function colorize_code(line, fid)
     if t == 8 then
       if chunk == "{" then
         arg_counter = arg_counter + 1
-        local has_pos = false
-        for k in pairs(csname_positions) do has_pos = true; break end
-        --
         local is_csname = csname_positions[arg_counter]
         if not is_csname and arg_counter == 1 then
           for k in pairs(csname_positions) do
@@ -1051,10 +1173,24 @@ local function colorize_code(line, fid)
           end
         end
         if is_csname then
-          in_csname, csname_base_color, next_brace_is_variant = true, nil, false
+          in_csname, csname_base_color, variant_braces_remaining = true, nil, 0
+          in_variant_group = false
+        end
+        if in_variant_group then
+          skip_variant_braces = skip_variant_braces + 1
+        elseif variant_braces_remaining > 0 then
+          in_variant_group = true
         end
       elseif chunk == "}" then
-        in_csname, next_brace_is_variant = false, false
+        in_csname = false
+        if in_variant_group then
+          if skip_variant_braces > 0 then
+            skip_variant_braces = skip_variant_braces - 1
+          else
+            in_variant_group = false
+            variant_braces_remaining = variant_braces_remaining - 1
+          end
+        end
       end
       h, tl = colored_str(chunk, "brace", fid)
     elseif t == 24 then
@@ -1064,8 +1200,20 @@ local function colorize_code(line, fid)
       rh, rt = append(rh, rt, h, tl)
       h, tl = colored_str(num, 'argnum', fid)
     elseif t == 26 then
-      next_brace_is_variant = true
       arg_counter = 0
+      if s_find(chunk, 'prg_generate_conditional_variant', 1, true) then
+        skip_variant_braces = 0
+        variant_braces_remaining = 2
+      elseif s_find(chunk, 'prg_new_eq_conditional', 1, true) then
+        skip_variant_braces = 0
+        variant_braces_remaining = 1
+      elseif s_find(chunk, 'prg_new', 1, true) then
+        skip_variant_braces = 0
+        variant_braces_remaining = 1
+      else
+        skip_variant_braces = 0
+        variant_braces_remaining = 1
+      end
       h, tl = emit_with_signature(chunk, 'publicfun', fid)
     elseif t == 30 then
       in_csname, csname_base_color = true, nil
@@ -1101,19 +1249,20 @@ local function colorize_code(line, fid)
       h, tl = colored_str(chunk, 'comment', fid)
     elseif in_csname then
       csname_base_color = csname_base_color or csname_color_from_prefix(chunk)
-      if t == 9 then
-        h, tl = colored_str(chunk, "comment", fid)
-      elseif s_sub(chunk, 1, 1) == "\\" then
-        -- Command inside csname: normal color, no emit_with_signature (avoids state reset)
+      if s_sub(chunk, 1, 1) == "\\" then
         h, tl = colored_str(chunk, type_colors[t], fid)
       else
-        h, tl = colored_str(chunk, csname_base_color, fid)
+        rh, rt = emit_csname_text(chunk, csname_base_color, fid, rh, rt)
+        h, tl = nil, nil
       end
-    elseif t == 5 or t == 6 or t == 14 or t == 25 then
+    elseif t == 5 or t == 6 or t == 14 then
       arg_counter = 0
       h, tl = emit_with_signature(chunk, type_colors[t], fid)
+    elseif t == 25 then
+      arg_counter = 0
+      h, tl = colored_str_bold(chunk, 'structure', fid)
     elseif t == 18 then
-      local four_caret = ("^"):rep(4)
+      local four_caret = "\x5e\x5e\x5e\x5e"
       if s_sub(chunk, 1, 4) == four_caret then
         h, tl = colored_str(four_caret, 'escape', fid); rh, rt = append(rh, rt, h, tl)
         h, tl = colored_str(s_sub(chunk, 5), 'number', fid)
@@ -1122,31 +1271,25 @@ local function colorize_code(line, fid)
       end
     elseif t == 13 then
       h, tl = emit_with_signature(chunk, 'danger', fid)
-    elseif t == 32 then
-      h, tl = colored_str(chunk, 'escape', fid)
     elseif t == 15 then
-      local first = s_sub(chunk, 1, 1) == "\\" and true or false
-      local parts = {}
-      local cur = first and 2 or 1  -- skip leading \ for first part
-      for i = (first and 2 or 1), #chunk do
-        if s_sub(chunk, i, i) == "@" then
-          if i > cur then
-            parts[#parts+1] = {s_sub(chunk, cur, i-1), 'latex_cmd'}
+      local cur = 2
+      local len = #chunk
+      for i = 2, len do
+        local b = s_byte(chunk, i)
+        if b == 64 or b == 33 or b == 38 or b == 94 then
+          local part = (cur == 2 and '\\' or '') .. s_sub(chunk, cur, i - 1)
+          if #part > 0 then
+            h, tl = colored_str(part, 'latex_cmd', fid); rh, rt = append(rh, rt, h, tl)
           end
-          parts[#parts+1] = {"@", 'escape'}
+          h, tl = colored_str(s_sub(chunk, i, i), 'escape', fid); rh, rt = append(rh, rt, h, tl)
           cur = i + 1
         end
       end
-      if cur <= #chunk then
-        parts[#parts+1] = {s_sub(chunk, cur), 'latex_cmd'}
-      end
-      -- emit first part with leading \ included
-      if first and #parts > 0 then
-        parts[1][1] = "\\" .. parts[1][1]
-      end
-      for i, part in ipairs(parts) do
-        h, tl = colored_str(part[1], part[2], fid)
-        if i < #parts then rh, rt = append(rh, rt, h, tl) end
+      if cur <= len then
+        local part = (cur == 2 and '\\' or '') .. s_sub(chunk, cur)
+        h, tl = colored_str(part, 'latex_cmd', fid)
+      else
+        h, tl = nil, nil
       end
     else
       h, tl = colored_str(chunk, type_colors[t], fid)
@@ -1165,7 +1308,7 @@ local lm_fid    = nil
 
 local function get_lm_fid()
   if lm_fid then return lm_fid end
-  for i = 1, font.max() do
+  for i = 1, f_max() do
     local f = f_getfont(i)
     if f and f.filename and s_find(f.filename, 'lmroman10%-regular') then
       if f.characters and f.characters[LM_LANGLE] then
@@ -1180,7 +1323,7 @@ end
 
 local function make_angle_nodes(content_head, content_tail, angle_color)
   local fid = get_lm_fid()
-  local c   = colors[angle_color] or colors['guard/angle']
+  local cname = (color_data[angle_color] and angle_color) or 'guard/angle'
   local function angle_glyph(cp)
     local g = n_new('glyph')
     g.font, g.char, g.subtype = fid, cp, 1
@@ -1190,15 +1333,15 @@ local function make_angle_nodes(content_head, content_tail, angle_color)
   local rg = angle_glyph(LM_RANGLE)
   local rh, rt = nil, nil
 
-  if c then rh, rt = append(rh, rt, colorstack_push(c[1], c[2], c[3])) end
+  if color_data[cname] then rh, rt = append(rh, rt, colorstack_push(cname)) end
   rh, rt = append(rh, rt, lg)
-  if c then rh, rt = append(rh, rt, colorstack_pop()) end
+  if color_data[cname] then rh, rt = append(rh, rt, colorstack_pop()) end
 
   if content_head then rh, rt = append(rh, rt, content_head, content_tail) end
 
-  if c then rh, rt = append(rh, rt, colorstack_push(c[1], c[2], c[3])) end
+  if color_data[cname] then rh, rt = append(rh, rt, colorstack_push(cname)) end
   rh, rt = append(rh, rt, rg)
-  if c then rh, rt = append(rh, rt, colorstack_pop()) end
+  if color_data[cname] then rh, rt = append(rh, rt, colorstack_pop()) end
 
   return rh, rt
 end
@@ -1207,30 +1350,31 @@ end
 local function colorize_guard_expr(expr, fid)
   local rh, rt = nil, nil
   local name_start = 1
-  local function flush(s, e_)
-    if s <= e_ then
-      local h, t = colored_str(s_sub(expr, s, e_), 'guard/name', fid)
-      rh, rt = append(rh, rt, h, t)
-    end
-  end
-  for i = 1, #expr do
-    local c = s_sub(expr, i, i)
-    if s_match(c, '[!&|()*/ ]') then
-      flush(name_start, i - 1)
+  local len = #expr
+  for i = 1, len do
+    local b = s_byte(expr, i)
+    if b == 33 or b == 32 or b == 38 or b == 40 or b == 41 or b == 42 or b == 47 or b == 124 then
+      if name_start <= i - 1 then
+        local h, t = colored_str(s_sub(expr, name_start, i - 1), 'guard/name', fid)
+        rh, rt = append(rh, rt, h, t)
+      end
       name_start = i + 1
-      if c ~= ' ' then
-        local h, t = colored_str(c, 'guard/operator', fid)
+      if b ~= 32 then
+        local h, t = colored_str(s_sub(expr, i, i), 'guard/operator', fid)
         rh, rt = append(rh, rt, h, t)
       end
     end
   end
-  flush(name_start, #expr)
+  if name_start <= len then
+    local h, t = colored_str(s_sub(expr, name_start, len), 'guard/name', fid)
+    rh, rt = append(rh, rt, h, t)
+  end
   return rh, rt
 end
 
 -- Guard line renderer
 local function render_guard(line, fid)
-  local rest = string.gsub(line, '^%s*', '')
+  local rest = s_gsub(line, '^%s*', '')
   if s_sub(rest, 1, 1) ~= '<' then
     local h, t = colored_str('%' .. line, 'guard/name', fid)
     if h then n_write(h) end
@@ -1280,11 +1424,11 @@ end
 local function apply_at_at(line)
   local modname = t_get_macro('g__codedoc_module_name_tl')
   if modname and modname ~= '' then
-    line = string.gsub(line, '@@@@', '\0')
-    line = string.gsub(line, '__@@', '__' .. modname)
-    line = string.gsub(line, '_@@',  '__' .. modname)
-    line = string.gsub(line, '@@',   '__' .. modname)
-    line = string.gsub(line, '\0',   '@@')
+    line = s_gsub(line, '@@@@', '\0')
+    line = s_gsub(line, '__@@', '__' .. modname)
+    line = s_gsub(line, '_@@',  '__' .. modname)
+    line = s_gsub(line, '@@',   '__' .. modname)
+    line = s_gsub(line, '\0',   '@@')
   end
   return line
 end
@@ -1293,7 +1437,7 @@ end
 register_tex_cmd("process_line", function()
   local line = t_get_macro('l__mylhmc_verbatim_line_tl')
   if not line or line == '' then return end
-  line = string.gsub(line, '[\r\n]+$', '')
+  line = s_gsub(line, '[\r\n]+$', '')
   if line == '' then return end
 
   line = apply_at_at(line)
@@ -1301,7 +1445,7 @@ register_tex_cmd("process_line", function()
 
   if s_sub(line, 1, 1) == '%' then
     local rest = s_sub(line, 2)
-    local trimmed = string.match(rest, '^%s*(.*)')
+    local trimmed = s_match(rest, '^%s*(.*)')
     if s_sub(trimmed, 1, 1) == '<' then
       render_guard(rest, fid)
     else
@@ -1316,7 +1460,7 @@ end, {})
 \end{filecontents*}
 \begin{filecontents*}[overwrite]{mylhmc.sty}
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2025-08-09}{1.0}
+\ProvidesExplPackage{mylhmc}{2025-08-10}{1.2}
   {Line-by-line macrocode reader for l3doc in Lua}
 % Require LuaTeX
 \sys_if_engine_luatex:F
@@ -1334,10 +1478,15 @@ end, {})
 \lua_load_module:n { mylhmc.lua }
 \cs_generate_variant:Nn \__mylhmc_set_color:nn { VV }
 
+% { 008000 } % Verde puro
+% { 006400 } % Verde Pygments
+% { 191970 } % MidnightBlue
+% { 002EA6 } % Azul Eléctrico
+
 % Colors — code token classes
 \color_set:nnn { mylhmc / argument   } { HTML } { 48467C } % Violáceo Oscuro -> # (sin número)
 \color_set:nnn { mylhmc / argnum     } { HTML } { 6A1B9A } % Púrpura         -> número en #1
-\color_set:nnn { mylhmc / privatevar } { HTML } { 006400 } % Verde Pygments  -> \g__var \l__var
+\color_set:nnn { mylhmc / privatevar } { HTML } { 3D7A7A}  % verde azulado   -> \g__var \l__var
 \color_set:nnn { mylhmc / bracket    } { HTML } { 4A5568 } % Gris Carbón     -> []
 \color_set:nnn { mylhmc / publicvar  } { HTML } { 0066CC } % Azul Medio      -> \l_var \g_var
 \color_set:nnn { mylhmc / privatefun } { HTML } { 00695C } % Menta Oscuro    -> \__foo:Nn
@@ -1361,7 +1510,7 @@ end, {})
 \color_set:nnn { mylhmc / math       } { HTML } { FF1818 } % Rojo Neón       -> $ $$ \( \) \[ \]
 \color_set:nnn { mylhmc / compare    } { HTML } { 808080 } % Gris Medio      -> < > = <= >= !=
 \color_set:nnn { mylhmc / latex_cmd  } { HTML } { 3F3FFF } % Azul Brillante  -> \mathrm \textbf \,
-\color_set:nnn { mylhmc / structure  } { HTML } { 191970 } % MidnightBlue    -> \NeedsTeXFormat \ProvidesExplPackage
+\color_set:nnn { mylhmc / structure  } { HTML } { 0066CC } % Azul Medio      -> \NeedsTeXFormat \ProvidesExplPackage
 
 % Colors — guard/module annotation
 \color_set:nnn { mylhmc / guard / angle    } { HTML } { 808080 } % Gris Medio   -> 〈 〉
@@ -3715,13 +3864,13 @@ end, {})
 % \subsection{Declaration of the package}
 %
 % First we will make sure we have a minimum (super updated) version of
-% \hologo{LaTeX} to work correctly.
+% \hologo{LaTeX} to work correctly. \textbf{\texttt{NeedsTeXFormat}}
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
 %    \end{macrocode}
 % Now declare the \mypkg*{spintent} package.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-08-09} {0.95} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-11} {0.95} {Spanish parse intents}
 %    \end{macrocode}
 % We check if the requirements for running the \mypkg*{spintent} package
 % are met; that is: |\DocumentMetadata| must be active, \hologo{LuaTeX}
@@ -8349,7 +8498,7 @@ end, {})
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.95 [2026-08-09]
+     Lua module spintent.lua for spintent package - v0.95 [2026-08-11]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -8371,6 +8520,10 @@ local s_byte     = string.byte
 local u_len      = utf8.len
 local u_sub      = utf8.sub
 
+-- Nuevas referencias locales para rendimiento
+local ipairs     = ipairs
+local pairs      = pairs
+
 local token_set_macro = token.set_macro
 local luatexbase_new  = luatexbase.new_luafunction
 
@@ -8390,46 +8543,29 @@ local spintent_spshort_Cc = lpeg_base.Cc
 local spintent_digit = R"09"
 
 local spintent_math_space =
-    P"\\,"
-    + P"\\-"
-    + P"\\;"
-    + P"\\:"
-    + P"\\!"
-    + P"\\>"
-    + P"\\quad"
-    + P"\\qquad"
-    + P"~"
-    + P"\\ "
-    + P"\\thinspace"
-    + P"\\nobreakspace"
+    P"\\," + P"\\-" + P"\\;" + P"\\:" + P"\\!" +
+    P"\\>" + P"\\quad" + P"\\qquad" + P"~" +
+    P"\\ " + P"\\thinspace" + P"\\nobreakspace"
 
 local spintent_discard_space = (S" \t\r\n" + spintent_math_space) / ""
 local spintent_opt_spaces = spintent_discard_space^0
 
 -- Eliminación de espacios matemáticos para cálculos
 local spintent_num_chunk = Cs(
-    spintent_digit
-    * (spintent_opt_spaces * spintent_digit)^0
+    spintent_digit * (spintent_opt_spaces * spintent_digit)^0
 )
 
-local spintent_num_sep_keep = (
-        spintent_opt_spaces
-        * #spintent_digit
-)
+local spintent_num_sep_keep = (spintent_opt_spaces * #spintent_digit)
 
 local spintent_num_chunk_keep = Cs(
-    spintent_digit
-    * (
-        ((S" \t\r\n" + spintent_math_space)^0 * #spintent_digit)
-        * spintent_digit
+    spintent_digit * (
+        ((S" \t\r\n" + spintent_math_space)^0 * #spintent_digit) * spintent_digit
     )^0
 )
 
-
--- Registro de las funciones para expl3; Max Chernoff style (https://chat.stackexchange.com/transcript/message/68993656#68993656)
-
+-- Registro de las funciones para expl3
 local function register_tex_cmd(name, func, args)
-    name = "__spintent_" .. name .. ":" .. ("n"):rep(#args)
+    name = "__spintent_" .. name .. ":" .. string.rep("n", #args)
     local scanners = {}
     for i = 1, #args do
         local scan_type = (args[i] == "string" and "scan_argument") or "scan_" .. args[i]
@@ -8447,11 +8583,11 @@ local function register_tex_cmd(name, func, args)
         scanning_func = function()
             local values = {}
             for i = 1, #scanners do values[i] = scanners[i]() end
-            func(table.unpack(values))
+            func(t_unpack(values))
         end
     end
 
-    local index = luatexbase.new_luafunction(name)
+    local index = luatexbase_new(name)
     lua.get_functions_table()[index] = scanning_func
     token.set_lua(name, index, "global", "protected")
 end
@@ -8464,7 +8600,6 @@ local spintent_num_semi = P ";"
 local spintent_forbidden_in_extra = spintent_num_decimal + spintent_num_semi
 local spintent_custom_spunit_aliases = {}
 
--- Un espacio matemático seguido de un dígito continúa formando parte del número.
 local spintent_extra_char = P(1) - spintent_forbidden_in_extra
 
 local spintent_number_pattern = Ct(
@@ -8487,77 +8622,73 @@ local spintent_number_pattern = Ct(
         spintent_opt_spaces
         * S"eE"
         * spintent_opt_spaces
-        * Cg(
-            Cs(spintent_num_sign^-1 * spintent_num_chunk),
-            "exponent"
-        )
+        * Cg(Cs(spintent_num_sign^-1 * spintent_num_chunk), "exponent")
     )^-1
     * spintent_opt_spaces
     * Cg(Cs(spintent_extra_char^0), "extra")
     * P(-1)
 )
 
+-- Optimización: uso exclusivo de longitud de bytes (#) y s_sub para dígitos (O(1) vs O(N))
 local function spintent_rae_format_digits(str_num, reverse)
-    if not str_num or str_num == "" then
-        return ""
-    end
+    if not str_num or str_num == "" then return "" end
 
     str_num = tostring(str_num)
-    local len = u_len(str_num) or #str_num
-    if len <= 4 then
-        return str_num
-    end
+    local len = #str_num -- Los números en Lua son 1 byte por carácter (ASCII)
+    if len <= 4 then return str_num end
 
     local chunks = {}
     if reverse then
         for i = 1, len, 3 do
-            t_insert(chunks, u_sub(str_num, i, i + 2))
+            t_insert(chunks, s_sub(str_num, i, i + 2))
         end
     else
         local first = len % 3
-        if first == 0 then
-            first = 3
-        end
-        t_insert(chunks, u_sub(str_num, 1, first))
+        if first == 0 then first = 3 end
+        t_insert(chunks, s_sub(str_num, 1, first))
 
         for i = first + 1, len, 3 do
-            t_insert(chunks, u_sub(str_num, i, i + 2))
+            t_insert(chunks, s_sub(str_num, i, i + 2))
         end
     end
 
     return t_concat(chunks, "\\,")
 end
 
-register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
-    raw_string = s_match(raw_string, "^%s*(.-)%s*$") or raw_string
-
-    local result = spintent_number_pattern:match(raw_string) or {}
-    local r_sign = result.sign or ""
-
-    -- Conservan los espacios TeX del usuario
-    local r_int  = result.integer or ""
-    local r_frac = result.fraction or ""
-
-    -- Versiones limpias para cálculos
-    local r_int_clean = r_int
-    local r_frac_clean = r_frac
-
-    for _, sep in ipairs({
+-- Pre-asignación de tabla constante para evitar instanciación masiva en el bucle
+local math_spaces = {
     "\\,", "\\-", "\\;", "\\:", "\\!",
     "\\>", "\\quad", "\\qquad",
     "~", "\\ ", "\\thinspace", "\\nobreakspace"
-    }) do
-    r_int_clean  = s_gsub(r_int_clean, sep, "")
-    r_frac_clean = s_gsub(r_frac_clean, sep, "")
+}
+
+register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
+    raw_string = s_match(raw_string, "^%s*(.-)%s*$") or raw_string
+
+    local result = spintent_number_pattern:match(raw_string)
+
+    -- Prevención de creación de tabla si falla el match (nil or {})
+    local r_sign = (result and result.sign) or ""
+    local r_int  = (result and result.integer) or ""
+    local r_frac = (result and result.fraction) or ""
+
+    local r_int_clean = r_int
+    local r_frac_clean = r_frac
+
+    -- Uso de la constante extraída para reducir Garbage Collection
+    for _, sep in ipairs(math_spaces) do
+        r_int_clean  = s_gsub(r_int_clean, sep, "")
+        r_frac_clean = s_gsub(r_frac_clean, sep, "")
     end
 
-    -- Versiones matemáticas limpias usadas para cálculos internos
-    local r_int_clean  = s_gsub(r_int, "\\,", "")
-    local r_frac_clean = s_gsub(r_frac, "\\,", "")
-    local r_dec    = result.decimal or ""
-    local r_period = result.period or ""
-    local r_extra  = result.extra
-    local r_exp    = result.exponent or ""
+    r_int_clean  = s_gsub(r_int, "\\,", "")
+    r_frac_clean = s_gsub(r_frac, "\\,", "")
+
+    local r_dec    = (result and result.decimal) or ""
+    local r_period = (result and result.period) or ""
+    local r_extra  = (result and result.extra)
+    local r_exp    = (result and result.exponent) or ""
+
     local has_exponent = (r_exp ~= "") and "true" or "false"
     local above = ""
     local below = ""
@@ -8618,15 +8749,8 @@ register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
     local has_integer = "false"
     local has_natural = "false"
 
-    if r_int_clean ~= ""
-       and r_dec == ""
-       and r_frac_clean == ""
-       and r_period == ""
-       and has_exponent == "false"
-       and has_units == "false" then
-
+    if r_int_clean ~= "" and r_dec == "" and r_frac_clean == "" and r_period == "" and has_exponent == "false" and has_units == "false" then
         has_integer = "true"
-
         if r_sign == "" then
             local int_val = tonumber(r_int_clean)
             if int_val and int_val > 0 then
@@ -8642,7 +8766,7 @@ register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
     token_set_macro("l__spintent_luaset_part_period_tl", r_period)
     token_set_macro("l__spintent_luaset_only_part_int_str", r_int_clean)
     token_set_macro("l__spintent_luaset_only_part_dec_str", r_frac_clean)
-    token_set_macro("l__spintent_luaset_only_part_period_str", result.period or "")
+    token_set_macro("l__spintent_luaset_only_part_period_str", (result and result.period) or "")
     token_set_macro("l__spintent_luaset_format_part_int_str", spintent_rae_format_digits(r_int_clean, false))
     token_set_macro("l__spintent_luaset_format_part_dec_str", spintent_rae_format_digits(r_frac_clean, true))
     token_set_macro("l__spintent_luaset_millons_str", is_million_clean)

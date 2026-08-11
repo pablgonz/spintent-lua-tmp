@@ -1,6 +1,6 @@
 ## spintent — Spanish parse intent
 
-Release v0.95 \[2026-08-09\]
+Release v0.95 \[2026-08-11\]
 
 ## Description
 
