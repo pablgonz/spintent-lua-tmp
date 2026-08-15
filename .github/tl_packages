@@ -34,8 +34,7 @@ anonymouspro
 accsupp
 alphalph
 amsfonts
-amsmath
-atbegshi
+# atbegshi
 attachfile2
 atveryend
 auxhook
@@ -44,43 +43,39 @@ babel-english
 babel-spanish
 bigintcalc
 bitset
-booktabs
-caption
-# catchfile
+# caption
 cm
-#collectbox
-colorprofiles
 colortbl
 comfortaa
 csquotes
 ctablestack
 duckuments
-ec
-#enctex
+# ec
+# enctex
 enumitem
 #environ
 etexcmds
 etoolbox
-euenc
-everyshi
+# euenc
+# everyshi
 fancyvrb
 fetamont
-filehook
-float
+# filehook
+# float
 fontawesome5
 fontspec
 # fvextra
 geometry
 gettitlestring
-grfext
+# grfext
 hologo
 hycolor
 hypdoc
 hyperref
 hyph-utf8
 hyphenex
-ifoddpage
-ifplatform
+# ifoddpage
+# ifplatform
 iftex
 imakeidx
 infwarerr
@@ -92,7 +87,7 @@ l3backend
 l3kernel
 l3packages
 lastpage
-letltxmacro
+# letltxmacro
 libertinus-fonts
 libertinus-otf
 libertinus
@@ -102,7 +97,6 @@ lm
 lm-math
 ltxcmds
 lualatex-math
-microtype
 unicode-math
 # scontents
 # siunitx
@@ -123,6 +117,5 @@ underscore
 unicode-data
 uniquecounter
 #upquote
-xcolor
 xkeyval
 #xstring
