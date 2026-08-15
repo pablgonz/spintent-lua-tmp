@@ -32,7 +32,6 @@ fourier
 erewhon-math
 anonymouspro
 accsupp
-adjustbox
 alphalph
 amsfonts
 amsmath
@@ -49,7 +48,7 @@ booktabs
 caption
 # catchfile
 cm
-collectbox
+#collectbox
 colorprofiles
 colortbl
 comfortaa
@@ -57,9 +56,9 @@ csquotes
 ctablestack
 duckuments
 ec
-enctex
+#enctex
 enumitem
-environ
+#environ
 etexcmds
 etoolbox
 euenc
@@ -108,22 +107,22 @@ unicode-math
 # scontents
 # siunitx
 mwe
-ragged2e
-pdfescape
-pdftexcmds
-pgf
+#ragged2e
+#pdfescape
+#pdftexcmds
+#pgf
 psnfss
 refcount
 rerunfilecheck
 sourcecodepro
 stringenc
 symbol
-tcolorbox
+#tcolorbox
 titlesec
 underscore
 unicode-data
 uniquecounter
-upquote
+#upquote
 xcolor
 xkeyval
-xstring
+#xstring
