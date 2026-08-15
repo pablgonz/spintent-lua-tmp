@@ -8,6 +8,9 @@ local utf8 = require("unicode").utf8
 local tonumber   = tonumber
 local tostring   = tostring
 local math_floor = math.floor
+local math_sqrt  = math.sqrt
+local t_sort     = table.sort
+local s_format   = string.format
 local t_insert   = table.insert
 local t_concat   = table.concat
 local t_unpack   = table.unpack or unpack
@@ -18,15 +21,12 @@ local s_gsub     = string.gsub
 local s_lower    = string.lower
 local s_upper    = string.upper
 local s_byte     = string.byte
-local u_len      = utf8.len
-local u_sub      = utf8.sub
 
 -- Nuevas referencias locales para rendimiento
 local ipairs     = ipairs
 local pairs      = pairs
 
 local token_set_macro = token.set_macro
-local luatexbase_new  = luatexbase.new_luafunction
 
 local lpeg_base = lpeg or require("lpeg")
 local P, R, S, Cs, Ct, Cg, C, Cc =
@@ -40,7 +40,6 @@ local P, R, S, Cs, Ct, Cg, C, Cc =
     lpeg_base.Cc
 
 local spintent_spshort_V  = lpeg_base.V
-local spintent_spshort_Cc = lpeg_base.Cc
 local spintent_digit = R"09"
 
 local spintent_math_space =
@@ -55,8 +54,6 @@ local spintent_opt_spaces = spintent_discard_space^0
 local spintent_num_chunk = Cs(
     spintent_digit * (spintent_opt_spaces * spintent_digit)^0
 )
-
-local spintent_num_sep_keep = (spintent_opt_spaces * #spintent_digit)
 
 local spintent_num_chunk_keep = Cs(
     spintent_digit * (
@@ -74,7 +71,9 @@ local function register_tex_cmd(name, func, args)
     end
 
     local scanning_func
-    if #scanners == 1 then
+    if #scanners == 0 then
+        scanning_func = func
+    elseif #scanners == 1 then
         local s1 = scanners[1]
         scanning_func = function() func(s1()) end
     elseif #scanners == 2 then
@@ -88,7 +87,7 @@ local function register_tex_cmd(name, func, args)
         end
     end
 
-    local index = luatexbase_new(name)
+    local index = luatexbase.new_luafunction(name)
     lua.get_functions_table()[index] = scanning_func
     token.set_lua(name, index, "global", "protected")
 end
@@ -182,8 +181,8 @@ register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
         r_frac_clean = s_gsub(r_frac_clean, sep, "")
     end
 
-    r_int_clean  = s_gsub(r_int, "\\,", "")
-    r_frac_clean = s_gsub(r_frac, "\\,", "")
+    r_int_clean  = s_gsub(r_int_clean, "\\,", "")
+    r_frac_clean = s_gsub(r_frac_clean, "\\,", "")
 
     local r_dec    = (result and result.decimal) or ""
     local r_period = (result and result.period) or ""
@@ -627,8 +626,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local position = "pre"
     if resolved_symbol == "€" then position = "post" end
 
-    local raw_input = s_match(currency_name, "^%s*(.-)%s*$") or currency_name
-    if raw_input == s_upper(raw_input) and s_match(raw_input, "^[A-Za-z]+$") then
+    if clean == s_upper(clean) and s_match(clean, "^[a-z]+$") then
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "true")
     else
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "false")
@@ -871,7 +869,7 @@ local spintent_spshort_illegal_suff = C((R("az") + R("AZ"))^1)
 local spintent_spshort_ord_grammar = P({
   "Entry",
   Entry  = #spintent_digit * spintent_spshort_V("Main"),
-  Main   = C(spintent_spshort_digits) * spintent_spshort_dot * (spintent_spshort_raw_suffix + spintent_spshort_illegal_suff * Cg(spintent_spshort_Cc(true)))
+  Main   = C(spintent_spshort_digits) * spintent_spshort_dot * (spintent_spshort_raw_suffix + spintent_spshort_illegal_suff * Cg(Cc(true)))
 })
 
 local function spintent_spshort_execute_analysis(raw_input)
@@ -1200,7 +1198,7 @@ local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
     end
     local final_result = numbers[1]
     for i = 2, #numbers do final_result = operation_fn(final_result, numbers[i]) end
-    token_set_macro(tl_out, string.format("%d", final_result))
+    token_set_macro(tl_out, s_format("%d", final_result))
 end
 
 register_tex_cmd("luafun_calculate_mcd", function(raw_csv_list)
@@ -1245,7 +1243,7 @@ end
 local function spintent_calculate_divisors(n_val, limit)
     local divisors = {}
     -- Algoritmo optimizado de raíz cuadrada para divisores rápidos
-    for i = 1, math_floor(math.sqrt(n_val)) do
+    for i = 1, math_floor(math_sqrt(n_val)) do
         if n_val % i == 0 then
             t_insert(divisors, i)
             -- Si el cociente es diferente, agregarlo también
@@ -1255,7 +1253,7 @@ local function spintent_calculate_divisors(n_val, limit)
         end
     end
     -- Ordenar los divisores de menor a mayor
-    table.sort(divisors)
+    t_sort(divisors)
 
     local results = {}
     local actual_count = #divisors
@@ -1328,7 +1326,6 @@ local function get_scaled_font(id, factor)
 end
 
 local function scale_glyphs(head, factor)
-    if spintent_measuring then return head end
     for n in node.traverse_glyph(head) do
         if is_digit(n) then
             local new_id = get_scaled_font(n.font, factor)

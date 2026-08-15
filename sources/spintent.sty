@@ -125,8 +125,8 @@
     Cannot~configure~unknown~command~'\exp_not:c{#1}'.
   }
   {
-    You~attempted~to~use~\string\setspintent{#1}{...},~but~the~
-    macro~\exp_not:c{#1}~is~not~defined.~Please~check~for~typos.
+    You~attempted~to~use~\token_to_str:N \setspintent{#1}{...},~but~the~
+    command~\exp_not:c{#1}~is~not~defined.~Please~check~for~typos.
   }
 \cs_new_protected:Nn \__spintent_setspintent_set_keys:nn
   {
@@ -541,8 +541,8 @@
     Illegal~numeric~coefficient~in~inline~denominator~'#1'.
   }
   {
-    The~inline~mode~of~\token_to_str:N \spunit\ does~not~allow~numbers~
-    after~the~slash~(/).
+    The~inline~mode~of~\token_to_str:N \spunit \c_space_tl
+    does~not~allow~numbers~after~the~slash~(/).
   }
 \keys_define:nn { spintent/spunit }
   {
@@ -721,7 +721,7 @@
     The~unit~symbol~or~alias~'#1'~is~already~defined!
   }
   {
-    You~cannot~redefine~an~existing~unit~with~\token_to_str:N \spnewunit.
+    You~cannot~redefine~with~\token_to_str:N \spnewunit.
   }
 \msg_new:nnnn { spintent } { spunitalias-duplicate }
   {
@@ -735,7 +735,7 @@
     The~expression~'#2'~for~alias~'#1'~is~invalid.
   }
   {
-    It~must~contain~only~defined~units,~exponents~and~one~slash~(/).
+    It~must~contain~only~defined~units,~exponents~and~one~'/'.
   }
 \NewDocumentCommand \spnewunit { m m }
   {
@@ -1734,7 +1734,10 @@
     read-sym / unknown .code:n =
       \msg_error:nneee { spintent } { unknown-choice }
         { read-sym } { por, ~multiplicado-por, ~veces } { \exp_not:n {#1} },
-    unknown             .code:n =
+    not-print          .bool_set:N = \l__spintent_spmsym_not_print_bool,
+    not-print          .initial:n  = false,
+    not-print          .value_required:n = true,
+    unknown            .code:n =
       {
         \str_set:Nn \l__spintent_command_name_str { spmsym }
         \__spintent_unknown_keys_cmd:n {#1}
@@ -1754,7 +1757,13 @@
               \tl_if_empty:NF \l__spintent_spmsym_suffix_tl
                 { - \l__spintent_spmsym_suffix_tl }
             }
-            { \l__spintent_spmsym_symbol_tl }
+            {
+              \bool_if:NTF \l__spintent_spmsym_not_print_bool
+                {
+                  \invisibletimes
+                }
+                { \l__spintent_spmsym_symbol_tl }
+            }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmsym } }
