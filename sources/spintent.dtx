@@ -44,8 +44,8 @@
 \newcommand*\arara{\araratext{ar\kern-.03emar\kern-.03ema}}
 % Get file info
 \GetFileInfo{spintent.sty} % not work here :(
-\def\fileversion{v0.95}
-\def\filedate{2026-08-11}
+\def\fileversion{v0.96}
+\def\filedate{2026-08-16}
 \def\fileinfo{Spanish parse intents}
 % Config hyperref
 \definecolor{linkcolor}{rgb}{0.04,0.38,0.04}
@@ -4347,7 +4347,7 @@ end, {})
 %    \end{macrocode}
 % Now declare the \mypkg*{spintent} package.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-08-11} {0.95} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-16} {0.96} {Spanish parse intents}
 %    \end{macrocode}
 %
 % We check if the requirements for running the \mypkg*{spintent} package
@@ -8988,7 +8988,7 @@ end, {})
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.95 [2026-08-11]
+     Lua module spintent.lua for spintent package - v0.96 [2026-08-16]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -9012,7 +9012,6 @@ local s_upper    = string.upper
 local s_byte     = string.byte
 
 -- Nuevas referencias locales para rendimiento
-local ipairs     = ipairs
 local pairs      = pairs
 
 local token_set_macro = token.set_macro
@@ -9039,11 +9038,19 @@ local spintent_math_space =
 local spintent_discard_space = (S" \t\r\n" + spintent_math_space) / ""
 local spintent_opt_spaces = spintent_discard_space^0
 
+-- Trim de espacios centralizado en LPeg (sin backtracking), reemplaza el
+-- patrón s_match(x, "^%s*(.-)%s*$") repetido en cada función de registro.
+local spintent_ws = S" \t\r\n"
+local spintent_trim_pattern =
+    spintent_ws^0 * C((P(1) - spintent_ws^0 * P(-1))^0) * spintent_ws^0
+local function spintent_trim(str)
+    return spintent_trim_pattern:match(str)
+end
+
 -- Eliminación de espacios matemáticos para cálculos
 local spintent_num_chunk = Cs(
     spintent_digit * (spintent_opt_spaces * spintent_digit)^0
 )
-
 
 local spintent_num_chunk_keep = Cs(
     spintent_digit * (
@@ -9145,15 +9152,12 @@ local function spintent_rae_format_digits(str_num, reverse)
     return t_concat(chunks, "\\,")
 end
 
--- Pre-asignación de tabla constante para evitar instanciación masiva en el bucle
-local math_spaces = {
-    "\\,", "\\-", "\\;", "\\:", "\\!",
-    "\\>", "\\quad", "\\qquad",
-    "~", "\\ ", "\\thinspace", "\\nobreakspace"
-}
+-- Patrón de una sola pasada: reemplaza el loop de N gsub por un único
+-- recorrido LPeg que elimina cualquier separador matemático o espacio.
+local spintent_strip_math_spaces = Cs((spintent_discard_space + P(1)) ^ 0)
 
 register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
-    raw_string = s_match(raw_string, "^%s*(.-)%s*$") or raw_string
+    raw_string = spintent_trim(raw_string)
 
     local result = spintent_number_pattern:match(raw_string)
 
@@ -9162,17 +9166,8 @@ register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
     local r_int  = (result and result.integer) or ""
     local r_frac = (result and result.fraction) or ""
 
-    local r_int_clean = r_int
-    local r_frac_clean = r_frac
-
-    -- Uso de la constante extraída para reducir Garbage Collection
-    for _, sep in ipairs(math_spaces) do
-        r_int_clean  = s_gsub(r_int_clean, sep, "")
-        r_frac_clean = s_gsub(r_frac_clean, sep, "")
-    end
-
-    r_int_clean  = s_gsub(r_int_clean, "\\,", "")
-    r_frac_clean = s_gsub(r_frac_clean, "\\,", "")
+    local r_int_clean  = spintent_strip_math_spaces:match(r_int)
+    local r_frac_clean = spintent_strip_math_spaces:match(r_frac)
 
     local r_dec    = (result and result.decimal) or ""
     local r_period = (result and result.period) or ""
@@ -9187,7 +9182,7 @@ register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
     local denom_has_numeric = "false"
 
     if r_extra then
-        local extra = s_match(r_extra, "^%s*(.-)%s*$") or r_extra
+        local extra = spintent_trim(r_extra)
 
         if spintent_custom_spunit_aliases[extra] then
             extra = spintent_custom_spunit_aliases[extra]
@@ -9406,8 +9401,8 @@ register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
 end, { "string", "string" })
 
 register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
-    raw_unit_name = s_gsub(s_match(raw_unit_name, "^%s*(.-)%s*$") or raw_unit_name, "%s+", "")
-    local clean_exp_format = s_gsub(s_gsub(raw_unit_name, "{", ""), "}", "")
+    raw_unit_name = s_gsub(spintent_trim(raw_unit_name), "%s+", "")
+    local clean_exp_format = s_gsub(raw_unit_name, "[{}]", "")
     token_set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "false")
 
     local search_name = spintent_normalizations[clean_exp_format] or spintent_normalizations[raw_unit_name] or raw_unit_name
@@ -9470,8 +9465,8 @@ register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
 end, { "string" })
 
 register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_expression)
-    alias_name = s_gsub(s_match(alias_name, "^%s*(.-)%s*$") or alias_name, "%s+", "")
-    unit_expression = s_match(unit_expression, "^%s*(.-)%s*$") or unit_expression
+    alias_name = s_gsub(spintent_trim(alias_name), "%s+", "")
+    unit_expression = spintent_trim(unit_expression)
     if spintent_units[alias_name] or spintent_normalizations[alias_name] or spintent_custom_spunit_aliases[alias_name] then
         token_set_macro("l__spintent_spunit_luaset_status_str", "duplicate")
         return
@@ -9607,7 +9602,8 @@ local spintent_currency_spoken_names = {
 }
 
 register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
-    local clean = s_lower(s_match(currency_name, "^%s*(.-)%s*$") or currency_name)
+    local trimmed = spintent_trim(currency_name)
+    local clean = s_lower(trimmed)
     local resolved_symbol = spintent_internal_currencies[clean] or "$"
 
     local gram_entry = spintent_currency_grammatical_dict[clean] or spintent_currency_grammatical_dict[resolved_symbol]
@@ -9616,7 +9612,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local position = "pre"
     if resolved_symbol == "€" then position = "post" end
 
-    if clean == s_upper(clean) and s_match(clean, "^[a-z]+$") then
+    if trimmed == s_upper(trimmed) and s_match(trimmed, "^%a+$") then
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "true")
     else
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "false")
@@ -9640,7 +9636,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
 end, { "string" })
 
 register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
-    local clean = s_lower(s_match(raw_input, "^%s*(.-)%s*$") or raw_input)
+    local clean = s_lower(spintent_trim(raw_input))
     local resolved_symbol = spintent_internal_currencies[clean]
     local resolved_spoken = nil
 
@@ -9863,7 +9859,7 @@ local spintent_spshort_ord_grammar = P({
 })
 
 local function spintent_spshort_execute_analysis(raw_input)
-  local clean_input = s_lower(s_match(raw_input, "^%s*(.-)%s*$") or raw_input)
+  local clean_input = s_lower(spintent_trim(raw_input))
 
   local dict_match = spintent_spshort_dict[clean_input]
   if not dict_match then
@@ -10031,11 +10027,11 @@ local spintent_date_pattern = Ct(
 )
 
 -- Función auxiliar: Validar que el día y mes existan (¡incluyendo bisiestos!)
+local days_in_month = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+
 local function is_valid_date(d, m, y)
     if m < 1 or m > 12 then return false end
     if d < 1 then return false end
-
-    local days_in_month = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 
     -- Ajuste para febrero en años bisiestos
     if m == 2 then
@@ -10162,7 +10158,7 @@ local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
     token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "false")
 
     for item in s_gmatch(raw_csv_list, "([^,]+)") do
-        local clean_item = s_match(item, "^%s*(.-)%s*$") or item
+        local clean_item = spintent_trim(item)
         local result = spintent_number_pattern:match(clean_item) or {}
 
         local r_int  = result.integer
@@ -10237,8 +10233,9 @@ local function spintent_calculate_divisors(n_val, limit)
         if n_val % i == 0 then
             t_insert(divisors, i)
             -- Si el cociente es diferente, agregarlo también
-            if i ~= (n_val / i) then
-                t_insert(divisors, math_floor(n_val / i))
+            local quotient = n_val / i
+            if i ~= quotient then
+                t_insert(divisors, math_floor(quotient))
             end
         end
     end
@@ -10262,7 +10259,7 @@ local function execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
     -- es un número natural puro. ¡Solo convertimos y calculamos!
     local num_n = tonumber(raw_n)
 
-    local clean_limit = s_lower(s_match(raw_limit, "^%s*(.-)%s*$") or raw_limit)
+    local clean_limit = s_lower(spintent_trim(raw_limit))
     local num_limit = tonumber(clean_limit) or 0
     if clean_limit == "all" or clean_limit == "" then
         num_limit = 0
