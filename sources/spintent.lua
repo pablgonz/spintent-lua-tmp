@@ -9,6 +9,7 @@ local tonumber   = tonumber
 local tostring   = tostring
 local math_floor = math.floor
 local math_sqrt  = math.sqrt
+local math_min   = math.min
 local t_sort     = table.sort
 local s_format   = string.format
 local t_insert   = table.insert
@@ -412,7 +413,7 @@ register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
 end, { "string", "string" })
 
 register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
-    raw_unit_name = s_gsub(spintent_trim(raw_unit_name), "%s+", "")
+    raw_unit_name = s_gsub(raw_unit_name, "%s+", "")
     local clean_exp_format = s_gsub(raw_unit_name, "[{}]", "")
     token_set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "false")
 
@@ -476,7 +477,7 @@ register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
 end, { "string" })
 
 register_tex_cmd("luafun_define_spunit_alias", function(alias_name, unit_expression)
-    alias_name = s_gsub(spintent_trim(alias_name), "%s+", "")
+    alias_name = s_gsub(alias_name, "%s+", "")
     unit_expression = spintent_trim(unit_expression)
     if spintent_units[alias_name] or spintent_normalizations[alias_name] or spintent_custom_spunit_aliases[alias_name] then
         token_set_macro("l__spintent_spunit_luaset_status_str", "duplicate")
@@ -828,7 +829,7 @@ local function get_semantic_ordinal(val, suffix)
     plural = ""
   end
 
-  local ten_val = math.floor(val / 10)
+  local ten_val = math_floor(val / 10)
   local unit_val = val % 10
 
   if val == 11 and suffix ~= "er" then return "undécim" .. end_char .. plural end
@@ -1255,7 +1256,7 @@ local function spintent_calculate_divisors(n_val, limit)
 
     local results = {}
     local actual_count = #divisors
-    local count_to_show = (limit > 0) and math.min(limit, actual_count) or actual_count
+    local count_to_show = (limit > 0) and math_min(limit, actual_count) or actual_count
 
     for i = 1, count_to_show do
         t_insert(results, tostring(divisors[i]))
@@ -1314,7 +1315,7 @@ local function get_scaled_font(id, factor)
     if not old_font then return id end
     local spec = {}
     for k, v in pairs(old_font.specification) do spec[k] = v end
-    spec.size = math.floor(old_font.size * factor)
+    spec.size = math_floor(old_font.size * factor)
     local ok, data = pcall(fonts.definers.loadfont, spec)
     if not ok or not data then return id end
     local new_id = font.define(data)
@@ -1419,7 +1420,7 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     h_esc.width  = ancho
     h_esc.height = frac_height
     h_esc.depth  = frac_depth
-    h_esc.shift  = math.floor(frac_depth + 0.5)
+    h_esc.shift  = math_floor(frac_depth + 0.5)
 
     -- 5. Glyph nodes físicos
     local glyph_nodes = {}
