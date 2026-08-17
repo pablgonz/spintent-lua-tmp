@@ -29,14 +29,18 @@ for those people who are interested.
 % Stop docstrip adding \endinput (from l3doc.dtx)
 \postamble
 \endpostamble
-\usedir{tex/latex/spintent}
+\usedir{tex/lualatex/spintent}
 % Extraemos el paquete spintent.sty
 \generate{\file{spintent.sty}{\from{spintent.dtx}{package}}}
 % Apagamos el preámbulo y postámbulo
 \nopreamble
 \nopostamble
-% Extraemos el script spintent.lua
-\generate{\file{spintent.lua}{\from{spintent.dtx}{spintentlua}}}
+% Extraemos spintent.lua, mylhmc.lua y mylhmc.sty
+\generate{
+  \file{spintent.lua}{\from{spintent.dtx}{spintentlua}}
+  \file{mylhmc.sty}{\from{spintent.dtx}{mylhmcsty}}
+  \file{mylhmc.lua}{\from{spintent.dtx}{mylhmclua}}
+}
 \Msg{*****************************************************************}
 \Msg{*}
 \Msg{* To finish the installation you have to move the files into a }

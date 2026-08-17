@@ -102,25 +102,21 @@
     \DeleteShortVerb \|
     \lstMakeShortInline[language=spintent-doc,basicstyle=\ttfamily]\|
   }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{imakeidx}
 \indexsetup{level=\section,firstpagestyle=myheader,othercode=\pagestyle{myheader}}
 % imakeidx also opens a write stream for the .idx file, and that conflicts
 % with the one opened by l3doc. Here we close that write stream:
 \ExplSyntaxOn
 \iow_close:c { @indexfile }
-\ExplSyntaxOff
 % and later we will copy the write stream opened by imakeidx into \@indexfile
 % so that entries written to both streams end up in the same file.
-% \makeindex from imakeidx
-\makeindex[name=userdoc,options={-q -s gind.ist},columnsep=15pt,title={Índice de la Documentación}]
-\makeindex[options={-q -s gind.ist},columnsep=15pt,title={Índice de la Implementación}]
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeindex[name=userdoc,options={-q ~ -s ~ gind.ist},columnsep=15pt,title={Índice ~ de ~ la ~ Documentación}]
+\makeindex[options={-q ~ -s ~ gind.ist},columnsep=15pt,title={Índice ~ de ~ la ~ Implementación}]
 \EnableCrossrefs
-% \PageIndex, \CodelineIndex undoes what \PageIndex does
-% \CodelineIndex tries to open another write stream for the index file. We don't
-% want that, so we temporarily make \makeindex a no-op:
-\ExplSyntaxOn
-% Salvaguarda de \makeindex durante la carga de CodelineIndex
+% \PageIndex, \CodelineIndex undoes what \PageIndex does \CodelineIndex
+% tries to open another write stream for the index file. We don't want
+% that, so we temporarily make \makeindex a no-op:
 \cs_set_eq:NN \l__spintent_tmp_makeindex_cs \makeindex
 \cs_set_nopar:Npn \makeindex { }
 \CodelineIndex
@@ -135,12 +131,14 @@
     \bool_set_true:N \l__codedoc_in_implementation_bool
   }
 \bool_set_false:N \l__codedoc_in_implementation_bool
-% Links
+% Links and index
 \newcommand{\HP}[1]{\emph{\hyperpage{#1}}\normalsize}
-\cs_new_protected:Npn \MYSortIndex #1 #2
+\cs_new_protected:Nn \__mydoc_sort_index:nn
   {
     \bool_if:NTF \l__codedoc_in_implementation_bool
-      { \index{#1\actualchar#2|HP} }
+      {
+        \index{#1\actualchar#2|HP}
+      }
       { \index[userdoc]{#1\actualchar#2|HP} }
   }
 % Now, after imakeidx opens the write stream for the index file, we copy
@@ -148,1372 +146,8 @@
 \cs_set_eq:cc { @indexfile } { \c_sys_jobname_str @idxfile }
 \ExplSyntaxOff
 %%%%%%%%%%%%%% LuaLaTeX syntax highlighter for l3doc %%%%%%%%%%%
-\begin{filecontents*}[overwrite]{mylhmc.lua}
--- mylhmc.lua v1.4 [2026-08-14] (Lua-TeX Boundary Optimized & Fast String Matching)
--- LuaLaTeX syntax highlighter for l3doc macrocode environments
-
-local s_sub     = string.sub
-local s_find    = string.find
-local s_match   = string.match
-local s_format  = string.format
-local s_gsub    = string.gsub
-local s_gmatch  = string.gmatch
-local s_byte    = string.byte
-local s_lower   = string.lower
-local s_rep     = string.rep
-local t_unpack  = table.unpack or unpack
-local tonumber  = tonumber
-local ipairs    = ipairs
-local pairs     = pairs
-local pcall     = pcall
-local u_codes   = utf8.codes
-local n_new     = node.new
-local n_copy    = node.copy
-local n_write   = node.write
-local f_current = font.current
-local f_getfont = font.getfont
-local f_max     = font.max
-local t_get_macro = token.get_macro
-local t_set_macro = token.set_macro
-
--- Localización extra de APIs base de LuaTeX para evitar consultas en tablas globales
-local token_set_lua  = token.set_lua
-local luatexbase_new = luatexbase.new_luafunction
-local lua_get_funcs  = lua.get_functions_table
-
--- Variables locales de estado para evitar llamadas redundantes a TeX
-local current_module_name   = ""
-local current_module_prefix = ""
-
--- LPeg setup y localización
-local lpeg_base = lpeg or require("lpeg")
-local P, S, V, Cp, Cc = lpeg_base.P, lpeg_base.S, lpeg_base.V, lpeg_base.Cp, lpeg_base.Cc
-local lpeg_match = lpeg_base.match
-lpeg_base.locale(lpeg_base)
-local alpha = lpeg_base.alpha
-local digit = lpeg_base.digit
-
--- Register TeX commands
-local function register_tex_cmd(name, func, args)
-  name = "__mylhmc_" .. name .. ":" .. s_rep("n", #args)
-  local scanners = {}
-  for i = 1, #args do
-    local scan_type = (args[i] == "string" and "scan_argument") or "scan_" .. args[i]
-    scanners[i] = token[scan_type]
-  end
-  local scanning_func
-  if #scanners == 0 then
-    scanning_func = func
-  elseif #scanners == 1 then
-    local s1 = scanners[1]
-    scanning_func = function() func(s1()) end
-  elseif #scanners == 2 then
-    local s1, s2 = scanners[1], scanners[2]
-    scanning_func = function() func(s1(), s2()) end
-  else
-    scanning_func = function()
-      local values = {}
-      for i = 1, #scanners do values[i] = scanners[i]() end
-      func(t_unpack(values))
-    end
-  end
-  local index = luatexbase_new(name)
-  lua_get_funcs()[index] = scanning_func
-  token_set_lua(name, index, "global", "protected")
-end
-
--- Grammar
-local sig_chars  = S"NnVvoxefpTFwDcq"
-local hex_chars  = S"0123456789abcdefABCDEF"
-local name_chars = alpha + S"_@"
-local var_prefix = P"\\" * S"lg"
-local name_chars_no_at = alpha + S"_"
-
-local structure_names =
-  P"NeedsTeXFormat" + P"ProvidesExplPackage" +
-  P"ExplSyntaxOn" + P"ExplSyntaxOff" +
-  P"makeatletter" + P"makeatother"
-
-local pkgstruct_names =
-  P"ProvidesPackage" + P"ProvidesFile" + P"ProvidesClass" +
-  P"RequirePackage" + P"RequirePackageWithOptions" +
-  P"LoadClass" + P"LoadClassWithOptions" +
-  P"PassOptionsToPackage" + P"PassOptionsToClass" +
-  P"DocumentMetadata" +
-  P"IfFormatAtLeast"    * (P"TF" + P"T" + P"F") +
-  P"IfPackageLoaded"    * (P"WithOptions") ^ -1 * (P"TF" + P"T" + P"F") +
-  P"IfFileExists"       * (P"TF" + P"T" + P"F") +
-  P"IfDocumentMetadata" * (P"TF" + P"T" + P"F") +
-  -- Hook management (LaTeX2e interface)
-  P"NewHook" + P"NewReversedHook" + P"NewMirroredHookPair" +
-  P"AddToHook" * (P"WithArguments") ^ -1 +
-  P"RemoveFromHook" +
-  P"UseHook" + P"UseOneTimeHook" +
-  P"IfHookEmpty" * (P"TF" + P"T" + P"F") +
-  P"DeclareHookRule" +
-  P"ClearHookRule" + P"ClearHook" +
-  P"SetDefaultHookLabel" + P"PushDefaultHookLabel" + P"PopDefaultHookLabel" +
-  P"ShowHook" + P"LogHook" +
-  -- Properties and labels
-  P"NewProperty" + P"SetProperty" +
-  P"RecordProperties" + P"RecordProperty" +
-  P"RefProperty" +
-  P"IfPropertyExists"   * (P"TF" + P"T" + P"F") +
-  P"IfLabelExists"      * (P"TF" + P"T" + P"F") +
-  P"IfPropertyRecorded" * (P"TF" + P"T" + P"F")
-
-local mathml_names =
-  P"MathMLintent" + P"MathMLarg" + P"luamml_annotate:en"
-
-local ltcmd_def_names =
-  P"NewDocumentCommand" + P"NewDocumentEnvironment" +
-  P"DeclareDocumentCommand" + P"DeclareDocumentEnvironment" +
-  P"NewExpandableDocumentCommand" + P"DeclareExpandableDocumentCommand" +
-  P"RenewDocumentCommand" + P"RenewDocumentEnvironment" +
-  P"ProvideDocumentCommand" + P"ProvideDocumentEnvironment"
-
-local ltcmd_use_names =
-  P"BooleanTrue" + P"BooleanFalse" +
-  P"IfNoValue" * (P"TF" + P"T" + P"F") +
-  P"IfValue"   * (P"TF" + P"T" + P"F") +
-  P"IfBoolean" * (P"TF" + P"T" + P"F") +
-  P"ProcessedArgument" + P"ReverseBoolean" +
-  P"SplitArgument" + P"SplitList" +
-  P"ProcessList" + P"TrimSpaces"
-
-local ltcmd_names = ltcmd_def_names + ltcmd_use_names
-
-local gen_variant_suffix =
-  P"cs_generate_variant:" * S"Nc" * P"n" +
-  P"prg_generate_conditional_variant:" * S"Nc" * P"nn" +
-  P"prg_new_conditional:" * S"N" * P"pnn" +
-  P"prg_new_conditional:" * S"N" * P"nn" +
-  P"prg_new_protected_conditional:" * S"N" * P"pnn" +
-  P"prg_new_protected_conditional:" * S"N" * P"nn" +
-  P"prg_new_eq_conditional:" * S"N" * P"Nn"
-
-local legacy_names =
-  P"legacy_if_set_true:n"  + P"legacy_if_set_false:n"  +
-  P"legacy_if_gset_true:n" + P"legacy_if_gset_false:n" +
-  P"legacy_if_set:nn"      + P"legacy_if_gset:nn"      +
-  P"legacy_if_p:n"         + P"legacy_if:n" * (P"TF" + P"T" + P"F")
-
-local cs_w   = P"cs:w"
-local cs_end = P"cs_end:"
-
--- Dimensional units and skip keywords
-local dim_unit = P"pt" + P"pc" + P"in" + P"cm" + P"mm" + P"bp" +
-                 P"dd" + P"cc" + P"sp" + P"em" + P"ex" + P"px" + P"mu"
-local fill_kw  = P"filll" + P"fill" + P"fil"
-local skip_kw  = P"minus" + P"plus"
-local num_part = digit ^ 1 * (P"." * digit ^ 1) ^ -1
-
-local code_rules = {
-  {24, P"#" ^ 1 * digit},
-  {1,  P"#" ^ 1},
-  {21, P"$$"},
-  {21, P"$"},
-  {21, P"\\" * S"(["},
-  {21, P"\\" * S")]"},
-  {18, P"\x5e\x5e\x5e\x5e" * hex_chars * hex_chars * hex_chars * hex_chars},
-  {18, P"\\" ^ -1 * P"\x5e\x5e" * P(1) * P(1) ^ -1},
-  {18, P"~"},
-  {22, P" " * (P"<=" + P">=" + P"!=" + P"<" + P">" + P"=" + P"/") * P" "},
-  {22, P" " * P"=" * (P"\\" + -P(1))},
-  {29, P","},
-  {13, P"\\" * (alpha + S"_@") ^ 1 * P":D"},
-  {10, P"\\" * P"s__" * (alpha + S"_") ^ 1},
-  {10, P"\\" * P"s_"  * (alpha + S"_") ^ 1},
-  {11, P"\\" * P"q__" * (alpha + S"_") ^ 1},
-  {11, P"\\" * P"q_"  * (alpha + S"_") ^ 1},
-  {38, P"\\" * mathml_names},
-  {37, P"\\" * pkgstruct_names},
-  {25, P"\\" * structure_names},
-  {14, P"\\" * ltcmd_def_names},
-  {33, P"\\" * ltcmd_use_names},
-  {19, P"\\" * P"c__" * name_chars ^ 1},
-  {20, P"\\" * P"c_"  * (alpha + S"@") * name_chars ^ 0},
-  {2,  var_prefix * P"__" * name_chars ^ 1},
-  {4,  var_prefix * P"_" * (alpha + S"@") * name_chars ^ 0},
-  {15, P"\\" * (alpha ^ 0 * (P"@" + P"!" + P"&" + P"*") * alpha ^ 0) ^ 1},
-  {5,  P"\\" * P"__" * name_chars ^ 1 * (P":" * sig_chars ^ 0) ^ -1},
-  {34, P"\\" * legacy_names},
-  {26, P"\\" * gen_variant_suffix},
-  {30, P"\\" * cs_w},
-  {31, P"\\" * cs_end},
-  {16, P"." * (alpha + S"_") ^ 1 * P":" * (alpha + S"_") ^ 0},
-  {28, P"``"},                             -- `` opening double quote
-  {17, P"`" * P"\\" * (P(1) - alpha)},    -- `\\ `\% `\{
-  {17, P"`" * P"\\" * alpha * -alpha},     -- `\A `\Z (single alpha)
-  {17, P"`" * (P(1) - alpha - P"\\")},    -- `9 `+ etc (non-alpha, non-backslash)
-  {17, P"`" * alpha * -alpha},             -- `A where A not followed by alpha
-  {17, P"`" * -alpha},                     -- ` alone (before \cmd)
-  {28, P"`"},
-  {28, P"'" },
-  {28, P'"' },
-  {23, P"\\\\" },
-  {23, P"\\" * S",:;!>~|/*+-={}#$_&%\x5e"},
-  {35, num_part * dim_unit},
-  {36, (fill_kw + skip_kw) * -alpha},
-  {12, digit ^ 1},
-  {6,  P"\\" * alpha * name_chars_no_at ^ 0 * P":" * sig_chars ^ 0},
-  {23, P"\\" * alpha * name_chars_no_at ^ 0},
-  {8,  S"{}"},
-  {3,  S"[]"},
-  {9,  P"%" * (P(1) - S"\r\n") ^ 0 * (S"\r\n" + -1)},
-}
-
-local function build_combined()
-  local alternatives = nil
-  for _, rule in ipairs(code_rules) do
-    local t = rule[1]
-    local p = Cp() * rule[2] * Cp() * Cc(t)
-    alternatives = alternatives and (alternatives + p) or p
-  end
-  return P{ alternatives + P(1) * V(1) }
-end
-
-local combined_pattern = build_combined()
-
--- =========================================================================
--- CONSTANTES Y CACHÉS
--- =========================================================================
-local LM_LANGLE = 0x2329
-local LM_RANGLE = 0x232A
-
-local bold_cache   = {}
-local lm_cache     = {}
-local italic_cache = {}
-
--- =========================================================================
--- CARGA NATIVA DE FUENTES OPEN-TYPE
--- =========================================================================
-local LM_ITALIC_PATH  = nil
-local LM_REGULAR_PATH = nil
-local LM_BOLD_PATH    = nil
-
-local function ensure_lm_paths()
-  if not LM_REGULAR_PATH then
-    LM_REGULAR_PATH = kpse.find_file("lmroman10-regular.otf", "opentype fonts")
-    LM_ITALIC_PATH  = kpse.find_file("lmmono10-italic.otf",   "opentype fonts")
-    LM_BOLD_PATH    = kpse.find_file("lmmonolt10-bold.otf",   "opentype fonts")
-  end
-end
-
-local function load_font_at_size(filepath, target_size)
-  if not filepath then return nil end
-  local font_spec = "[" .. filepath .. "]"
-  local ok, data, new_id = pcall(fonts.constructors.readanddefine, font_spec, target_size)
-  if not ok or not data or not new_id or new_id <= 0 then return nil end
-  fonts.hashes.identifiers[new_id] = data
-  return new_id
-end
-
-local function get_bold_fid(fid)
-  if bold_cache[fid] then return bold_cache[fid] end
-
-  local f = f_getfont(fid)
-  if not f or not f.name or not f.size then
-    bold_cache[fid] = fid
-    return fid
-  end
-
-  local base_family = s_match(f.name, "^%[?([^%-]+)") or f.name
-  local target_size = f.size
-  local best_id     = nil
-  local best_score  = 0
-  local best_path   = nil
-
-  for i = 1, f_max() do
-    local bf = f_getfont(i)
-    if bf and bf.name and bf.name ~= f.name and s_find(bf.name, base_family, 1, true) then
-      local lower_name = s_lower(bf.name)
-      local score = 0
-
-      if s_find(lower_name, "medium") then
-        score = 3
-      elseif s_find(lower_name, "semibold") or s_find(lower_name, "semi") or s_find(lower_name, "demi") then
-        score = 2
-      elseif s_find(lower_name, "bold") then
-        score = 1
-      end
-
-      if score > best_score then
-        best_score = score
-        if bf.size == target_size then
-          bold_cache[fid] = i
-          return i
-        else
-          best_id = i
-          best_path = bf.filename or bf.name
-        end
-      elseif score > 0 and score == best_score and bf.size == target_size then
-        bold_cache[fid] = i
-        return i
-      end
-    end
-  end
-
-  if best_path and best_id then
-    local clean_path = s_match(best_path, "^%[?(.-)%]?$") or best_path
-    local new_id = load_font_at_size(clean_path, target_size)
-    if new_id then
-      bold_cache[fid] = new_id
-      return new_id
-    end
-    bold_cache[fid] = best_id
-    return best_id
-  end
-
-  ensure_lm_paths()
-  local fallback_id = load_font_at_size(LM_BOLD_PATH, target_size)
-  if fallback_id then
-    bold_cache[fid] = fallback_id
-    return fallback_id
-  end
-
-  bold_cache[fid] = fid
-  return fid
-end
-
-local function get_italic_fid(fid)
-  if italic_cache[fid] then return italic_cache[fid] end
-
-  local f = f_getfont(fid)
-  if not f or not f.size then
-    italic_cache[fid] = fid
-    return fid
-  end
-
-  local target_size = f.size
-
-  ensure_lm_paths()
-  local fallback_id = load_font_at_size(LM_ITALIC_PATH, target_size)
-  if fallback_id then
-    italic_cache[fid] = fallback_id
-    return fallback_id
-  end
-
-  italic_cache[fid] = fid
-  return fid
-end
-
-local function get_lm_fid(fid)
-  fid = fid or f_current()
-  if lm_cache[fid] then return lm_cache[fid] end
-
-  local current_f = f_getfont(fid)
-  if not current_f or not current_f.size then
-    lm_cache[fid] = fid
-    return fid
-  end
-
-  local target_size = current_f.size
-
-  for i = 1, f_max() do
-    local f     = f_getfont(i)
-    local fname = f and (f.filename or f.name) or ""
-    if f and f.size == target_size and s_find(s_lower(fname), "lmroman10%-regular") then
-      lm_cache[fid] = i
-      return i
-    end
-  end
-
-  ensure_lm_paths()
-  local new_id = load_font_at_size(LM_REGULAR_PATH, target_size)
-  if new_id then
-    lm_cache[fid] = new_id
-    return new_id
-  end
-
-  lm_cache[fid] = fid
-  return fid
-end
-
--- =========================================================================
--- NODE BUILDERS & COLORS
--- =========================================================================
-local color_data = {}
-local push_templates = {}
-local module_user_cmds = {}
-
-register_tex_cmd("register_module_cmd", function(name)
-  name = s_match(name, '^%s*(.-)%s*$') or name
-  local clean = s_sub(name, 1, 1) == "\\" and s_sub(name, 2) or name
-  local bare  = s_match(clean, '^(.-):[NnVvoxefpTFwDcq]+$') or clean
-  if bare and bare ~= '' then
-    module_user_cmds[bare]  = true
-    module_user_cmds[clean] = true
-  end
-end, {"string"})
-
-register_tex_cmd("set_color", function(name, spec)
-  local r, g, b = s_match(spec, '([%d%.]+)%s+([%d%.]+)%s+([%d%.]+)')
-  if r then
-    local nr, ng, nb = tonumber(r), tonumber(g), tonumber(b)
-    color_data[name] = s_format('%.4f %.4f %.4f rg %.4f %.4f %.4f RG', nr, ng, nb, nr, ng, nb)
-  end
-end, {"string", "string"})
-
-local function colorstack_push(color_name)
-  local template = push_templates[color_name]
-  if not template then
-    template = n_new('whatsit', 'pdf_colorstack')
-    template.stack, template.command = 0, 1
-    template.data = color_data[color_name] or ''
-    push_templates[color_name] = template
-  end
-  return n_copy(template)
-end
-
-local pop_template = n_new('whatsit', 'pdf_colorstack')
-pop_template.stack, pop_template.command, pop_template.data = 0, 2, ''
-
-local function colorstack_pop()
-  return n_copy(pop_template)
-end
-
-local function append(rh, rt, h, t)
-  if not h then return rh, rt end
-  if not t then
-    t = h
-    while t.next do t = t.next end
-  end
-  if rt then
-    rt.next = h; h.prev = rt
-  else
-    rh = h
-  end
-  return rh, t
-end
-
--- =========================================================================
--- INTERCEPCIÓN Y FALLBACK
--- =========================================================================
-local function str_to_nodes(str, fid, fallback_fn)
-    if not str or str == '' then return nil, nil end
-    fid         = fid or f_current()
-    fallback_fn = fallback_fn or get_lm_fid
-
-    local head, tail
-    local f            = f_getfont(fid)
-    local chars        = f and f.characters
-
-    local lm_fid       = nil
-    local fallback_fid = nil
-
-    for _, cp in u_codes(str) do
-        local current_fid = fid
-
-        if cp == LM_LANGLE or cp == LM_RANGLE then
-            if not lm_fid then lm_fid = get_lm_fid(fid) end
-            current_fid = lm_fid
-        elseif chars and not chars[cp] then
-            if not fallback_fid then fallback_fid = fallback_fn(fid) end
-            current_fid = fallback_fid
-        end
-
-        local g = n_new('glyph')
-        g.font, g.char = current_fid, cp
-        if head then tail.next = g; g.prev = tail else head = g end
-        tail = g
-    end
-    return head, tail
-end
-
-local function colored_str(str, color_name, fid)
-  local h, t = str_to_nodes(str, fid)
-  if not h then return nil, nil end
-  if color_data[color_name] then
-    local push = colorstack_push(color_name)
-    local pop  = colorstack_pop()
-    push.next = h; h.prev = push
-    t.next = pop; pop.prev = t
-    return push, pop
-  end
-  return h, t
-end
-
-local function colored_str_bold(str, color_name, fid)
-  return colored_str(str, color_name, get_bold_fid(fid))
-end
-
-local function colored_str_italic(str, color_name, fid)
-  local italic_fid = get_italic_fid(fid)
-  local h, t = str_to_nodes(str, italic_fid, get_italic_fid)
-  if not h then return nil, nil end
-  if color_data[color_name] then
-    local push = colorstack_push(color_name)
-    local pop  = colorstack_pop()
-    push.next = h; h.prev = push
-    t.next = pop; pop.prev = t
-    return push, pop
-  end
-  return h, t
-end
-
--- =========================================================================
--- PARSER Y GENERADORES
--- =========================================================================
-local type_colors = {
-  [1] ='argument',   [2] ='privatevar', [3] ='bracket',
-  [4] ='publicvar',  [5] ='privatefun', [6] ='publicfun',
-  [8] ='brace',      [9] ='comment',    [10]='scan',
-  [11]='quark',      [12]='number',     [13]='danger',
-  [14]='ltcmd',      [15]='legacy_at',  [16]='key',
-  [17]='escape',     [18]='escape',     [19]='constant',
-  [20]='constant',   [21]='math',       [22]='compare',
-  [23]='latex_cmd',  [24]='argument',   [25]='structure',
-  [26]='publicfun',  [28]='quote',      [29]='brace',
-  [30]='publicfun',  [31]='publicfun',  [33]='ltcmd_arg',  [34]='publicfun',
-  [35]='unit',       [36]='compare',    [37]='pkgstruct',  [38]='mathml',
-}
-
-local csname_positions      = {}
-local arg_counter           = 0
-local in_csname             = false
-local csname_base_color     = nil
-local csname_depth          = 0
-local variant_braces_remaining = 0
-local variant_depth            = 0
-local in_variant_group         = false
-
-local ltcmd_brace_count   = 0
-local ltcmd_name_pending  = false
-local ltcmd_in_args       = false
-
--- PRE-DECLARACIÓN LOCAL PARA EVITAR GLOBAL LEAK
-local colorize_code
-
-local function reset_csname_state()
-  for k in pairs(csname_positions) do csname_positions[k] = nil end
-  arg_counter = 0
-  in_csname = false
-  csname_base_color = nil
-  csname_depth = 0
-end
-
-local function module_aware_color(chunk, base_color)
-  local name = s_sub(chunk, 1, 1) == "\\" and s_sub(chunk, 2) or chunk
-  local colon = s_find(name, ':', 1, true)
-  local bare = colon and s_sub(name, 1, colon - 1) or name
-  if module_user_cmds[bare] or module_user_cmds[name] then
-    return 'module_name'
-  end
-  if current_module_name ~= '' then
-    if s_find(name, current_module_name, 1, true) and not s_find(name, '__', 1, true) then
-      return 'module_name'
-    end
-  end
-  return base_color
-end
-
-local function emit_with_signature(chunk, base_color, fid)
-  local colon = s_find(chunk, ':', 2, true)
-  if not colon then
-    reset_csname_state()
-    return colored_str(chunk, base_color, fid)
-  end
-  local name = s_sub(chunk, 1, colon - 1)
-  local sig  = s_sub(chunk, colon + 1)
-
-  reset_csname_state()
-  local pos = 0
-  for ch in s_gmatch(sig, '.') do
-    if s_match(ch, '[NnVvoxefpTFwDcq]') then
-      pos = pos + 1
-      if ch == 'c' or ch == 'v' then
-        csname_positions[pos] = true
-      end
-    end
-  end
-
-  local rh, rt = nil, nil
-  local h, t = colored_str(name, base_color, fid)
-  rh, rt = append(rh, rt, h, t)
-
-  h, t = colored_str(':', 'signature', fid)
-  rh, rt = append(rh, rt, h, t)
-
-  if sig ~= '' then
-    h, t = colored_str(sig, 'sigargs', fid)
-    rh, rt = append(rh, rt, h, t)
-  end
-  return rh, rt
-end
-
-local function colorize_ltcmd_args(text, fid, rh, rt)
-  local i = 1
-  local depth = 0
-  local text_len = #text
-  while i <= text_len do
-    local b = s_byte(text, i)
-    if b == 123 then
-      depth = depth + 1
-      local h, t = colored_str("{", "brace", fid)
-      rh, rt = append(rh, rt, h, t)
-      i = i + 1
-    elseif b == 125 then
-      depth = depth - 1
-      local h, t = colored_str("}", "brace", fid)
-      rh, rt = append(rh, rt, h, t)
-      i = i + 1
-    elseif depth > 0 then
-      local j, d = i, depth
-      while j <= text_len do
-        local bb = s_byte(text, j)
-        if bb == 123 then d = d + 1
-        elseif bb == 125 then
-          d = d - 1; if d < depth then break end
-        end
-        j = j + 1
-      end
-      local content = s_sub(text, i, j - 1)
-      if content ~= "" then
-        local ch, ct = colorize_code(content, fid)
-        rh, rt = append(rh, rt, ch, ct)
-      end
-      i = j
-    elseif b == 32 then
-      local h, t = str_to_nodes(" ", fid)
-      rh, rt = append(rh, rt, h, t)
-      i = i + 1
-    else
-      local h, t = colored_str(s_sub(text, i, i), "ltcmd_arg", fid)
-      rh, rt = append(rh, rt, h, t)
-      i = i + 1
-    end
-  end
-  return rh, rt
-end
-
-local function csname_color_from_prefix(text)
-  text = s_match(text, '^%s*(.-)%s*$') or text
-  local p2 = s_sub(text, 1, 2)
-  local p3 = s_sub(text, 1, 3)
-  if p3 == 'l__' or p3 == 'g__' then
-    return 'privatevar'
-  elseif p2 == '__' then
-    return 'privatefun'
-  elseif p2 == 'l_' or p2 == 'g_' then
-    return 'publicvar'
-  elseif p3 == 'c__' or p2 == 'c_' then
-    return 'constant'
-  end
-  return 'latex_cmd'
-end
-
-local function emit_csname_text(text, base_color, fid, rh, rt)
-  local has_special = false
-  local len = #text
-  for i = 1, len do
-    local b = s_byte(text, i)
-    if b == 64 or b == 33 or b == 38 or b == 94 or b == 42 or b == 58 then has_special = true; break end
-  end
-
-  if not has_special then
-    local h, t = colored_str(text, base_color, fid)
-    return append(rh, rt, h, t)
-  end
-
-  local cur = 1
-  for i = 1, len do
-    local b = s_byte(text, i)
-    if b == 64 or b == 33 or b == 38 or b == 94 or b == 42 then
-      if i > cur then
-        local h, t = colored_str(s_sub(text, cur, i-1), base_color, fid)
-        rh, rt = append(rh, rt, h, t)
-      end
-      local h, t = colored_str(s_sub(text, i, i), 'escape', fid)
-      rh, rt = append(rh, rt, h, t)
-      cur = i + 1
-    elseif b == 58 then
-      if i > cur then
-        local h, t = colored_str(s_sub(text, cur, i-1), base_color, fid)
-        rh, rt = append(rh, rt, h, t)
-      end
-      local h, t = colored_str(':', 'signature', fid)
-      rh, rt = append(rh, rt, h, t)
-      local rest = s_sub(text, i+1)
-      if rest ~= '' then
-        h, t = colored_str(rest, 'sigargs', fid)
-        rh, rt = append(rh, rt, h, t)
-      end
-      cur = len + 1
-      break
-    end
-  end
-  if cur <= len then
-    local h, t = colored_str(s_sub(text, cur), base_color, fid)
-    rh, rt = append(rh, rt, h, t)
-  end
-  return rh, rt
-end
-
-local function ltcmd_name_color(text)
-  text = s_match(text, '^%s*(.-)%s*$') or text
-  local name = s_sub(text, 1, 1) == "\\" and s_sub(text, 2) or text
-  local colon = s_find(name, ':', 1, true)
-  local bare = colon and s_sub(name, 1, colon - 1) or name
-  if module_user_cmds[bare] or module_user_cmds[text] then return 'module_name' end
-  if current_module_name ~= '' and s_find(bare, current_module_name, 1, true) then
-    return 'module_name'
-  end
-  return 'latex_cmd'
-end
-
--- DEFINICIÓN DE LA FUNCIÓN PRE-DECLARADA
-colorize_code = function(line, fid)
-  local rh, rt = nil, nil
-  local pos = 1
-  local line_len = #line
-
-  while pos <= line_len do
-    local b, e, t = lpeg_match(combined_pattern, line, pos)
-
-    if not b then
-      local remainder = s_sub(line, pos)
-      local h, tl
-      if in_variant_group then
-        h, tl = colored_str(remainder, 'sigargs', fid)
-      elseif in_csname then
-        csname_base_color = csname_base_color or csname_color_from_prefix(remainder)
-        rh, rt = emit_csname_text(remainder, csname_base_color, fid, rh, rt)
-        h, tl = nil, nil
-      elseif ltcmd_in_args then
-        if ltcmd_brace_count > 1 then
-          h, tl = str_to_nodes(remainder, fid)
-        else
-          rh, rt = colorize_ltcmd_args(remainder, fid, rh, rt)
-          h, tl = nil, nil
-        end
-      elseif ltcmd_name_pending and ltcmd_brace_count == 1 then
-        rh, rt = emit_csname_text(remainder, ltcmd_name_color(remainder), fid, rh, rt)
-        h, tl = nil, nil
-      else
-        h, tl = str_to_nodes(remainder, fid)
-      end
-      rh, rt = append(rh, rt, h, tl)
-      break
-    end
-
-    if b > pos then
-      local prefix = s_sub(line, pos, b - 1)
-      local h, tl
-      if in_variant_group then
-        h, tl = colored_str(prefix, 'sigargs', fid)
-      elseif in_csname then
-        csname_base_color = csname_base_color or csname_color_from_prefix(prefix)
-        rh, rt = emit_csname_text(prefix, csname_base_color, fid, rh, rt)
-        h, tl = nil, nil
-      elseif ltcmd_in_args then
-        if ltcmd_brace_count > 1 then
-          h, tl = str_to_nodes(prefix, fid)
-        else
-          rh, rt = colorize_ltcmd_args(prefix, fid, rh, rt)
-          h, tl = nil, nil
-        end
-      elseif ltcmd_name_pending and ltcmd_brace_count == 1 then
-        rh, rt = emit_csname_text(prefix, ltcmd_name_color(prefix), fid, rh, rt)
-        h, tl = nil, nil
-      else
-        h, tl = str_to_nodes(prefix, fid)
-      end
-      rh, rt = append(rh, rt, h, tl)
-    end
-
-    local chunk = s_sub(line, b, e - 1)
-    local h, tl
-
-    if t == 8 then
-      if chunk == "{" then
-        arg_counter = arg_counter + 1
-        local is_csname = csname_positions[arg_counter]
-        if not is_csname and arg_counter == 1 then
-          for k in pairs(csname_positions) do
-            if k >= 1 then is_csname = true; break end
-          end
-        end
-        if is_csname then
-          in_csname, csname_base_color, csname_depth = true, nil, 0
-          in_variant_group = false
-          variant_braces_remaining = 0
-          variant_depth = 0
-        elseif in_csname then
-          csname_depth = csname_depth + 1
-        end
-        if in_variant_group then
-          variant_depth = variant_depth + 1
-        elseif variant_braces_remaining > 0 then
-          in_variant_group = true
-        end
-        if ltcmd_name_pending or ltcmd_in_args then
-          ltcmd_brace_count = ltcmd_brace_count + 1
-        end
-      elseif chunk == "}" then
-        if in_csname then
-          if csname_depth > 0 then
-            csname_depth = csname_depth - 1
-          else
-            in_csname = false
-            csname_depth = 0
-          end
-        end
-        if in_variant_group then
-          if variant_depth > 0 then
-            variant_depth = variant_depth - 1
-          else
-            in_variant_group = false
-            variant_braces_remaining = variant_braces_remaining - 1
-          end
-        end
-        if ltcmd_in_args and ltcmd_brace_count > 0 then
-          ltcmd_brace_count = ltcmd_brace_count - 1
-          if ltcmd_brace_count == 0 then
-            ltcmd_in_args = false
-          end
-        elseif ltcmd_name_pending and ltcmd_brace_count > 0 then
-          ltcmd_brace_count = ltcmd_brace_count - 1
-          if ltcmd_brace_count == 0 then
-            ltcmd_name_pending = false
-            ltcmd_in_args = true
-          end
-        end
-      end
-      h, tl = colored_str(chunk, "brace", fid)
-    elseif t == 24 then
-      local hashes = s_match(chunk, '^#+')
-      local num    = s_sub(chunk, #hashes + 1)
-      h, tl = colored_str(hashes, 'argument', fid)
-      rh, rt = append(rh, rt, h, tl)
-      h, tl = colored_str(num, 'argnum', fid)
-    elseif t == 26 then
-      arg_counter = 0
-      variant_depth = 0
-      in_variant_group = false
-      if s_find(chunk, 'prg_generate_conditional_variant', 1, true) then
-        variant_braces_remaining = 2
-      else
-        variant_braces_remaining = 1
-      end
-      h, tl = emit_with_signature(chunk, 'publicfun', fid)
-    elseif t == 30 then
-      in_csname, csname_base_color, csname_depth = true, nil, 0
-      h, tl = colored_str(chunk, 'publicfun', fid)
-    elseif t == 31 then
-      in_csname = false
-      h, tl = colored_str(chunk, 'publicfun', fid)
-    elseif t == 16 then
-      local dot  = s_sub(chunk, 1, 1)
-      local rest = s_sub(chunk, 2)
-      local colon = s_find(rest, ':', 1, true)
-      h, tl = colored_str(dot, 'signature', fid)
-      rh, rt = append(rh, rt, h, tl)
-      if colon then
-        local kname = s_sub(rest, 1, colon - 1)
-        local kargs = s_sub(rest, colon + 1)
-        reset_csname_state()
-        local cpos = 0
-        for i = 1, #kargs do
-          local ch = s_sub(kargs, i, i)
-          if s_match(ch, '[NnVvoxefpTFwDcq]') then
-            cpos = cpos + 1
-            if ch == 'c' or ch == 'v' then csname_positions[cpos] = true end
-          end
-        end
-        h, tl = colored_str(kname, 'key', fid); rh, rt = append(rh, rt, h, tl)
-        h, tl = colored_str(':', 'signature', fid); rh, rt = append(rh, rt, h, tl)
-        h, tl = colored_str(kargs, 'sigargs', fid)
-      else
-        h, tl = colored_str(rest, 'key', fid)
-      end
-    elseif t == 9 then
-      h, tl = colored_str(s_sub(chunk, 1, 1), 'guard/angle', fid)
-      rh, rt = append(rh, rt, h, tl)
-      h, tl = colored_str_italic(s_sub(chunk, 2), 'comment', fid)
-    elseif t == 14 then
-      arg_counter = 0
-      ltcmd_brace_count = 0
-      ltcmd_name_pending = true
-      ltcmd_in_args = false
-      h, tl = emit_with_signature(chunk, 'ltcmd', fid)
-    elseif t == 34 then
-      h, tl = emit_with_signature(chunk, 'publicfun', fid)
-      csname_positions[1] = true
-    elseif t == 33 then
-      h, tl = emit_with_signature(chunk, 'ltcmd_arg', fid)
-    elseif ltcmd_name_pending and ltcmd_brace_count == 1 then
-      rh, rt = emit_csname_text(chunk, ltcmd_name_color(chunk), fid, rh, rt)
-      h, tl = nil, nil
-    elseif ltcmd_name_pending and ltcmd_brace_count == 0
-           and s_sub(chunk, 1, 1) == "\\" then
-      h, tl = colored_str(chunk, ltcmd_name_color(chunk), fid)
-      ltcmd_name_pending = false
-      ltcmd_in_args = true
-    elseif ltcmd_in_args then
-      if ltcmd_brace_count > 1 then
-        h, tl = colored_str(chunk, type_colors[t], fid)
-      else
-        rh, rt = colorize_ltcmd_args(chunk, fid, rh, rt)
-        h, tl = nil, nil
-      end
-    elseif in_csname then
-      csname_base_color = csname_base_color or csname_color_from_prefix(chunk)
-      if s_sub(chunk, 1, 1) == "\\" then
-        h, tl = colored_str(chunk, type_colors[t], fid)
-      else
-        rh, rt = emit_csname_text(chunk, csname_base_color, fid, rh, rt)
-        h, tl = nil, nil
-      end
-    elseif t == 5 or t == 6 then
-      arg_counter = 0
-      if ltcmd_in_args or ltcmd_name_pending then
-        ltcmd_in_args = false
-        ltcmd_name_pending = false
-        ltcmd_brace_count = 0
-      end
-      local eff = t == 6 and module_aware_color(chunk, 'publicfun') or 'privatefun'
-      h, tl = emit_with_signature(chunk, eff, fid)
-    elseif t == 25 then
-      arg_counter = 0
-      h, tl = colored_str_bold(chunk, 'structure', fid)
-    elseif t == 37 then
-      arg_counter = 0
-      h, tl = emit_with_signature(chunk, 'pkgstruct', fid)
-    elseif t == 38 then
-      h, tl = emit_with_signature(chunk, 'mathml', fid)
-    elseif t == 35 then
-      local split = s_find(chunk, '%a')
-      if split then
-        h, tl = colored_str(s_sub(chunk, 1, split-1), 'number', fid)
-        rh, rt = append(rh, rt, h, tl)
-        h, tl = colored_str(s_sub(chunk, split), 'unit', fid)
-      else
-        h, tl = colored_str(chunk, 'number', fid)
-      end
-    elseif t == 18 then
-      local four_caret = "\x5e\x5e\x5e\x5e"
-      if s_sub(chunk, 1, 4) == four_caret then
-        h, tl = colored_str(four_caret, 'escape', fid); rh, rt = append(rh, rt, h, tl)
-        h, tl = colored_str(s_sub(chunk, 5), 'number', fid)
-      else
-        h, tl = colored_str(chunk, 'escape', fid)
-      end
-    elseif t == 13 then
-      h, tl = emit_with_signature(chunk, 'danger', fid)
-    elseif t == 15 then
-      local cur = 2
-      local len = #chunk
-      for i = 2, len do
-        local b = s_byte(chunk, i)
-        if b == 64 or b == 33 or b == 38 or b == 94 then
-          local part = (cur == 2 and '\\' or '') .. s_sub(chunk, cur, i - 1)
-          if #part > 0 then
-            h, tl = colored_str(part, 'latex_cmd', fid); rh, rt = append(rh, rt, h, tl)
-          end
-          h, tl = colored_str(s_sub(chunk, i, i), 'escape', fid); rh, rt = append(rh, rt, h, tl)
-          cur = i + 1
-        end
-      end
-      if cur <= len then
-        local part = (cur == 2 and '\\' or '') .. s_sub(chunk, cur)
-        h, tl = colored_str(part, 'latex_cmd', fid)
-      else
-        h, tl = nil, nil
-      end
-    elseif t == 4 then
-      h, tl = colored_str(chunk, module_aware_color(chunk, 'publicvar'), fid)
-    else
-      local effective = type_colors[t]
-      if effective then
-        local bare = s_sub(chunk, 1, 1) == "\\" and s_sub(chunk, 2) or chunk
-        if module_user_cmds[bare] or module_user_cmds[chunk] then
-          effective = 'module_name'
-        end
-      end
-      h, tl = colored_str(chunk, effective, fid)
-    end
-
-    rh, rt = append(rh, rt, h, tl)
-    pos = e
-  end
-  return rh, rt
-end
-
-local function make_angle_nodes(content_head, content_tail, angle_color, fid)
-  local lm_fid = get_lm_fid(fid)
-  local cname = (color_data[angle_color] and angle_color) or 'guard/angle'
-
-  -- Optimizamos evitando crear un 'closure' por cada iteración
-  local lg = n_new('glyph')
-  lg.font, lg.char = lm_fid, LM_LANGLE
-  local rg = n_new('glyph')
-  rg.font, rg.char = lm_fid, LM_RANGLE
-
-  local rh, rt = nil, nil
-
-  if color_data[cname] then rh, rt = append(rh, rt, colorstack_push(cname)) end
-  rh, rt = append(rh, rt, lg)
-  if color_data[cname] then rh, rt = append(rh, rt, colorstack_pop()) end
-
-  if content_head then rh, rt = append(rh, rt, content_head, content_tail) end
-
-  if color_data[cname] then rh, rt = append(rh, rt, colorstack_push(cname)) end
-  rh, rt = append(rh, rt, rg)
-  if color_data[cname] then rh, rt = append(rh, rt, colorstack_pop()) end
-
-  return rh, rt
-end
-
-local function colorize_guard_expr(expr, fid)
-  local rh, rt = nil, nil
-  local name_start = 1
-  local len = #expr
-  for i = 1, len do
-    local b = s_byte(expr, i)
-    if b == 33 or b == 32 or b == 38 or b == 40 or b == 41 or b == 42 or b == 47 or b == 124 then
-      if name_start <= i - 1 then
-        local h, t = colored_str(s_sub(expr, name_start, i - 1), 'guard/name', fid)
-        rh, rt = append(rh, rt, h, t)
-      end
-      name_start = i + 1
-      if b ~= 32 then
-        local h, t = colored_str(s_sub(expr, i, i), 'guard/operator', fid)
-        rh, rt = append(rh, rt, h, t)
-      end
-    end
-  end
-  if name_start <= len then
-    local h, t = colored_str(s_sub(expr, name_start, len), 'guard/name', fid)
-    rh, rt = append(rh, rt, h, t)
-  end
-  return rh, rt
-end
-
-local function render_guard(line, fid)
-  local rest = s_gsub(line, '^%s*', '')
-  local close = s_find(rest, '>', 2)
-  if not close then
-    local h, t = colored_str('%', 'guard/angle', fid)
-    if h then n_write(h) end
-    h, t = colored_str_italic(line, 'comment', fid)
-    if h then n_write(h) end
-    return
-  end
-
-  local inner = s_sub(rest, 2, close - 1)
-  local after = s_sub(rest, close + 1)
-  local ch, ct = nil, nil
-  local h, t
-
-  if s_sub(inner, 1, 3) == '@@=' then
-    local modname = s_sub(inner, 4)
-    t_set_macro('g__codedoc_module_name_tl', modname, 'global')
-    current_module_name = modname
-    current_module_prefix = '__' .. modname
-    h, t = colored_str('@@',      'module_at',   fid); ch, ct = append(ch, ct, h, t)
-    h, t = colored_str('=',       'module_eq',   fid); ch, ct = append(ch, ct, h, t)
-    h, t = colored_str_bold(modname, 'module_name', fid); ch, ct = append(ch, ct, h, t)
-  else
-    local sigil = ''
-    local expr  = inner
-    local first = s_sub(inner, 1, 1)
-    if first == '*' or first == '/' then sigil = first; expr = s_sub(inner, 2) end
-    if sigil ~= '' then
-      h, t = colored_str(sigil, 'guard/operator', fid); ch, ct = append(ch, ct, h, t)
-    end
-    if expr ~= '' then
-      h, t = colorize_guard_expr(expr, fid); ch, ct = append(ch, ct, h, t)
-    end
-  end
-
-  local rh, rt = make_angle_nodes(ch, ct, 'guard/angle', fid)
-  if rh then n_write(rh) end
-
-  if after and after ~= '' then
-    local ah, at = colorize_code(after, fid)
-    if ah then n_write(ah) end
-  end
-end
-
-local function apply_at_at(line)
-  if not s_find(line, '@@', 1, true) then return line end
-  if current_module_name ~= '' then
-    line = s_gsub(line, '@@@@', '\0')
-    line = s_gsub(line, '__@@', current_module_prefix)
-    line = s_gsub(line, '_@@',  current_module_prefix)
-    line = s_gsub(line, '@@',   current_module_prefix)
-    line = s_gsub(line, '\0',   '@@')
-  end
-  return line
-end
-
-local function init_line_state()
-  current_module_name = t_get_macro('g__codedoc_module_name_tl') or ''
-  current_module_prefix = current_module_name ~= '' and ('__' .. current_module_name) or ''
-end
-
--- Inline highlighting: same pipeline as process_line, for use outside macrocode
-register_tex_cmd("inline", function()
-  local text = t_get_macro('l__mylhmc_verbatim_line_tl')
-  if not text or text == '' then return end
-  text = s_gsub(text, '[\r\n]+$', '')
-  init_line_state()
-  text = apply_at_at(text)
-  local fid = f_current()
-  local rh, rt = colorize_code(text, fid)
-  if rh then n_write(rh) end
-end, {})
-
-register_tex_cmd("process_line", function()
-  local line = t_get_macro('l__mylhmc_verbatim_line_tl')
-  if not line or line == '' then return end
-  line = s_gsub(line, '[\r\n]+$', '')
-  if line == '' then return end
-
-  init_line_state()
-  line = apply_at_at(line)
-  local fid = f_current()
-
-  if s_sub(line, 1, 1) == '%' then
-    local rest = s_sub(line, 2)
-    local trimmed = s_match(rest, '^%s*(.*)')
-    if s_sub(trimmed, 1, 1) == '<' then
-      render_guard(rest, fid)
-    else
-      local h, t = colored_str(s_sub(line, 1, 1), 'guard/angle', fid)
-      if h then n_write(h) end
-      h, t = colored_str_italic(s_sub(line, 2), 'comment', fid)
-      if h then n_write(h) end
-    end
-  else
-    local rh, rt = colorize_code(line, fid)
-    if rh then n_write(rh) end
-  end
-end, {})
-\end{filecontents*}
-\begin{filecontents*}[overwrite]{mylhmc.sty}
-\NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2025-08-14}{1.5}
-  {Line-by-line macrocode reader for l3doc in Lua}
-\RequirePackage { accsupp }
-% Require LuaTeX
-\sys_if_engine_luatex:F
-  {
-    \msg_new:nnn { mylhmc } { luatex-required } { mylhmc~requires~LuaTeX. }
-    \msg_fatal:nn { mylhmc } { luatex-required }
-  }
-% Require l3doc.cls
-\tl_if_exist:NF \g__codedoc_module_name_tl
-  {
-    \msg_new:nnn { mylhmc } { l3doc-required } { mylhmc~must~be~loaded~via~l3doc.cls. }
-    \msg_fatal:nn { mylhmc } { l3doc-required }
-  }
-% Load module
-\lua_load_module:n { mylhmc.lua }
-\cs_generate_variant:Nn \__mylhmc_set_color:nn { VV }
-
-% Vars
-\seq_new:N \g__mylhmc_colors_export_seq
-\seq_new:N \l__mylhmc_path_seq
-\tl_new:N  \l__mylhmc_color_export_tl
-\tl_new:N  \l__mylhmc_export_name_tl
-
-% xcolor bridge
-\cs_new_protected:Npn \__mylhmc_define_xcolor:nnn #1#2#3
-  {
-    \definecolor { #1 } { #2 } { #3 }
-  }
-\cs_generate_variant:Nn \__mylhmc_define_xcolor:nnn { Vnn }
-
-% Extract the exported name from a color path
-\cs_new_protected:Npn \__mylhmc_color_export_name:n #1
-  {
-    \seq_set_split:Nnn \l__mylhmc_path_seq { / } { #1 }
-    \seq_pop_right:NN \l__mylhmc_path_seq \l__mylhmc_export_name_tl
-    \tl_trim_spaces:N \l__mylhmc_export_name_tl
-  }
-
-% Deferred xcolor export
-\cs_new_protected:Npn \__mylhmc_export_color_aux:nnn #1#2#3
-  {
-    \__mylhmc_color_export_name:n { #1 }
-    \__mylhmc_define_xcolor:Vnn \l__mylhmc_export_name_tl { #2 } { #3 }
-  }
-\cs_new_protected:Npn \__mylhmc_process_color_export:n #1
-  {
-    \__mylhmc_export_color_aux:nnn #1
-  }
-
-% Unified color declaration
-\cs_new_protected:Npn \__mylhmc_define_color:nnn #1#2#3
-  {
-    % Native expl3 color
-    \color_set:nnn { mylhmc / #1 } { #2 } { #3 }
-    % Export to Lua using the last path component as the name
-    \__mylhmc_color_export_name:n { #1 }
-    \color_export:nnN { mylhmc / #1 } { space-sep-rgb } \l__mylhmc_color_export_tl
-    \__mylhmc_set_color:VV \l__mylhmc_export_name_tl \l__mylhmc_color_export_tl
-    % Defer xcolor definition until xcolor is available
-    \seq_gput_right:Nn \g__mylhmc_colors_export_seq { { #1 } { #2 } { #3 } }
-  }
-
-% Colors — code token classes
-\__mylhmc_define_color:nnn { argument   } { HTML } { 48467C } % Violáceo Oscuro   -> # (sin número)
-\__mylhmc_define_color:nnn { argnum     } { HTML } { 6A1B9A } % Púrpura           -> número en #1
-\__mylhmc_define_color:nnn { privatevar } { HTML } { 3D7A7A } % Verde azulado     -> \g__var \l__var
-\__mylhmc_define_color:nnn { bracket    } { HTML } { 4A5568 } % Gris Carbón       -> []
-\__mylhmc_define_color:nnn { publicvar  } { HTML } { 0066CC } % Azul Medio        -> \l_var \g_var
-\__mylhmc_define_color:nnn { privatefun } { HTML } { 00695C } % Menta Oscuro      -> \__foo:Nn
-\__mylhmc_define_color:nnn { publicfun  } { HTML } { 004085 } % Azul Denim        -> \cs_new:Nn
-\__mylhmc_define_color:nnn { brace      } { HTML } { 4A5568 } % Gris Carbón       -> { }
-\__mylhmc_define_color:nnn { comment    } { HTML } { 7F8C8D } % Gris Medio        -> %
-\__mylhmc_define_color:nnn { signature  } { HTML } { 5C6BC0 } % Azul Acero        -> :
-\__mylhmc_define_color:nnn { sigargs    } { HTML } { 7F8C8D } % Gris Medio        -> Nn nTF
-\__mylhmc_define_color:nnn { number     } { HTML } { 6A1B9A } % Púrpura           -> 10 100
-\__mylhmc_define_color:nnn { constant   } { HTML } { 5E2A84 } % Púrpura Oscuro    -> \c_foo \c__foo
-\__mylhmc_define_color:nnn { ltcmd      } { HTML } { 002EA6 } % Azul Eléctrico    -> \NewDocumentCommand
-\__mylhmc_define_color:nnn { ltcmd_arg  } { HTML } { 5C658A } % Azul Pizarra      -> { O{} m +m t }
-\__mylhmc_define_color:nnn { legacy_at  } { HTML } { 607D8B } % Gris Azulado      -> \mi@cmd
-\__mylhmc_define_color:nnn { scan       } { HTML } { A64426 } % Rojo Ladrillo     -> \s_stop
-\__mylhmc_define_color:nnn { quark      } { HTML } { 800040 } % Vino              -> \q_nil
-\__mylhmc_define_color:nnn { key        } { HTML } { B27A00 } % Oro Viejo         -> .meta:n
-\__mylhmc_define_color:nnn { backtick   } { HTML } { 558B2F } % Verde Manzana     -> `A
-\__mylhmc_define_color:nnn { escape     } { HTML } { D81B60 } % Rosa Eléctrico    -> ^^M ~
-\__mylhmc_define_color:nnn { danger     } { HTML } { D32F2F } % Rojo Sangre       -> :D
-\__mylhmc_define_color:nnn { quote      } { HTML } { E65100 } % Naranja Profundo  -> ' "
-\__mylhmc_define_color:nnn { math       } { HTML } { FF1818 } % Rojo Neón         -> $ $$ \( \) \[ \]
-\__mylhmc_define_color:nnn { compare    } { HTML } { 808080 } % Gris Medio        -> < > = <= >= !=
-\__mylhmc_define_color:nnn { latex_cmd  } { HTML } { 3F3FFF } % Azul Brillante    -> \mathrm \textbf \,
-\__mylhmc_define_color:nnn { structure  } { HTML } { 004085 } % Azul Denim (bold) -> \NeedsTeXFormat \ProvidesExplPackage
-\__mylhmc_define_color:nnn { unit       } { HTML } { E67E22 } % Naranja Calabaza  -> pt em cm mu
-\__mylhmc_define_color:nnn { pkgstruct  } { HTML } { 064FA5 } % Azul cuerpo       -> \RequirePackage \IfPackageLoadedTF
-\__mylhmc_define_color:nnn { mathml     } { HTML } { 2036D2 } % Azul MathML       -> \MathMLintent \MathMLarg \luamml_annotate:en
-
-% Colors — guard/module annotation
-\__mylhmc_define_color:nnn { guard / angle    } { HTML } { 4A5568 } % Gris Carbón  -> 〈 〉
-\__mylhmc_define_color:nnn { guard / name     } { HTML } { 5A6370 } % Gris Pizarra -> nombre módulo
-\__mylhmc_define_color:nnn { guard / operator } { HTML } { 95A5A6 } % Gris Plata   -> * / ( ) & | !
-\__mylhmc_define_color:nnn { module_at        } { HTML } { 008080 } % Teal         -> @@
-\__mylhmc_define_color:nnn { module_name      } { HTML } { 008080 } % Teal         -> nombre módulo en @@=
-\__mylhmc_define_color:nnn { module_eq        } { HTML } { 808080 } % Gris Medio   -> =
-
-% Deferred xcolor initialization
-\hook_gput_code:nnn { begindocument } { mylhmc }
-  {
-    \IfPackageLoadedT { xcolor }
-      {
-        \seq_map_function:NN \g__mylhmc_colors_export_seq \__mylhmc_process_color_export:n
-      }
-  }
-
-% Module public commands and environments (adjust as needed)
-\clist_const:Nn \c__mylhmc_module_cmds_clist
-  {
-    spnum , spunit , spmoney , spshort , spusep, setspintent,
-    spdate , sptime , spang  , spread , spdsym, spnewunit, spunitalias,
-    spmcm , spmcd  , spsiglo , spdiv, spmul, spnM, spnD, spnZ, spmQ,
-  }
-\clist_map_inline:Nn \c__mylhmc_module_cmds_clist
-  { \__mylhmc_register_module_cmd:n {#1} }
-
-% Inline code highlighting (same colors as macrocode)
-\NewDocumentCommand \myhlc { v }
-  {
-    \mode_leave_vertical:
-    \group_begin:
-      \ttfamily
-      \__mylhmc_inline:n {#1}
-    \group_end:
-  }
-\cs_new_protected:Npn \__mylhmc_inline:n #1
-  {
-    \tl_set:Nn \l__mylhmc_verbatim_line_tl {#1}
-    \__mylhmc_inline:
-  }
-
-% Number line
-\hook_gput_code:nnn { begindocument } { mylhmc }
-  {
-    \renewcommand \theCodelineNo
-      {
-        \BeginAccSupp { ActualText = {} }
-        \group_begin:
-          \color_select:n { mylhmc / guard / angle }
-          \ttfamily \tiny \arabic { CodelineNo }
-        \group_end:
-        \EndAccSupp {}
-      }
-  }
-
-% Verbatim line reader
-\group_begin:
-  \int_set:Nn \tex_endlinechar:D { -1 }
-  \use:n
-    {
-      \char_set_catcode_active:n { 32 }
-      \tl_const:Nn \c__mylhmc_active_space_tl
-    }{ }
-\group_end:
-
-\tl_new:N \l__mylhmc_verbatim_line_tl
-\tl_new:N \l__mylhmc_verbatim_finish_tl
-
-\group_begin:
-  \char_set_catcode_active:n { 13 }
-  \cs_new_protected:Npe \__mylhmc_set_end_pattern:n #1
-    {
-      \tl_set:Nn \exp_not:N \l__mylhmc_verbatim_finish_tl
-        {
-          \c_percent_str
-          \prg_replicate:nn { 4 } { \exp_not:o { \c__mylhmc_active_space_tl } }
-          \exp_not:o { \active@escape@char } end
-          \c_left_brace_str #1 \c_right_brace_str
-          \exp_not:N ^^M
-        }
-    }
-  \cs_new_protected:Npn \__mylhmc_verbatim_start:w #1
-    {
-      \str_if_eq:nnTF { #1 } { ^^M }
-        { \__mylhmc_verbatim_read_line:w }
-        { \__mylhmc_verbatim_read_line:w #1 }
-    }
-  \cs_new_protected:Npn \__mylhmc_verbatim_read_line:w #1 ^^M
-    {
-      \tl_set:Nn \l__mylhmc_verbatim_line_tl { #1 ^^M }
-      \tl_if_eq:NNTF \l__mylhmc_verbatim_line_tl \l__mylhmc_verbatim_finish_tl
-        { \exp_args:Ne \end { \@currenvir } }
-        {
-          \__mylhmc_output_line:
-          \__mylhmc_verbatim_read_line:w
-        }
-    }
-\group_end:
-
-% Line output
-\cs_new_protected_nopar:Nn \__mylhmc_output_line:
-  {
-    \tex_noindent:D
-    \__mylhmc_process_line:
-    \tex_par:D
-  }
-
-% \xmacro@code
-\cs_generate_variant:Nn \__mylhmc_set_end_pattern:n { V }
-\cs_set_protected_nopar:Npn \xmacro@code
-  {
-    \__mylhmc_set_end_pattern:V \@currenvir
-    \__mylhmc_verbatim_start:w
-  }
-\cs_set_eq:cN { xmacro@code* } \xmacro@code
-
-\file_input_stop:
-\end{filecontents*}
 \usepackage{mylhmc}
-
 % Colors
-\definecolor{optcolor}{rgb}{0.281,0.275,0.485}
-\definecolor{pkgcolor}{rgb}{0,0.5,0.5}
 \definecolor{rulecolor}{rgb}{0.96,0.96,0.96}
 \definecolor{nvdapurple}{rgb}{0.353, 0.176, 0.506}   % Púrpura NVDA (#5A2D81)
 \definecolor{mathcatgreen}{rgb}{0.165, 0.478, 0.157} % Verde MathCAT (#2A7A28)
@@ -1525,7 +159,7 @@ end, {})
 \NewDocumentCommand{\pkglogo}{}
   {
     \group_begin:
-      \LibertinusSansOsF{\textcolor{pkgcolor}{sp}\textcolor{OrangeRed}{intent}}
+      \LibertinusSansOsF{\textcolor{module_name}{sp}\textcolor{OrangeRed}{intent}}
     \group_end:
   }
 % Custom \meta[...]{...}, \marg[...]{...} and \oarg[...]{...} with color
@@ -1554,7 +188,7 @@ end, {})
     type / rm .code:n = \tl_set:Nn \l_userdoc_meta_font_tl { \rmfamily },
     type .initial:n   = tt,
     cf .tl_set:N      = \l_userdoc_meta_color_tl,
-    cf .initial:n     = optcolor,
+    cf .initial:n     = keyname,
     ac .tl_set:N      = \l_userdoc_meta_anglecolor_tl,
     ac .initial:n     = lightgray,
     sbc .tl_set:N     = \l_userdoc_meta_brackcolor_tl,
@@ -1626,7 +260,7 @@ end, {})
   {
     \group_begin:
     \small\ttfamily
-    \textcolor{pkgcolor}{\textbackslash#2}
+    \textcolor{module_name}{\textbackslash#2}
     \IfValueT{#1}{ \textcolor{MediumOrchid}{#1} }
     \IfValueT{#3}
       {
@@ -1634,15 +268,15 @@ end, {})
         \tl_set:Nn \l_tempd_tl { #3 }
         % \regex_replace_once:nnN { (\*) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tempd_tl
         \regex_replace_once:nnN { (\*) } { \c{texttt}\cB\{\c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} \cE\} } \l_tempd_tl
-        \myoarg[type=tt,sbc=gray,ac=lightgray,cf=optcolor]{\tl_use:N \l_tempd_tl}
+        \myoarg[type=tt,sbc=gray,ac=lightgray,cf=keyname]{\tl_use:N \l_tempd_tl}
       }
     \IfValueTF{#5}
       {
         \mymeta[ac=gray,type=tt,cf=MediumOrchid]{#5}%
-        \mymeta[type=tt,ac=gray,cf=optcolor]{#4}
+        \mymeta[type=tt,ac=gray,cf=keyname]{#4}
         \mymeta[ac=gray,type=tt,cf=MediumOrchid]{#5}%
       }
-      { \mymarg[type=tt,cbc=gray,ac=lightgray,cf=optcolor]{#4} }
+      { \mymarg[type=tt,cbc=gray,ac=lightgray,cf=keyname]{#4} }
     \par
     \group_end:
   }
@@ -1654,7 +288,7 @@ end, {})
     \hbox_to_wd:nn { -\marginparsep }
       {
         \tex_hss:D
-        \textcolor { optcolor } { \small \ttfamily {#2} }
+        \textcolor { keyname } { \small \ttfamily {#2} }
       }
     \IfBooleanTF {#1}
       {
@@ -1663,16 +297,15 @@ end, {})
       }
       {
         \textcolor { gray } { \, \bfseries \texttt{=} } \, {}
-        \mymarg [ type=tt, cbc=gray, ac=lightgray, cf=optcolor ] { \small {#3} }
+        \mymarg [ type=tt, cbc=gray, ac=lightgray, cf=keyname ] { \small {#3} }
       }
     \hfill
     \textcolor { gray } { \small \textsf{default}:~ \emph{#4} } \par
     \IfValueT {#5}
       {
-        \MYSortIndex { Keys }
+        \__mydoc_sort_index:nn { Keys }
           {
-            Keys~for~ \texttt { \textbackslash #5 } ~
-            provide~by~ \pkglogo :> \texttt {#2}
+            Keys~for~ \texttt { \textbackslash #5 } ~ provide~by~ \pkglogo :> \texttt {#2}
           }
       }
   }
@@ -1681,30 +314,32 @@ end, {})
 \NewDocumentCommand \mykey { o m }
   {
     \group_begin:
-      \textcolor{optcolor}{\ttfamily #2}
+      \textcolor{keyname}{\ttfamily #2}
       \IfValueT {#1}
         {
           \clist_map_inline:nn {#1}
             {
-              \MYSortIndex{Keys}{Keys~for~\texttt{\textbackslash{}##1}~provide~by~\pkglogo :>\texttt{#2}}
+              \__mydoc_sort_index:nn {Keys} {Keys~for~\texttt{\textbackslash{}##1}~provide~by~\pkglogo :>\texttt{#2}}
             }
         }
     \group_end:
   }
 % \mypkg{sm}
-\NewDocumentCommand \mypkg { s m }
+\NewDocumentCommand \mypkg { s O{} m }
   {
     \group_begin:
-    \IfBooleanTF{#1}
+    \IfBooleanTF {#1}
       {
         \pkglogo
-        %%%%\MYSortIndex{packages}{Packages :>\texttt{#2}}
       }
       {
-        \textcolor{OrangeRed}{\texttt{#2}}%
-        \MYSortIndex{packages}{Packages :>\texttt{#2}}%
+        \textcolor{angle} { \texttt{#3} } %\texttt{#3}
       }
-     \group_end:
+    \str_if_eq:nnF {#2} { no-index }
+      {
+        \__mydoc_sort_index:nn { packages } { Packages~:>~\texttt{#3} }
+      }
+    \group_end:
   }
 % \mynvmath
 \tl_new:N \l__mynvmath_input_tl
@@ -1712,22 +347,10 @@ end, {})
   {
     \group_begin:
       \tl_set:Nn \l__mynvmath_input_tl { #1 }
-      \regex_replace_all:nnN
-        { NVDA }
-        { \c{textcolor}\cB\{nvdapurple\cE\}\cB\{NVDA\cE\} }
-        \l__mynvmath_input_tl
-      \regex_replace_all:nnN
-        { Math }
-        { \c{textcolor}\cB\{nvdapurple\cE\}\cB\{Math\cE\} }
-        \l__mynvmath_input_tl
-      \regex_replace_all:nnN
-        { (CAT|ML) }
-        { \c{textcolor}\cB\{catgray\cE\}\cB\{\1\cE\} }
-        \l__mynvmath_input_tl
-      \regex_replace_all:nnN
-        { / }
-        { \c{textcolor}\cB\{gray\cE\}\cB\{/\cE\} }
-        \l__mynvmath_input_tl
+      \regex_replace_all:nnN { NVDA } { \c{textcolor}\cB\{nvdapurple\cE\}\cB\{NVDA\cE\} } \l__mynvmath_input_tl
+      \regex_replace_all:nnN { Math } { \c{textcolor}\cB\{nvdapurple\cE\}\cB\{Math\cE\} } \l__mynvmath_input_tl
+      \regex_replace_all:nnN { (CAT|ML) } { \c{textcolor}\cB\{catgray\cE\}\cB\{\1\cE\} }  \l__mynvmath_input_tl
+      \regex_replace_all:nnN { / } { \c{textcolor}\cB\{gray\cE\}\cB\{/\cE\} } \l__mynvmath_input_tl
       \ttfamily
       \tl_use:N \l__mynvmath_input_tl
     \group_end:
@@ -1735,8 +358,8 @@ end, {})
 % \myclass{m}
 \NewDocumentCommand \myclass { m }
   {
-    \mbox{\texttt{\textcolor{OrangeRed}{#1}}}
-    \MYSortIndex{class}{Document~class :>\texttt{#1}}
+    \mbox{\texttt{\textcolor{angle}{#1}}}
+    \__mydoc_sort_index:nn {class} {Document~class :>\texttt{#1}}
   }
 % \myenv{sm}
 \NewDocumentCommand \myenv { s m O{}}
@@ -1745,12 +368,12 @@ end, {})
       {
         \tl_set:Nn \l_tmpa_tl { #2 }
         \regex_replace_once:nnN { (\*) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
-        \textcolor{pkgcolor}{\ttfamily{\tl_use:N \l_tmpa_tl}}%
-        \MYSortIndex{environment}{Environments~provide~by ~\pkglogo :>\texttt{\tl_use:N \l_tmpa_tl}}
+        \textcolor{module_name}{\ttfamily{\tl_use:N \l_tmpa_tl}}%
+        \__mydoc_sort_index:nn {environment} {Environments~provide~by ~\pkglogo :>\texttt{\tl_use:N \l_tmpa_tl}}
       }
       {
         \textcolor{SlateBlue}{\ttfamily{#2}}%
-        \MYSortIndex{environment}{Environments :>\texttt{#2}}
+        \__mydoc_sort_index:nn {environment} {Environments :>\texttt{#2}}
       }
   }
 % \ics{sm}
@@ -1761,21 +384,24 @@ end, {})
         \tl_set:Nn \l_tmpa_tl { #2 }
         \regex_replace_once:nnN { (\*) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
         \regex_replace_once:nnN { (!) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
-        \textcolor{pkgcolor}{\ttfamily\textbackslash{\tl_use:N \l_tmpa_tl}}
-        \MYSortIndex{Commands}{Commands~provide ~by~\pkglogo :>\texttt{\textbackslash#2}}
+        \textcolor{module_name}{\ttfamily\textbackslash{\tl_use:N \l_tmpa_tl}}
+        \__mydoc_sort_index:nn {Commands} {Commands~provide ~by~\pkglogo :>\texttt{\textbackslash#2}}
       }
       {
         \textcolor{blue!75}{\ttfamily\textbackslash{#2}}
-        \MYSortIndex{#2}{\texttt{\textbackslash#2}}
+        \__mydoc_sort_index:nn {#2} {\texttt{\textbackslash#2}}
       }
   }
 % \mydim{m}
 \NewDocumentCommand \mydim { m }
   {
-    \tl_set:Nn \l_tmpa_tl { #1 }
-    \regex_replace_all:nnN { (\d) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
-    \regex_replace_all:nnN  { (\.) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
-    \textcolor{gray}{ \ttfamily \tl_use:N \l_tmpa_tl }
+    \group_begin:
+      \tl_set:Nn \l_tmpa_tl { #1 }
+      \regex_replace_all:nnN { (\d) } { \c{textcolor}\cB\{number\cE\}\cB\{\1\cE\} } \l_tmpa_tl
+      %\regex_replace_all:nnN  { (\.) } { \c{textcolor}\cB\{unit\cE\}\cB\{\1\cE\} } \l_tmpa_tl
+    \textcolor{unit}{ \ttfamily \tl_use:N \l_tmpa_tl }
+    %%\texttt { \tl_use:N \l_tmpa_tl }
+    \group_end:
   }
 % \myluamod{}
 \tl_new:N \l__mydoc_luamod_tl
@@ -1785,7 +411,7 @@ end, {})
       \tl_set:Nn \l__mydoc_luamod_tl { spintent.lua }
       \regex_replace_all:nnN { spintent }
         {
-          \c{textcolor}\cB\{pkgcolor\cE\}\cB\{sp\cE\}
+          \c{textcolor}\cB\{module_name\cE\}\cB\{sp\cE\}
           \c{textcolor}\cB\{OrangeRed\cE\}\cB\{intent\cE\}
         }
         \l__mydoc_luamod_tl
@@ -1796,7 +422,7 @@ end, {})
         }
         \l__mydoc_luamod_tl
       \texttt{ \l__mydoc_luamod_tl }
-      \MYSortIndex{Module}{Lua~module~provide ~by~\pkglogo :>\texttt{spintent.lua}}
+      \__mydoc_sort_index:nn {Module} {Lua~module~provide ~by~\pkglogo :>\texttt{spintent.lua}}
     \group_end:
   }
 % \myfile{m}
@@ -1822,7 +448,7 @@ end, {})
         \hbox_to_wd:nn { \marginparsep }
           {
             \tex_hss:D
-            \textcolor { pkgcolor } { #1 }
+            \textcolor { module_at } { #1 } % privatefun
           }
       }
     \skip_horizontal:n { 0.5 \marginparsep }
@@ -1848,10 +474,9 @@ end, {})
     \seq_set_split:Nnn \l__spintent_email_seq { @ } { #1 }
     \href { mailto:#1 }
       {
-        %%\sffamily
         \ttfamily
         \seq_item:Nn \l__spintent_email_seq { 1 }
-        \textcolor { optcolor } { \footnotesize @ }
+        \textcolor { arroba } { \footnotesize @ }
         \seq_item:Nn \l__spintent_email_seq { 2 }
       }
   }
@@ -1882,10 +507,10 @@ end, {})
       \__spintent_starttoc:n { toc }
     \end{multicols}
     \vspace* { -3pt }
-    {
-      \color { gray }
-      \tex_hrule:D height 0.6pt
-    }
+      {
+        \color { gray }
+        \tex_hrule:D height 0.6pt
+      }
     \vspace* { 5pt }
     \group_end:
   }
@@ -1896,8 +521,8 @@ end, {})
       {
         \int_case:nnF { #1 }
           {
-            { 1 } { \textcolor { pkgcolor } { * } }
-            { 2 } { \textcolor { pkgcolor } { \dagger } }
+            { 1 } { \textcolor { module_name } { * } }
+            { 2 } { \textcolor { module_name } { \dagger } }
             { 3 } { \ddagger }
             { 4 } { \mathsection }
             { 5 } { \mathparagraph }
@@ -1948,8 +573,8 @@ end, {})
                     mode_leave_vertical, Umathchardef,mathrm, mathbf, textstyle, addfontfeatures, %
                     left, right, Uleft, Uright,  },%
 % Other words 3
-    keywordstyle  = [5]{\color{optcolor!85}},%
-    keywords      = [5]{article},%,
+    keywordstyle  = [5]{\color{angle}},%
+    keywords      = [5]{article,babel,spintent,libertinus-otf,sourcecodepro,fourier-otf,Erewhon-Math,hyperref,},%,
 % Reserved words 4 (spintent pkg)
     keywordstyle  = [6]{\color{module_name}},%
     keywords      = [6]{spnum, spunit, spmoney, spshort, spdiv, spang, sptime, spdate, spsiglo, spmcm, spnD, spnM, %
@@ -1961,8 +586,8 @@ end, {})
                     splittopskip,showboxdepth,topskip,showoutput,nointerlineskip, ignorespaces, unskip, unkern, lastnodetype,%
                     rightskip, @rightskip, flushglue, @flushglue, hbadness, hss, scantokens, beginparpenalty, itempenalty, %
                     endparpenalty, lowpenalty,},%
-% Reserved words 6 (optcolor) KEYS
-    keywordstyle  = [8]{\color{optcolor}},%
+% Reserved words 6 (keyname) KEYS
+    keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
                     multislash, coma, punto, result, join-word, entero, enteros, y, error, periódico, postfix,%
                     es-paralela, es-paralelo, two-dots, old-style, slash, dividido, dividido-por, dividido-entre, por,%
@@ -1990,13 +615,13 @@ end, {})
                     {:}{{\textcolor{signature}{:}}}{1}
                     {`}{{\textcolor{quote}{\textasciigrave}}}{1}
                     {\&}{{\textcolor{gray}{\&}}}{1}
-                    {>}{{\textcolor{lightgray}{>}}}{1}
-                    {<}{{\textcolor{lightgray}{<}}}{1}
-                    {*}{{\textcolor{MediumOrchid}{*}}}{1}
-                    {ua-2}{{\textcolor{optcolor}{ua-2}}}{4} % UA-2
+                    {>}{{\textcolor{module_eq}{>}}}{1}
+                    {<}{{\textcolor{module_eq}{<}}}{1}
+                    {*}{{\textcolor{star}{*}}}{1}
+                    {ua-2}{{\textcolor{keyname}{ua-2}}}{4} % UA-2
                     {!}{{\textcolor{MediumOrchid}{!}}}{1}
-                    {@}{{\textcolor{MediumOrchid}{@}}}{1}%
-                    {\^}{{\textcolor{optcolor}{\textasciicircum}}}{1}
+                    {@}{{\textcolor{arroba}{@}}}{1}%
+                    {\^}{{\textcolor{keyname}{\textasciicircum}}}{1}
                     {0}{{\textcolor{argnum}{0}}}{1}
                     {1}{{\textcolor{argnum}{1}}}{1}
                     {2}{{\textcolor{argnum}{2}}}{1}
@@ -2047,26 +672,26 @@ end, {})
     escapechar  =`,%
     basicstyle  =\ttfamily,%\small
     numberstyle = \tiny\color{lightgray}\noaccsupp,%
-    literate    =*{\%}{{\textcolor{gray}{\%}}}{1}
-                  {i}{{\textcolor{optcolor}{i}}}{1}
-                  {ii}{{\textcolor{optcolor}{ii}}}{2}
-                  {iii}{{\textcolor{optcolor}{iii}}}{3}
-                  {iv}{{\textcolor{optcolor}{iv}}}{2}
-                  {v}{{\textcolor{optcolor}{v}}}{1}
-                  {vi}{{\textcolor{optcolor}{vi}}}{1}
+    literate    =*{\%}{{\textcolor{percent}{\%}}}{1}
+                  {i}{{\textcolor{keyname}{i}}}{1}
+                  {ii}{{\textcolor{keyname}{ii}}}{2}
+                  {iii}{{\textcolor{keyname}{iii}}}{3}
+                  {iv}{{\textcolor{keyname}{iv}}}{2}
+                  {v}{{\textcolor{keyname}{v}}}{1}
+                  {vi}{{\textcolor{keyname}{vi}}}{1}
   }
 % Set default \lstinline style
 \lstset{style=inline}
 
 % Configuration titleps and titlesec
 \settitlemarks{section}
-\renewpagestyle{plain}[\color{optcolor}\small\sffamily]{%
+\renewpagestyle{plain}[\color{keyname}\small\sffamily]{%
 \setfoot{\rlap{\hskip\dimexpr-\oddsidemargin-1in\relax%
          \parbox{1.93\paperwidth}{\hfil\thepage\,/\,\pageref{LastPage}}}}%
         {}%
         {}%
 }
-\newpagestyle{myheader}[\color{optcolor}\small\sffamily]{%
+\newpagestyle{myheader}[\color{keyname}\small\sffamily]{%
 \renewcommand\makeheadrule{%
 \rlap{\hskip\dimexpr-\oddsidemargin-1in\relax
       \color{rulecolor}\rule[0.3cm]{\paperwidth}{0.7cm}}\hss
@@ -2101,15 +726,15 @@ end, {})
 %
 % \title{
 %    \scalebox{2.67}{\pkglogo}\\[0pt]
-%    {\Large\textcolor{gray}{\fetamontotf{spanish parse intents}}}\\[-5pt]
+%    {\Large\textcolor{angle}{\fetamontotf{spanish parse intents}}}\\[-5pt]
 %    \fileversion{} \quad \filedate\thanks{
 %     Este archivo describe la documentación para la versión \fileversion{}
 %     revisada por última vez el
 %    \filedate.}\\[30pt]
 %    \author{
 %    \large
-%    \raisebox{-1pt}{\textcopyright}{}2026 by Pablo González L\thanks{
-%    E-mail: \textcolor{OrangeRed}{\textsf{\guillemotleft}}\email{pablgonz@educarchile.cl}\textcolor{OrangeRed}{\textsf{\guillemotright}}.
+%    \raisebox{-1pt}{\textcolor{angle}{\textcopyright{}2026 by Pablo González L}}\thanks{
+%    E-mail: \textcolor{angle}{\textsf{\guillemotleft}}\email{pablgonz@educarchile.cl}\textcolor{angle}{\textsf{\guillemotright}}.
 %       }%
 %    }
 % \small
@@ -2122,7 +747,7 @@ end, {})
 % \maketitle
 %
 % \begin{abstract}
-%  El paquete \mypkg*{spintent} proporciona una serie de utilidades para
+%  El paquete \mypkg*[no-index]{spintent} proporciona una serie de utilidades para
 %  docentes de educación primaria y secundaria que necesiten crean documentos
 %  \texttt{PDF} \emph{accesibles} (\emph{tagged} \texttt{PDF}) en español
 %  usando \hologo{LuaLaTeX}.
@@ -2164,7 +789,7 @@ end, {})
 %
 % \smallskip
 %
-% El objetivo de \mypkg*{spintent} nace precisamente de esta necesidad:
+% El objetivo de \mypkg*[no-index]{spintent} nace precisamente de esta necesidad:
 % proporcionar herramientas para que el o la docente pueda indicar
 % explícitamente el contexto de determinadas expresiones matemáticas
 % desde el propio código fuente de \hologo{LaTeX}, de modo que el
@@ -2187,7 +812,7 @@ end, {})
 %
 % \section*{Licencia y requerimientos}
 %
-% El paquete \mypkg*{spintent} carga y requiere el paquete \mypkg{unicode-math}\cite{unicode-math}
+% El paquete \mypkg*[no-index]{spintent} carga y requiere el paquete \mypkg{unicode-math}\cite{unicode-math}
 % y que se ejecute bajo \hologo{LuaLaTeX} por lo que es necesario contar con
 % una distribución moderna de \hologo{TeX} como \hologo{TeX} Live 2026. Ha sido probado con las clases estándar
 % proporcionadas por \hologo{LaTeX}: \myclass{book}, \myclass{report}, \myclass{article} y
@@ -2208,7 +833,7 @@ end, {})
 % \smallskip
 %
 % \begin{important}*
-%  El requerimiento mínimo es \hologo{LaTeX} release 2026-06-01.
+%  El requerimiento mínimo es \hologo{LaTeX} release 2026-11-01.
 % \end{important}
 %
 % \smallskip
@@ -2226,12 +851,12 @@ end, {})
 %<*example>
 % \fi
 \begin{examplecode}[frame=single,language={}]
-  spintent.sty  >  TDS:tex/lualatex/spintent/
-  spintent.lua  >  TDS:tex/lualatex/spintent/
-  spintent.pdf  >  TDS:doc/lualatex/spintent/
-  README.md     >  TDS:doc/lualatex/spintent/
-  spintent.dtx  >  TDS:source/lualatex/spintent/
-  spintent.ins  >  TDS:source/lualatex/spintent/
+  spintent.sty  =>  TDS:tex/lualatex/spintent/
+  spintent.lua  =>  TDS:tex/lualatex/spintent/
+  spintent.pdf  =>  TDS:doc/lualatex/spintent/
+  README.md     =>  TDS:doc/lualatex/spintent/
+  spintent.dtx  =>  TDS:source/lualatex/spintent/
+  spintent.ins  =>  TDS:source/lualatex/spintent/
 \end{examplecode}
 % \iffalse
 %</example>
@@ -2241,7 +866,7 @@ end, {})
 %
 % \section{Descripción}
 %
-% El nombre \mypkg*{spintent} puede entenderse como \emph{«Spanish Parse
+% El nombre \mypkg*[no-index]{spintent} puede entenderse como \emph{«Spanish Parse
 % Intent»} o también como \emph{«School Parse Intent»}. Ambas
 % interpretaciones reflejan el objetivo del paquete y el público para el
 % que fue diseñado: docentes de educación primaria y secundaria.
@@ -2255,14 +880,14 @@ end, {})
 % \smallskip
 %
 % \begin{important}*
-%  El paquete \mypkg*{spintent} usa y abusa del atributo |:intent| de \mynvmath{MathML}
+%  El paquete \mypkg*[no-index]{spintent} usa y abusa del atributo |:intent| de \mynvmath{MathML}
 %  por medio del comando |\MathMLintent| definido en \mypkg{latex-lab-mathintent}\cite{latexlab},
 %  un encapsulado de |\luamml_attribute:een| proveída por \mypkg{luamml}\cite{luamml}. !Gracias Marcel¡
 % \end{important}
 %
 % \subsection{Carga del paquete}
 %
-% El paquete \mypkg*{spintent} trabaja solo con \hologo{LuaLaTeX} y
+% El paquete \mypkg*[no-index]{spintent} trabaja solo con \hologo{LuaLaTeX} y
 % \emph{tagged} \texttt{PDF} activo usando |tagging=on| dentro del comando
 % |\DocumentMetadata| al inicio del archivo.
 % Las llaves (\mymeta{keys})  aceptadas por |\DocumentMetadata| y en
@@ -2311,13 +936,13 @@ end, {})
 % Muchas de las «shorthands» proveidas por \mypkg{babel-spanish} hoy no
 % son necesarias, más allá de |\sptext| para las abreviaturas y ordinales
 % el resto son solo atajos de teclas para escritura que hoy en día no se ocupan.
-% El paquete \mypkg*{spintent} provee el comando |\spshort| (\S\ref{sec:spshort})
+% El paquete \mypkg*[no-index]{spintent} provee el comando |\spshort| (\S\ref{sec:spshort})
 % que cubre estos casos, de esta manera podemos cargar \mypkg{babel}\cite{babel}
 % con todas sus funcionalidades sin problemas.
 %
 % \subsection{Fuentes tipográficas}
 %
-% Como \mypkg*{spintent} es un paquete \hologo{LuaLaTeX} debemos
+% Como \mypkg*[no-index]{spintent} es un paquete \hologo{LuaLaTeX} debemos
 % distinguir entre las fuentes tipográficas \texttt{OpenType/TrueType}
 % versus las fuentes de \texttt{8bit} estándar usadas por
 % \hologo{LaTeX} para el \emph{modo texto} y el \emph{modo matemático}.
@@ -2413,7 +1038,7 @@ end, {})
 %     \ics*{setspintent}\mymarg{comando}\mymarg{key-uno \textnormal{\textcolor{gray}{=}} valor\textnormal{\textcolor{gray}{,}} key-dos \textnormal{\textcolor{gray}{=}} valor\textnormal{\textcolor{gray}{,}} key-tres \textnormal{\textcolor{gray}{=}} valor\textnormal{\textcolor{gray}{,}} \dots}
 %   \end{syntax}
 %   El comando \ics*{setspintent} establece las llaves (\mymeta{keys}) de
-%   forma global para los comandos provistos por \mypkg*{spintent}. Puede
+%   forma global para los comandos provistos por \mypkg*[no-index]{spintent}. Puede
 %   utilizarse tanto en el preámbulo como en el cuerpo del documento
 %   tantas veces como se desee.
 %
@@ -2426,7 +1051,7 @@ end, {})
 %
 % \smallskip
 %
-%   Muchas de las utilidades que provee el paquete \mypkg*{spintent} implementan
+%   Muchas de las utilidades que provee el paquete \mypkg*[no-index]{spintent} implementan
 %   el sistema \myoarg{key \textnormal{\textcolor{gray}{=}} val} y están pensadas
 %   para ser utilizadas en la generación de \emph{«hojas de ejercicios»} o \emph{«clases
 %   escritas»}. Se recomienda usar |\setspintent| y establecerlas de manera
@@ -2436,7 +1061,7 @@ end, {})
 %  \smallskip
 %
 %   El sistema \myoarg{key \textnormal{\textcolor{gray}{=}} val} utilizado
-%   por \mypkg*{spintent} se implementa usando el módulo \mypkg{l3keys}
+%   por \mypkg*[no-index]{spintent} se implementa usando el módulo \mypkg{l3keys}
 %   de \mypkg{expl3}\cite{expl3}. Por diseño, las llaves que reciben un
 %   \emph{valor} después del signo `|=|' NO aceptan \emph{valores vacíos}
 %   y es obligatorio pasar uno valido; las llaves documentadas como \mymeta{valor prohibido}
@@ -2449,10 +1074,10 @@ end, {})
 %
 % \section{The big four}
 %
-% El paquete \mypkg*{spintent} provee cuatro grandes comandos
+% El paquete \mypkg*[no-index]{spintent} provee cuatro grandes comandos
 % \emph{(«the big four\footnote{Los \emph{«cuatro grandes»} del
 % Thrash Metal: Metallica, Megadeth, Slayer y Anthrax, que me acompañan
-% mientras desarrollo \mypkg*{spintent}.}»)}:
+% mientras desarrollo \mypkg*[no-index]{spintent}.}»)}:
 % |\spnum| para el manejo de números, |\spunit| para el manejo
 % de unidades, |\spmoney| para el manejo de dinero y |\spshort|
 % para el manejo de abreviaturas, acrónimos y números ordinales.
@@ -2942,7 +1567,7 @@ end, {})
 %  El \emph{«símbolo de moneda»} es tomado de la fuente tipográfica definida
 %  para el \emph{modo matemático} al momento de ejecutar el comando, se
 %  debe tener presente en caso de querer usar un \emph{«símbolo de moneda»}
-%  poco habitual que esté soportada por \mypkg*{spintent}. El \mymarg{argumento}
+%  poco habitual que esté soportada por \mypkg*[no-index]{spintent}. El \mymarg{argumento}
 %  puede contener espacios matemáticos validos, pero, NO puede contener
 %  comandos con o sin argumentos como |\textstyle|, |\mathrm{#1}| o
 %  |\mathbf{#1}| por ejemplo. La \emph{coma} `\textcolor{red}{\texttt{,}}'
@@ -3083,7 +1708,7 @@ end, {})
 % \smallskip
 %
 % Para crear un nueva \mymarg{abreviatura}, \mymarg{acrónimo} o \mymarg{número ordinal}
-% que no se encuentre registrada por \mypkg*{spintent} dentro del módulo Lua \myluamod{}
+% que no se encuentre registrada por \mypkg*[no-index]{spintent} dentro del módulo Lua \myluamod{}
 % descritas en \S\ref{subsec:arg-spshort} se debe utilizar la llave
 % |read-arg| y definir esta dentro del \emph{argumento obligatorio}
 % que puede contener \mymarg{comandos \hologo{LaTeX}} \emph{en modo texto}
@@ -3106,7 +1731,7 @@ end, {})
 %   El comando |\spshort| está pensado como un reemplazo para \emph{shorthands}
 %   y el comando |\sptext| provistos por el paquete \mypkg{babel} en español
 %   compatible con \emph{tagged} PDF. Es de las pocas utilidades que provee
-%   el paquete \mypkg*{spintent} que trabaja \emph{solo en modo texto}. Internamente
+%   el paquete \mypkg*[no-index]{spintent} que trabaja \emph{solo en modo texto}. Internamente
 %   utiliza la llave \mykey{E} \emph{(expansion text)} proveída por el paquete
 %   \mypkg{tagpdf}\cite{tagpdf}.
 % \end{important}
@@ -3290,7 +1915,7 @@ end, {})
 %
 % \section{Utilidades generales}\label{sec:utilidades}
 %
-% Además de los \emph{«cuatro grandes»} y sus asociados, el paquete \mypkg*{spintent}
+% Además de los \emph{«cuatro grandes»} y sus asociados, el paquete \mypkg*[no-index]{spintent}
 % provee tres utilidades de uso general: |\spsiglo| para la escritura y
 % lectura de siglos, |\sptime| para la escritura y lectura de tiempo y
 % |\spdate| para la escritura y lectura de fechas.
@@ -3322,7 +1947,7 @@ end, {})
 %  El \emph{argumento obligatorio} \mymarg{siglo} \emph{«siempre»} es
 %  convertido a \emph{número romano en versalitas} y es verbalizado por
 %  \mynvmath{NVDA/MathCAT} como \emph{número arábigo}. Esta es la única utilidad
-%  que provee el paquete \mypkg*{spintent} que trabaja en \emph{modo texto}
+%  que provee el paquete \mypkg*[no-index]{spintent} que trabaja en \emph{modo texto}
 %  y en \emph{modo matemático}. Internamente utiliza la llave \mykey{alt}
 %  proveída por el paquete \mypkg{tagpdf} en \emph{modo texto}
 %  y usa |\MathMLintent| para el \emph{modo matemático}.
@@ -3399,7 +2024,7 @@ end, {})
 %
 % \section{Utilidades para símbolos}
 %
-% El paquete \mypkg*{spintent} provee tres comandos |\spread|, |\spdsym|
+% El paquete \mypkg*[no-index]{spintent} provee tres comandos |\spread|, |\spdsym|
 % y |\spmsym| para trabajar con \emph{«símbolos matemáticos»} descritos
 % en esta sección. Están pensandos desde el punto de vista docente, para
 % situaciones donde la lectura de un \emph{«símbolo»} (acorde al contexto)
@@ -3408,7 +2033,7 @@ end, {})
 %
 % \begin{important}*
 %  A diferencia de las otras utilidades implementados por
-%  \mypkg*{spintent} (que analizan y dan formato a la salida), estos no
+%  \mypkg*[no-index]{spintent} (que analizan y dan formato a la salida), estos no
 %  procesan los \emph{«símbolos matemáticos»}, solo afectan la \emph{forma}
 %  (semántica) en que serán verbalizados por \mynvmath{NVDA/MathCAT}.
 % \end{important}
@@ -3559,7 +2184,7 @@ end, {})
 %
 % \section{Utilidades para números}
 %
-% El paquete \mypkg*{spintent} provee utilidades para trabajar con números
+% El paquete \mypkg*[no-index]{spintent} provee utilidades para trabajar con números
 % descritas en esta sección.
 %
 % \subsection*{El comando \cs[no-index]{spdiv}}\label{subsec:spdiv}
@@ -4063,7 +2688,7 @@ end, {})
 % \begin{important}*
 %   En el caso de las fracciones, y en especial con los \emph{«números
 %   mixtos»}, no se pueden manejar muchas cosas desde el lado de
-%   \mypkg*{spintent}. Por ejemplo, la entrada |$3\frac{5}{7}$| con
+%   \mypkg*[no-index]{spintent}. Por ejemplo, la entrada |$3\frac{5}{7}$| con
 %   \emph{tagged} \texttt{PDF} se verbaliza por \mynvmath{NVDA/MathCAT} como
 %   \emph{«tres más cinco séptimos»}, lo cual no está mal, pero
 %   pedagógicamente hablando no es del todo correcto.
@@ -4087,7 +2712,7 @@ end, {})
 %
 % \section{Utilidades para geometría}
 %
-% El paquete \mypkg*{spintent} provee utilidades para trabajar con geometría
+% El paquete \mypkg*[no-index]{spintent} provee utilidades para trabajar con geometría
 % (plana), que describiremos en esta sección.
 %
 % \subsection*{El comando \cs[no-index]{spang}}\label{subsec:spang}
@@ -4293,7 +2918,7 @@ end, {})
 % \label{sec:Implementation}
 % \addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
 %
-% The most recent publicly released version of \mypkg*{spintent} is
+% The most recent publicly released version of \mypkg*[no-index]{spintent} is
 % available at \textsc{ctan}: \url{https://www.ctan.org/pkg/spintent}.
 % While general feedback via email is welcomed, specific bugs or
 % feature requests should be reported through the issue
@@ -4345,12 +2970,12 @@ end, {})
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
 %    \end{macrocode}
-% Now declare the \mypkg*{spintent} package.
+% Now declare the \mypkg*[no-index]{spintent} package.
 %    \begin{macrocode}
 \ProvidesExplPackage {spintent} {2026-08-16} {0.96} {Spanish parse intents}
 %    \end{macrocode}
 %
-% We check if the requirements for running the \mypkg*{spintent} package
+% We check if the requirements for running the \mypkg*[no-index]{spintent} package
 % are met; that is: |\DocumentMetadata| must be active, \hologo{LuaTeX}
 % must be running, and the \mypkg{unicode-math} or \mypkg{lua-unicode-math}
 % package must be loaded. If neither is present, we will load \mypkg{unicode-math}.
@@ -4541,7 +3166,7 @@ end, {})
 % \subsection{The command \cs{setspintent}}\label{cmd:setspintent}
 %
 % The \ics*{setspintent} command is used to configure \mymeta{keys}
-% \emph{\enquote{globally}} for the utilities provided by \mypkg*{spintent}.
+% \emph{\enquote{globally}} for the utilities provided by \mypkg*[no-index]{spintent}.
 %
 % \subsubsection{Internal variables and error messages for \cs[no-index]{setspintent}}
 %
@@ -4877,7 +3502,7 @@ end, {})
 % \subsection{The command \cs{spnum}}\label{cmd:spnum}
 %
 % The user command \ics*{spnum} is \emph{first} of \emph{\enquote{the big four}}
-% provided by the \mypkg*{spintent} package and is fundamental to the
+% provided by the \mypkg*[no-index]{spintent} package and is fundamental to the
 % implementation of other commands. It handles the processing of numerical
 % input, scientific notation, and units of measurement, using the Lua module \myluamod,
 % which is responsible for separating and assigning variables defined in
@@ -5118,9 +3743,9 @@ end, {})
 \cs_new_protected:Nn \@@_spnum_render_decimal_sep:
   {
     \str_if_eq:VnTF \l_@@_luaset_dec_sep_tl { , }
-      { \str_set:Nn \l_@@_spnum_intent_read_dec_sep_str { _coma:prefix($dp) } }
-      { \str_set:Nn \l_@@_spnum_intent_read_dec_sep_str { _punto:prefix($dp) } }
-    \MathMLintent { \l_@@_spnum_intent_read_dec_sep_str }
+      { \str_set:Nn \l_@@_spnum_intent_read_dec_sep_str { _coma } }
+      { \str_set:Nn \l_@@_spnum_intent_read_dec_sep_str { _punto } }
+    \MathMLintent { \l_@@_spnum_intent_read_dec_sep_str :prefix($dp) }
       {
         \mathord { \l_@@_luaset_dec_sep_tl }
         \MathMLarg { dp }
@@ -5352,7 +3977,7 @@ end, {})
 % \subsection{The command \cs{spunit}}\label{cmd:spunit}
 %
 % The user command \ics*{spunit} is the \emph{second} of \emph{\enquote{the big four}}
-% provided by the \mypkg*{spintent} package and is used to parse and print physical units
+% provided by the \mypkg*[no-index]{spintent} package and is used to parse and print physical units
 % and angular systems. It sends the \mymarg{argument} to Lua module \myluamod{} via
 % \myhlc|\@@_luafun_clean_split_and_set:n| to separate and clean the \mymarg{argument}.
 %
@@ -5819,7 +4444,7 @@ end, {})
 % \subsection{The command \cs{spmoney}}\label{cmd:spmoney}
 %
 % The user command \ics*{spmoney} is the \emph{third} of
-% \emph{\enquote{the big four}} provided by the \mypkg*{spintent} package,
+% \emph{\enquote{the big four}} provided by the \mypkg*[no-index]{spintent} package,
 % designed to format monetary values and currencies. It delegates
 % \mymarg{argument} parsing to the Lua module \myluamod{} via
 % \myhlc|\@@_luafun_clean_split_and_set:n|. The module then retrieves the
@@ -8794,7 +7419,7 @@ end, {})
           }
         { y       }
           {
-            \MathMLintent { _y } { \c_@@_invisible_sep_tl }
+            \MathMLintent { _y- } { \c_@@_invisible_sep_tl }
           }
       }
    }
@@ -10450,4 +9075,1509 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
 end, {"string", "string"})
 % \iffalse
 %</spintentlua>
+% \fi
+%
+% \iffalse
+%<@@=>
+%<*mylhmcsty>
+% \fi
+\NeedsTeXFormat{LaTeX2e}[2026-11-01]
+\ProvidesExplPackage{mylhmc}{2025-08-16}{2.0}
+  {Line-by-line macrocode reader for l3doc in Lua}
+\RequirePackage { accsupp }
+\sys_if_engine_luatex:F
+  {
+    \msg_new:nnn { mylhmc } { luatex-required } { mylhmc~requires~LuaTeX. }
+    \msg_fatal:nn { mylhmc } { luatex-required }
+  }
+\tl_new:N  \l__mylhmc_module_name_tl
+\tl_if_exist:NTF \g__codedoc_module_name_tl
+  {
+   \tl_if_empty:NF \g__codedoc_module_name_tl
+     {
+       \tl_set_eq:NN \l__mylhmc_module_name_tl \g__codedoc_module_name_tl
+     }
+  }
+  {
+    \msg_new:nnn { mylhmc } { l3doc-required } { mylhmc~must~be~loaded~via~l3doc.cls. }
+    \msg_fatal:nn { mylhmc } { l3doc-required }
+  }
+\lua_load_module:n { mylhmc.lua }
+\cs_generate_variant:Nn \__mylhmc_set_color:nn { VV }
+
+\seq_new:N \g__mylhmc_colors_export_seq
+\seq_new:N \l__mylhmc_path_seq
+\tl_new:N  \l__mylhmc_color_export_tl
+\tl_new:N  \l__mylhmc_export_name_tl
+
+\cs_new_protected:Npn \__mylhmc_define_xcolor:nnn #1#2#3
+  {
+    \definecolor { #1 } { #2 } { #3 }
+  }
+\cs_generate_variant:Nn \__mylhmc_define_xcolor:nnn { Vnn }
+
+\cs_new_protected:Npn \__mylhmc_color_export_name:n #1
+  {
+    \seq_set_split:Nnn \l__mylhmc_path_seq { / } { #1 }
+    \seq_pop_right:NN \l__mylhmc_path_seq \l__mylhmc_export_name_tl
+    \tl_trim_spaces:N \l__mylhmc_export_name_tl
+  }
+
+\cs_new_protected:Npn \__mylhmc_export_color_aux:nnn #1#2#3
+  {
+    \__mylhmc_color_export_name:n { #1 }
+    \__mylhmc_define_xcolor:Vnn \l__mylhmc_export_name_tl { #2 } { #3 }
+  }
+\cs_new_protected:Npn \__mylhmc_process_color_export:n #1
+  {
+    \__mylhmc_export_color_aux:nnn #1
+  }
+
+\cs_new_protected:Npn \__mylhmc_define_color:nnn #1#2#3
+  {
+    % Native expl3 color
+    \color_set:nnn { mylhmc / #1 } { #2 } { #3 }
+    % Export to Lua using the last path component as the name
+    \__mylhmc_color_export_name:n { #1 }
+    \color_export:nnN { mylhmc / #1 } { space-sep-rgb } \l__mylhmc_color_export_tl
+    \__mylhmc_set_color:VV \l__mylhmc_export_name_tl \l__mylhmc_color_export_tl
+    % Defer xcolor definition until xcolor is available
+    \seq_gput_right:Nn \g__mylhmc_colors_export_seq { { #1 } { #2 } { #3 } }
+  }
+
+\__mylhmc_define_color:nnn { argument   } { HTML } { 48467C } % Violáceo Oscuro   -> # (sin número)
+\__mylhmc_define_color:nnn { argnum     } { HTML } { 6A1B9A } % Púrpura           -> número en #1
+\__mylhmc_define_color:nnn { privatevar } { HTML } { 3D7A7A } % Verde azulado     -> \g__var \l__var
+\__mylhmc_define_color:nnn { bracket    } { HTML } { 4A5568 } % Gris Carbón       -> []
+\__mylhmc_define_color:nnn { publicvar  } { HTML } { 0066CC } % Azul Medio        -> \l_var \g_var
+\__mylhmc_define_color:nnn { privatefun } { HTML } { 00695C } % Menta Oscuro      -> \__foo:Nn
+\__mylhmc_define_color:nnn { publicfun  } { HTML } { 004085 } % Azul Denim        -> \cs_new:Nn
+\__mylhmc_define_color:nnn { brace      } { HTML } { 4A5568 } % Gris Carbón       -> { }
+\__mylhmc_define_color:nnn { comment    } { HTML } { 7F8C8D } % Gris Medio        -> %
+\__mylhmc_define_color:nnn { signature  } { HTML } { 5C6BC0 } % Azul Acero        -> :
+\__mylhmc_define_color:nnn { sigargs    } { HTML } { 7F8C8D } % Gris Medio        -> Nn nTF
+\__mylhmc_define_color:nnn { number     } { HTML } { 6A1B9A } % Púrpura           -> 10 100
+\__mylhmc_define_color:nnn { constant   } { HTML } { 5E2A84 } % Púrpura Oscuro    -> \c_foo \c__foo
+\__mylhmc_define_color:nnn { ltcmd      } { HTML } { 002EA6 } % Azul Eléctrico    -> \NewDocumentCommand
+\__mylhmc_define_color:nnn { ltcmd_arg  } { HTML } { 5C658A } % Azul Pizarra      -> { O{} m +m t }
+\__mylhmc_define_color:nnn { legacy_at  } { HTML } { 607D8B } % Gris Azulado      -> \mi@cmd
+\__mylhmc_define_color:nnn { scan       } { HTML } { A64426 } % Rojo Ladrillo     -> \s_stop
+\__mylhmc_define_color:nnn { quark      } { HTML } { 800040 } % Vino              -> \q_nil
+\__mylhmc_define_color:nnn { key        } { HTML } { B27A00 } % Oro Viejo         -> .meta:n
+\__mylhmc_define_color:nnn { backtick   } { HTML } { 558B2F } % Verde Manzana     -> `A
+\__mylhmc_define_color:nnn { escape     } { HTML } { D81B60 } % Rosa Eléctrico    -> ^^M ~
+\__mylhmc_define_color:nnn { danger     } { HTML } { D32F2F } % Rojo Sangre       -> :D
+\__mylhmc_define_color:nnn { quote      } { HTML } { E65100 } % Naranja Profundo  -> ' "
+\__mylhmc_define_color:nnn { math       } { HTML } { FF1818 } % Rojo Neón         -> $ $$ \( \) \[ \]
+\__mylhmc_define_color:nnn { compare    } { HTML } { 808080 } % Gris Medio        -> < > = <= >= !=
+\__mylhmc_define_color:nnn { latex_cmd  } { HTML } { 3F3FFF } % Azul Brillante    -> \mathrm \textbf \,
+\__mylhmc_define_color:nnn { structure  } { HTML } { 004085 } % Azul Denim (bold) -> \NeedsTeXFormat \ProvidesExplPackage
+\__mylhmc_define_color:nnn { unit       } { HTML } { E67E22 } % Naranja Calabaza  -> pt em cm mu
+\__mylhmc_define_color:nnn { pkgstruct  } { HTML } { 064FA5 } % Azul cuerpo       -> \RequirePackage \IfPackageLoadedTF
+\__mylhmc_define_color:nnn { mathml     } { HTML } { 2036D2 } % Azul MathML       -> \MathMLintent \MathMLarg \luamml_annotate:en
+\__mylhmc_define_color:nnn { mathml_var } { HTML } { 008000 } % Verde Puro         -> $foo identifiers in MathMLintent/MathMLarg
+\__mylhmc_define_color:nnn { percent    } { HTML } { 4A5568 } % Gris Carbón        -> %
+\__mylhmc_define_color:nnn { arroba     } { HTML } { D81B60 } % Rosa Eléctrico     -> @
+\__mylhmc_define_color:nnn { star       } { HTML } { D81B60 } % Rosa Eléctrico     -> *
+\__mylhmc_define_color:nnn { keyname    } { HTML } { 483D8B } % Gris Índigo        -> cifras-sep read-sign terse clear
+\__mylhmc_define_color:nnn { other_np   } { HTML } { D32F2F } % Rojo Sangre        -> \__other_mod: privados ajenos
+
+\__mylhmc_define_color:nnn { guard / angle    } { HTML } { 4A5568 } % Gris Carbón  -> 〈 〉
+\__mylhmc_define_color:nnn { guard / name     } { HTML } { 5A6370 } % Gris Pizarra -> nombre módulo
+\__mylhmc_define_color:nnn { guard / operator } { HTML } { 95A5A6 } % Gris Plata   -> * / ( ) & | !
+\__mylhmc_define_color:nnn { module_at        } { HTML } { 008080 } % Teal         -> __spintent
+\__mylhmc_define_color:nnn { module_name      } { HTML } { 008080 } % Teal         -> nombre módulo en __spintent=
+\__mylhmc_define_color:nnn { module_eq        } { HTML } { 808080 } % Gris Medio   -> =
+
+\hook_gput_code:nnn { begindocument } { mylhmc }
+  {
+    \IfPackageLoadedT { xcolor }
+      {
+        \seq_map_function:NN \g__mylhmc_colors_export_seq \__mylhmc_process_color_export:n
+      }
+  }
+
+\clist_const:Nn \c__mylhmc_module_cmds_clist
+  {
+    spnum , spunit , spmoney , spshort , spusep, setspintent,
+    spdate , sptime , spang  , spread , spdsym, spnewunit, spunitalias,
+    spmcm , spmcd  , spsiglo , spdiv, spmul, spnM, spnD, spnZ, spmQ,
+  }
+\clist_map_inline:Nn \c__mylhmc_module_cmds_clist
+  { \__mylhmc_register_module_cmd:n {#1} }
+
+\NewDocumentCommand \myhlc { v }
+  {
+    \mode_leave_vertical:
+    \group_begin:
+      \ttfamily
+      \__mylhmc_inline:n {#1}
+    \group_end:
+  }
+\cs_new_protected:Npn \__mylhmc_inline:n #1
+  {
+    \tl_set:Nn \l__mylhmc_verbatim_line_tl {#1}
+    \__mylhmc_inline:
+  }
+
+\hook_gput_code:nnn { begindocument } { mylhmc }
+  {
+    \renewcommand \theCodelineNo
+      {
+        \BeginAccSupp { ActualText = {} }
+        \group_begin:
+          \color_select:n { mylhmc / guard / angle }
+          \ttfamily \tiny \arabic { CodelineNo }
+        \group_end:
+        \EndAccSupp {}
+      }
+  }
+
+\group_begin:
+  \int_set:Nn \tex_endlinechar:D { -1 }
+  \use:n
+    {
+      \char_set_catcode_active:n { 32 }
+      \tl_const:Nn \c__mylhmc_active_space_tl
+    }{ }
+\group_end:
+
+\tl_new:N \l__mylhmc_verbatim_line_tl
+\tl_new:N \l__mylhmc_verbatim_finish_tl
+
+\group_begin:
+  \char_set_catcode_active:n { 13 }
+  \cs_new_protected:Npe \__mylhmc_set_end_pattern:n #1
+    {
+      \tl_set:Nn \exp_not:N \l__mylhmc_verbatim_finish_tl
+        {
+          \c_percent_str
+          \prg_replicate:nn { 4 } { \exp_not:o { \c__mylhmc_active_space_tl } }
+          \exp_not:o { \active@escape@char } end
+          \c_left_brace_str #1 \c_right_brace_str
+          \exp_not:N ^^M
+        }
+    }
+  \cs_new_protected:Npn \__mylhmc_verbatim_start:w #1
+    {
+      \str_if_eq:nnTF { #1 } { ^^M }
+        { \__mylhmc_verbatim_read_line:w }
+        { \__mylhmc_verbatim_read_line:w #1 }
+    }
+  \cs_new_protected:Npn \__mylhmc_verbatim_read_line:w #1 ^^M
+    {
+      \tl_set:Nn \l__mylhmc_verbatim_line_tl { #1 ^^M }
+      \tl_if_eq:NNTF \l__mylhmc_verbatim_line_tl \l__mylhmc_verbatim_finish_tl
+        { \exp_args:Ne \end { \@currenvir } }
+        {
+          \__mylhmc_output_line:
+          \__mylhmc_verbatim_read_line:w
+        }
+    }
+\group_end:
+
+\cs_new_protected_nopar:Nn \__mylhmc_output_line:
+  {
+    \tex_noindent:D
+    \__mylhmc_process_line:
+    \tex_par:D
+  }
+
+\cs_generate_variant:Nn \__mylhmc_set_end_pattern:n { V }
+\cs_set_protected_nopar:Npn \xmacro@code
+  {
+    \__mylhmc_set_end_pattern:V \@currenvir
+    \__mylhmc_verbatim_start:w
+  }
+\cs_set_eq:cN { xmacro@code* } \xmacro@code
+
+\file_input_stop:
+% \iffalse
+%</mylhmcsty>
+% \fi
+% \iffalse
+%<*mylhmclua>
+% \fi
+-- mylhmc.lua v2.0 (node.direct + Bounded Glyph Cache + other_np detection)
+-- LuaLaTeX syntax highlighter for l3doc macrocode environments
+
+local require      = require
+local pcall        = pcall
+local ipairs       = ipairs
+local pairs        = pairs
+local tonumber     = tonumber
+local tostring     = tostring
+local t_unpack     = table.unpack or unpack
+
+local s_sub        = string.sub
+local s_find       = string.find
+local s_match      = string.match
+local s_format     = string.format
+local s_gsub       = string.gsub
+local s_gmatch     = string.gmatch
+local s_byte       = string.byte
+local s_lower      = string.lower
+local s_rep        = string.rep
+
+local u_codes      = utf8.codes
+
+local d_new        = node.direct.new
+local d_copy       = node.direct.copy
+local d_copylist   = node.direct.copy_list
+local d_tonode     = node.direct.tonode
+local d_setlink    = node.direct.setlink
+local d_getnext    = node.direct.getnext
+local d_setfield   = node.direct.setfield
+local n_write      = node.write
+
+local f_current    = font.current
+local f_getfont    = font.getfont
+local f_max        = font.max
+
+local t_get_macro    = token.get_macro
+local t_set_macro    = token.set_macro
+local t_scan_arg     = token.scan_argument
+local t_scan_int     = token.scan_int
+local t_scan_dimen   = token.scan_dimen
+local t_scan_glue    = token.scan_glue
+local t_scan_toks    = token.scan_toks
+local t_scan_word    = token.scan_word
+local token_set_lua  = token.set_lua
+
+local kpse_find      = kpse.find_file
+local f_read         = fonts.constructors.readanddefine
+local f_hashes       = fonts.hashes.identifiers
+
+local luatexbase_new = luatexbase.new_luafunction
+local lua_get_funcs  = lua.get_functions_table
+
+local current_module_name   = ''
+local current_module_prefix = ''
+
+local lpeg_base  = lpeg or require('lpeg')
+local P, S, V    = lpeg_base.P, lpeg_base.S, lpeg_base.V
+local Cp, Cc     = lpeg_base.Cp, lpeg_base.Cc
+local lpeg_match = lpeg_base.match
+lpeg_base.locale(lpeg_base)
+local alpha      = lpeg_base.alpha
+local digit      = lpeg_base.digit
+
+local scan_map = {
+  string = t_scan_arg,
+  int    = t_scan_int,
+  dimen  = t_scan_dimen,
+  glue   = t_scan_glue,
+  toks   = t_scan_toks,
+  word   = t_scan_word
+}
+
+local function register_tex_cmd(name, func, args)
+  name = '__mylhmc_' .. name .. ':' .. s_rep('n', #args)
+  local scanners = {}
+  for i = 1, #args do
+    scanners[i] = scan_map[args[i]] or t_scan_arg
+  end
+  local scanning_func
+  if #scanners == 0 then
+    scanning_func = func
+  elseif #scanners == 1 then
+    local s1 = scanners[1]
+    scanning_func = function() func(s1()) end
+  elseif #scanners == 2 then
+    local s1, s2 = scanners[1], scanners[2]
+    scanning_func = function() func(s1(), s2()) end
+  else
+    scanning_func = function()
+      local values = {}
+      for i = 1, #scanners do values[i] = scanners[i]() end
+      func(t_unpack(values))
+    end
+  end
+  local index = luatexbase_new(name)
+  lua_get_funcs()[index] = scanning_func
+  token_set_lua(name, index, 'global', 'protected')
+end
+
+local sig_chars  = S'NnVvoxefpTFwDcq'
+local hex_chars  = S'0123456789abcdefABCDEF'
+local name_chars = alpha + S'_@'
+local var_prefix = P'\\' * S'lg'
+local name_chars_no_at = alpha + S'_'
+
+local structure_names =
+  P'NeedsTeXFormat' + P'ProvidesExplPackage' +
+  P'ExplSyntaxOn' + P'ExplSyntaxOff' +
+  P'makeatletter' + P'makeatother'
+
+local pkgstruct_names =
+  P'ProvidesPackage' + P'ProvidesFile' + P'ProvidesClass' +
+  P'RequirePackage' + P'RequirePackageWithOptions' +
+  P'LoadClass' + P'LoadClassWithOptions' +
+  P'PassOptionsToPackage' + P'PassOptionsToClass' +
+  P'DocumentMetadata' +
+  P'IfFormatAtLeast'    * (P'TF' + P'T' + P'F') +
+  P'IfPackageLoaded'    * (P'WithOptions') ^ -1 * (P'TF' + P'T' + P'F') +
+  P'IfFileExists'       * (P'TF' + P'T' + P'F') +
+  P'IfDocumentMetadata' * (P'TF' + P'T' + P'F') +
+  P'NewHook' + P'NewReversedHook' + P'NewMirroredHookPair' +
+  P'AddToHook' * (P'WithArguments') ^ -1 +
+  P'RemoveFromHook' + P'UseHook' + P'UseOneTimeHook' +
+  P'IfHookEmpty' * (P'TF' + P'T' + P'F') +
+  P'DeclareHookRule' + P'ClearHookRule' + P'ClearHook' +
+  P'SetDefaultHookLabel' + P'PushDefaultHookLabel' + P'PopDefaultHookLabel' +
+  P'ShowHook' + P'LogHook' +
+  P'NewProperty' + P'SetProperty' +
+  P'RecordProperties' + P'RecordProperty' + P'RefProperty' +
+  P'IfPropertyExists'   * (P'TF' + P'T' + P'F') +
+  P'IfLabelExists'      * (P'TF' + P'T' + P'F') +
+  P'IfPropertyRecorded' * (P'TF' + P'T' + P'F')
+
+local mathml_names =
+  P'MathMLintent' + P'MathMLarg' +
+  P'luamml_annotate:nen' + P'luamml_annotate:en' +
+  P'luamml_attribute:een' + P'luamml_attribute_core:een' +
+  P'luamml_begin_single_file:' + P'luamml_end_single_file:' +
+  P'luamml_flag_ignore:' + P'luamml_flag_process:' +
+  P'luamml_flag_save:nNn' + P'luamml_flag_save:nN' +
+  P'luamml_flag_save:nn' + P'luamml_flag_save:n' +
+  P'luamml_get_last_mathml_stream:e' +
+  P'luamml_ignore:' + P'luamml_pdf_write:' + P'luamml_process:' +
+  P'luamml_register_output_hook:N' +
+  P'luamml_save:nNn' + P'luamml_save:nN' +
+  P'luamml_save:nn' + P'luamml_save:n' +
+  P'luamml_set_filename:n' + P'luamml_structelem:' +
+  P'tag_start:n' + P'tag_start:' +
+  P'tag_stop:n' + P'tag_stop:' +
+  P'tag_suspend:n' + P'tag_resume:n' +
+  P'tag_get:n' +
+  P'tag_if_active_p:' + P'tag_if_active:' +
+  P'tag_if_box_tagged:N' +
+  P'tag_if_in:n' +
+  P'tag_mc_add_missing_to_stream:Nn' +
+  P'tag_mc_artifact_group_begin:n' + P'tag_mc_artifact_group_end:' +
+  P'tag_mc_begin_pop:n' + P'tag_mc_begin:n' +
+  P'tag_mc_end_push:' + P'tag_mc_end:' +
+  P'tag_mc_if_in:' +
+  P'tag_mc_new_stream:n' +
+  P'tag_mc_reset_box:N' +
+  P'tag_mc_use:n' +
+  P'tag_socket_use:nnn' + P'tag_socket_use:nn' + P'tag_socket_use:n' +
+  P'tag_socket_use_expandable:n' +
+  P'tag_spacechar_off:' + P'tag_spacechar_on:' +
+  P'tag_check_child:nn' +
+  P'tag_struct_begin:n' +
+  P'tag_struct_end:n' + P'tag_struct_end:' +
+  P'tag_struct_use_num:n' + P'tag_struct_use:n' +
+  P'tag_struct_object_ref:n' +
+  P'tag_struct_insert_annot:nn' +
+  P'tag_struct_parent_int:' +
+  P'tag_struct_gput_ref:nnn' + P'tag_struct_gput:nnn'
+
+local keys_names =
+  P'keys_define:' * S'Ncn' * P'n' +
+  P'keys_set:'    * S'Ncn' * P'n'
+
+local msgerror_names =
+  P'msg_error:nneee'
+
+local msg_generic_names =
+  P'msg_' * (P'new' + P'error' + P'warning' + P'info' + P'note' +
+             P'critical' + P'fatal' + P'expandable_error' +
+             P'redirect_name' + P'redirect_class' + P'log' + P'term') *
+  P':' * sig_chars ^ 1
+
+local ltcmd_def_names =
+  P'NewDocumentCommand' + P'NewDocumentEnvironment' +
+  P'DeclareDocumentCommand' + P'DeclareDocumentEnvironment' +
+  P'NewExpandableDocumentCommand' + P'DeclareExpandableDocumentCommand' +
+  P'RenewDocumentCommand' + P'RenewDocumentEnvironment' +
+  P'ProvideDocumentCommand' + P'ProvideDocumentEnvironment'
+
+local ltcmd_use_names =
+  P'BooleanTrue' + P'BooleanFalse' +
+  P'IfNoValue' * (P'TF' + P'T' + P'F') +
+  P'IfValue'   * (P'TF' + P'T' + P'F') +
+  P'IfBoolean' * (P'TF' + P'T' + P'F') +
+  P'ProcessedArgument' + P'ReverseBoolean' +
+  P'SplitArgument' + P'SplitList' +
+  P'ProcessList' + P'TrimSpaces'
+
+local gen_variant_suffix =
+  P'cs_generate_variant:' * S'Nc' * P'n' +
+  P'prg_generate_conditional_variant:' * S'Nc' * P'nn' +
+  P'prg_new_conditional:' * S'N' * P'pnn' +
+  P'prg_new_conditional:' * S'N' * P'nn' +
+  P'prg_new_protected_conditional:' * S'N' * P'pnn' +
+  P'prg_new_protected_conditional:' * S'N' * P'nn' +
+  P'prg_new_eq_conditional:' * S'N' * P'Nn'
+
+local legacy_names =
+  P'legacy_if_set_true:n'  + P'legacy_if_set_false:n'  +
+  P'legacy_if_gset_true:n' + P'legacy_if_gset_false:n' +
+  P'legacy_if_set:nn'      + P'legacy_if_gset:nn'      +
+  P'legacy_if_p:n'         + P'legacy_if:n' * (P'TF' + P'T' + P'F')
+
+local cs_w     = P'cs:w'
+local cs_end   = P'cs_end:'
+local dim_unit = P'pt' + P'pc' + P'in' + P'cm' + P'mm' + P'bp' +
+                 P'dd' + P'cc' + P'sp' + P'em' + P'ex' + P'px' + P'mu'
+local fill_kw  = P'filll' + P'fill' + P'fil'
+local skip_kw  = P'minus' + P'plus'
+local num_part = digit ^ 1 * (P'.' * digit ^ 1) ^ -1
+
+local code_rules = {
+  {24, P'#' ^ 1 * digit},
+  {1,  P'#' ^ 1},
+  {21, P'$$'}, {21, P'$'},
+  {21, P'\\' * S'(['}, {21, P'\\' * S')]'},
+  {18, P'\x5e\x5e\x5e\x5e' * hex_chars * hex_chars * hex_chars * hex_chars},
+  {18, P'\\' ^ -1 * P'\x5e\x5e' * P(1) * P(1) ^ -1},
+  {18, P'~'},
+  {22, P' ' * (P'<=' + P'>=' + P'!=' + P'<' + P'>' + P'=' + P'/') * P' '},
+  {22, P' ' * P'=' * (P'\\' + -P(1))},
+  {29, P','},
+  {13, P'\\' * (alpha + S'_@') ^ 1 * P':D'},
+  {10, P'\\' * P's__' * (alpha + S'_') ^ 1},
+  {10, P'\\' * P's_'  * (alpha + S'_') ^ 1},
+  {11, P'\\' * P'q__' * (alpha + S'_') ^ 1},
+  {11, P'\\' * P'q_'  * (alpha + S'_') ^ 1},
+  {38, P'\\' * mathml_names},
+  {39, P'\\' * keys_names},
+  {40, P'\\' * msgerror_names},
+  {41, P'\\' * msg_generic_names},
+  {37, P'\\' * pkgstruct_names},
+  {25, P'\\' * structure_names},
+  {14, P'\\' * ltcmd_def_names},
+  {33, P'\\' * ltcmd_use_names},
+  {19, P'\\' * P'c__' * name_chars ^ 1},
+  {20, P'\\' * P'c_'  * (alpha + S'@') * name_chars ^ 0},
+  {2,  var_prefix * P'__' * name_chars ^ 1},
+  {4,  var_prefix * P'_' * (alpha + S'@') * name_chars ^ 0},
+  {15, P'\\' * (alpha ^ 0 * (P'@' + P'!' + P'&' + P'*') * alpha ^ 0) ^ 1},
+  {5,  P'\\' * P'__' * name_chars ^ 1 * (P':' * sig_chars ^ 0) ^ -1},
+  {34, P'\\' * legacy_names},
+  {26, P'\\' * gen_variant_suffix},
+  {30, P'\\' * cs_w},
+  {31, P'\\' * cs_end},
+  {16, P'.' * (alpha + S'_') ^ 1 * P':' * (alpha + S'_') ^ 0},
+  {28, P'``'},
+  {17, P'`' * P'\\' * (P(1) - alpha)},
+  {17, P'`' * P'\\' * alpha * -alpha},
+  {17, P'`' * (P(1) - alpha - P'\\')},
+  {17, P'`' * alpha * -alpha},
+  {17, P'`' * -alpha},
+  {28, P'`'},
+  {28, P'\''},
+  {28, P'\x22'},
+  {23, P'\\\\'},
+  {23, P'\\' * S',:;!>~|/*+-={}#$_&%\x5e'},
+  {35, num_part * dim_unit},
+  {36, (fill_kw + skip_kw) * -alpha},
+  {12, digit ^ 1},
+  {6,  P'\\' * alpha * name_chars_no_at ^ 0 * P':' * sig_chars ^ 0},
+  {23, P'\\' * alpha * name_chars_no_at ^ 0},
+  {8,  S'{}'},
+  {3,  S'[]'},
+  {9,  P'%' * (P(1) - S'\r\n') ^ 0 * (S'\r\n' + -1)},
+}
+
+local function build_combined()
+  local alts = nil
+  for _, rule in ipairs(code_rules) do
+    local p = Cp() * rule[2] * Cp() * Cc(rule[1])
+    alts = alts and (alts + p) or p
+  end
+  return P{ alts + P(1) * V(1) }
+end
+
+local combined_pattern = build_combined()
+local LM_LANGLE = 0x2329
+local LM_RANGLE = 0x232A
+local bold_cache, lm_cache, italic_cache = {}, {}, {}
+
+local LM_ITALIC_PATH, LM_REGULAR_PATH, LM_BOLD_PATH = nil, nil, nil
+
+local function ensure_lm_paths()
+  if not LM_REGULAR_PATH then
+    LM_REGULAR_PATH = kpse_find('lmroman10-regular.otf', 'opentype fonts')
+    LM_ITALIC_PATH  = kpse_find('lmmono10-italic.otf',   'opentype fonts')
+    LM_BOLD_PATH    = kpse_find('lmmonolt10-bold.otf',   'opentype fonts')
+  end
+end
+
+local function load_font_at_size(filepath, target_size)
+  if not filepath then return nil end
+  local font_spec = '[' .. filepath .. ']'
+  local ok, data, new_id = pcall(f_read, font_spec, target_size)
+  if not ok or not data or not new_id or new_id <= 0 then return nil end
+  f_hashes[new_id] = data
+  return new_id
+end
+
+local function get_bold_fid(fid)
+  if bold_cache[fid] then return bold_cache[fid] end
+  local f = f_getfont(fid)
+  if not f or not f.name or not f.size then
+    bold_cache[fid] = fid; return fid
+  end
+  local base_family = s_match(f.name, '^%[?([^%-]+)') or f.name
+  local target_size = f.size
+  local best_id, best_score, best_path = nil, 0, nil
+
+  for i = 1, f_max() do
+    local bf = f_getfont(i)
+    if bf and bf.name and bf.name ~= f.name and
+       s_find(bf.name, base_family, 1, true) then
+      local lower_name = s_lower(bf.name)
+      local score = 0
+      if s_find(lower_name, 'medium') then score = 3
+      elseif s_find(lower_name, 'semibold') or s_find(lower_name, 'semi') or
+             s_find(lower_name, 'demi') then score = 2
+      elseif s_find(lower_name, 'bold') then score = 1
+      end
+      if score > best_score then
+        best_score = score
+        if bf.size == target_size then
+          bold_cache[fid] = i; return i
+        else
+          best_id = i
+          best_path = bf.filename or bf.name
+        end
+      elseif score > 0 and score == best_score and bf.size == target_size then
+        bold_cache[fid] = i; return i
+      end
+    end
+  end
+  if best_path and best_id then
+    local clean_path = s_match(best_path, '^%[?(.-)%]?$') or best_path
+    local new_id = load_font_at_size(clean_path, target_size)
+    if new_id then bold_cache[fid] = new_id; return new_id end
+    bold_cache[fid] = best_id; return best_id
+  end
+  ensure_lm_paths()
+  local fallback_id = load_font_at_size(LM_BOLD_PATH, target_size)
+  if fallback_id then bold_cache[fid] = fallback_id; return fallback_id end
+  bold_cache[fid] = fid; return fid
+end
+
+local function get_italic_fid(fid)
+  if italic_cache[fid] then return italic_cache[fid] end
+  local f = f_getfont(fid)
+  if not f or not f.size then italic_cache[fid] = fid; return fid end
+  ensure_lm_paths()
+  local fallback_id = load_font_at_size(LM_ITALIC_PATH, f.size)
+  if fallback_id then italic_cache[fid] = fallback_id; return fallback_id end
+  italic_cache[fid] = fid; return fid
+end
+
+local function get_lm_fid(fid)
+  fid = fid or f_current()
+  if lm_cache[fid] then return lm_cache[fid] end
+  local cf = f_getfont(fid)
+  if not cf or not cf.size then lm_cache[fid] = fid; return fid end
+  for i = 1, f_max() do
+    local f = f_getfont(i)
+    local fname = f and (f.filename or f.name) or ''
+    if f and f.size == cf.size and
+       s_find(s_lower(fname), 'lmroman10%-regular') then
+      lm_cache[fid] = i; return i
+    end
+  end
+  ensure_lm_paths()
+  local new_id = load_font_at_size(LM_REGULAR_PATH, cf.size)
+  if new_id then lm_cache[fid] = new_id; return new_id end
+  lm_cache[fid] = fid; return fid
+end
+
+local color_data, push_templates, module_user_cmds = {}, {}, {}
+
+register_tex_cmd('register_module_cmd', function(name)
+  name = s_match(name, '^%s*(.-)%s*$') or name
+  local clean = s_sub(name, 1, 1) == '\\' and s_sub(name, 2) or name
+  local bare  = s_match(clean, '^(.-):[NnVvoxefpTFwDcq]+$') or clean
+  if bare and bare ~= '' then
+    module_user_cmds[bare], module_user_cmds[clean] = true, true
+  end
+end, {'string'})
+
+register_tex_cmd('set_color', function(name, spec)
+  local r, g, b = s_match(spec, '([%d%.]+)%s+([%d%.]+)%s+([%d%.]+)')
+  if r then
+    local nr, ng, nb = tonumber(r), tonumber(g), tonumber(b)
+    color_data[name] = s_format(
+      '%.4f %.4f %.4f rg %.4f %.4f %.4f RG', nr, ng, nb, nr, ng, nb)
+  end
+end, {'string', 'string'})
+
+local function colorstack_push(color_name)
+  local tpl = push_templates[color_name]
+  if not tpl then
+    tpl = d_new('whatsit', 'pdf_colorstack')
+    d_setfield(tpl, 'stack', 0)
+    d_setfield(tpl, 'command', 1)
+    d_setfield(tpl, 'data', color_data[color_name] or '')
+    push_templates[color_name] = tpl
+  end
+  return d_copy(tpl)
+end
+
+local pop_template = d_new('whatsit', 'pdf_colorstack')
+d_setfield(pop_template, 'stack', 0)
+d_setfield(pop_template, 'command', 2)
+d_setfield(pop_template, 'data', '')
+
+local function colorstack_pop() return d_copy(pop_template) end
+
+local function append(rh, rt, h, t)
+  if not h then return rh, rt end
+  if not t then
+    t = h; while d_getnext(t) do t = d_getnext(t) end
+  end
+  if rt then d_setlink(rt, h) else rh = h end
+  return rh, t
+end
+
+-- Bounded glyph cache: only short, frequently-repeated tokens are cached
+-- (spaces, punctuation, short signature fragments like "Nn", "TF", ":").
+-- Longer strings (comment lines, long identifiers) are rarely repeated
+-- verbatim, so caching them would only grow memory without ever paying
+-- off; those are built fresh every time and never stored.
+local raw_glyph_cache = {}
+local CACHE_MAX_LEN = 16
+
+local function str_to_nodes(str, fid, fallback_fn)
+  if not str or str == '' then return nil, nil end
+  fid = fid or f_current()
+
+  local cacheable = #str <= CACHE_MAX_LEN
+  local key
+  if cacheable then
+    key = str .. '|' .. tostring(fid)
+    local cached = raw_glyph_cache[key]
+    if cached then
+      local h = d_copylist(cached)
+      local t = h
+      while d_getnext(t) do t = d_getnext(t) end
+      return h, t
+    end
+  end
+
+  fallback_fn = fallback_fn or get_lm_fid
+  local head, tail, lm_fid, fallback_fid = nil, nil, nil, nil
+  local chars = f_getfont(fid) and f_getfont(fid).characters
+
+  for _, cp in u_codes(str) do
+    local current_fid = fid
+    if cp == LM_LANGLE or cp == LM_RANGLE then
+      if not lm_fid then lm_fid = get_lm_fid(fid) end
+      current_fid = lm_fid
+    elseif chars and not chars[cp] then
+      if not fallback_fid then fallback_fid = fallback_fn(fid) end
+      current_fid = fallback_fid
+    end
+    local g = d_new('glyph')
+    d_setfield(g, 'font', current_fid)
+    d_setfield(g, 'char', cp)
+    if head then d_setlink(tail, g) else head = g end
+    tail = g
+  end
+
+  if head and cacheable then
+    raw_glyph_cache[key] = d_copylist(head)
+  end
+  return head, tail
+end
+
+local function colored_str(str, color_name, fid)
+  local h, t = str_to_nodes(str, fid)
+  if not h then return nil, nil end
+  if color_data[color_name] then
+    local push, pop = colorstack_push(color_name), colorstack_pop()
+    d_setlink(push, h)
+    d_setlink(t, pop)
+    return push, pop
+  end
+  return h, t
+end
+
+local function colored_str_bold(str, color_name, fid)
+  return colored_str(str, color_name, get_bold_fid(fid))
+end
+
+local function colored_str_italic(str, color_name, fid)
+  local italic_fid = get_italic_fid(fid)
+  local h, t = str_to_nodes(str, italic_fid, get_italic_fid)
+  if not h then return nil, nil end
+  if color_data[color_name] then
+    local push, pop = colorstack_push(color_name), colorstack_pop()
+    d_setlink(push, h)
+    d_setlink(t, pop)
+    return push, pop
+  end
+  return h, t
+end
+
+local type_colors = {
+  [1] ='argument',   [2] ='privatevar', [3] ='bracket',
+  [4] ='publicvar',  [5] ='privatefun', [6] ='publicfun',
+  [8] ='brace',      [9] ='comment',    [10]='scan',
+  [11]='quark',      [12]='number',     [13]='danger',
+  [14]='ltcmd',      [16]='key',
+  [17]='escape',     [18]='escape',     [19]='constant',
+  [20]='constant',   [21]='math',       [22]='compare',
+  [23]='latex_cmd',  [24]='argument',   [25]='structure',
+  [26]='publicfun',  [28]='quote',      [29]='brace',
+  [30]='publicfun',  [31]='publicfun',  [33]='ltcmd_arg',
+  [34]='publicfun',  [35]='unit',       [36]='compare',
+  [37]='pkgstruct',  [38]='mathml',     [39]='publicfun',  [40]='publicfun',
+  [41]='publicfun',
+}
+
+local csname_positions = {}
+local arg_counter = 0
+local in_csname, csname_base_color, csname_depth = false, nil, 0
+local variant_braces_remaining, variant_depth = 0, 0
+local in_variant_group = false
+local ltcmd_brace_count, ltcmd_name_pending, ltcmd_in_args = 0, false, false
+local in_mathml_intent, in_mathml_arg = false, false
+local mathml_brace_count, mathml_after_dollar = 0, false
+local in_keys_context, keys_body_opened, keys_depth = false, false, 0
+local keys_in_choices = false
+
+local in_msgerror       = false
+local msgerror_argnum   = 0
+local msgerror_depth    = 0
+local msgerror_is_unknown = false
+
+local in_msg_simple    = false
+local msg_simple_depth = 0
+local msg_simple_done  = false
+
+local colorize_code
+
+local function reset_csname_state()
+  for k in pairs(csname_positions) do csname_positions[k] = nil end
+  arg_counter, in_csname, csname_base_color, csname_depth = 0, false, nil, 0
+end
+
+local function module_aware_color(chunk, base_color)
+  local name = s_sub(chunk, 1, 1) == '\\' and s_sub(chunk, 2) or chunk
+  local colon = s_find(name, ':', 1, true)
+  local bare = colon and s_sub(name, 1, colon - 1) or name
+  if module_user_cmds[bare] or module_user_cmds[name] then
+    return 'module_name'
+  end
+  if current_module_name ~= '' and s_find(name, current_module_name, 1, true)
+     and not s_find(name, '__', 1, true) then
+    return 'module_name'
+  end
+  return base_color
+end
+
+-- Detecta \l__foo, \g__foo, \c__foo, \__foo cuyo segmento de módulo NO
+-- coincide con current_module_name: acceso explícito a privados de OTRO
+-- módulo (hackeo de internos ajenos) -> color de advertencia 'other_np'.
+local function private_owner_color(chunk, fallback_color)
+  local name = s_sub(chunk, 1, 1) == '\\' and s_sub(chunk, 2) or chunk
+  local c3 = s_sub(name, 1, 3)
+  local rest
+  if c3 == 'l__' or c3 == 'g__' or c3 == 'c__' then
+    rest = s_sub(name, 4)
+  elseif s_sub(name, 1, 2) == '__' then
+    rest = s_sub(name, 3)
+  else
+    return fallback_color
+  end
+  if current_module_name == '' then return fallback_color end
+  if module_user_cmds[rest] then return fallback_color end
+  if s_find(rest, current_module_name, 1, true) then return fallback_color end
+  return 'other_np'
+end
+
+local function emit_with_signature(chunk, base_color, fid)
+  local colon = s_find(chunk, ':', 2, true)
+  if not colon then
+    reset_csname_state()
+    return colored_str(chunk, base_color, fid)
+  end
+  local name, sig = s_sub(chunk, 1, colon - 1), s_sub(chunk, colon + 1)
+  reset_csname_state()
+  local pos = 0
+  for ch in s_gmatch(sig, '.') do
+    if s_match(ch, '[NnVvoxefpTFwDcq]') then
+      pos = pos + 1
+      if ch == 'c' or ch == 'v' then csname_positions[pos] = true end
+    end
+  end
+  local rh, rt = nil, nil
+  local h, t = colored_str(name, base_color, fid); rh, rt = append(rh, rt, h, t)
+  h, t = colored_str(':', 'signature', fid); rh, rt = append(rh, rt, h, t)
+  if sig ~= '' then
+    h, t = colored_str(sig, 'sigargs', fid); rh, rt = append(rh, rt, h, t)
+  end
+  return rh, rt
+end
+
+local function colorize_ltcmd_args(text, fid, rh, rt)
+  local i, depth, text_len = 1, 0, #text
+  while i <= text_len do
+    local b = s_byte(text, i)
+    if b == 123 then
+      depth = depth + 1
+      local h, t = colored_str('{', 'brace', fid); rh, rt = append(rh, rt, h, t)
+      i = i + 1
+    elseif b == 125 then
+      depth = depth - 1
+      local h, t = colored_str('}', 'brace', fid); rh, rt = append(rh, rt, h, t)
+      i = i + 1
+    elseif depth > 0 then
+      local j, d = i, depth
+      while j <= text_len do
+        local bb = s_byte(text, j)
+        if bb == 123 then d = d + 1
+        elseif bb == 125 then d = d - 1; if d < depth then break end end
+        j = j + 1
+      end
+      local content = s_sub(text, i, j - 1)
+      if content ~= '' then
+        local ch, ct = colorize_code(content, fid); rh, rt = append(rh, rt, ch, ct)
+      end
+      i = j
+    elseif b == 32 then
+      local h, t = str_to_nodes(' ', fid); rh, rt = append(rh, rt, h, t)
+      i = i + 1
+    else
+      local h, t = colored_str(s_sub(text, i, i), 'ltcmd_arg', fid)
+      rh, rt = append(rh, rt, h, t); i = i + 1
+    end
+  end
+  return rh, rt
+end
+
+local function csname_color_from_prefix(text)
+  text = s_match(text, '^%s*(.-)%s*$') or text
+  local p2, p3 = s_sub(text, 1, 2), s_sub(text, 1, 3)
+  local base, rest
+  if p3 == 'l__' or p3 == 'g__' then base, rest = 'privatevar', s_sub(text, 4)
+  elseif p3 == 'c__' then base, rest = 'constant', s_sub(text, 4)
+  elseif p2 == '__' then base, rest = 'privatefun', s_sub(text, 3)
+  elseif p2 == 'l_' or p2 == 'g_' then return 'publicvar'
+  elseif p2 == 'c_' then return 'constant'
+  else return 'latex_cmd'
+  end
+  if current_module_name == '' then return base end
+  if module_user_cmds[rest] then return base end
+  if s_find(rest, current_module_name, 1, true) then return base end
+  return 'other_np'
+end
+
+local function emit_csname_text(text, base_color, fid, rh, rt)
+  local has_special, len = false, #text
+  for i = 1, len do
+    local b = s_byte(text, i)
+    if b == 64 or b == 33 or b == 38 or b == 94 or b == 42 or b == 58 then
+      has_special = true; break
+    end
+  end
+  if not has_special then
+    local h, t = colored_str(text, base_color, fid); return append(rh, rt, h, t)
+  end
+  local cur = 1
+  for i = 1, len do
+    local b = s_byte(text, i)
+    if b == 64 or b == 33 or b == 38 or b == 94 or b == 42 then
+      if i > cur then
+        local h, t = colored_str(s_sub(text, cur, i-1), base_color, fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      local color_name = (b == 64 and 'arroba') or (b == 42 and 'star') or 'escape'
+      local h, t = colored_str(s_sub(text, i, i), color_name, fid)
+      rh, rt = append(rh, rt, h, t); cur = i + 1
+    elseif b == 58 then
+      if i > cur then
+        local h, t = colored_str(s_sub(text, cur, i-1), base_color, fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      local h, t = colored_str(':', 'signature', fid)
+      rh, rt = append(rh, rt, h, t); local rest = s_sub(text, i+1)
+      if rest ~= '' then
+        h, t = colored_str(rest, 'sigargs', fid); rh, rt = append(rh, rt, h, t)
+      end
+      cur = len + 1; break
+    end
+  end
+  if cur <= len then
+    local h, t = colored_str(s_sub(text, cur), base_color, fid)
+    rh, rt = append(rh, rt, h, t)
+  end
+  return rh, rt
+end
+
+local function colorize_mathml_intent(text, fid, rh, rt)
+  local i, len = 1, #text
+  while i <= len do
+    local c, b = s_sub(text, i, i), s_byte(text, i)
+    if c == ':' then
+      local j = i + 1
+      while j <= len do
+        local cb = s_byte(text, j)
+        if (cb >= 65 and cb <= 90) or (cb >= 97 and cb <= 122) or
+           (cb >= 48 and cb <= 57) or cb == 95 or cb == 45 then j = j + 1
+        else break end
+      end
+      local h, t = colored_str(':', 'signature', fid)
+      rh, rt = append(rh, rt, h, t)
+      if j > i + 1 then
+        h, t = colored_str(s_sub(text, i+1, j-1), 'ltcmd_arg', fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      i = j
+    elseif c == '$' then
+      local h, t = colored_str('$', 'math', fid); rh, rt = append(rh, rt, h, t)
+      local j = i + 1
+      while j <= len do
+        local cb = s_byte(text, j)
+        if (cb >= 65 and cb <= 90) or (cb >= 97 and cb <= 122) or
+           (cb >= 48 and cb <= 57) or cb == 95 then j = j + 1
+        else break end
+      end
+      if j > i + 1 then
+        h, t = colored_str(s_sub(text, i+1, j-1), 'mathml_var', fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      i = j
+    elseif c == '(' or c == ')' or c == ',' then
+      local h, t = colored_str(c, 'brace', fid); rh, rt = append(rh, rt, h, t)
+      i = i + 1
+    elseif c == ' ' then
+      local h, t = str_to_nodes(c, fid); rh, rt = append(rh, rt, h, t); i = i + 1
+    else
+      local j = i + 1
+      while j <= len do
+        local nc = s_sub(text, j, j)
+        if nc == ':' or nc == '$' or nc == '(' or nc == ')' or
+           nc == ',' or nc == ' ' then break end
+        j = j + 1
+      end
+      local h, t = str_to_nodes(s_sub(text, i, j-1), fid)
+      rh, rt = append(rh, rt, h, t); i = j
+    end
+  end
+  return rh, rt
+end
+
+local function colorize_keys_path(text, fid, rh, rt)
+  local i, len = 1, #text
+  while i <= len do
+    local b = s_byte(text, i)
+    if (b >= 65 and b <= 90) or (b >= 97 and b <= 122) or b == 95 or b == 45 then
+      local j = i + 1
+      while j <= len do
+        local bb = s_byte(text, j)
+        if (bb >= 65 and bb <= 90) or (bb >= 97 and bb <= 122) or
+           bb == 95 or bb == 45 then j = j + 1 else break end
+      end
+      local word = s_sub(text, i, j - 1)
+      if module_user_cmds[word] or
+         (current_module_name ~= '' and word == current_module_name) then
+        local h, t = colored_str(word, 'module_name', fid)
+        rh, rt = append(rh, rt, h, t)
+      else
+        local h, t = str_to_nodes(word, fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      i = j
+    else
+      local h, t = str_to_nodes(s_sub(text, i, i), fid)
+      rh, rt = append(rh, rt, h, t)
+      i = i + 1
+    end
+  end
+  return rh, rt
+end
+
+local function colorize_trimmed_keyname(text, fid, rh, rt)
+  local lead = s_match(text, '^(%s*)')
+  local core = s_sub(text, #lead + 1)
+  local trimmed = s_match(core, '^(.-)%s*$')
+  local trail = s_sub(core, #trimmed + 1)
+  if lead ~= '' then
+    local h2, t2 = str_to_nodes(lead, fid)
+    rh, rt = append(rh, rt, h2, t2)
+  end
+  if trimmed ~= '' then
+    local h, t = colored_str(trimmed, 'keyname', fid)
+    rh, rt = append(rh, rt, h, t)
+  end
+  if trail ~= '' then
+    local h, t = str_to_nodes(trail, fid)
+    rh, rt = append(rh, rt, h, t)
+  end
+  return rh, rt
+end
+
+local function ltcmd_name_color(text)
+  text = s_match(text, '^%s*(.-)%s*$') or text
+  local name = s_sub(text, 1, 1) == '\\' and s_sub(text, 2) or text
+  local colon = s_find(name, ':', 1, true)
+  local bare = colon and s_sub(name, 1, colon - 1) or name
+  if module_user_cmds[bare] or module_user_cmds[text] then return 'module_name' end
+  if current_module_name ~= '' and s_find(bare, current_module_name, 1, true) then
+    return 'module_name'
+  end
+  return 'latex_cmd'
+end
+
+local function colorize_plain_text(text, fid, rh, rt)
+  local h, tl
+  if in_variant_group then h, tl = colored_str(text, 'sigargs', fid)
+  elseif in_csname then
+    csname_base_color = csname_base_color or csname_color_from_prefix(text)
+    rh, rt = emit_csname_text(text, csname_base_color, fid, rh, rt)
+    h, tl = nil, nil
+  elseif in_mathml_intent then
+    if mathml_after_dollar then
+      mathml_after_dollar = false
+      local ident = s_match(text, '^%s*([%a%d_]+)')
+      if ident then
+        h, tl = colored_str(ident, 'mathml_var', fid)
+        rh, rt = append(rh, rt, h, tl)
+        local fnd = s_find(text, ident, 1, true) or 1
+        local rest = s_sub(text, fnd + #ident)
+        if rest ~= '' then rh, rt = colorize_mathml_intent(rest, fid, rh, rt) end
+        h, tl = nil, nil
+      else
+        rh, rt = colorize_mathml_intent(text, fid, rh, rt); h, tl = nil, nil
+      end
+    else
+      rh, rt = colorize_mathml_intent(text, fid, rh, rt); h, tl = nil, nil
+    end
+  elseif in_mathml_arg then h, tl = colored_str(text, 'mathml_var', fid)
+  elseif in_keys_context and keys_body_opened and keys_depth == 1 then
+    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+  elseif in_keys_context and keys_body_opened and keys_in_choices and keys_depth == 2 then
+    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+  elseif in_msgerror and msgerror_depth == 1 and msgerror_argnum == 1 then
+    h, tl = colored_str(text, 'module_name', fid)
+  elseif in_msgerror and msgerror_depth == 1 and msgerror_argnum == 2 then
+    local trimmed = s_match(text, '^%s*(.-)%s*$')
+    msgerror_is_unknown = (trimmed == 'unknown-choice')
+    h, tl = str_to_nodes(text, fid)
+  elseif in_msgerror and msgerror_depth == 1 and msgerror_is_unknown
+         and (msgerror_argnum == 3 or msgerror_argnum == 4) then
+    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+  elseif ltcmd_in_args then
+    if ltcmd_brace_count > 1 then h, tl = str_to_nodes(text, fid)
+    else rh, rt = colorize_ltcmd_args(text, fid, rh, rt); h, tl = nil, nil end
+  elseif ltcmd_name_pending and ltcmd_brace_count == 1 then
+    rh, rt = emit_csname_text(text, ltcmd_name_color(text), fid, rh, rt)
+    h, tl = nil, nil
+  elseif in_keys_context and not keys_body_opened then
+    rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
+  elseif in_msg_simple and not msg_simple_done and msg_simple_depth == 1 then
+    rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
+  else h, tl = str_to_nodes(text, fid) end
+  return append(rh, rt, h, tl)
+end
+
+colorize_code = function(line, fid)
+  local rh, rt, pos, line_len = nil, nil, 1, #line
+  while pos <= line_len do
+    local b, e, t = lpeg_match(combined_pattern, line, pos)
+    if not b then
+      local remainder = s_sub(line, pos)
+      rh, rt = colorize_plain_text(remainder, fid, rh, rt)
+      break
+    end
+    if b > pos then
+      local prefix = s_sub(line, pos, b - 1)
+      rh, rt = colorize_plain_text(prefix, fid, rh, rt)
+    end
+    local chunk = s_sub(line, b, e - 1)
+    local h, tl
+    if t == 8 then
+      if chunk == '{' then
+        arg_counter = arg_counter + 1
+        local is_csname = csname_positions[arg_counter]
+        if not is_csname and arg_counter == 1 then
+          for k in pairs(csname_positions) do
+            if k >= 1 then is_csname = true; break end
+          end
+        end
+        if is_csname then
+          in_csname, csname_base_color, csname_depth = true, nil, 0
+          in_variant_group, variant_braces_remaining, variant_depth = false, 0, 0
+        elseif in_csname then csname_depth = csname_depth + 1 end
+        if in_variant_group then variant_depth = variant_depth + 1
+        elseif variant_braces_remaining > 0 then in_variant_group = true end
+        if ltcmd_name_pending or ltcmd_in_args then
+          ltcmd_brace_count = ltcmd_brace_count + 1
+        end
+        if in_mathml_intent or in_mathml_arg then
+          mathml_brace_count = mathml_brace_count + 1
+        end
+        if in_keys_context then
+          keys_depth = keys_depth + 1
+        end
+        if in_msgerror then
+          if msgerror_depth == 0 then
+            msgerror_argnum = msgerror_argnum + 1
+          end
+          msgerror_depth = msgerror_depth + 1
+        end
+        if in_msg_simple and not msg_simple_done then
+          msg_simple_depth = msg_simple_depth + 1
+        end
+      elseif chunk == '}' then
+        if in_csname then
+          if csname_depth > 0 then csname_depth = csname_depth - 1
+          else in_csname, csname_depth = false, 0 end
+        end
+        if in_variant_group then
+          if variant_depth > 0 then variant_depth = variant_depth - 1
+          else
+            in_variant_group = false
+            variant_braces_remaining = variant_braces_remaining - 1
+          end
+        end
+        if ltcmd_in_args and ltcmd_brace_count > 0 then
+          ltcmd_brace_count = ltcmd_brace_count - 1
+          if ltcmd_brace_count == 0 then ltcmd_in_args = false end
+        elseif ltcmd_name_pending and ltcmd_brace_count > 0 then
+          ltcmd_brace_count = ltcmd_brace_count - 1
+          if ltcmd_brace_count == 0 then
+            ltcmd_name_pending, ltcmd_in_args = false, true
+          end
+        end
+        if mathml_brace_count > 0 then
+          mathml_brace_count = mathml_brace_count - 1
+          if mathml_brace_count == 0 then
+            in_mathml_intent, in_mathml_arg = false, false
+          end
+        end
+        if in_keys_context and keys_depth > 0 then
+          keys_depth = keys_depth - 1
+          if keys_in_choices and keys_depth == 1 then
+            keys_in_choices = false
+          end
+          if keys_depth == 0 then
+            if not keys_body_opened then
+              keys_body_opened = true
+            else
+              in_keys_context, keys_body_opened = false, false
+            end
+          end
+        end
+        if in_msgerror and msgerror_depth > 0 then
+          msgerror_depth = msgerror_depth - 1
+          if msgerror_depth == 0 and msgerror_argnum >= 5 then
+            in_msgerror, msgerror_argnum, msgerror_is_unknown = false, 0, false
+          end
+        end
+        if in_msg_simple and not msg_simple_done and msg_simple_depth > 0 then
+          msg_simple_depth = msg_simple_depth - 1
+          if msg_simple_depth == 0 then
+            msg_simple_done, in_msg_simple = true, false
+          end
+        end
+      end
+      h, tl = colored_str(chunk, 'brace', fid)
+    elseif t == 24 then
+      local hashes = s_match(chunk, '^#+')
+      local num    = s_sub(chunk, #hashes + 1)
+      h, tl = colored_str(hashes, 'argument', fid); rh, rt = append(rh, rt, h, tl)
+      h, tl = colored_str(num, 'argnum', fid)
+    elseif t == 26 then
+      arg_counter, variant_depth, in_variant_group = 0, 0, false
+      if s_find(chunk, 'prg_generate_conditional_variant', 1, true) then
+        variant_braces_remaining = 2
+      else variant_braces_remaining = 1 end
+      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+    elseif t == 30 then
+      in_csname, csname_base_color, csname_depth = true, nil, 0
+      h, tl = colored_str(chunk, 'publicfun', fid)
+    elseif t == 31 then
+      in_csname = false; h, tl = colored_str(chunk, 'publicfun', fid)
+    elseif t == 16 then
+      local dot  = s_sub(chunk, 1, 1)
+      local rest = s_sub(chunk, 2)
+      local colon = s_find(rest, ':', 1, true)
+      h, tl = colored_str(dot, 'signature', fid); rh, rt = append(rh, rt, h, tl)
+      if colon then
+        local kname, kargs = s_sub(rest, 1, colon - 1), s_sub(rest, colon + 1)
+        if in_keys_context and keys_body_opened and keys_depth == 1 then
+          keys_in_choices = (kname == 'choices')
+        end
+        reset_csname_state(); local cpos = 0
+        for i = 1, #kargs do
+          local ch = s_sub(kargs, i, i)
+          if s_match(ch, '[NnVvoxefpTFwDcq]') then
+            cpos = cpos + 1
+            if ch == 'c' or ch == 'v' then csname_positions[cpos] = true end
+          end
+        end
+        h, tl = colored_str(kname, 'key', fid); rh, rt = append(rh, rt, h, tl)
+        h, tl = colored_str(':', 'signature', fid); rh, rt = append(rh, rt, h, tl)
+        h, tl = colored_str(kargs, 'sigargs', fid)
+      else h, tl = colored_str(rest, 'key', fid) end
+    elseif t == 9 then
+      h, tl = colored_str(s_sub(chunk, 1, 1), 'angle', fid)
+      rh, rt = append(rh, rt, h, tl)
+      h, tl = colored_str_italic(s_sub(chunk, 2), 'comment', fid)
+    elseif t == 14 then
+      arg_counter, ltcmd_brace_count, ltcmd_name_pending, ltcmd_in_args = 0, 0, true, false
+      h, tl = emit_with_signature(chunk, 'ltcmd', fid)
+    elseif t == 39 then
+      in_keys_context, keys_body_opened, keys_depth = true, false, 0
+      keys_in_choices = false
+      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+    elseif t == 40 then
+      in_msgerror, msgerror_argnum, msgerror_depth, msgerror_is_unknown =
+        true, 0, 0, false
+      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+    elseif t == 41 then
+      in_msg_simple, msg_simple_depth, msg_simple_done = true, 0, false
+      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+    elseif t == 34 then
+      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+      csname_positions[1] = true
+    elseif t == 33 then h, tl = emit_with_signature(chunk, 'ltcmd_arg', fid)
+    elseif ltcmd_name_pending and ltcmd_brace_count == 1 then
+      rh, rt = emit_csname_text(chunk, ltcmd_name_color(chunk), fid, rh, rt)
+      h, tl = nil, nil
+    elseif ltcmd_name_pending and ltcmd_brace_count == 0 and s_sub(chunk, 1, 1) == '\\' then
+      h, tl = colored_str(chunk, ltcmd_name_color(chunk), fid)
+      ltcmd_name_pending, ltcmd_in_args = false, true
+    elseif ltcmd_in_args then
+      if ltcmd_brace_count > 1 then h, tl = colored_str(chunk, type_colors[t], fid)
+      else rh, rt = colorize_ltcmd_args(chunk, fid, rh, rt); h, tl = nil, nil end
+    elseif in_csname then
+      csname_base_color = csname_base_color or csname_color_from_prefix(chunk)
+      if s_sub(chunk, 1, 1) == '\\' then
+        h, tl = colored_str(chunk, type_colors[t], fid)
+      else rh, rt = emit_csname_text(chunk, csname_base_color, fid, rh, rt); h, tl = nil, nil end
+    elseif t == 5 or t == 6 then
+      arg_counter = 0
+      if ltcmd_in_args or ltcmd_name_pending then
+        ltcmd_in_args, ltcmd_name_pending, ltcmd_brace_count = false, false, 0
+      end
+      local eff
+      if t == 6 then
+        eff = module_aware_color(chunk, 'publicfun')
+      else
+        eff = private_owner_color(chunk, 'privatefun')
+      end
+      h, tl = emit_with_signature(chunk, eff, fid)
+    elseif t == 25 then arg_counter = 0; h, tl = colored_str_bold(chunk, 'structure', fid)
+    elseif t == 37 then arg_counter = 0; h, tl = emit_with_signature(chunk, 'pkgstruct', fid)
+    elseif t == 38 then
+      mathml_brace_count, mathml_after_dollar = 0, false
+      if s_find(chunk, 'MathMLintent', 1, true) or s_find(chunk, 'luamml_annotate', 1, true) then
+        in_mathml_intent, in_mathml_arg = true, false
+      elseif s_find(chunk, 'MathMLarg', 1, true) then
+        in_mathml_arg, in_mathml_intent = true, false
+      else in_mathml_intent, in_mathml_arg = false, false end
+      h, tl = emit_with_signature(chunk, 'mathml', fid)
+    elseif in_mathml_intent and t ~= 8 then
+      if t == 21 then mathml_after_dollar = true; h, tl = colored_str(s_sub(chunk, 1, 1), 'math', fid)
+      elseif mathml_after_dollar then
+        mathml_after_dollar = false
+        rh, rt = colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil
+      else rh, rt = colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil end
+    elseif in_mathml_arg and t ~= 8 then h, tl = colored_str(chunk, 'mathml_var', fid)
+    elseif t == 35 then
+      local split = s_find(chunk, '%a')
+      if split then
+        h, tl = colored_str(s_sub(chunk, 1, split-1), 'number', fid)
+        rh, rt = append(rh, rt, h, tl)
+        h, tl = colored_str(s_sub(chunk, split), 'unit', fid)
+      else h, tl = colored_str(chunk, 'number', fid) end
+    elseif t == 18 then
+      local four_caret = '\x5e\x5e\x5e\x5e'
+      if s_sub(chunk, 1, 4) == four_caret then
+        h, tl = colored_str(four_caret, 'escape', fid); rh, rt = append(rh, rt, h, tl)
+        h, tl = colored_str(s_sub(chunk, 5), 'number', fid)
+      else h, tl = colored_str(chunk, 'escape', fid) end
+    elseif t == 13 then h, tl = emit_with_signature(chunk, 'danger', fid)
+    elseif t == 15 then
+      local cur, len = 2, #chunk
+      for i = 2, len do
+        local b = s_byte(chunk, i)
+        if b == 64 or b == 33 or b == 38 or b == 94 or b == 42 then
+          local part = (cur == 2 and '\\' or '') .. s_sub(chunk, cur, i - 1)
+          if #part > 0 then
+            h, tl = colored_str(part, 'latex_cmd', fid); rh, rt = append(rh, rt, h, tl)
+          end
+          local color_name = (b == 64 and 'arroba') or (b == 42 and 'star') or 'escape'
+          h, tl = colored_str(s_sub(chunk, i, i), color_name, fid)
+          rh, rt = append(rh, rt, h, tl); cur = i + 1
+        end
+      end
+      if cur <= len then
+        h, tl = colored_str((cur == 2 and '\\' or '') .. s_sub(chunk, cur), 'latex_cmd', fid)
+      else h, tl = nil, nil end
+    elseif t == 4 then
+      h, tl = colored_str(chunk, module_aware_color(chunk, 'publicvar'), fid)
+    elseif t == 2 then
+      h, tl = colored_str(chunk, private_owner_color(chunk, 'privatevar'), fid)
+    elseif t == 19 then
+      h, tl = colored_str(chunk, private_owner_color(chunk, 'constant'), fid)
+    else
+      local effective = type_colors[t]
+      if effective then
+        local bare = s_sub(chunk, 1, 1) == '\\' and s_sub(chunk, 2) or chunk
+        if module_user_cmds[bare] or module_user_cmds[chunk] then effective = 'module_name' end
+      end
+      h, tl = colored_str(chunk, effective, fid)
+    end
+    rh, rt = append(rh, rt, h, tl); pos = e
+  end
+  return rh, rt
+end
+
+local function make_angle_nodes(content_head, content_tail, angle_color, fid)
+  local lm_fid = get_lm_fid(fid)
+  local cname = (color_data[angle_color] and angle_color) or 'angle'
+  local lg, rg = d_new('glyph'), d_new('glyph')
+  d_setfield(lg, 'font', lm_fid)
+  d_setfield(lg, 'char', LM_LANGLE)
+  d_setfield(rg, 'font', lm_fid)
+  d_setfield(rg, 'char', LM_RANGLE)
+  local rh, rt = nil, nil
+  if color_data[cname] then rh, rt = append(rh, rt, colorstack_push(cname)) end
+  rh, rt = append(rh, rt, lg)
+  if color_data[cname] then rh, rt = append(rh, rt, colorstack_pop()) end
+  if content_head then rh, rt = append(rh, rt, content_head, content_tail) end
+  if color_data[cname] then rh, rt = append(rh, rt, colorstack_push(cname)) end
+  rh, rt = append(rh, rt, rg)
+  if color_data[cname] then rh, rt = append(rh, rt, colorstack_pop()) end
+  return rh, rt
+end
+
+local function colorize_guard_expr(expr, fid)
+  local rh, rt, name_start, len = nil, nil, 1, #expr
+  for i = 1, len do
+    local b = s_byte(expr, i)
+    if b == 33 or b == 32 or b == 38 or b == 40 or b == 41 or b == 42 or
+       b == 47 or b == 124 then
+      if name_start <= i - 1 then
+        local h, t = colored_str(s_sub(expr, name_start, i - 1), 'name', fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      name_start = i + 1
+      if b ~= 32 then
+        local h, t = colored_str(s_sub(expr, i, i), 'operator', fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+    end
+  end
+  if name_start <= len then
+    local h, t = colored_str(s_sub(expr, name_start, len), 'name', fid)
+    rh, rt = append(rh, rt, h, t)
+  end
+  return rh, rt
+end
+
+local function render_guard(line, fid)
+  local rest = s_gsub(line, '^%s*', '')
+  local close = s_find(rest, '>', 2)
+  if not close then
+    local h, t = colored_str('%', 'angle', fid)
+    if h then n_write(d_tonode(h)) end
+    h, t = colored_str_italic(line, 'comment', fid)
+    if h then n_write(d_tonode(h)) end
+    return
+  end
+  local inner = s_sub(rest, 2, close - 1)
+  local after = s_sub(rest, close + 1)
+  local ch, ct, h, t = nil, nil, nil, nil
+
+  if s_sub(inner, 1, 3) == '@@=' then
+    local modname = s_sub(inner, 4)
+    t_set_macro('g__codedoc_module_name_tl', modname, 'global')
+    current_module_name = modname
+    current_module_prefix = '__' .. modname
+    h, t = colored_str('@@', 'module_at', fid); ch, ct = append(ch, ct, h, t)
+    h, t = colored_str('=', 'module_eq', fid); ch, ct = append(ch, ct, h, t)
+    h, t = colored_str_bold(modname, 'module_name', fid); ch, ct = append(ch, ct, h, t)
+  else
+    local sigil, expr, first = '', inner, s_sub(inner, 1, 1)
+    if first == '*' or first == '/' then sigil = first; expr = s_sub(inner, 2) end
+    if sigil ~= '' then
+      h, t = colored_str(sigil, 'operator', fid); ch, ct = append(ch, ct, h, t)
+    end
+    if expr ~= '' then
+      h, t = colorize_guard_expr(expr, fid); ch, ct = append(ch, ct, h, t)
+    end
+  end
+
+  local rh, rt = make_angle_nodes(ch, ct, 'angle', fid)
+  if rh then n_write(d_tonode(rh)) end
+  if after and after ~= '' then
+    local ah, at = colorize_code(after, fid); if ah then n_write(d_tonode(ah)) end
+  end
+end
+
+local function apply_at_at(line)
+  if not s_find(line, '@@', 1, true) then return line end
+  if current_module_name ~= '' then
+    line = s_gsub(line, '@@@@', '\0')
+    line = s_gsub(line, '__@@', current_module_prefix)
+    line = s_gsub(line, '_@@',  current_module_prefix)
+    line = s_gsub(line, '@@',   current_module_prefix)
+    line = s_gsub(line, '\0',   '@@')
+  end
+  return line
+end
+
+-- El nombre de módulo activo (current_module_name/current_module_prefix) se
+-- sincroniza desde \g__codedoc_module_name_tl al inicio de cada línea, pero
+-- SOLO cuando el valor leído no está vacío: así se mantiene sincronía con
+-- el mecanismo nativo de l3doc.cls (y con cualquier otro código externo
+-- que también fije esa variable), sin que una lectura vacía intermedia
+-- borre el estado que Lua ya tiene cacheado desde un %<@@=modulo> anterior.
+local function init_line_state()
+  local m = t_get_macro('g__codedoc_module_name_tl')
+  if m and m ~= '' then
+    current_module_name = m
+    current_module_prefix = '__' .. m
+  end
+end
+
+register_tex_cmd('inline', function()
+  local text = t_get_macro('l__mylhmc_verbatim_line_tl')
+  if not text or text == '' then return end
+  text = s_gsub(text, '[\r\n]+$', '')
+  init_line_state()
+  text = apply_at_at(text)
+  local fid = f_current()
+  local rh, rt = colorize_code(text, fid)
+  if rh then n_write(d_tonode(rh)) end
+end, {})
+
+register_tex_cmd('process_line', function()
+  local line = t_get_macro('l__mylhmc_verbatim_line_tl')
+  if not line or line == '' then return end
+  line = s_gsub(line, '[\r\n]+$', '')
+  if line == '' then return end
+  init_line_state()
+  line = apply_at_at(line)
+  local fid = f_current()
+  if s_sub(line, 1, 1) == '%' then
+    local rest = s_sub(line, 2)
+    local trimmed = s_match(rest, '^%s*(.*)')
+    if s_sub(trimmed, 1, 1) == '<' then render_guard(rest, fid)
+    else
+      local h, t = colored_str(s_sub(line, 1, 1), 'angle', fid)
+      if h then n_write(d_tonode(h)) end
+      h, t = colored_str_italic(s_sub(line, 2), 'comment', fid)
+      if h then n_write(d_tonode(h)) end
+    end
+  else
+    local rh, rt = colorize_code(line, fid)
+    if rh then n_write(d_tonode(rh)) end
+  end
+end, {})
+% \iffalse
+%</mylhmclua>
 % \fi
