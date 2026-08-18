@@ -7612,12 +7612,11 @@
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.96 [2026-08-16]
+     Lua module spintent.lua for spintent package - v0.98 [2026-08-18]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
 
-local utf8 = require("unicode").utf8
 local tonumber   = tonumber
 local tostring   = tostring
 local math_floor = math.floor
@@ -7625,7 +7624,6 @@ local math_sqrt  = math.sqrt
 local math_min   = math.min
 local t_sort     = table.sort
 local s_format   = string.format
-local t_insert   = table.insert
 local t_concat   = table.concat
 local t_unpack   = table.unpack or unpack
 local s_match    = string.match
@@ -7640,6 +7638,15 @@ local s_byte     = string.byte
 local pairs      = pairs
 
 local token_set_macro = token.set_macro
+
+-- APIs node.direct cacheadas a nivel de módulo (una sola vez, no en cada
+-- invocación de \spmQ) para máximo rendimiento, mismo criterio que mylhmc.lua.
+local d_todirect = node.direct.todirect
+local d_tonode   = node.direct.tonode
+local d_traverse = node.direct.traverse_glyph
+local d_getfield = node.direct.getfield
+local d_new      = node.direct.new
+local d_setfield = node.direct.setfield
 
 local lpeg_base = lpeg or require("lpeg")
 local P, R, S, Cs, Ct, Cg, C, Cc =
@@ -7670,6 +7677,13 @@ local spintent_trim_pattern =
     spintent_ws^0 * C((P(1) - spintent_ws^0 * P(-1))^0) * spintent_ws^0
 local function spintent_trim(str)
     return spintent_trim_pattern:match(str)
+end
+
+-- Combina trim + minúsculas para los casos que no necesitan conservar
+-- el case original después (a diferencia de luafun_spmoney_lookup_data,
+-- que sí reutiliza la versión sin s_lower para la detección ISO).
+local function normalize_key(str)
+    return str and s_lower(spintent_trim(str)) or ""
 end
 
 -- Eliminación de espacios matemáticos para cálculos
@@ -7762,15 +7776,15 @@ local function spintent_rae_format_digits(str_num, reverse)
     local chunks = {}
     if reverse then
         for i = 1, len, 3 do
-            t_insert(chunks, s_sub(str_num, i, i + 2))
+            chunks[#chunks + 1] = s_sub(str_num, i, i + 2)
         end
     else
         local first = len % 3
         if first == 0 then first = 3 end
-        t_insert(chunks, s_sub(str_num, 1, first))
+        chunks[#chunks + 1] = s_sub(str_num, 1, first)
 
         for i = first + 1, len, 3 do
-            t_insert(chunks, s_sub(str_num, i, i + 2))
+            chunks[#chunks + 1] = s_sub(str_num, i, i + 2)
         end
     end
 
@@ -7817,7 +7831,7 @@ register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
             has_units = "true"
             local parts = {}
             for part in s_gmatch(extra, "[^/]+") do
-                t_insert(parts, part)
+                parts[#parts + 1] = part
             end
 
             if #parts > 2 or s_match(extra, "/%s*/") then
@@ -8261,7 +8275,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
 end, { "string" })
 
 register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
-    local clean = s_lower(spintent_trim(raw_input))
+    local clean = normalize_key(raw_input)
     local resolved_symbol = spintent_internal_currencies[clean]
     local resolved_spoken = nil
 
@@ -8484,7 +8498,7 @@ local spintent_spshort_ord_grammar = P({
 })
 
 local function spintent_spshort_execute_analysis(raw_input)
-  local clean_input = s_lower(spintent_trim(raw_input))
+  local clean_input = normalize_key(raw_input)
 
   local dict_match = spintent_spshort_dict[clean_input]
   if not dict_match then
@@ -8570,15 +8584,15 @@ local spintent_roman_to_arab_byte_map = {
 }
 
 local function spintent_arabic_to_roman(num)
-  local result = ""
+  local result = {}
   for i = 1, #spintent_arab_to_roman_map do
     local pair = spintent_arab_to_roman_map[i]
     while num >= pair[1] do
-      result = result .. pair[2]
+      result[#result + 1] = pair[2]
       num = num - pair[1]
     end
   end
-  return result
+  return t_concat(result)
 end
 
 local function spintent_roman_to_arabic(str_roman)
@@ -8797,7 +8811,7 @@ local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
           and (not r_ext or s_gsub(r_ext, "%s+", "") == "")
 
         if es_natural then
-            t_insert(numbers, tonumber(r_int))
+            numbers[#numbers + 1] = tonumber(r_int)
         else
             token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
             return
@@ -8846,7 +8860,7 @@ end, { "string" })
 local function spintent_calculate_multiples(n_val, count)
     local results = {}
     for i = 1, count do
-        t_insert(results, tostring(n_val * i))
+        results[#results + 1] = tostring(n_val * i)
     end
     return t_concat(results, ", ")
 end
@@ -8856,11 +8870,11 @@ local function spintent_calculate_divisors(n_val, limit)
     -- Algoritmo optimizado de raíz cuadrada para divisores rápidos
     for i = 1, math_floor(math_sqrt(n_val)) do
         if n_val % i == 0 then
-            t_insert(divisors, i)
+            divisors[#divisors + 1] = i
             -- Si el cociente es diferente, agregarlo también
-            local quotient = n_val / i
+            local quotient = n_val // i
             if i ~= quotient then
-                t_insert(divisors, math_floor(quotient))
+                divisors[#divisors + 1] = quotient
             end
         end
     end
@@ -8872,7 +8886,7 @@ local function spintent_calculate_divisors(n_val, limit)
     local count_to_show = (limit > 0) and math_min(limit, actual_count) or actual_count
 
     for i = 1, count_to_show do
-        t_insert(results, tostring(divisors[i]))
+        results[#results + 1] = tostring(divisors[i])
     end
 
     local is_truncated = (count_to_show < actual_count) and "true" or "false"
@@ -8884,7 +8898,7 @@ local function execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
     -- es un número natural puro. ¡Solo convertimos y calculamos!
     local num_n = tonumber(raw_n)
 
-    local clean_limit = s_lower(spintent_trim(raw_limit))
+    local clean_limit = normalize_key(raw_limit)
     local num_limit = tonumber(clean_limit) or 0
     if clean_limit == "all" or clean_limit == "" then
         num_limit = 0
@@ -8916,6 +8930,15 @@ end, { "string", "string" })
 
 local font_cache         = {}
 local spintent_measuring = false
+
+-- Tabla constante: nunca cambia entre llamadas, se construye una sola vez
+-- en vez de en cada invocación de \spmQ.
+local spintent_mathstyle_names = {
+    [0] = "display",      [1] = "display",
+    [2] = "text",         [3] = "text",
+    [4] = "script",       [5] = "script",
+    [6] = "scriptscript", [7] = "scriptscript",
+}
 
 local function is_digit(n)
     return n.char >= 48 and n.char <= 57
@@ -8980,62 +9003,50 @@ local function build_submlist_noad(str)
     return noad
 end
 
+-- Movida a nivel de módulo: no captura nada específico de una llamada a
+-- \spmQ (dt/cmd son parámetros explícitos, no upvalues), así que crear
+-- un closure nuevo por invocación era trabajo evitable.
+local function medir_frac(dt, cmd)
+    spintent_measuring = true
+    tex.runtoks(function()
+        tex.sprint(
+            "\\setbox0\\hbox{$\\" .. dt .. "style" ..
+            "\\" .. cmd .. "{0}{0}$}"
+        )
+    end)
+    spintent_measuring = false
+    local h  = tex.box[0].height
+    local dp = tex.box[0].depth
+    tex.box[0] = nil
+    return h, dp
+end
+
 register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
-    -- APIs directas cacheadas localmente para máximo rendimiento
-    local d_todirect = node.direct.todirect
-    local d_tonode   = node.direct.tonode
-    local d_traverse = node.direct.traverse_glyph
-    local d_getfield = node.direct.getfield
-    local d_new      = node.direct.new
-    local d_setfield = node.direct.setfield
-
-    local styles = {
-        [0] = "display",      [1] = "display",
-        [2] = "text",         [3] = "text",
-        [4] = "script",       [5] = "script",
-        [6] = "scriptscript", [7] = "scriptscript",
-    }
-
     local display_type = (frac_cmd == "dfrac") and "display" or
-        (styles[tonumber(tex.mathstyle)] or "text")
-
-    local function build_entero_mlist_noad()
-        return build_submlist_noad(entero)
-    end
-
-    local function medir_frac(dt, cmd)
-        spintent_measuring = true
-        tex.runtoks(function()
-            tex.sprint(
-                "\\setbox0\\hbox{$\\" .. dt .. "style" ..
-                "\\" .. cmd .. "{0}{0}$}"
-            )
-        end)
-        spintent_measuring = false
-        local h  = tex.box[0].height
-        local dp = tex.box[0].depth
-        tex.box[0] = nil
-        return h, dp
-    end
+        (spintent_mathstyle_names[tonumber(tex.mathstyle)] or "text")
 
     -- 1. Medir fracción
     local frac_height, frac_depth = medir_frac(display_type, frac_cmd)
     local ht_frac_real = frac_height + frac_depth
 
-    -- 2. Medir entero
-    spintent_measuring = true
-    local h_med = node.mlist_to_hlist(build_entero_mlist_noad(), display_type, false)
-    spintent_measuring = false
-    local ht_entero = h_med.height + h_med.depth
+    -- 2. Construir y medir la hlist del entero UNA sola vez, antes de
+    --    escalarla. Antes se llamaba node.mlist_to_hlist dos veces sobre
+    --    la misma estructura (una para medir y descartar, otra para
+    --    escalar) — la operación más costosa de esta función. Como
+    --    build_submlist_noad/build_char_noads son puras (sin efectos
+    --    secundarios) y spintent_measuring no se lee en ningún lado,
+    --    medir antes de escalar produce los mismos valores sin pagar
+    --    el costo de una segunda conversión mlist->hlist.
+    local h_esc = node.mlist_to_hlist(build_submlist_noad(entero), display_type, false)
+    local ht_entero = h_esc.height + h_esc.depth
 
     -- 3. Factor
     local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
 
-    -- 4. Hlist escalada
-    local h_esc = node.mlist_to_hlist(build_entero_mlist_noad(), display_type, false)
+    -- 4. Escalar la misma hlist ya medida
     scale_glyphs(h_esc.list, factor)
 
-    -- 4 y 5. Ancho y Glyph nodes físicos (Bucle fusionado y acelerado por C)
+    -- 5. Ancho y Glyph nodes físicos (Bucle fusionado y acelerado por C)
     local ancho = 0
     local glyph_nodes = {}
 
@@ -9198,6 +9209,8 @@ end, {"string", "string"})
 \__mylhmc_define_color:nnn { star       } { HTML } { D81B60 } % Rosa Eléctrico     -> *
 \__mylhmc_define_color:nnn { keyname    } { HTML } { 483D8B } % Gris Índigo        -> cifras-sep read-sign terse clear
 \__mylhmc_define_color:nnn { other_np   } { HTML } { D32F2F } % Rojo Sangre        -> \__other_mod: privados ajenos
+\__mylhmc_define_color:nnn { package_name } { HTML } { 6A5ACD } % SlateBlue          -> nombre de paquete (negrita)
+\__mylhmc_define_color:nnn { class_name   } { HTML } { 8470FF } % LightSlateBlue     -> nombre de clase (negrita)
 
 \__mylhmc_define_color:nnn { guard / angle    } { HTML } { 4A5568 } % Gris Carbón  -> 〈 〉
 \__mylhmc_define_color:nnn { guard / name     } { HTML } { 5A6370 } % Gris Pizarra -> nombre módulo
@@ -9313,6 +9326,7 @@ end, {"string", "string"})
 %</mylhmcsty>
 % \fi
 % \iffalse
+%
 %<*mylhmclua>
 % \fi
 -- mylhmc.lua v2.0 2025-08-18 (node.direct + Loop/Memory Micro-Optimized)
@@ -9427,8 +9441,8 @@ local structure_names =
 
 local pkgstruct_names =
   P'ProvidesPackage' + P'ProvidesFile' + P'ProvidesClass' +
-  P'RequirePackage' + P'RequirePackageWithOptions' +
-  P'LoadClass' + P'LoadClassWithOptions' +
+  P'RequirePackageWithOptions' + P'RequirePackage' +
+  P'LoadClassWithOptions' + P'LoadClass' +
   P'PassOptionsToPackage' + P'PassOptionsToClass' +
   P'DocumentMetadata' +
   P'IfFormatAtLeast'    * (P'TF' + P'T' + P'F') +
@@ -9492,6 +9506,22 @@ local mathml_names =
 local keys_names =
   P'keys_define:' * S'Ncn' * P'n' +
   P'keys_set:'    * S'Ncn' * P'n'
+
+-- Resto de la familia \keys_...:n... (l3keys) cuyo PRIMER argumento es
+-- siempre {módulo} o {módulo/path}, pero cuyo SEGUNDO argumento cambia
+-- de significado según la función (lista de claves, lista de grupos,
+-- nombre de clave único, etc.) -- por eso solo coloreamos el primero,
+-- sin extender el tratamiento de "cuerpo de claves" como en .meta/keys_define.
+-- Orden: nombres más largos antes que sus prefijos (set_known/set_groups/
+-- set_exclude_groups antes de cualquier 'set' bare, que ya cubre keys_names).
+local keys_module_arg_names =
+  P'keys_' *
+  (P'set_exclude_groups' + P'set_groups' + P'set_known' +
+   P'precompile' +
+   P'if_choice_exist_p' + P'if_choice_exist' +
+   P'if_exist_p' + P'if_exist' +
+   P'show' + P'log') *
+  P':' * P'n' * sig_chars ^ 0
 
 local msgerror_names =
   P'msg_error:nneee'
@@ -9567,6 +9597,7 @@ local code_rules = {
   {11, P'\\' * P'q_'  * (alpha + S'_') ^ 1},
   {38, P'\\' * mathml_names},
   {39, P'\\' * keys_names},
+  {44, P'\\' * keys_module_arg_names},
   {40, P'\\' * msgerror_names},
   {41, P'\\' * msg_generic_names},
   {37, P'\\' * pkgstruct_names},
@@ -9856,7 +9887,7 @@ local type_colors = {
   [30]='publicfun',  [31]='publicfun',  [33]='ltcmd_arg',
   [34]='publicfun',  [35]='unit',       [36]='compare',
   [37]='pkgstruct',  [38]='mathml',     [39]='publicfun',  [40]='publicfun',
-  [41]='publicfun',  [42]='intent',     [43]='mathml_var',
+  [41]='publicfun',  [42]='intent',     [43]='mathml_var', [44]='publicfun',
 }
 
 local csname_positions = {}
@@ -9870,6 +9901,14 @@ local mathml_brace_count, mathml_after_dollar = 0, false
 local in_keys_context, keys_body_opened, keys_depth = false, false, 0
 local keys_in_choices = false
 
+-- .meta:nn (2 args: ruta módulo/clave + lista de claves) y .meta:n
+-- (1 arg: lista de claves). Reutiliza colorize_keys_path para la ruta
+-- y colorize_trimmed_keyname para la lista, igual que el resto de keys.
+local keys_meta_pending      = false
+local keys_meta_arity        = 0  -- 1 = .meta:n, 2 = .meta:nn
+local keys_meta_argnum       = 0  -- argumento actual (1 o 2)
+local keys_meta_brace_count  = 0
+
 local in_msgerror       = false
 local msgerror_argnum   = 0
 local msgerror_depth    = 0
@@ -9878,6 +9917,35 @@ local msgerror_is_unknown = false
 local in_msg_simple    = false
 local msg_simple_depth = 0
 local msg_simple_done  = false
+
+-- Resto de la familia \keys_...:n... (set_known, set_groups,
+-- set_exclude_groups, precompile, if_exist, if_choice_exist, show, log):
+-- arg1 (primer 'n' de la firma) = ruta módulo/path -> colorize_keys_path;
+-- args 2..N (resto de las 'n' minúsculas de la firma) = nombre de
+-- clave/grupo/opción -> colorize_trimmed_keyname; lo que venga después
+-- (ramas T/F de un sufijo TF, argumentos N sin llaves, etc.) no se toca.
+local in_keys_module_arg     = false
+local keys_module_arg_depth  = 0
+local keys_module_arg_done   = false
+local keys_module_arg_argnum = 0
+local keys_module_arg_total_n = 0
+
+-- \ProvidesExplPackage {nombre} {...} {...} {...}: el PRIMER argumento
+-- (el nombre del paquete/módulo) va en negrita + color module_name.
+local provides_pkg_pending = false
+local provides_pkg_brace_count = 0
+
+-- Nombres de paquete/clase (\ProvidesPackage, \RequirePackage,
+-- \ProvidesClass, \LoadClass, \PassOptionsTo(Package|Class),
+-- \IfPackageLoaded...) -> negrita + color package_name/class_name.
+-- pkgcls_target_arg indica en qué argumento {} está el nombre (1 o 2);
+-- [opciones] opcional no afecta el conteo porque [] no toca estas
+-- variables (solo {} las incrementa).
+local pkgcls_pending     = false
+local pkgcls_target_arg  = 0
+local pkgcls_argnum      = 0
+local pkgcls_brace_depth = 0
+local pkgcls_color       = nil
 
 local colorize_code
 
@@ -10183,6 +10251,13 @@ local function colorize_plain_text(text, fid, rh, rt)
       rh, rt = colorize_mathml_intent(text, fid, rh, rt); h, tl = nil, nil
     end
   elseif in_mathml_arg then h, tl = colored_str(text, 'mathml_var', fid)
+  elseif keys_meta_pending and keys_meta_brace_count == 1
+         and keys_meta_argnum == 1 and keys_meta_arity == 2 then
+    -- .meta:nn primer argumento: ruta módulo/clave (spintent/spnum)
+    rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
+  elseif keys_meta_pending and keys_meta_brace_count == 1 then
+    -- .meta:n único argumento, o .meta:nn segundo argumento: lista de claves
+    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   elseif in_keys_context and keys_body_opened and keys_depth == 1 then
     rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   elseif in_keys_context and keys_body_opened and keys_in_choices and keys_depth == 2 then
@@ -10206,6 +10281,18 @@ local function colorize_plain_text(text, fid, rh, rt)
     rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
   elseif in_msg_simple and not msg_simple_done and msg_simple_depth == 1 then
     rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
+  elseif in_keys_module_arg and not keys_module_arg_done
+         and keys_module_arg_depth == 1 then
+    if keys_module_arg_argnum == 1 then
+      rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
+    else
+      rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+    end
+  elseif provides_pkg_pending and provides_pkg_brace_count == 1 then
+    h, tl = colored_str_bold(text, 'module_name', fid)
+  elseif pkgcls_pending and pkgcls_brace_depth == 1
+         and pkgcls_argnum == pkgcls_target_arg then
+    h, tl = colored_str_bold(text, pkgcls_color, fid)
   else h, tl = str_to_nodes(text, fid) end
   return append(rh, rt, h, tl)
 end
@@ -10249,6 +10336,12 @@ colorize_code = function(line, fid)
         if in_keys_context then
           keys_depth = keys_depth + 1
         end
+        if keys_meta_pending then
+          keys_meta_brace_count = keys_meta_brace_count + 1
+          if keys_meta_brace_count == 1 then
+            keys_meta_argnum = keys_meta_argnum + 1
+          end
+        end
         if in_msgerror then
           if msgerror_depth == 0 then
             msgerror_argnum = msgerror_argnum + 1
@@ -10257,6 +10350,21 @@ colorize_code = function(line, fid)
         end
         if in_msg_simple and not msg_simple_done then
           msg_simple_depth = msg_simple_depth + 1
+        end
+        if in_keys_module_arg and not keys_module_arg_done then
+          keys_module_arg_depth = keys_module_arg_depth + 1
+          if keys_module_arg_depth == 1 then
+            keys_module_arg_argnum = keys_module_arg_argnum + 1
+          end
+        end
+        if provides_pkg_pending then
+          provides_pkg_brace_count = provides_pkg_brace_count + 1
+        end
+        if pkgcls_pending then
+          pkgcls_brace_depth = pkgcls_brace_depth + 1
+          if pkgcls_brace_depth == 1 then
+            pkgcls_argnum = pkgcls_argnum + 1
+          end
         end
       elseif chunk == '}' then
         if in_csname then
@@ -10298,6 +10406,14 @@ colorize_code = function(line, fid)
             end
           end
         end
+        if keys_meta_pending and keys_meta_brace_count > 0 then
+          keys_meta_brace_count = keys_meta_brace_count - 1
+          if keys_meta_brace_count == 0 then
+            if keys_meta_arity == 1 or keys_meta_argnum >= 2 then
+              keys_meta_pending = false
+            end
+          end
+        end
         if in_msgerror and msgerror_depth > 0 then
           msgerror_depth = msgerror_depth - 1
           if msgerror_depth == 0 and msgerror_argnum >= 5 then
@@ -10308,6 +10424,26 @@ colorize_code = function(line, fid)
           msg_simple_depth = msg_simple_depth - 1
           if msg_simple_depth == 0 then
             msg_simple_done, in_msg_simple = true, false
+          end
+        end
+        if in_keys_module_arg and not keys_module_arg_done
+           and keys_module_arg_depth > 0 then
+          keys_module_arg_depth = keys_module_arg_depth - 1
+          if keys_module_arg_depth == 0
+             and keys_module_arg_argnum >= keys_module_arg_total_n then
+            keys_module_arg_done, in_keys_module_arg = true, false
+          end
+        end
+        if provides_pkg_pending and provides_pkg_brace_count > 0 then
+          provides_pkg_brace_count = provides_pkg_brace_count - 1
+          if provides_pkg_brace_count == 0 then
+            provides_pkg_pending = false
+          end
+        end
+        if pkgcls_pending and pkgcls_brace_depth > 0 then
+          pkgcls_brace_depth = pkgcls_brace_depth - 1
+          if pkgcls_brace_depth == 0 and pkgcls_argnum >= pkgcls_target_arg then
+            pkgcls_pending = false
           end
         end
       end
@@ -10337,6 +10473,13 @@ colorize_code = function(line, fid)
         local kname, kargs = s_sub(rest, 1, colon - 1), s_sub(rest, colon + 1)
         if in_keys_context and keys_body_opened and keys_depth == 1 then
           keys_in_choices = (kname == 'choices')
+          if kname == 'meta' then
+            keys_meta_pending, keys_meta_argnum, keys_meta_brace_count =
+              true, 0, 0
+            keys_meta_arity = (kargs == 'n') and 1 or 2
+          else
+            keys_meta_pending = false
+          end
         end
         reset_csname_state(); local cpos = 0
         for i = 1, #kargs do
@@ -10368,6 +10511,18 @@ colorize_code = function(line, fid)
     elseif t == 41 then
       in_msg_simple, msg_simple_depth, msg_simple_done = true, 0, false
       h, tl = emit_with_signature(chunk, 'publicfun', fid)
+    elseif t == 44 then
+      in_keys_module_arg, keys_module_arg_depth, keys_module_arg_done =
+        true, 0, false
+      keys_module_arg_argnum = 0
+      local colon = s_find(chunk, ':', 1, true)
+      local sig = colon and s_sub(chunk, colon + 1) or ''
+      local n_count = 0
+      for ch in s_gmatch(sig, '.') do
+        if ch == 'n' then n_count = n_count + 1 end
+      end
+      keys_module_arg_total_n = n_count
+      h, tl = emit_with_signature(chunk, 'publicfun', fid)
     elseif t == 34 then
       h, tl = emit_with_signature(chunk, 'publicfun', fid)
       csname_positions[1] = true
@@ -10398,8 +10553,37 @@ colorize_code = function(line, fid)
         eff = private_owner_color(chunk, 'privatefun')
       end
       h, tl = emit_with_signature(chunk, eff, fid)
-    elseif t == 25 then arg_counter = 0; h, tl = colored_str_bold(chunk, 'structure', fid)
-    elseif t == 37 then arg_counter = 0; h, tl = emit_with_signature(chunk, 'pkgstruct', fid)
+    elseif t == 25 then
+      arg_counter = 0
+      if s_find(chunk, 'ProvidesExplPackage', 1, true) then
+        provides_pkg_pending, provides_pkg_brace_count = true, 0
+      end
+      h, tl = colored_str_bold(chunk, 'structure', fid)
+    elseif t == 37 then
+      arg_counter = 0
+      if s_find(chunk, 'ProvidesPackage', 1, true) then
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'package_name'
+      elseif s_find(chunk, 'ProvidesClass', 1, true) then
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'class_name'
+      elseif s_find(chunk, 'RequirePackageWithOptions', 1, true) then
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'package_name'
+      elseif s_find(chunk, 'RequirePackage', 1, true) then
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'package_name'
+      elseif s_find(chunk, 'LoadClassWithOptions', 1, true) then
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'class_name'
+      elseif s_find(chunk, 'LoadClass', 1, true) then
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'class_name'
+      elseif s_find(chunk, 'PassOptionsToPackage', 1, true) then
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 2, 'package_name'
+      elseif s_find(chunk, 'PassOptionsToClass', 1, true) then
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 2, 'class_name'
+      elseif s_find(chunk, 'IfPackageLoaded', 1, true) then
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'package_name'
+      else
+        pkgcls_pending = false
+      end
+      if pkgcls_pending then pkgcls_argnum, pkgcls_brace_depth = 0, 0 end
+      h, tl = emit_with_signature(chunk, 'pkgstruct', fid)
     elseif t == 38 then
       mathml_brace_count, mathml_after_dollar = 0, false
       if s_find(chunk, 'MathMLintent', 1, true) then
