@@ -8981,6 +8981,13 @@ local function build_submlist_noad(str)
 end
 
 register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
+    -- APIs directas cacheadas localmente para máximo rendimiento
+    local d_todirect = node.direct.todirect
+    local d_tonode   = node.direct.tonode
+    local d_traverse = node.direct.traverse_glyph
+    local d_getfield = node.direct.getfield
+    local d_new      = node.direct.new
+    local d_setfield = node.direct.setfield
 
     local styles = {
         [0] = "display",      [1] = "display",
@@ -9028,25 +9035,35 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     local h_esc = node.mlist_to_hlist(build_entero_mlist_noad(), display_type, false)
     scale_glyphs(h_esc.list, factor)
 
+    -- 4 y 5. Ancho y Glyph nodes físicos (Bucle fusionado y acelerado por C)
     local ancho = 0
-    for n in node.traverse_glyph(h_esc.list) do ancho = ancho + n.width end
+    local glyph_nodes = {}
+
+    for n in d_traverse(d_todirect(h_esc.list)) do
+        ancho = ancho + d_getfield(n, "width")
+        -- Reconvertimos a userdata temporalmente porque is_digit lo espera así
+        local n_user = d_tonode(n)
+        if is_digit(n_user) then
+            glyph_nodes[#glyph_nodes + 1] = n_user
+        end
+    end
+
     h_esc.width  = ancho
     h_esc.height = frac_height
     h_esc.depth  = frac_depth
     h_esc.shift  = math_floor(frac_depth + 0.5)
 
-    -- 5. Glyph nodes físicos
-    local glyph_nodes = {}
-    for n in node.traverse_glyph(h_esc.list) do
-        if is_digit(n) then glyph_nodes[#glyph_nodes + 1] = n end
-    end
+    -- 6. sub_box con mathml_filter usando node.direct
+    local sub = d_new("sub_box")
+    d_setfield(sub, "head", d_todirect(h_esc))
 
-    -- 6. sub_box con mathml_filter
-    local sub    = node.new("sub_box")
-    sub.head     = h_esc
-    local noad   = node.new("noad")
-    noad.subtype = 0
-    noad.nucleus = sub
+    local noad = d_new("noad")
+    d_setfield(noad, "subtype", 0)
+    d_setfield(noad, "nucleus", sub)
+
+    -- Devolvemos a userdata para interactuar con las properties de luamml y node.write
+    local sub_user = d_tonode(sub)
+    local noad_user = d_tonode(noad)
 
     local mml_mn = {
         [0]         = 'mn',
@@ -9054,12 +9071,13 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
         [':nodes']  = glyph_nodes,
         [':actual'] = entero,
     }
+
     local properties = node.get_properties_table()
-    local p = properties[sub] or {}
+    local p = properties[sub_user] or {}
     p.mathml_filter = function(_mml, _core)
         return mml_mn, mml_mn
     end
-    properties[sub] = p
+    properties[sub_user] = p
 
     -- 7. Inyectar el noad con luamml deshabilitado temporalmente.
     --    node.write aquí solo deposita el noad en la lista matemática
@@ -9069,7 +9087,7 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     --    verá igual cuando procese la lista completa.
     --    Lo que sí suprime es cualquier callback intermedio espurio
     --    que pudiera dispararse durante el node.write mismo.
-    node.write(noad)
+    node.write(noad_user)
 
 end, {"string", "string"})
 % \iffalse
