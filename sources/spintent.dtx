@@ -9099,7 +9099,7 @@ end, {"string", "string"})
 %<*mylhmcsty>
 % \fi
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2025-08-16}{2.0}
+\ProvidesExplPackage{mylhmc}{2025-08-18}{2.0}
   {Line-by-line macrocode reader for l3doc in Lua}
 \RequirePackage { accsupp }
 \sys_if_engine_luatex:F
@@ -9315,7 +9315,7 @@ end, {"string", "string"})
 % \iffalse
 %<*mylhmclua>
 % \fi
--- mylhmc.lua v2.0 (node.direct + Bounded Glyph Cache + other_np detection)
+-- mylhmc.lua v2.0 2025-08-18 (node.direct + Loop/Memory Micro-Optimized)
 -- LuaLaTeX syntax highlighter for l3doc macrocode environments
 
 local require      = require
@@ -9323,7 +9323,6 @@ local pcall        = pcall
 local ipairs       = ipairs
 local pairs        = pairs
 local tonumber     = tonumber
-local tostring     = tostring
 local t_unpack     = table.unpack or unpack
 
 local s_sub        = string.sub
@@ -9503,6 +9502,12 @@ local msg_generic_names =
              P'redirect_name' + P'redirect_class' + P'log' + P'term') *
   P':' * sig_chars ^ 1
 
+local intent_names =
+  P':prefix' + P':postfix' + P':function' + P':nofix' +
+  P':silent' + P':time' + P':date' + P':infix'
+
+local dollar_var_pattern = P'$' * (alpha + digit + P'_') ^ 1
+
 local ltcmd_def_names =
   P'NewDocumentCommand' + P'NewDocumentEnvironment' +
   P'DeclareDocumentCommand' + P'DeclareDocumentEnvironment' +
@@ -9545,6 +9550,8 @@ local num_part = digit ^ 1 * (P'.' * digit ^ 1) ^ -1
 local code_rules = {
   {24, P'#' ^ 1 * digit},
   {1,  P'#' ^ 1},
+  {42, intent_names},
+  {43, dollar_var_pattern},
   {21, P'$$'}, {21, P'$'},
   {21, P'\\' * S'(['}, {21, P'\\' * S')]'},
   {18, P'\x5e\x5e\x5e\x5e' * hex_chars * hex_chars * hex_chars * hex_chars},
@@ -9641,7 +9648,9 @@ local function get_bold_fid(fid)
   local target_size = f.size
   local best_id, best_score, best_path = nil, 0, nil
 
-  for i = 1, f_max() do
+  -- Optimización: cacheamos f_max() para el for
+  local max_f = f_max()
+  for i = 1, max_f do
     local bf = f_getfont(i)
     if bf and bf.name and bf.name ~= f.name and
        s_find(bf.name, base_family, 1, true) then
@@ -9692,7 +9701,10 @@ local function get_lm_fid(fid)
   if lm_cache[fid] then return lm_cache[fid] end
   local cf = f_getfont(fid)
   if not cf or not cf.size then lm_cache[fid] = fid; return fid end
-  for i = 1, f_max() do
+
+  -- Optimización: cacheamos f_max() para el for
+  local max_f = f_max()
+  for i = 1, max_f do
     local f = f_getfont(i)
     local fname = f and (f.filename or f.name) or ''
     if f and f.size == cf.size and
@@ -9754,11 +9766,7 @@ local function append(rh, rt, h, t)
   return rh, t
 end
 
--- Bounded glyph cache: only short, frequently-repeated tokens are cached
--- (spaces, punctuation, short signature fragments like "Nn", "TF", ":").
--- Longer strings (comment lines, long identifiers) are rarely repeated
--- verbatim, so caching them would only grow memory without ever paying
--- off; those are built fresh every time and never stored.
+-- Bounded glyph cache
 local raw_glyph_cache = {}
 local CACHE_MAX_LEN = 16
 
@@ -9769,7 +9777,8 @@ local function str_to_nodes(str, fid, fallback_fn)
   local cacheable = #str <= CACHE_MAX_LEN
   local key
   if cacheable then
-    key = str .. '|' .. tostring(fid)
+    -- Optimización: concatenación implícita de número en vez de tostring()
+    key = str .. '_' .. fid
     local cached = raw_glyph_cache[key]
     if cached then
       local h = d_copylist(cached)
@@ -9847,7 +9856,7 @@ local type_colors = {
   [30]='publicfun',  [31]='publicfun',  [33]='ltcmd_arg',
   [34]='publicfun',  [35]='unit',       [36]='compare',
   [37]='pkgstruct',  [38]='mathml',     [39]='publicfun',  [40]='publicfun',
-  [41]='publicfun',
+  [41]='publicfun',  [42]='intent',     [43]='mathml_var',
 }
 
 local csname_positions = {}
@@ -10076,8 +10085,12 @@ local function colorize_mathml_intent(text, fid, rh, rt)
            nc == ',' or nc == ' ' then break end
         j = j + 1
       end
-      local h, t = str_to_nodes(s_sub(text, i, j-1), fid)
-      rh, rt = append(rh, rt, h, t); i = j
+      local chunk = s_sub(text, i, j-1)
+      local saved_intent, saved_arg = in_mathml_intent, in_mathml_arg
+      in_mathml_intent, in_mathml_arg = false, false
+      local ch, ct = colorize_code(chunk, fid)
+      in_mathml_intent, in_mathml_arg = saved_intent, saved_arg
+      rh, rt = append(rh, rt, ch, ct); i = j
     end
   end
   return rh, rt
@@ -10389,7 +10402,7 @@ colorize_code = function(line, fid)
     elseif t == 37 then arg_counter = 0; h, tl = emit_with_signature(chunk, 'pkgstruct', fid)
     elseif t == 38 then
       mathml_brace_count, mathml_after_dollar = 0, false
-      if s_find(chunk, 'MathMLintent', 1, true) or s_find(chunk, 'luamml_annotate', 1, true) then
+      if s_find(chunk, 'MathMLintent', 1, true) then
         in_mathml_intent, in_mathml_arg = true, false
       elseif s_find(chunk, 'MathMLarg', 1, true) then
         in_mathml_arg, in_mathml_intent = true, false
@@ -10402,6 +10415,12 @@ colorize_code = function(line, fid)
         rh, rt = colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil
       else rh, rt = colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil end
     elseif in_mathml_arg and t ~= 8 then h, tl = colored_str(chunk, 'mathml_var', fid)
+    elseif t == 42 then
+      h, tl = colored_str(':', 'signature', fid); rh, rt = append(rh, rt, h, tl)
+      h, tl = colored_str(s_sub(chunk, 2), 'intent', fid)
+    elseif t == 43 then
+      h, tl = colored_str('$', 'math', fid); rh, rt = append(rh, rt, h, tl)
+      h, tl = colored_str(s_sub(chunk, 2), 'mathml_var', fid)
     elseif t == 35 then
       local split = s_find(chunk, '%a')
       if split then

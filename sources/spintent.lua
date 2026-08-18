@@ -1,10 +1,9 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.96 [2026-08-16]
+     Lua module spintent.lua for spintent package - v0.98 [2026-08-18]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
 
-local utf8 = require("unicode").utf8
 local tonumber   = tonumber
 local tostring   = tostring
 local math_floor = math.floor
@@ -12,7 +11,6 @@ local math_sqrt  = math.sqrt
 local math_min   = math.min
 local t_sort     = table.sort
 local s_format   = string.format
-local t_insert   = table.insert
 local t_concat   = table.concat
 local t_unpack   = table.unpack or unpack
 local s_match    = string.match
@@ -23,10 +21,13 @@ local s_lower    = string.lower
 local s_upper    = string.upper
 local s_byte     = string.byte
 
--- Nuevas referencias locales para rendimiento
+-- Referencias locales para rendimiento
 local pairs      = pairs
 
 local token_set_macro = token.set_macro
+local token_set_lua   = token.set_lua
+local luatexbase_new  = luatexbase.new_luafunction
+local lua_get_funcs   = lua.get_functions_table
 
 local lpeg_base = lpeg or require("lpeg")
 local P, R, S, Cs, Ct, Cg, C, Cc =
@@ -95,10 +96,9 @@ local function register_tex_cmd(name, func, args)
             func(t_unpack(values))
         end
     end
-
-    local index = luatexbase.new_luafunction(name)
-    lua.get_functions_table()[index] = scanning_func
-    token.set_lua(name, index, "global", "protected")
+    local index = luatexbase_new(name)
+    lua_get_funcs()[index] = scanning_func
+    token_set_lua(name, index, "global", "protected")
 end
 
 -- 1. MOTOR CENTRAL Y NÚMEROS (\spnum y \spunit)
@@ -143,21 +143,21 @@ local function spintent_rae_format_digits(str_num, reverse)
     if not str_num or str_num == "" then return "" end
 
     str_num = tostring(str_num)
-    local len = #str_num -- Los números en Lua son 1 byte por carácter (ASCII)
+    local len = #str_num
     if len <= 4 then return str_num end
 
     local chunks = {}
     if reverse then
         for i = 1, len, 3 do
-            t_insert(chunks, s_sub(str_num, i, i + 2))
+            chunks[#chunks + 1] = s_sub(str_num, i, i + 2)
         end
     else
         local first = len % 3
         if first == 0 then first = 3 end
-        t_insert(chunks, s_sub(str_num, 1, first))
+        chunks[#chunks + 1] = s_sub(str_num, 1, first)
 
         for i = first + 1, len, 3 do
-            t_insert(chunks, s_sub(str_num, i, i + 2))
+            chunks[#chunks + 1] = s_sub(str_num, i, i + 2)
         end
     end
 
@@ -204,7 +204,7 @@ register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
             has_units = "true"
             local parts = {}
             for part in s_gmatch(extra, "[^/]+") do
-                t_insert(parts, part)
+                parts[#parts + 1] = part
             end
 
             if #parts > 2 or s_match(extra, "/%s*/") then
@@ -613,9 +613,13 @@ local spintent_currency_spoken_names = {
     ["₴"]        = "grivnas",
 }
 
+local function normalize_key(str)
+    return str and s_lower(spintent_trim(str)) or ""
+end
+
 register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local trimmed = spintent_trim(currency_name)
-    local clean = s_lower(trimmed)
+    local clean = normalize_key(trimmed)
     local resolved_symbol = spintent_internal_currencies[clean] or "$"
 
     local gram_entry = spintent_currency_grammatical_dict[clean] or spintent_currency_grammatical_dict[resolved_symbol]
@@ -648,7 +652,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
 end, { "string" })
 
 register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
-    local clean = s_lower(spintent_trim(raw_input))
+    local clean = normalize_key(raw_input)
     local resolved_symbol = spintent_internal_currencies[clean]
     local resolved_spoken = nil
 
@@ -957,15 +961,16 @@ local spintent_roman_to_arab_byte_map = {
 }
 
 local function spintent_arabic_to_roman(num)
-  local result = ""
-  for i = 1, #spintent_arab_to_roman_map do
-    local pair = spintent_arab_to_roman_map[i]
-    while num >= pair[1] do
-      result = result .. pair[2]
-      num = num - pair[1]
+    if num <= 0 or num >= 4000 then return tostring(num) end
+    local result = {}
+    for i = 1, #spintent_arab_to_roman_map do
+        local pair = spintent_arab_to_roman_map[i]
+        while num >= pair[1] do
+            result[#result + 1] = pair[2]
+            num = num - pair[1]
+        end
     end
-  end
-  return result
+    return t_concat(result)
 end
 
 local function spintent_roman_to_arabic(str_roman)
@@ -1184,7 +1189,7 @@ local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
           and (not r_ext or s_gsub(r_ext, "%s+", "") == "")
 
         if es_natural then
-            t_insert(numbers, tonumber(r_int))
+            numbers[#numbers + 1] = tonumber(r_int)
         else
             token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "true")
             return
@@ -1233,7 +1238,7 @@ end, { "string" })
 local function spintent_calculate_multiples(n_val, count)
     local results = {}
     for i = 1, count do
-        t_insert(results, tostring(n_val * i))
+        results[#results + 1] = tostring(n_val * i)
     end
     return t_concat(results, ", ")
 end
@@ -1243,11 +1248,11 @@ local function spintent_calculate_divisors(n_val, limit)
     -- Algoritmo optimizado de raíz cuadrada para divisores rápidos
     for i = 1, math_floor(math_sqrt(n_val)) do
         if n_val % i == 0 then
-            t_insert(divisors, i)
+            divisors[#divisors + 1] = i
             -- Si el cociente es diferente, agregarlo también
-            local quotient = n_val / i
+            local quotient = n_val // i
             if i ~= quotient then
-                t_insert(divisors, math_floor(quotient))
+                divisors[#divisors + 1] = quotient
             end
         end
     end
@@ -1259,7 +1264,7 @@ local function spintent_calculate_divisors(n_val, limit)
     local count_to_show = (limit > 0) and math_min(limit, actual_count) or actual_count
 
     for i = 1, count_to_show do
-        t_insert(results, tostring(divisors[i]))
+        results[#results + 1] = tostring(divisors[i])
     end
 
     local is_truncated = (count_to_show < actual_count) and "true" or "false"
@@ -1367,8 +1372,27 @@ local function build_submlist_noad(str)
     return noad
 end
 
+
+local styles_map = {
+    [0] = "display",      [1] = "display",
+    [2] = "text",         [3] = "text",
+    [4] = "script",       [5] = "script",
+    [6] = "scriptscript", [7] = "scriptscript",
+}
+
+local function medir_frac(dt, cmd)
+    spintent_measuring = true
+    tex.runtoks(function()
+        tex.sprint("\\setbox0\\hbox{$\\" .. dt .. "style\\" .. cmd .. "{0}{0}$}")
+    end)
+    spintent_measuring = false
+    local h  = tex.box[0].height
+    local dp = tex.box[0].depth
+    tex.box[0] = nil
+    return h, dp
+end
+
 register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
-    -- APIs directas cacheadas localmente para máximo rendimiento
     local d_todirect = node.direct.todirect
     local d_tonode   = node.direct.tonode
     local d_traverse = node.direct.traverse_glyph
@@ -1376,59 +1400,28 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     local d_new      = node.direct.new
     local d_setfield = node.direct.setfield
 
-    local styles = {
-        [0] = "display",      [1] = "display",
-        [2] = "text",         [3] = "text",
-        [4] = "script",       [5] = "script",
-        [6] = "scriptscript", [7] = "scriptscript",
-    }
-
     local display_type = (frac_cmd == "dfrac") and "display" or
-        (styles[tonumber(tex.mathstyle)] or "text")
+        (styles_map[tonumber(tex.mathstyle)] or "text")
 
-    local function build_entero_mlist_noad()
-        return build_submlist_noad(entero)
-    end
-
-    local function medir_frac(dt, cmd)
-        spintent_measuring = true
-        tex.runtoks(function()
-            tex.sprint(
-                "\\setbox0\\hbox{$\\" .. dt .. "style" ..
-                "\\" .. cmd .. "{0}{0}$}"
-            )
-        end)
-        spintent_measuring = false
-        local h  = tex.box[0].height
-        local dp = tex.box[0].depth
-        tex.box[0] = nil
-        return h, dp
-    end
-
-    -- 1. Medir fracción
     local frac_height, frac_depth = medir_frac(display_type, frac_cmd)
     local ht_frac_real = frac_height + frac_depth
 
-    -- 2. Medir entero
     spintent_measuring = true
-    local h_med = node.mlist_to_hlist(build_entero_mlist_noad(), display_type, false)
+    local h_med = node.mlist_to_hlist(build_submlist_noad(entero), display_type, false)
     spintent_measuring = false
     local ht_entero = h_med.height + h_med.depth
+    node.flush_list(h_med) -- <- Evita la fuga de memoria
 
-    -- 3. Factor
     local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
 
-    -- 4. Hlist escalada
-    local h_esc = node.mlist_to_hlist(build_entero_mlist_noad(), display_type, false)
+    local h_esc = node.mlist_to_hlist(build_submlist_noad(entero), display_type, false)
     scale_glyphs(h_esc.list, factor)
 
-    -- 4 y 5. Ancho y Glyph nodes físicos (Bucle fusionado y acelerado por C)
     local ancho = 0
     local glyph_nodes = {}
 
     for n in d_traverse(d_todirect(h_esc.list)) do
         ancho = ancho + d_getfield(n, "width")
-        -- Reconvertimos a userdata temporalmente porque is_digit lo espera así
         local n_user = d_tonode(n)
         if is_digit(n_user) then
             glyph_nodes[#glyph_nodes + 1] = n_user
@@ -1440,7 +1433,6 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     h_esc.depth  = frac_depth
     h_esc.shift  = math_floor(frac_depth + 0.5)
 
-    -- 6. sub_box con mathml_filter usando node.direct
     local sub = d_new("sub_box")
     d_setfield(sub, "head", d_todirect(h_esc))
 
@@ -1448,7 +1440,6 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     d_setfield(noad, "subtype", 0)
     d_setfield(noad, "nucleus", sub)
 
-    -- Devolvemos a userdata para interactuar con las properties de luamml y node.write
     local sub_user = d_tonode(sub)
     local noad_user = d_tonode(noad)
 
@@ -1466,14 +1457,5 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     end
     properties[sub_user] = p
 
-    -- 7. Inyectar el noad con luamml deshabilitado temporalmente.
-    --    node.write aquí solo deposita el noad en la lista matemática
-    --    actual; el callback de luamml se dispara al CERRAR el grupo
-    --    matemático (al final de $ o \]). Por tanto deshabilitar el
-    --    flag aquí NO suprime el procesamiento del noad — luamml lo
-    --    verá igual cuando procese la lista completa.
-    --    Lo que sí suprime es cualquier callback intermedio espurio
-    --    que pudiera dispararse durante el node.write mismo.
     node.write(noad_user)
-
 end, {"string", "string"})
