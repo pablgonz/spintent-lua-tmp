@@ -235,17 +235,17 @@
 %% Common msm for command in math and text mode
 \msg_new:nnnn { spintent } { need-math-mode }
   {
-    Math~mode~required~for~'#1'.
+    Math~mode~required~for~'#1'~\msg_line_context:.
   }
   {
-    Please~wrap~the~command~inside~$...$~or~a~math~environment.
+    Use~inside~$...$~or~in~math~environment.
   }
 \msg_new:nnnn { spintent } { need-text-mode }
   {
-    Text~mode~required~for~'#1'.
+    Text~mode~required~for~'#1'~\msg_line_context:.
   }
   {
-    Please~move~the~command~outside~of~$...$~or~the~math~environment.
+    Use~outside~of~$...$~or~math~environment.
   }
 %% Internal vars for \spnum
 \bool_new:N \l__spintent_spnum_read_terse_bool
@@ -365,9 +365,9 @@
 \cs_new_protected:Nn \__spintent_spnum_render_decimal_sep:
   {
     \str_if_eq:VnTF \l__spintent_luaset_dec_sep_tl { , }
-      { \str_set:Nn \l__spintent_spnum_intent_read_dec_sep_str { _coma:prefix($dp) } }
-      { \str_set:Nn \l__spintent_spnum_intent_read_dec_sep_str { _punto:prefix($dp) } }
-    \MathMLintent { \l__spintent_spnum_intent_read_dec_sep_str }
+      { \str_set:Nn \l__spintent_spnum_intent_read_dec_sep_str { _coma } }
+      { \str_set:Nn \l__spintent_spnum_intent_read_dec_sep_str { _punto } }
+    \MathMLintent { \l__spintent_spnum_intent_read_dec_sep_str :prefix($dp) }
       {
         \mathord { \l__spintent_luaset_dec_sep_tl }
         \MathMLarg { dp }
@@ -2438,7 +2438,7 @@
           }
         { y       }
           {
-            \MathMLintent { _y } { \c__spintent_invisible_sep_tl }
+            \MathMLintent { _y- } { \c__spintent_invisible_sep_tl }
           }
       }
    }

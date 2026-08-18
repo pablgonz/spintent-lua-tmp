@@ -42,24 +42,6 @@
 \definecolor{araracolor}{rgb}{0, 0.72, 0.28}
 \newcommand{\araratext}[1]{{\small\normalfont\comfortaa\color{araracolor}\bfseries#1}}
 \newcommand*\arara{\araratext{ar\kern-.03emar\kern-.03ema}}
-% Get file info
-\GetFileInfo{spintent.sty} % not work here :(
-\def\fileversion{v0.96}
-\def\filedate{2026-08-16}
-\def\fileinfo{Spanish parse intents}
-% Config hyperref
-\definecolor{linkcolor}{rgb}{0.04,0.38,0.04}
-\hypersetup
-  {
-    allcolors          = linkcolor,
-    colorlinks         = true,
-    linktoc            = all,
-    pdftitle           = {.:: The spintent package --- \fileinfo{} ::.},
-    pdfauthor          = {Pablo González L},
-    pdfsubject         = {Documentation for \fileversion{} [\filedate] },
-    pdfkeywords        = {MathCAT, NVDA, tagged PDF, spanish, accesibilidad},
-    bookmarksopenlevel = 2,
-  }
 % Fonts
 \usepackage[osf,nomath,mono=false,ScaleSF=0.95,ScaleRM=0.95]{libertinus-otf}
 \usepackage{sourcecodepro}
@@ -87,8 +69,10 @@
 % \def\verbvisiblespace{\usefont{OT1}{cmtt}{m}{n}\asciispace}
 \def\verbvisiblespace{{\fontfamily{lmtt}\selectfont\char"2423}}
 % Math font
+\typeout{ \fileversion }
 \global\let\danger\relax
 \usepackage[no-text,Scale = 0.95]{fourier-otf}
+\typeout{ \fileversion }
 \setmathfont{Erewhon-Math}[range={cal,bfcal},StylisticSet={1,4}]
 \newfontfamily\fetamontotf{ffmw10.otf}[
    Scale             = 0.95,%
@@ -102,7 +86,7 @@
     \DeleteShortVerb \|
     \lstMakeShortInline[language=spintent-doc,basicstyle=\ttfamily]\|
   }
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Index
 \usepackage{imakeidx}
 \indexsetup{level=\section,firstpagestyle=myheader,othercode=\pagestyle{myheader}}
 % imakeidx also opens a write stream for the .idx file, and that conflicts
@@ -145,14 +129,33 @@
 % the reference to \@indexfile:
 \cs_set_eq:cc { @indexfile } { \c_sys_jobname_str @idxfile }
 \ExplSyntaxOff
-%%%%%%%%%%%%%% LuaLaTeX syntax highlighter for l3doc %%%%%%%%%%%
+% LuaLaTeX syntax highlighter for l3doc
 \usepackage{mylhmc}
 % Colors
+\definecolor{clspkg}{HTML}{8DA0F5} % Azul claro
 \definecolor{rulecolor}{rgb}{0.96,0.96,0.96}
 \definecolor{nvdapurple}{rgb}{0.353, 0.176, 0.506}   % Púrpura NVDA (#5A2D81)
 \definecolor{mathcatgreen}{rgb}{0.165, 0.478, 0.157} % Verde MathCAT (#2A7A28)
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
+% File info
+\def\fileversion{v0.96}
+\def\filedate{2026-08-16}
+\def\fileinfo{Spanish parse intents}
 
+% Config hyperref
+\definecolor{linkcolor}{rgb}{0.04,0.38,0.04}
+\definecolor{newlinkcolor}{HTML}{0A602C} % (0A6048 bonito Deep Teal) 029352
+\hypersetup
+  {
+    allcolors          = newlinkcolor, %%%araracolor,%%%;linkcolor,
+    colorlinks         = true,
+    linktoc            = all,
+    pdftitle           = {.:: The spintent package --- \fileinfo{} ::.},
+    pdfauthor          = {Pablo González L},
+    pdfsubject         = {Documentation for \fileversion{} [\filedate] },
+    pdfkeywords        = {MathCAT, NVDA, tagged PDF, spanish, accesibilidad},
+    bookmarksopenlevel = 2,
+  }
 % User level commands
 \ExplSyntaxOn
 % Logo
@@ -333,7 +336,7 @@
         \pkglogo
       }
       {
-        \textcolor{angle} { \texttt{#3} } %\texttt{#3}
+        \textcolor{angle} { \textbf{\texttt{#3} } } %\texttt{#3}
       }
     \str_if_eq:nnF {#2} { no-index }
       {
@@ -341,25 +344,24 @@
       }
     \group_end:
   }
+% \myclass{m}
+\NewDocumentCommand \myclass { m }
+  {
+    \textcolor{angle} { \textbf{\texttt{#1} } } % \texttt{#3}
+    \__mydoc_sort_index:nn {class} {Document~class :>\texttt{#1}}
+  }
 % \mynvmath
 \tl_new:N \l__mynvmath_input_tl
 \NewDocumentCommand \mynvmath { m }
   {
     \group_begin:
       \tl_set:Nn \l__mynvmath_input_tl { #1 }
-      \regex_replace_all:nnN { NVDA } { \c{textcolor}\cB\{nvdapurple\cE\}\cB\{NVDA\cE\} } \l__mynvmath_input_tl
-      \regex_replace_all:nnN { Math } { \c{textcolor}\cB\{nvdapurple\cE\}\cB\{Math\cE\} } \l__mynvmath_input_tl
-      \regex_replace_all:nnN { (CAT|ML) } { \c{textcolor}\cB\{catgray\cE\}\cB\{\1\cE\} }  \l__mynvmath_input_tl
-      \regex_replace_all:nnN { / } { \c{textcolor}\cB\{gray\cE\}\cB\{/\cE\} } \l__mynvmath_input_tl
-      \ttfamily
-      \tl_use:N \l__mynvmath_input_tl
+      \regex_replace_all:nnN { NVDA } { \c{textcolor}\cB\{angle\cE\}\cB\{NVDA\cE\} } \l__mynvmath_input_tl
+      \regex_replace_all:nnN { Math } { \c{textcolor}\cB\{angle\cE\}\cB\{Math\cE\} } \l__mynvmath_input_tl
+      \regex_replace_all:nnN { (CAT|ML) } { \c{textcolor}\cB\{comment\cE\}\cB\{\1\cE\} }  \l__mynvmath_input_tl
+      \regex_replace_all:nnN { / } { \c{textcolor}\cB\{operator\cE\}\cB\{/\cE\} } \l__mynvmath_input_tl
+      \textbf{\texttt{ \tl_use:N \l__mynvmath_input_tl } }
     \group_end:
-  }
-% \myclass{m}
-\NewDocumentCommand \myclass { m }
-  {
-    \mbox{\texttt{\textcolor{angle}{#1}}}
-    \__mydoc_sort_index:nn {class} {Document~class :>\texttt{#1}}
   }
 % \myenv{sm}
 \NewDocumentCommand \myenv { s m O{}}
@@ -539,7 +541,6 @@
     \cs_set_eq:cN { @fnsymbol } \__spintent_fnsymbol:n
   }
 \ExplSyntaxOff
-
 % Don't copy numbers in code example
 \newcommand*{\noaccsupp}[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
 % Create a language for documentation
@@ -553,53 +554,55 @@
     alsoletter    = {-,.},% @,
 % comments
     morecomment   = [l]{\%},%
-    commentstyle  = \ttfamily\small\color{lightgray},%
+    commentstyle  = \ttfamily\small\color{comment},%
 % Important \NeedsTeXFormat \ProvidesExplPackage \documentclass \DocumentMetadata
     keywordstyle  = [1]{\bfseries\color{structure}},%
-    keywords      = [1]{documentclass, DocumentMetadata,makeatletter, makeatother, %
+    keywords      = [1]{documentclass, makeatletter, makeatother, %
                     },%
 % Other words \usepackage,
     keywordstyle  = [2]{\color{pkgstruct}},%
     keywords      = [2]{usepackage,hypersetup},%,
 % Other words MathML cms
     keywordstyle  = [3]{\color{mathml}},%
-    keywords      = [3]{MathMLintent,MathMLarg, invisibletimes, luamml_attribute, luamml_annotate,tagging, tagging-setup,%
-                        lang, pdfversion, pdfstandard, },%,
-% Other words 3
+    keywords      = [3]{MathMLintent,MathMLarg, invisibletimes, luamml_attribute, luamml_annotate, DocumentMetadata,},%,
+% Other words 4
     keywordstyle  = [4]{\color{latex_cmd}},%
     keywords      = [4]{frac, dfrac, section, input, listparindent, linewidth, emph, textbf, footnote,%
                     triangleright, diamond, circ, parleft, star, centering, ast, sptext, , href, label, ref, %
                     mathord, parallel, mathstyle, setmathfont, .choice, .code, .meta, text, textsuperscript, cs_to_str, c_zero_skip, keys_define, %
                     mode_leave_vertical, Umathchardef,mathrm, mathbf, textstyle, addfontfeatures, %
                     left, right, Uleft, Uright,  },%
-% Other words 3
-    keywordstyle  = [5]{\color{angle}},%
+% Other words 5
+    keywordstyle  = [5]{\bfseries\color{percent}},% percent
     keywords      = [5]{article,babel,spintent,libertinus-otf,sourcecodepro,fourier-otf,Erewhon-Math,hyperref,},%,
-% Reserved words 4 (spintent pkg)
+% Reserved words 6 (spintent cmd)
     keywordstyle  = [6]{\color{module_name}},%
     keywords      = [6]{spnum, spunit, spmoney, spshort, spdiv, spang, sptime, spdate, spsiglo, spmcm, spnD, spnM, %
                     spmcd, spmul, spread, spdsym, spmsym, spnewunit, spunitalias, spnZ, spmQ , setspintent, spreadsym,
                     spusep, },%
-% Reserved words 5 (plain TeX or internal)
+% Reserved words 7 (plain TeX or internal)
     keywordstyle  = [7]{\color{red}},%
     keywords      = [7]{let,verb,def,prevdepth,glue, if@minipage,% if@noitemarg
                     splittopskip,showboxdepth,topskip,showoutput,nointerlineskip, ignorespaces, unskip, unkern, lastnodetype,%
                     rightskip, @rightskip, flushglue, @flushglue, hbadness, hss, scantokens, beginparpenalty, itempenalty, %
                     endparpenalty, lowpenalty,},%
-% Reserved words 6 (keyname) KEYS
+% Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
                     multislash, coma, punto, result, join-word, entero, enteros, y, error, periódico, postfix,%
                     es-paralela, es-paralelo, two-dots, old-style, slash, dividido, dividido-por, dividido-entre, por,%
-                    multiplicado-por, veces, cross, dot, asterisk, sample-arg, cifras-sep, %
+                    multiplicado-por, veces, cross, dot, asterisk, sample-arg, cifras-sep, read-cmd, %
                     osf, nomath, mono, ScaleSF, ScaleRM, spanish, shorthands, no-text, semibold, colorlinks, pdftitle, pdfdisplaydoctitle, %
                     pdfstartview, FitH, pdfinfo, Title, Subject, range, StylisticSet, small-caps, read-arg, píxeles, px, caudal,%
-                    read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, silent, %
-                    en-US, math, mathml-SE, es-CL, on, off, setup, },%
-% Reserved words 7 (intent values)
-    keywordstyle  = [9]{\color{MediumOrchid}},%
-    keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal,%
-                    title, table, firstaid, on,XXI, setup,},%
+                    read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size,%
+                    en-US, math, mathml-SE, es-CL, on, off, setup, tagging, tagging-setup, lang, pdfversion, pdfstandard,},%
+% Reserved words 9 (intent values)
+    keywordstyle  = [9]{\color{ltcmd_arg}},%
+    keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
+                    intent, title, table, firstaid, on,XXI, setup,},%
+% Reserved words 10 (signature)
+    keywordstyle  = [10]{\color{sigargs}},%
+    keywords      = [10]{een, },%
 % literate
     literate      =*{\{}{{{\color{brace}{\char`\{}}}}{1}
                     {\}}{{{\color{brace}{\char`\}}}}}{1}
@@ -612,6 +615,7 @@
                     {]}{{\textcolor{bracket}{]}}}{1}
                     {,}{{\textcolor{gray}{,}}}{1}
                     {;}{{\textcolor{gray}{;}}}{1}
+                    {.}{{\textcolor{signature}{.}}}{1}
                     {:}{{\textcolor{signature}{:}}}{1}
                     {`}{{\textcolor{quote}{\textasciigrave}}}{1}
                     {\&}{{\textcolor{gray}{\&}}}{1}
@@ -2926,6 +2930,11 @@
 %
 % \smallskip
 %
+% All variables and functions defined in this package are \enquote{private}
+% and are NOT intended to work or be used by another package or module.
+%
+% \smallskip
+%
 % \begin{important}*
 % The documentation presented here is far from professional, it contains
 % a lot of obvious information that to the eye of a \hologo{TeX}pert are
@@ -2940,33 +2949,23 @@
 %<*package>
 %    \end{macrocode}
 % Identify the internal prefix (\LaTeX3 \pkg{DocStrip} convention) for
-% \pkg{l3doc} class.
+% \mypkg{l3doc} class.
 %    \begin{macrocode}
 %<@@=spintent>
 %    \end{macrocode}
 %
-% \subsection{General conventions}
-%
-% Functions of the form \myhlc|\@@_luafun_some:n| or
-% \myhlc|\@@_luafun_some:nn| are defined (created) in the Lua
-% module \myluamod{} and only their variants are declared in
-% \mypkg{expl3}.
-%
 % \smallskip
 %
-% Similarly, variables of the form \myhlc|\l_@@_luaset_some_tl| or
-% \myhlc|\l_@@_luaset_some_str| are defined in the Lua module
-% \myluamod{} and only declared in \mypkg{expl3}.
-%
-% \smallskip
-%
-% All variables and functions defined in this package are private and
-% are NOT intended to work or be used by another package or module.
+% \begin{important}*
+% Functions of the form \myhlc|\@@_luafun_some:nn| or variables of the
+% form \myhlc|\l_@@_luaset_some_tl| or \myhlc|\l_@@_luaset_some_str| are
+% defined in the Lua module \myluamod{} and only declared in \mypkg{expl3}.
+% \end{important}
 %
 % \subsection{Declaration of the package}
 %
 % First we will make sure we have a minimum (super updated) version of
-% \hologo{LaTeX} to work correctly. \textbf{\texttt{NeedsTeXFormat}}
+% \hologo{LaTeX} to work correctly.
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
 %    \end{macrocode}
@@ -3213,7 +3212,7 @@
 % \begin{macro}[int]{\@@_setspintent_parse_args:nn, \@@_setspintent_parse_args:Vn}
 %   The function \myhlc|\@@_setspintent_parse_args:nn| will check if the
 %   argument passed in |#1| begins with `|\|' or is just a \emph{command name}. If it
-%   begins with `|\|', it will remove it using |\cs_to_str:N| and then
+%   begins with `\myhlc|\|', it will remove it using \myhlc|\cs_to_str:N| and then
 %   execute \myhlc|\@@_setspintent_set_keys:en|. Otherwise, i.e., if `|\|'
 %   was not passed, it will directly execute \myhlc|\@@_setspintent_set_keys:nn|.
 %    \begin{macrocode}
@@ -3485,17 +3484,17 @@
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { need-math-mode }
   {
-    Math~mode~required~for~'#1'.
+    Math~mode~required~for~'#1'~\msg_line_context:.
   }
   {
-    Please~wrap~the~command~inside~$...$~or~a~math~environment.
+    Use~inside~$...$~or~in~math~environment.
   }
 \msg_new:nnnn { spintent } { need-text-mode }
   {
-    Text~mode~required~for~'#1'.
+    Text~mode~required~for~'#1'~\msg_line_context:.
   }
   {
-    Please~move~the~command~outside~of~$...$~or~the~math~environment.
+    Use~outside~of~$...$~or~math~environment.
   }
 %    \end{macrocode}
 %
