@@ -31,7 +31,7 @@
 \documentclass[full]{l3doc}
 \usepackage[svgnames]{xcolor}
 \usepackage[sf,bf,compact,medium,pagestyles]{titlesec}
-\usepackage{lastpage,microtype,attachfile2,multicol,listings,accsupp,titletoc,booktabs, longtable, fontawesome5}
+\usepackage{lastpage,microtype,attachfile2,multicol,listings,titletoc,booktabs, longtable, fontawesome5}
 \usepackage{scalerel} % for \spmQ sample
 \usepackage[english]{babel} % \selectlanguage{english}
 \usepackage[top=0.5in,bottom=0.3in,left=1.70in,right=0.7in,footskip=0.2in,headheight=1cm,headsep=0.27cm]{geometry}
@@ -395,11 +395,11 @@
         \tl_set:Nn \l_tmpa_tl { #2 }
         \regex_replace_once:nnN { (\*) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
         \regex_replace_once:nnN { (!) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
-        \textcolor{latex_cmd}{\ttfamily\textbackslash{\tl_use:N \l_tmpa_tl}}
+        \textcolor{module_name}{\ttfamily\textbackslash{\tl_use:N \l_tmpa_tl}}
         \__mydoc_sort_index:nn {Commands} {Commands~provide ~by~\pkglogo :>\texttt{\textbackslash#2}}
       }
       {
-        \textcolor{module_name}{\ttfamily\textbackslash{#2}}
+        \textcolor{latex_cmd}{\ttfamily\textbackslash{#2}}
         \__mydoc_sort_index:nn {#2} {\texttt{\textbackslash#2}}
       }
   }
@@ -9375,6 +9375,7 @@ end, {"string", "string"})
 \__mylhmc_define_color:nnn { structure  } { HTML } { 004085 } % Azul Denim (bold) -> \NeedsTeXFormat \ProvidesExplPackage
 \__mylhmc_define_color:nnn { unit       } { HTML } { E67E22 } % Naranja Calabaza  -> pt em cm mu
 \__mylhmc_define_color:nnn { pkgstruct  } { HTML } { 064FA5 } % Azul cuerpo       -> \RequirePackage \IfPackageLoadedTF
+\__mylhmc_define_color:nnn { hyperref   } { HTML } { 6D4C41 } % Marrón cálido     -> \href \hyperlink \hypertarget etc
 \__mylhmc_define_color:nnn { mathml     } { HTML } { 2036D2 } % Azul MathML       -> \MathMLintent \MathMLarg \luamml_annotate:en
 \__mylhmc_define_color:nnn { mathml_var } { HTML } { 008000 } % Verde Puro         -> $foo identifiers in MathMLintent/MathMLarg
 \__mylhmc_define_color:nnn { intent     } { HTML } { 5C658A } % Azul Pizarra       -> :prefix :postfix :infix :silent etc (global)
@@ -9540,8 +9541,8 @@ end, {"string", "string"})
 % \iffalse
 %</mylhmcsty>
 % \fi
-%
 % \iffalse
+%
 %<*mylhmclua>
 % \fi
 -- mylhmc.lua v2.0 2025-08-18 (node.direct + Loop/Memory Micro-Optimized)
@@ -9677,6 +9678,18 @@ local pkgstruct_names =
   P'IfLabelExists'      * (P'TF' + P'T' + P'F') +
   P'IfPropertyRecorded' * (P'TF' + P'T' + P'F')
 
+-- Familia hyperref: comandos públicos, ninguno con prefijo real de otro
+-- (todos divergen justo tras "hyper" o son nombres completamente
+-- distintos), así que el orden dentro de la alternancia no es crítico.
+local hyperref_names =
+  P'hyperlink' + P'hypertarget' + P'hyperbaseurl' + P'hyperimage' +
+  P'hyperdef' + P'hyperget' + P'hypersetup' + P'hyperref' +
+  P'href' + P'nolinkurl' + P'url' +
+  P'autopageref' + P'autoref' +
+  P'pdfstringdef' +
+  P'currentpdfbookmark' + P'subpdfbookmark' + P'belowpdfbookmark' + P'pdfbookmark' +
+  P'texorpdfstring' + P'phantomsection'
+
 local mathml_names =
   P'MathMLintent' + P'MathMLarg' +
   P'luamml_annotate:nen' + P'luamml_annotate:en' +
@@ -9798,8 +9811,6 @@ local intent_names =
    P'silent' + P'time' + P'date' + P'infix') *
   balanced_parens ^ -1
 
-local dollar_var_pattern = P'$' * (alpha + digit + P'_') ^ 1
-
 local ltcmd_def_names =
   P'NewDocumentCommand' + P'NewDocumentEnvironment' +
   P'DeclareDocumentCommand' + P'DeclareDocumentEnvironment' +
@@ -9843,7 +9854,6 @@ local code_rules = {
   {24, P'#' ^ 1 * digit},
   {1,  P'#' ^ 1},
   {42, intent_names},
-  {43, dollar_var_pattern},
   {21, P'$$'}, {21, P'$'},
   {21, P'\\' * S'(['}, {21, P'\\' * S')]'},
   {18, P'\x5e\x5e\x5e\x5e' * hex_chars * hex_chars * hex_chars * hex_chars},
@@ -9866,6 +9876,7 @@ local code_rules = {
   {47, P'\\' * hook_label_names},
   {48, hook_name_convention},
   {37, P'\\' * pkgstruct_names},
+  {49, P'\\' * hyperref_names},
   {25, P'\\' * structure_names},
   {14, P'\\' * ltcmd_def_names},
   {33, P'\\' * ltcmd_use_names},
@@ -10017,7 +10028,6 @@ end
 local color_data, push_templates, module_user_cmds = {}, {}, {}
 
 register_tex_cmd('register_module_cmd', function(name)
-  local original = name
   name = s_match(name, '^%s*(.-)%s*$') or name
   local clean = s_sub(name, 1, 1) == '\\' and s_sub(name, 2) or name
   -- quitar un '*' final (variante con asterisco, estilo \section*): el
@@ -10025,9 +10035,6 @@ register_tex_cmd('register_module_cmd', function(name)
   -- module_user_cmds, así que registrar "nuevo*" tal cual no serviría.
   clean = s_match(clean, '^(.-)%*$') or clean
   local bare  = s_match(clean, '^(.-):[NnVvoxefpTFwDcq]+$') or clean
-  if s_find(original, 'nuevo', 1, true) or s_find(original, 'Comando', 1, true) then
-    texio.write_nl('[[REG-DEBUG]] original=[' .. original .. '] clean=[' .. clean .. '] bare=[' .. bare .. ']')
-  end
   if bare and bare ~= '' then
     module_user_cmds[bare], module_user_cmds[clean] = true, true
   end
@@ -10118,6 +10125,54 @@ local function str_to_nodes(str, fid, fallback_fn)
   return head, tail
 end
 
+-- Envuelve texto en un Span con ActualText = mismo texto: los glyphs se
+-- muestran igual visualmente, pero el PDF garantiza que al copiar/pegar
+-- se extraigan exactamente esos caracteres, sin depender de cómo el
+-- backend termine serializando corridas de glyphs (que a veces colapsan
+-- espacios repetidos en puro kerning sin carácter extraíble, o incluso
+-- provocan que el lector de PDF inserte un salto de línea espurio ante
+-- un hueco horizontal ancho sin texto extraíble de por medio). Uso
+-- previsto: solo indentación/espacios de alineación, por eso no hace
+-- falta escapar '(' ')' '\' -- si se reutiliza para texto arbitrario,
+-- agregar ese escapado antes.
+local function actual_text_wrap(text, fid)
+  local begin_n = d_new('whatsit', 'pdf_literal')
+  d_setfield(begin_n, 'mode', 2)
+  d_setfield(begin_n, 'data', '/Span << /ActualText (' .. text .. ') >> BDC')
+  local end_n = d_new('whatsit', 'pdf_literal')
+  d_setfield(end_n, 'mode', 2)
+  d_setfield(end_n, 'data', 'EMC')
+  local h, t = str_to_nodes(text, fid)
+  local rh, rt = append(nil, nil, begin_n, begin_n)
+  rh, rt = append(rh, rt, h, t)
+  rh, rt = append(rh, rt, end_n, end_n)
+  return rh, rt
+end
+
+-- Como str_to_nodes, pero envuelve en ActualText cualquier corrida de
+-- 2+ espacios consecutivos (típicas de alineación de columnas en
+-- código expl3/TeX bien formateado). Texto normal (sin corridas
+-- largas) no paga overhead extra -- pasa directo por str_to_nodes.
+local function str_to_nodes_ws_safe(str, fid)
+  local rh, rt, i, len = nil, nil, 1, #str
+  while i <= len do
+    local ws_start, ws_end = s_find(str, '  +', i)
+    if not ws_start then
+      local h, t = str_to_nodes(s_sub(str, i), fid)
+      rh, rt = append(rh, rt, h, t)
+      break
+    end
+    if ws_start > i then
+      local h, t = str_to_nodes(s_sub(str, i, ws_start - 1), fid)
+      rh, rt = append(rh, rt, h, t)
+    end
+    local h, t = actual_text_wrap(s_sub(str, ws_start, ws_end), fid)
+    rh, rt = append(rh, rt, h, t)
+    i = ws_end + 1
+  end
+  return rh, rt
+end
+
 local function colored_str(str, color_name, fid)
   local h, t = str_to_nodes(str, fid)
   if not h then return nil, nil end
@@ -10160,9 +10215,9 @@ local type_colors = {
   [30]='publicfun',  [31]='publicfun',  [33]='ltcmd_arg',
   [34]='publicfun',  [35]='unit',       [36]='compare',
   [37]='pkgstruct',  [38]='mathml',     [39]='publicfun',  [40]='publicfun',
-  [41]='publicfun',  [42]='intent',     [43]='mathml_var', [44]='publicfun',
+  [41]='publicfun',  [42]='intent',     [44]='publicfun',
   [46]='publicfun',
-  [47]='publicfun',  [48]='module_name',
+  [47]='publicfun',  [48]='module_name', [49]='hyperref',
 }
 
 local csname_positions = {}
@@ -10250,6 +10305,12 @@ local hook_label_argnum    = 0
 local hook_label_total_n   = 0
 local hook_label_positions = nil
 
+-- \hypersetup{key=val, ...}: único argumento tratado como lista de
+-- claves, mismo tratamiento visual que el cuerpo de \keys_define:nn/
+-- \keys_set:nn (colorize_trimmed_keyname).
+local in_hypersetup    = false
+local hypersetup_depth = 0
+
 local colorize_code
 
 local function reset_csname_state()
@@ -10261,10 +10322,6 @@ local function module_aware_color(chunk, base_color)
   local name = s_sub(chunk, 1, 1) == '\\' and s_sub(chunk, 2) or chunk
   local colon = s_find(name, ':', 1, true)
   local bare = colon and s_sub(name, 1, colon - 1) or name
-  if s_find(name, 'nuevo', 1, true) or s_find(name, 'Comando', 1, true) then
-    texio.write_nl('[[MOD-DEBUG]] chunk=[' .. chunk .. '] name=[' .. name .. '] bare=[' .. bare
-      .. '] registered_bare=' .. tostring(module_user_cmds[bare]) .. ' registered_name=' .. tostring(module_user_cmds[name]))
-  end
   if module_user_cmds[bare] or module_user_cmds[name] then
     return 'module_name'
   end
@@ -10562,7 +10619,7 @@ local function colorize_trimmed_keyname(text, fid, rh, rt)
   local trimmed = s_match(core, '^(.-)%s*$')
   local trail = s_sub(core, #trimmed + 1)
   if lead ~= '' then
-    local h2, t2 = str_to_nodes(lead, fid)
+    local h2, t2 = str_to_nodes_ws_safe(lead, fid)
     rh, rt = append(rh, rt, h2, t2)
   end
   if trimmed ~= '' then
@@ -10570,7 +10627,7 @@ local function colorize_trimmed_keyname(text, fid, rh, rt)
     rh, rt = append(rh, rt, h, t)
   end
   if trail ~= '' then
-    local h, t = str_to_nodes(trail, fid)
+    local h, t = str_to_nodes_ws_safe(trail, fid)
     rh, rt = append(rh, rt, h, t)
   end
   return rh, rt
@@ -10673,7 +10730,9 @@ local function colorize_plain_text(text, fid, rh, rt)
   elseif in_hook_label and hook_label_depth == 1
          and hook_label_positions[hook_label_argnum] then
     h, tl = colored_str(text, 'module_name', fid)
-  else h, tl = str_to_nodes(text, fid) end
+  elseif in_hypersetup and hypersetup_depth == 1 then
+    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+  else h, tl = str_to_nodes_ws_safe(text, fid) end
   return append(rh, rt, h, tl)
 end
 
@@ -10755,6 +10814,9 @@ colorize_code = function(line, fid)
           if hook_label_depth == 1 then
             hook_label_argnum = hook_label_argnum + 1
           end
+        end
+        if in_hypersetup then
+          hypersetup_depth = hypersetup_depth + 1
         end
       elseif chunk == '}' then
         if in_csname then
@@ -10848,6 +10910,12 @@ colorize_code = function(line, fid)
             in_hook_label = false
           end
         end
+        if in_hypersetup and hypersetup_depth > 0 then
+          hypersetup_depth = hypersetup_depth - 1
+          if hypersetup_depth == 0 then
+            in_hypersetup = false
+          end
+        end
       end
       h, tl = colored_str(chunk, 'brace', fid)
     elseif t == 3 then
@@ -10892,13 +10960,17 @@ colorize_code = function(line, fid)
         local kname, kargs = s_sub(rest, 1, colon - 1), s_sub(rest, colon + 1)
         if in_keys_context and keys_body_opened and keys_depth == 1 then
           keys_in_choices = (kname == 'choices')
-          if kname == 'meta' then
-            keys_meta_pending, keys_meta_argnum, keys_meta_brace_count =
-              true, 0, 0
-            keys_meta_arity = (kargs == 'n') and 1 or 2
-          else
-            keys_meta_pending = false
-          end
+        end
+        -- .meta:nn/.meta:n es autocontenido (sus dos argumentos son ruta
+        -- de módulo + lista de claves, sin depender de estar dentro de
+        -- un \keys_define:nn real) -- se reconoce sin importar el
+        -- contexto, para que \myhlc también lo coloree correctamente.
+        if kname == 'meta' then
+          keys_meta_pending, keys_meta_argnum, keys_meta_brace_count =
+            true, 0, 0
+          keys_meta_arity = (kargs == 'n') and 1 or 2
+        else
+          keys_meta_pending = false
         end
         reset_csname_state(); local cpos = 0
         for i = 1, #kargs do
@@ -11053,6 +11125,11 @@ colorize_code = function(line, fid)
         in_file_arg, file_arg_depth, file_arg_done = true, 0, false
       end
       h, tl = emit_with_signature(chunk, 'pkgstruct', fid)
+    elseif t == 49 then
+      if s_find(chunk, 'hypersetup', 1, true) then
+        in_hypersetup, hypersetup_depth = true, 0
+      end
+      h, tl = emit_with_signature(chunk, 'hyperref', fid)
     elseif t == 38 then
       mathml_brace_count, mathml_after_dollar = 0, false
       if s_find(chunk, 'MathMLintent', 1, true) then
@@ -11084,9 +11161,6 @@ colorize_code = function(line, fid)
         rh, rt = colorize_mathml_intent(paren_content, fid, rh, rt)
       end
       h, tl = nil, nil
-    elseif t == 43 then
-      h, tl = colored_str('$', 'math', fid); rh, rt = append(rh, rt, h, tl)
-      h, tl = colored_str(s_sub(chunk, 2), 'mathml_var', fid)
     elseif t == 35 then
       local split = s_find(chunk, '%a')
       if split then
@@ -11288,6 +11362,7 @@ register_tex_cmd('actual_text_end', function()
   n_write(d_tonode(n))
 end, {})
 
+
 register_tex_cmd('inline', function()
   local text = t_get_macro('l__mylhmc_verbatim_line_tl')
   if not text or text == '' then return end
@@ -11318,7 +11393,15 @@ register_tex_cmd('process_line', function()
       if h then n_write(d_tonode(h)) end
     end
   else
-    local rh, rt = colorize_code(line, fid)
+    local indent = s_match(line, '^(%s+)')
+    local rest = line
+    local rh, rt
+    if indent and indent ~= '' then
+      rest = s_sub(line, #indent + 1)
+      rh, rt = actual_text_wrap(indent, fid)
+    end
+    local ch, ct = colorize_code(rest, fid)
+    rh, rt = append(rh, rt, ch, ct)
     if rh then n_write(d_tonode(rh)) end
   end
 end, {})
