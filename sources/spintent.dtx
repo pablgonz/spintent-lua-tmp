@@ -131,6 +131,15 @@
 \ExplSyntaxOff
 % LuaLaTeX syntax highlighter for l3doc
 \usepackage{mylhmc}
+\setmylhmc
+  {
+    provide =
+      { setspintent, spnum, spunit, spnewunit, spunitalias, spmoney,
+        spshort, spsiglo, sptime, spdate, spread, spdsym, spmsym,
+        spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, spang,
+        spmQ, %
+      }
+  }
 % Colors
 \definecolor{clspkg}{HTML}{8DA0F5} % Azul claro
 \definecolor{rulecolor}{rgb}{0.96,0.96,0.96}
@@ -138,8 +147,8 @@
 \definecolor{mathcatgreen}{rgb}{0.165, 0.478, 0.157} % Verde MathCAT (#2A7A28)
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
-\def\fileversion{v0.96}
-\def\filedate{2026-08-16}
+\def\fileversion{v0.98}
+\def\filedate{2026-08-19}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -336,7 +345,7 @@
         \pkglogo
       }
       {
-        \textcolor{angle} { \textbf{\texttt{#3} } } %\texttt{#3}
+        \textcolor{pkgname} { \textbf{\texttt{#3} } } %\texttt{#3}
       }
     \str_if_eq:nnF {#2} { no-index }
       {
@@ -347,7 +356,7 @@
 % \myclass{m}
 \NewDocumentCommand \myclass { m }
   {
-    \textcolor{angle} { \textbf{\texttt{#1} } } % \texttt{#3}
+    \textcolor{clsname} { \textbf{\texttt{#1} } } % \texttt{#3}
     \__mydoc_sort_index:nn {class} {Document~class :>\texttt{#1}}
   }
 % \mynvmath
@@ -356,10 +365,10 @@
   {
     \group_begin:
       \tl_set:Nn \l__mynvmath_input_tl { #1 }
-      \regex_replace_all:nnN { NVDA } { \c{textcolor}\cB\{angle\cE\}\cB\{NVDA\cE\} } \l__mynvmath_input_tl
-      \regex_replace_all:nnN { Math } { \c{textcolor}\cB\{angle\cE\}\cB\{Math\cE\} } \l__mynvmath_input_tl
+      \regex_replace_all:nnN { NVDA } { \c{textcolor}\cB\{percent\cE\}\cB\{NVDA\cE\} } \l__mynvmath_input_tl
+      \regex_replace_all:nnN { Math } { \c{textcolor}\cB\{percent\cE\}\cB\{Math\cE\} } \l__mynvmath_input_tl
       \regex_replace_all:nnN { (CAT|ML) } { \c{textcolor}\cB\{comment\cE\}\cB\{\1\cE\} }  \l__mynvmath_input_tl
-      \regex_replace_all:nnN { / } { \c{textcolor}\cB\{operator\cE\}\cB\{/\cE\} } \l__mynvmath_input_tl
+      \regex_replace_all:nnN { / } { \c{textcolor}\cB\{backtick\cE\}\cB\{/\cE\} } \l__mynvmath_input_tl
       \textbf{\texttt{ \tl_use:N \l__mynvmath_input_tl } }
     \group_end:
   }
@@ -386,11 +395,11 @@
         \tl_set:Nn \l_tmpa_tl { #2 }
         \regex_replace_once:nnN { (\*) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
         \regex_replace_once:nnN { (!) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
-        \textcolor{module_name}{\ttfamily\textbackslash{\tl_use:N \l_tmpa_tl}}
+        \textcolor{latex_cmd}{\ttfamily\textbackslash{\tl_use:N \l_tmpa_tl}}
         \__mydoc_sort_index:nn {Commands} {Commands~provide ~by~\pkglogo :>\texttt{\textbackslash#2}}
       }
       {
-        \textcolor{blue!75}{\ttfamily\textbackslash{#2}}
+        \textcolor{module_name}{\ttfamily\textbackslash{#2}}
         \__mydoc_sort_index:nn {#2} {\texttt{\textbackslash#2}}
       }
   }
@@ -435,7 +444,7 @@
       \tl_set:Nn \l_tmpa_tl { #1 }
       \regex_replace_all:nnN { (\d) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
       \regex_replace_all:nnN  { (\.) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tmpa_tl
-      \textcolor{gray}{ \ttfamily \tl_use:N \l_tmpa_tl }
+      \textcolor{filename}{ \ttfamily \tl_use:N \l_tmpa_tl }
     \group_end:
   }
 
@@ -500,9 +509,7 @@
             \tex_leaders:D \tex_hrule:D height 5pt depth -4.4pt \tex_hfill:D
           }
       }
-    \__spintent_mkboth:nn
-      { \text_uppercase:n { \contentsname } }
-      { \text_uppercase:n { \contentsname } }
+    \__spintent_mkboth:nn { \text_uppercase:n { \contentsname } } { \text_uppercase:n { \contentsname } }
     \vspace* { -14pt }
     \dim_set:Nn \columnsep { 10pt }
     \begin{multicols}{2}
@@ -573,19 +580,16 @@
                     mode_leave_vertical, Umathchardef,mathrm, mathbf, textstyle, addfontfeatures, %
                     left, right, Uleft, Uright,  },%
 % Other words 5
-    keywordstyle  = [5]{\bfseries\color{percent}},% percent
-    keywords      = [5]{article,babel,spintent,libertinus-otf,sourcecodepro,fourier-otf,Erewhon-Math,hyperref,},%,
-% Reserved words 6 (spintent cmd)
-    keywordstyle  = [6]{\color{module_name}},%
-    keywords      = [6]{spnum, spunit, spmoney, spshort, spdiv, spang, sptime, spdate, spsiglo, spmcm, spnD, spnM, %
+    keywordstyle  = [5]{\bfseries\color{pkgname}},%
+    keywords      = [5]{babel,spintent,libertinus-otf,sourcecodepro,fourier-otf,Erewhon-Math,hyperref,},%,
+% Reserved words 6 (document class)
+    keywordstyle  = [6]{\bfseries\color{clsname}},%
+    keywords      = [6]{article, l3doc,},%
+% Reserved words 7 (spintent cmd)
+    keywordstyle  = [7]{\color{module_name}},%
+    keywords      = [7]{spnum, spunit, spmoney, spshort, spdiv, spang, sptime, spdate, spsiglo, spmcm, spnD, spnM, %
                     spmcd, spmul, spread, spdsym, spmsym, spnewunit, spunitalias, spnZ, spmQ , setspintent, spreadsym,
                     spusep, },%
-% Reserved words 7 (plain TeX or internal)
-    keywordstyle  = [7]{\color{red}},%
-    keywords      = [7]{let,verb,def,prevdepth,glue, if@minipage,% if@noitemarg
-                    splittopskip,showboxdepth,topskip,showoutput,nointerlineskip, ignorespaces, unskip, unkern, lastnodetype,%
-                    rightskip, @rightskip, flushglue, @flushglue, hbadness, hss, scantokens, beginparpenalty, itempenalty, %
-                    endparpenalty, lowpenalty,},%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -730,15 +734,15 @@
 %
 % \title{
 %    \scalebox{2.67}{\pkglogo}\\[0pt]
-%    {\Large\textcolor{angle}{\fetamontotf{spanish parse intents}}}\\[-5pt]
+%    {\Large\textcolor{guard_angle}{\fetamontotf{spanish parse intents}}}\\[-5pt]
 %    \fileversion{} \quad \filedate\thanks{
 %     Este archivo describe la documentación para la versión \fileversion{}
 %     revisada por última vez el
 %    \filedate.}\\[30pt]
 %    \author{
 %    \large
-%    \raisebox{-1pt}{\textcolor{angle}{\textcopyright{}2026 by Pablo González L}}\thanks{
-%    E-mail: \textcolor{angle}{\textsf{\guillemotleft}}\email{pablgonz@educarchile.cl}\textcolor{angle}{\textsf{\guillemotright}}.
+%    \raisebox{-1pt}{\textcolor{guard_angle}{\textcopyright{}2026 by Pablo González L}}\thanks{
+%    E-mail: \textcolor{guard_angle}{\textsf{\guillemotleft}}\email{pablgonz@educarchile.cl}\textcolor{guard_angle}{\textsf{\guillemotright}}.
 %       }%
 %    }
 % \small
@@ -2060,6 +2064,73 @@
 %   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«es paralelo»}.
 % \end{function}
 %
+% \subsection*{El comando \cs[no-index]{spusep}}\label{subsec:spusep}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spusep}
+%   \begin{syntax}
+%     \ics*{spusep}\mymarg{separador}
+%     \ics*{spusep}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{separador}
+%   \end{syntax}
+%   El comando \ics*{spusep} trabaja en \emph{modo matemático} y recibe el
+%   \emph{argumento obligatorio} \mymarg{separador}, el cual debe ser uno de
+%   los \emph{«delimitadores»} soportados: `|(|', `|)|', `|[|', `|]|',
+%   `|\{|' o `|\}|'. Imprime el \emph{delimitador} indicado con el tamaño
+%   establecido por la llave \mykey[spusep]{size} y controla si
+%   \mynvmath{NVDA/MathCAT} lo verbaliza o no mediante la llave
+%   \mykey[spusep]{silent}.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val}, |$\spusep{(}$|
+%   imprimirá `$($' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«paréntesis izquierdo»}.
+% \end{function}
+%
+% \smallskip
+%
+% \begin{important}*
+%   El motivo de existencia de |\spusep| es que los comandos |\left|,
+%   |\right|, |\Uleft| y |\Uright| provistos por \hologo{LuaTeX} crean
+%   un \emph{grupo} implícito que dificulta el código para \emph{tagged}
+%   \texttt{PDF} cuando se necesita interrumpir algo entre ellos, por
+%   ejemplo al construir expresiones complejas con |\spnZ|, |\spmQ| o
+%   |\spdiv|. El comando |\spusep| imprime el \emph{delimitador} sin crear
+%   ningún grupo.
+% \end{important}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spusep}}
+%
+% \keyexampcmd{size}{none \textnormal{\textcolor{lightgray}{\textbar}}
+%   big \textnormal{\textcolor{lightgray}{\textbar}}
+%   Big \textnormal{\textcolor{lightgray}{\textbar}}
+%   bigg \textnormal{\textcolor{lightgray}{\textbar}}
+%   Bigg}{none}[spusep]
+% \smallskip
+% Establece el \emph{tamaño} del \mymarg{delimitador} que se imprimirá en
+% la salida \texttt{PDF}. Los valores corresponden a los cuatro tamaños
+% fijos provistos por \hologo{LaTeX}: si se establece en |none|, el
+% \mymarg{delimitador} se imprime en el tamaño por defecto del modo
+% matemático en curso; si se establece en |big|, se usa |\bigl|/|\bigr|;
+% si se establece en |Big|, se usa |\Bigl|/|\Bigr|; si se establece en
+% |bigg|, se usa |\biggl|/|\biggr|; y si se establece en |Bigg|, se usa
+% |\Biggl|/|\Biggr|. El tamaño se aplica automáticamente en el lado
+% correcto (izquierdo o derecho) según el \mymarg{delimitador} pasado.
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spusep]
+% \smallskip
+% Establece si \mynvmath{NVDA/MathCAT} \emph{verbalizará} el
+% \mymarg{delimitador} impreso por |\spusep|. Si se establece en |true|,
+% el \mymarg{delimitador} se marcará con el \emph{intent} |:silent| y
+% \mynvmath{NVDA/MathCAT} \emph{no} lo verbalizará; si se establece en
+% |false|, \mynvmath{NVDA/MathCAT} verbalizará el \mymarg{delimitador}
+% de forma normal.
+%
 % \subsection*{El comando \cs[no-index]{spdsym}}\label{subsec:spdsym}
 %
 % \vspace*{-0.5\baselineskip}
@@ -2673,18 +2744,17 @@
 %     \ics*{spmQ}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
 %   \end{syntax}
 %   El comando \ics*{spmQ} trabaja en \emph{modo matemático} y recibe
-%   \emph{tres argumentos} obligatorios: \mymarg{número entero}, \mymarg{numerador}
-%   y \mymarg{denominador}, los procesa internamente y devuelve un \emph{«número mixto»}.
-%^^A Los procesa internamente bajo el comando |\spnum| y devuelve un \emph{«número mixto»}.
+%   \emph{tres argumentos obligatorios}: \mymarg{número entero},
+%   \mymarg{numerador} y \mymarg{denominador}, los procesa internamente
+%   y devuelve un \emph{«número mixto»}.
 %
 %   \smallskip
 %
-%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%  |$\spmQ{2}{5}{7}$| imprimirá `$\scalerel{2}{\frac{5}{7}}$'
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spmQ{2}{5}{7}$| imprimirá `$\scalerel{2}{\frac{5}{7}}$'
 %   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%  \emph{«dos y cinco séptimos»}.
-%
-%^^A Este comando está dedicado exclusivamente al manejo de \emph{«números mixtos»} y a cómo los verbaliza \mynvmath{NVDA/MathCAT}.
+%   \emph{«dos y cinco séptimos»}.
 % \end{function}
 %
 % \smallskip
@@ -2692,9 +2762,9 @@
 % \begin{important}*
 %   En el caso de las fracciones, y en especial con los \emph{«números
 %   mixtos»}, no se pueden manejar muchas cosas desde el lado de
-%   \mypkg*[no-index]{spintent}. Por ejemplo, la entrada |$3\frac{5}{7}$| con
-%   \emph{tagged} \texttt{PDF} se verbaliza por \mynvmath{NVDA/MathCAT} como
-%   \emph{«tres más cinco séptimos»}, lo cual no está mal, pero
+%   \mypkg*[no-index]{spintent}. Por ejemplo, la entrada |$3\frac{5}{7}$|
+%   con \emph{tagged} \texttt{PDF} se verbaliza por \mynvmath{NVDA/MathCAT}
+%   como \emph{«tres más cinco séptimos»}, lo cual no está mal, pero
 %   pedagógicamente hablando no es del todo correcto.
 % \end{important}
 %
@@ -2703,16 +2773,65 @@
 % \keyexampcmd{join-word}{entero \textnormal{\textcolor{lightgray}{\textbar}}
 %   enteros \textnormal{\textcolor{lightgray}{\textbar}} y}{y}[spmQ]
 % \smallskip
-% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbaliza la conexión
-% entre el entero y la fracción que forman el número mixto. Si se establece
-% en |entero|, al usar |$\spmQ[join-word=entero]{1}{5}{7}$| imprimirá
-% `$1\frac{5}{7}$' en la salida \texttt{PDF}, y \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«un entero cinco séptimos»}; si se establece en |enteros|, al usar
-% |$\spmQ[join-word=enteros]{2}{5}{7}$| imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la
-% salida \texttt{PDF}, y \mynvmath{NVDA/MathCAT} verbalizará \emph{«dos enteros
-% cinco séptimos»}; si se establece en |y|, al usar
-% |$\spmQ[join-word=y]{2}{5}{7}$| imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la salida
-% \texttt{PDF}, y \mynvmath{NVDA/MathCAT} verbalizará \emph{«dos y cinco séptimos»}.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbaliza la
+% conexión entre el entero y la fracción que forman el \emph{número mixto}.
+% Si se establece en |entero|, al usar |$\spmQ[join-word=entero]{1}{5}{7}$|
+% imprimirá `$\scalerel{1}{\frac{5}{7}}$' en la salida \texttt{PDF}, y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«un entero cinco séptimos»};
+% si se establece en |enteros|, al usar |$\spmQ[join-word=enteros]{2}{5}{7}$|
+% imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la salida \texttt{PDF}, y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«dos enteros cinco séptimos»};
+% si se establece en |y|, al usar |$\spmQ[join-word=y]{2}{5}{7}$|
+% imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la salida \texttt{PDF}, y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«dos y cinco séptimos»}.
+%
+% \smallskip
+%
+% \keyexampcmd{use-spnZ}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spmQ]
+% \smallskip
+% Establece si el \mymarg{numerador} y el \mymarg{denominador} que forman
+% la fracción del \emph{número mixto} se procesan internamente bajo el
+% comando |\spnZ|, añadiendo así \emph{semántica de entero} en la
+% estructura \mynvmath{MathML} de la salida \texttt{PDF}. Si se establece
+% en |true|, \mymarg{numerador} y \mymarg{denominador} se pasarán a |\spnZ|
+% y \mynvmath{NVDA/MathCAT} los verbalizará correctamente como
+% \emph{números ordinales}; si se establece en |false|, los argumentos
+% se tipografían directamente sin procesamiento semántico adicional.
+%
+% \smallskip
+%
+% \keyexampcmd{print-dfrac}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spmQ]
+% \smallskip
+% Establece si la fracción del \emph{número mixto} se imprime usando
+% |\dfrac| en lugar de |\frac|. Si se establece en |true|, al usar
+% |$\spmQ[print-dfrac=true]{2}{5}{7}$| imprimirá la fracción en tamaño
+% \emph{display} `$\scalerel{2}{\dfrac{5}{7}}$' en la salida \texttt{PDF};
+% si se establece en |false|, la fracción se imprime con |\frac| siguiendo
+% el tamaño matemático del contexto en curso.
+%
+% \smallskip
+%
+% \keyexampcmd{wrap-parens}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spmQ]
+% \smallskip
+% Establece si se \emph{imprimen} paréntesis redondos `|(|\dots|)|'
+% alrededor del \emph{número mixto} completo devuelto por |\spmQ|. Si se
+% establece en |true|, se imprimirán paréntesis redondos cuyo tamaño se
+% ajusta automáticamente al estilo matemático en curso; si se establece en
+% |false|, no se imprimirán los paréntesis.
+%
+% \smallskip
+%
+% \keyexampcmd{read-parens}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spmQ]
+% \smallskip
+% Establece si \mynvmath{NVDA/MathCAT} \emph{verbalizará} los paréntesis
+% redondos `|(|\dots|)|' alrededor del \emph{número mixto} cuando la llave
+% \mykey[spmQ]{wrap-parens} está activa. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} verbalizará la lectura de los paréntesis; si se
+% establece en |false|, \mynvmath{NVDA/MathCAT} no los verbalizará.
 %
 % \section{Utilidades para geometría}
 %
@@ -2971,7 +3090,7 @@
 %    \end{macrocode}
 % Now declare the \mypkg*[no-index]{spintent} package.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-08-16} {0.96} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-19} {0.98} {Spanish parse intents}
 %    \end{macrocode}
 %
 % We check if the requirements for running the \mypkg*[no-index]{spintent} package
@@ -5571,12 +5690,12 @@
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sptime_build_seconds:nn
   {
-    \MathMLintent { #1 : prefix($z) }
+    \MathMLintent { #1:prefix($z) }
       {
         \text { : }
         \MathMLarg { z }
           {
-            \MathMLintent { segundos : postfix($m) }
+            \MathMLintent { segundos:postfix($m) }
               {
                 \@@_invisible_sep:
                 \MathMLarg { m }
@@ -7197,44 +7316,55 @@
 %
 % \subsection{The command \cs{spmQ}}\label{cmd:spmQ}
 %
-% The command |\spmQ| typesets mixed numbers within Spanish mathematical
-% contexts (e.g., $3\frac{1}{2}$). It accepts an optional key-value list and
-% three mandatory arguments: the integer part, the numerator, and the denominator.
+% The command |\spmQ| typesets \emph{\enquote{mixed numbers}} within Spanish
+% mathematical contexts (e.g., $3\frac{1}{2}$). It delegates the scaling
+% of the integer part to the Lua module \myluamod{} via
+% \myhlc|\@@_luafun_spmQ_scale_int:Vn|, which measures both the integer
+% glyph and the fraction box at the node level and computes a scaling factor
+% to align their heights visually. Finally, it constructs the correct
+% \mynvmath{MathML} intent for \mynvmath{MathCAT}.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spmQ}}
 %
-% \begin{variable}[int]
-%   {
-%     \l_@@_spmQ_join_word_str,
-%     \l_@@_spmQ_math_style_tl,
-%     \l_@@_spnQ_intent_read_sign_str,
-%     \l_@@_spnQ_wrap_parens_l_tl,
-%     \l_@@_spnQ_wrap_parens_r_tl,
-%     \l_@@_saved_luamml_flag_int.
-%   }
-% The variable \myhlc|\l_@@_spmQ_join_word_str| stores the value set by the
-% key \mykey[spmQ]{join-word} which will be verbalized by
-% \mynvmath{MathCAT} as a grammatical connector between the integer and
-% fractional parts.
+% \begin{variable}[int]{
+%   \l_@@_spmQ_join_word_str,
+%   \l_@@_spmQ_math_style_tl,
+%   \l_@@_spnQ_intent_read_sign_str,
+%   \l_@@_spnQ_wrap_parens_l_tl,
+%   \l_@@_spnQ_wrap_parens_r_tl,
+%   \l_@@_saved_luamml_flag_int}
+%   The variable \myhlc|\l_@@_spmQ_join_word_str| stores the value set by
+%   the key \mykey[spmQ]{join-word} which will be verbalized by
+%   \mynvmath{MathCAT} as a grammatical connector between the integer and
+%   fractional parts.
 %
-% \smallskip
+%   \smallskip
 %
-% The variable \myhlc|\l_@@_spmQ_math_style_tl| stores the current
-% \emph{mathematical style} used by the functions \myhlc|\@@_spmQ_wrap_math:n| and
-% \myhlc|\@@_spmQ_capture_math_style:|
+%   The variable \myhlc|\l_@@_spmQ_math_style_tl| stores the current
+%   mathematical style used by the function \myhlc|\@@_spmQ_set_wrap_parens_size:|.
 %
-% \smallskip
+%   \smallskip
 %
-% The variable \myhlc|\l_@@_spnQ_intent_read_sign_str| stores the |:intent|
-% passed to |\MathMLintent| when the signs `$\mathcolor{red}{+}$' or
-% `$\mathcolor{red}{-}$' are present in integer part used by the function
-% \myhlc|\@@_spmQ_match_sign:|.
+%   The variable \myhlc|\l_@@_spnQ_intent_read_sign_str| stores the
+%   |:intent| passed to |\MathMLintent| when the signs
+%   `$\mathcolor{red}{+}$' or `$\mathcolor{red}{-}$' are present in the
+%   integer part, used by the function \myhlc|\@@_spmQ_print_sacle_int:n|.
 %
-% \smallskip
+%   \smallskip
 %
-% The variable \myhlc|\l_@@_spnQ_wrap_parens_l_tl| and \myhlc|\l_@@_spnQ_wrap_parens_r_tl|
-% stores the size parens set by the function \myhlc|\@@_spmQ_set_wrap_parens_size:|
-% used by the key \mykey{wrap-parens}.
+%   The variables \myhlc|\l_@@_spnQ_wrap_parens_l_tl| and
+%   \myhlc|\l_@@_spnQ_wrap_parens_r_tl| store the sized parentheses set
+%   by the function \myhlc|\@@_spmQ_set_wrap_parens_size:| and used by the
+%   key \mykey[spmQ]{wrap-parens}.
+%
+%   \smallskip
+%
+%   The integer variable \myhlc|\l_@@_saved_luamml_flag_int| temporarily
+%   stores the current value of |\l__luamml_flag_int| before disabling it
+%   during the injection of the scaled integer node, and restores it
+%   afterwards. This prevents \mypkg{luamml} from generating a spurious
+%   \lstinline+<math>+ element around the |sub_box| processed in isolation,
+%   before |\frac| has expanded.
 %    \begin{macrocode}
 \str_new:N \l_@@_spmQ_join_word_str
 \tl_new:N  \l_@@_spmQ_math_style_tl
@@ -7247,10 +7377,14 @@
 %
 % \subsubsection{Definition of error messages for \cs[no-index]{spmQ}}
 %
-% \begin{macro}[int]{spmQ-zero-denominator, spmQ-not-integer,}
+% \begin{macro}[int]{spmQ-zero-denominator, spmQ-not-integer}
 %   The error message |spmQ-zero-denominator| is raised when a zero
-%   denominator is passed to |\spmQ|. The second error is returned
-%   when the integer part is not actually an integer.
+%   denominator is passed to |\spmQ|. The second error |spmQ-not-integer|
+%   is returned when the integer part passed in \mymarg{argument} is not
+%   actually an integer.
+% \iffalse
+%% Error messages for \spmQ.
+% \fi
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spmQ-zero-denominator }
   { Zero~denominator~in~\token_to_str:N \spmQ. }
@@ -7260,17 +7394,18 @@
 \msg_new:nnnn { spintent } { spmQ-not-integer }
   { The~value~'#1'~is~not~a~valid~integer. }
   {
-    Command~\token_to_str:N \spnQ \c_space_tl only~accepts~integers.\\
+    Command~\token_to_str:N \spmQ \c_space_tl only~accepts~integers.\\
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spmQ}}
 %
-% \begin{macro}[int]{join-word, use-spnZ,wrap-parens, read-parens,
+% \begin{macro}[int]{join-word, use-spnZ, wrap-parens, read-parens,
 %                    print-dfrac, unknown}
 %   Now we add the keys \mykey[spmQ]{join-word}, \mykey[spmQ]{use-spnZ},
-%   \mykey[spmQ]{wrap-parens}, \mykey[spmQ]{read-parens} and \mykey[spmQ]{print-dfrac}.
+%   \mykey[spmQ]{wrap-parens}, \mykey[spmQ]{read-parens} and
+%   \mykey[spmQ]{print-dfrac}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spmQ }
   {
@@ -7312,12 +7447,21 @@
 %
 % \subsubsection{Internal functions for \cs[no-index]{spmQ}}
 %
-% \begin{macro}[int]{\@@_spmQ_set_wrap_parens_size:,}
-%   The function \myhlc|\@@_spmQ_set_wrap_parens_size:| capture the current
-%   \emph{mathematical style} using the primitive |\mathstyle| from
+% \begin{macro}[int]{\@@_spmQ_set_wrap_parens_size:}
+%   The function \myhlc|\@@_spmQ_set_wrap_parens_size:| captures the
+%   current mathematical style using the primitive |\mathstyle| from
 %   \hologo{LuaTeX} and sets the variables \cs{l_@@_spnQ_wrap_parens_l_tl}
 %   and \cs{l_@@_spnQ_wrap_parens_r_tl} with the appropriate size for the
-%   parentheses.
+%   parentheses. Display styles (|0| and |1|) receive |\Bigl\lparen| and
+%   |\Bigr\rparen|; text styles (|2| and |3|) receive |\bigl\lparen| and
+%   |\bigr\rparen|; any other style falls back to unsized |\lparen| and
+%   |\rparen|.
+%
+%   \smallskip
+%
+%   If the key \mykey[spmQ]{print-dfrac} is active, the size is always
+%   forced to |\Bigl|/|\Bigr| regardless of the current mathematical style,
+%   since |\dfrac| always produces a display-height fraction.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_set_wrap_parens_size:
   {
@@ -7330,18 +7474,18 @@
           }
         { 1 }
           {
-            \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
-            \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
+            \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
           }
         { 2 }
           {
-            \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
-            \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
+            \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
           }
         { 3 }
           {
-            \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
-            \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
+            \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
           }
       }
       {
@@ -7349,24 +7493,35 @@
         \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \rparen }
       }
 %    \end{macrocode}
-%   If the key \mykey{print-dfrac} is active, we must reset the variables
-%   \cs{l_@@_spnQ_wrap_parens_l_tl} and \cs{l_@@_spnQ_wrap_parens_r_tl}.
+%   If the key \mykey[spmQ]{print-dfrac} is active, we must reset the
+%   variables \cs{l_@@_spnQ_wrap_parens_l_tl} and
+%   \cs{l_@@_spnQ_wrap_parens_r_tl} to |\Bigl|/|\Bigr| unconditionally.
 %    \begin{macrocode}
     \bool_if:NT \l_@@_spmQ_print_dfrac_bool
       {
-        \tl_set:Nn  \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
-        \tl_set:Nn  \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
+        \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
+        \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spmQ_start_wrap_parens:, \@@_spmQ_stop_wrap_parens:}
-%   The functions \myhlc|\@@_spmQ_start_wrap_parens:| and \myhlc|\@@_spmQ_stop_wrap_parens:|
-%   print with the appropriate size for the parentheses set by the key
-%   \mykey{wrap-parens}. Only if the variable \cs{l_@@_spnQ_read_parens_bool}
-%   handled by the key \mykey{read-parens} is false, we will execute
-%   |\MathMLintent{:silent}|.
+%   The functions \myhlc|\@@_spmQ_start_wrap_parens:| and
+%   \myhlc|\@@_spmQ_stop_wrap_parens:| open and close the parentheses
+%   around the \emph{\enquote{mixed number}} when the key
+%   \mykey[spmQ]{wrap-parens} is active. They first call
+%   \myhlc|\@@_spmQ_set_wrap_parens_size:| to determine the correct size
+%   for the current mathematical style, then print the appropriate
+%   parenthesis stored in \cs{l_@@_spnQ_wrap_parens_l_tl} or
+%   \cs{l_@@_spnQ_wrap_parens_r_tl}.
+%
+%   \smallskip
+%
+%   If the variable \cs{l_@@_spnQ_read_parens_bool}, controlled by the
+%   key \mykey[spmQ]{read-parens}, is \emph{false}, each parenthesis is
+%   wrapped inside |\MathMLintent{:silent}| so that
+%   \mynvmath{NVDA/MathCAT} does not verbalize them.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_start_wrap_parens:
   {
@@ -7374,12 +7529,8 @@
       {
         \@@_spmQ_set_wrap_parens_size:
         \bool_if:NTF \l_@@_spnQ_read_parens_bool
-          {
-            \l_@@_spnQ_wrap_parens_l_tl
-          }
-          {
-            \MathMLintent { :silent } { \l_@@_spnQ_wrap_parens_l_tl }
-          }
+          { \l_@@_spnQ_wrap_parens_l_tl }
+          { \MathMLintent { :silent } { \l_@@_spnQ_wrap_parens_l_tl } }
       }
   }
 \cs_new_protected:Nn \@@_spmQ_stop_wrap_parens:
@@ -7388,106 +7539,95 @@
       {
         \@@_spmQ_set_wrap_parens_size:
         \bool_if:NTF \l_@@_spnQ_read_parens_bool
-          {
-            \l_@@_spnQ_wrap_parens_r_tl
-          }
-          {
-            \MathMLintent { :silent } { \l_@@_spnQ_wrap_parens_r_tl }
-          }
+          { \l_@@_spnQ_wrap_parens_r_tl }
+          { \MathMLintent { :silent } { \l_@@_spnQ_wrap_parens_r_tl } }
       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmQ_join_word:,}
-%  The function \myhlc|\@@_spmQ_join_word:| captures the `$\mathcolor{red}{+}$' or
-% `$\mathcolor{red}{-}$' for integer part sign and sets the |:intent| to
-% |\MathMLintent| \mymarg{argument} if present.
+% \begin{macro}[int]{\@@_spmQ_set_join_word:}
+%   The function \myhlc|\@@_spmQ_set_join_word:| injects the grammatical
+%   connector between the integer part and the fraction by dispatching on
+%   the value stored in \cs{l_@@_spmQ_join_word_str}, set by the key
+%   \mykey[spmQ]{join-word}. In all three cases the visual output is the
+%   Unicode invisible separator |U+2063| via \cs{c_@@_invisible_sep_tl},
+%   which produces a \lstinline+<mi>+ node in the \mynvmath{MathML}
+%   structure; what differs is the |:intent| text attached to it via
+%   |\MathMLintent|, which \mynvmath{NVDA/MathCAT} will verbalize as
+%   \emph{«entero»}, \emph{«enteros»} or \emph{«y»} respectively.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_set_join_word:
   {
     \str_case:Vn \l_@@_spmQ_join_word_str
       {
-        { entero  }
-          {
-            \MathMLintent { _entero } { \c_@@_invisible_sep_tl }
-          }
-        { enteros }
-          {
-            \MathMLintent { _enteros } { \c_@@_invisible_sep_tl }
-          }
-        { y       }
-          {
-            \MathMLintent { _y- } { \c_@@_invisible_sep_tl }
-          }
-      }
-   }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spmQ_print_spnZ_dfrac:nn,}
-%   The function \myhlc|\@@_spmQ_print_spnZ_dfrac:nn| checks the state of the
-%   variable \cs{l_@@_spmQ_use_spnZ_bool} handled by the key \mykey{use-spnZ}
-%   along with the variable \cs{l_@@_spmQ_print_dfrac_bool} handled by
-%   the key \mykey{print-dfrac}. According to their values, it prints
-%   |\frac| or |\dfrac| using |\spnZ| when necessary.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_print_spnZ_dfrac:nn
-  {
-    \@@_luafun_clean_split_and_set:n { \exp_not:n {#1} }
-    \str_if_eq:VnT \l_@@_luaset_has_integer_str { false }
-      {
-        \msg_error:nn { spintent } { spmQ-not-integer }
-      }
-    \bool_if:NTF \l_@@_spmQ_use_spnZ_bool
-      {
-        \use:c { \bool_if:NT \l_@@_spmQ_print_dfrac_bool { d } frac }
-          { \spnZ { #1 } } { \spnZ { #2 } }
-      }
-      {
-        \use:c { \bool_if:NT \l_@@_spmQ_print_dfrac_bool { d } frac }
-          { #1 } { #2 }
+        { entero  } { \MathMLintent { _entero  } { \c_@@_invisible_sep_tl } }
+        { enteros } { \MathMLintent { _enteros } { \c_@@_invisible_sep_tl } }
+        { y       } { \MathMLintent { _y-      } { \c_@@_invisible_sep_tl } }
       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmQ_print_scaled_int:,}
-%   The function \myhlc|\@@_spmQ_print_scaled_int:| will print the
-%   integer part scaled and aligned correctly.
+% \begin{macro}[int]{\@@_spmQ_print_scale_int:}
+%   The function \myhlc|\@@_spmQ_print_scale_int:| prints the integer part
+%   of the \emph{\enquote{mixed number}} scaled to match the visual height
+%   of the accompanying fraction. Before calling the Lua function
+%   \myhlc|\@@_luafun_spmQ_scale_int:Vn|, it temporarily disables
+%   \mypkg{luamml} by saving the current value of |\l__luamml_flag_int|
+%   into \cs{l_@@_saved_luamml_flag_int} and setting it to |0| (skip
+%   completely). This prevents \mypkg{luamml} from generating a spurious
+%   \lstinline+<math>+ wrapper around the |sub_box| node that holds the
+%   scaled integer, which is processed in isolation before |\frac| has
+%   expanded. Once the Lua function returns, the original flag value is
+%   restored via \cs{l_@@_saved_luamml_flag_int}.
+%
+%   \smallskip
+%
+%   The Lua function receives the integer digits from
+%   \cs{l_@@_luaset_part_int_tl} and the fraction command name
+%   (|\frac| or |\dfrac|, determined by the key \mykey[spmQ]{print-dfrac})
+%   as its two arguments, and inserts the appropriately scaled |sub_box|
+%   node directly into the current horizontal list.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_print_scale_int:
   {
-    % Deshabilitar luamml mientras se inyecta el noad del entero.
-    % Esto evita el <math> fantasma del sub_box procesado en solitario
-    % antes de que \frac se expanda.
-    % Flag 0 = skip completamente.
-    %%\int_set:Nn \l__luamml_flag_int { 0 }
     \int_set_eq:Nc \l_@@_saved_luamml_flag_int { l__luamml_flag_int }
     \int_set:Nn \l__luamml_flag_int { 0 }
     \bool_if:NTF \l_@@_spmQ_print_dfrac_bool
-      {
-        \@@_luafun_spmQ_scale_int:Vn \l_@@_luaset_part_int_tl {dfrac}
-      }
-      {
-        \@@_luafun_spmQ_scale_int:Vn \l_@@_luaset_part_int_tl {frac}
-      }
-    % Restaurar flag normal (11 = mathml-SE: bits 0,1,3)
-    % \int_set:Nn \l__luamml_flag_int { 11 }
+      { \@@_luafun_spmQ_scale_int:Vn \l_@@_luaset_part_int_tl { dfrac } }
+      { \@@_luafun_spmQ_scale_int:Vn \l_@@_luaset_part_int_tl { frac  } }
     \int_set_eq:cN { l__luamml_flag_int } \l_@@_saved_luamml_flag_int
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmQ_print_sacle_int:n,}
-%   The function \myhlc|\@@_spmQ_print_int:n| takes as its arguments the
-%   integer part passed in `|#1|'. First, the function \myhlc|\@@_luafun_clean_split_and_set:n|
-%   executes on `|#1|' and checks the status of the variable
-%   \myhlc|\l_@@_luaset_has_integer_str|. If it is |true|, checks if the
-%   variable \myhlc|\l_@@_luaset_sign_tl| is  \emph{empty} and calls the
-%   function \myhlc|\@@_spmQ_print_scale_int:| to print the scaled integer
-%   part; otherwise, captures the `$\mathcolor{red}{+}$'  or `$\mathcolor{red}{-}$'
-%   for integer part sign, sets the |:intent| to |\MathMLintent| and print.
+% \begin{macro}[int]{\@@_spmQ_print_sacle_int:n}
+%   The function \myhlc|\@@_spmQ_print_sacle_int:n| takes the integer part
+%   of the \emph{\enquote{mixed number}} passed in `|#1|'. It first calls
+%   \myhlc|\@@_luafun_clean_split_and_set:n| on `|#1|' to parse and
+%   populate the shared Lua variables, then checks the status of
+%   \cs{l_@@_luaset_has_integer_str}.
+%
+%   \smallskip
+%
+%   If the status is |true|, it inspects \cs{l_@@_luaset_sign_tl}. When
+%   the sign is \emph{empty}, it delegates directly to
+%   \myhlc|\@@_spmQ_print_scale_int:| to render the scaled integer. When
+%   a sign is present, it sets \myhlc|\l_@@_spnQ_intent_read_sign_str| to
+%   either |_más:prefix($e)| or |_menos:prefix($e)| and wraps the sign
+%   glyph together with a \mynvmath{MathML} argument |($e)| containing the
+%   scaled integer inside a |\MathMLintent|, so that
+%   \mynvmath{NVDA/MathCAT} verbalizes the sign as a prefix before the
+%   integer value. An \myhlc|\@@_invisible_sep:| call between the sign and
+%   the |MathMLarg| forces the opening of a new \lstinline+<mrow>+ in the
+%   \mynvmath{MathML} structure, which is required for the intent tree to
+%   be well-formed.
+%
+%   \smallskip
+%
+%   If the status is |false|, the |spmQ-not-integer| \enquote{error} is
+%   raised immediately.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_print_sacle_int:n
   {
@@ -7502,15 +7642,15 @@
             \str_if_eq:VnTF \l_@@_luaset_sign_tl { + }
               {
                 \str_set:Nn
-                  \l_@@_spnQ_intent_read_sign_str { _más:prefix $(e) }
+                  \l_@@_spnQ_intent_read_sign_str { _más:prefix($e) }
               }
               {
-                 \str_set:Nn
-                   \l_@@_spnQ_intent_read_sign_str { _menos:prefix $(e) }
+                \str_set:Nn
+                  \l_@@_spnQ_intent_read_sign_str { _menos:prefix($e) }
               }
             \MathMLintent { \l_@@_spnQ_intent_read_sign_str }
               {
-                \l_@@_luaset_sign_tl  \@@_invisible_sep: % need
+                \l_@@_luaset_sign_tl \@@_invisible_sep:
                 \MathMLarg { e } { \@@_spmQ_print_scale_int: }
               }
           }
@@ -7520,23 +7660,57 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}[int]{\@@_spmQ_print_spnZ_dfrac:nn}
+%   The function \myhlc|\@@_spmQ_print_spnZ_dfrac:nn| typesets the
+%   fractional part of the \emph{\enquote{mixed number}}. It takes the
+%   numerator in `|#1|' and the denominator in `|#2|'. It first calls
+%   \myhlc|\@@_luafun_clean_split_and_set:n| on `|#1|' to validate that
+%   the numerator is an integer; if \cs{l_@@_luaset_has_integer_str} is
+%   |false|, the |spmQ-not-integer| \enquote{error} is raised immediately.
+%
+%   \smallskip
+%
+%   If the validation passes, the function dispatches on the two boolean
+%   variables \cs{l_@@_spmQ_use_spnZ_bool} and
+%   \cs{l_@@_spmQ_print_dfrac_bool}, controlled respectively by the keys
+%   \mykey[spmQ]{use-spnZ} and \mykey[spmQ]{print-dfrac}. When
+%   \mykey[spmQ]{use-spnZ} is |true|, both the numerator and denominator
+%   are passed through |\spnZ| to gain \mynvmath{MathML} integer semantics;
+%   otherwise, the raw token lists `|#1|' and `|#2|' are used directly.
+%   In both branches, the fraction command is selected dynamically via
+%   |\use:c|: if \mykey[spmQ]{print-dfrac} is |true|, |dfrac| is
+%   assembled; otherwise, |frac| is used.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spmQ_print_spnZ_dfrac:nn
+  {
+    \@@_luafun_clean_split_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnT \l_@@_luaset_has_integer_str { false }
+      { \msg_error:nn { spintent } { spmQ-not-integer } }
+    \bool_if:NTF \l_@@_spmQ_use_spnZ_bool
+      {
+        \use:c { \bool_if:NT \l_@@_spmQ_print_dfrac_bool { d } frac }
+          { \spnZ { #1 } } { \spnZ { #2 } }
+      }
+      {
+        \use:c { \bool_if:NT \l_@@_spmQ_print_dfrac_bool { d } frac }
+          { #1 } { #2 }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}[int]{\@@_spmQ_print:nnn}
-%   The function \myhlc|\@@_spmQ_render:nnn| takes three arguments: the
-%   integer part `|#1|', the numerator `|#2|', and the denominator `|#3|'.
-%   First, executes the function \cs{@@_spmQ_tart_wrap_parens:}
-%   handled by the key \mykey{wrap-parens} to open the parentheses if they
-%   are active, then we call the function \myhlc|\@@_spmQ_print_sacle_int:n|
-%   which will scale the integer part passed in `|#1|' and print it. Then, we inject
-%   the \enquote{word} that \emph{joins} the integer part with the fraction
-%   handled by the key \mykey{join-word}.
-%
-% \smallskip
-%
-%   Finally, we call the function \myhlc|\@@_spmQ_print_spnZ_dfrac:nn| which
-%   is responsible for printing the fraction using the keys \mykey{print-dfrac}
-%   and \mykey{use-spnZ}, then executes the function \cs{@@_spmQ_stop_wrap_parens:}
-%   handled by the key \mykey{wrap-parens} to close the parentheses if they
-%   are active.
+%   The function \myhlc|\@@_spmQ_print:nnn| is the main rendering
+%   orchestrator for |\spmQ|. It takes three arguments: the integer part
+%   `|#1|', the numerator `|#2|', and the denominator `|#3|'. It opens
+%   the optional parentheses via \myhlc|\@@_spmQ_start_wrap_parens:|,
+%   then calls \myhlc|\@@_spmQ_print_sacle_int:n| to scale and render the
+%   integer part. Next, it injects the grammatical connector between the
+%   integer and the fraction via \myhlc|\@@_spmQ_set_join_word:|. Then it
+%   calls \myhlc|\@@_spmQ_print_spnZ_dfrac:nn| to typeset the fraction
+%   using the keys \mykey[spmQ]{print-dfrac} and \mykey[spmQ]{use-spnZ}.
+%   Finally, it closes the optional parentheses via
+%   \myhlc|\@@_spmQ_stop_wrap_parens:|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_print:nnn
   {
@@ -7551,18 +7725,19 @@
 %
 % \begin{macro}[int]{\@@_spmQ_exec:nnnn}
 %   The internal function \myhlc|\@@_spmQ_exec:nnnn| takes four arguments:
-%   the optional \mymeta{keys} `|#1|', the integer `|#2|', the numerator `|#3|',
-%   and the denominator `|#4|'. First sets the optional \mymeta{keys}
-%   from `|#1|', then, processes the denominator input in `|#4|' using
-%   \myhlc|\@@_luafun_clean_split_and_set:n|.
+%   the optional \mymeta{keys} `|#1|', the integer `|#2|', the numerator
+%   `|#3|', and the denominator `|#4|'. First sets the optional \mymeta{keys}
+%   from `|#1|', then processes the denominator input in `|#4|' using
+%   \myhlc|\@@_luafun_clean_split_and_set:n| to validate it is a
+%   non-zero integer.
 %
 %   \smallskip
 %
-%   Now checks the status of \cs{l_@@_luaset_has_integer_str}. If the
-%   status of this variable is |true| and the integer part is exactly zero,
-%   it issues the |spmQ-zero-denominator| \enquote{error}. Otherwise, if
-%   the status is |false| or the integer part is \emph{non-zero}, it calls
-%   the function \myhlc|\@@_spmQ_print:nnn| to format the \emph{\enquote{mixed number}}.
+%   It checks the status of \cs{l_@@_luaset_has_integer_str}. If |true|
+%   and the integer part is exactly zero, it issues the
+%   |spmQ-zero-denominator| \enquote{error}. Otherwise, whether the status
+%   is |false| or the integer part is \emph{non-zero}, it calls
+%   \myhlc|\@@_spmQ_print:nnn| to format the \emph{\enquote{mixed number}}.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_exec:nnnn
   {
@@ -7580,10 +7755,11 @@
 % \end{macro}
 %
 % \begin{macro}{\spmQ}
-%   The command |\spmQ| is the public interface for formatting mixed
-%   numbers. It first checks if it is being used in math mode, issuing
-%   an error if not. Inside a local group, it calls \myhlc|\@@_spmQ_exec:nnnn|
-%   to process the optional \mymeta{keys} and the \mymarg{arguments}.
+%   The command |\spmQ| is the public interface for formatting
+%   \emph{\enquote{mixed numbers}}. It first checks if it is being used in
+%   \emph{math mode}, issuing an \enquote{error} if not. Inside a local
+%   group, it calls \myhlc|\@@_spmQ_exec:nnnn| to process the optional
+%   \mymeta{keys} and the \mymarg{arguments}.
 %    \begin{macrocode}
 \NewDocumentCommand \spmQ { O{} m m m }
   {
@@ -7612,7 +7788,7 @@
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.98 [2026-08-18]
+     Lua module spintent.lua for spintent package - v0.98 [2026-08-19]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -9112,20 +9288,12 @@ end, {"string", "string"})
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
 \ProvidesExplPackage{mylhmc}{2025-08-18}{2.0}
   {Line-by-line macrocode reader for l3doc in Lua}
-\RequirePackage { accsupp }
 \sys_if_engine_luatex:F
   {
     \msg_new:nnn { mylhmc } { luatex-required } { mylhmc~requires~LuaTeX. }
     \msg_fatal:nn { mylhmc } { luatex-required }
   }
-\tl_new:N  \l__mylhmc_module_name_tl
-\tl_if_exist:NTF \g__codedoc_module_name_tl
-  {
-   \tl_if_empty:NF \g__codedoc_module_name_tl
-     {
-       \tl_set_eq:NN \l__mylhmc_module_name_tl \g__codedoc_module_name_tl
-     }
-  }
+\tl_if_exist:NF \g__codedoc_module_name_tl
   {
     \msg_new:nnn { mylhmc } { l3doc-required } { mylhmc~must~be~loaded~via~l3doc.cls. }
     \msg_fatal:nn { mylhmc } { l3doc-required }
@@ -9146,9 +9314,14 @@ end, {"string", "string"})
 
 \cs_new_protected:Npn \__mylhmc_color_export_name:n #1
   {
+    % Clave Lua = path COMPLETO unido con '_' (no solo el último
+    % segmento): así el path sirve para organizar la UI de colores
+    % y a la vez garantiza claves únicas en color_data sin colisiones
+    % entre paths distintos que compartan el último segmento
+    % (p.ej. guard/name vs module/name).
     \seq_set_split:Nnn \l__mylhmc_path_seq { / } { #1 }
-    \seq_pop_right:NN \l__mylhmc_path_seq \l__mylhmc_export_name_tl
-    \tl_trim_spaces:N \l__mylhmc_export_name_tl
+    \seq_set_map:NNn \l__mylhmc_path_seq \l__mylhmc_path_seq { \tl_trim_spaces:n {##1} }
+    \tl_set:Ne \l__mylhmc_export_name_tl { \seq_use:Nn \l__mylhmc_path_seq { _ } }
   }
 
 \cs_new_protected:Npn \__mylhmc_export_color_aux:nnn #1#2#3
@@ -9191,7 +9364,7 @@ end, {"string", "string"})
 \__mylhmc_define_color:nnn { legacy_at  } { HTML } { 607D8B } % Gris Azulado      -> \mi@cmd
 \__mylhmc_define_color:nnn { scan       } { HTML } { A64426 } % Rojo Ladrillo     -> \s_stop
 \__mylhmc_define_color:nnn { quark      } { HTML } { 800040 } % Vino              -> \q_nil
-\__mylhmc_define_color:nnn { key        } { HTML } { B27A00 } % Oro Viejo         -> .meta:n
+\__mylhmc_define_color:nnn { keyfun     } { HTML } { B27A00 } % Oro Viejo         -> .meta:n
 \__mylhmc_define_color:nnn { backtick   } { HTML } { 558B2F } % Verde Manzana     -> `A
 \__mylhmc_define_color:nnn { escape     } { HTML } { D81B60 } % Rosa Eléctrico    -> ^^M ~
 \__mylhmc_define_color:nnn { danger     } { HTML } { D32F2F } % Rojo Sangre       -> :D
@@ -9204,20 +9377,27 @@ end, {"string", "string"})
 \__mylhmc_define_color:nnn { pkgstruct  } { HTML } { 064FA5 } % Azul cuerpo       -> \RequirePackage \IfPackageLoadedTF
 \__mylhmc_define_color:nnn { mathml     } { HTML } { 2036D2 } % Azul MathML       -> \MathMLintent \MathMLarg \luamml_annotate:en
 \__mylhmc_define_color:nnn { mathml_var } { HTML } { 008000 } % Verde Puro         -> $foo identifiers in MathMLintent/MathMLarg
+\__mylhmc_define_color:nnn { intent     } { HTML } { 5C658A } % Azul Pizarra       -> :prefix :postfix :infix :silent etc (global)
+\__mylhmc_define_color:nnn { filename   } { HTML } { 4A5568 } % Gris Carbón        -> \file_... \input \include \IfFileExists (nombre de archivo)
 \__mylhmc_define_color:nnn { percent    } { HTML } { 4A5568 } % Gris Carbón        -> %
 \__mylhmc_define_color:nnn { arroba     } { HTML } { D81B60 } % Rosa Eléctrico     -> @
 \__mylhmc_define_color:nnn { star       } { HTML } { D81B60 } % Rosa Eléctrico     -> *
 \__mylhmc_define_color:nnn { keyname    } { HTML } { 483D8B } % Gris Índigo        -> cifras-sep read-sign terse clear
 \__mylhmc_define_color:nnn { other_np   } { HTML } { D32F2F } % Rojo Sangre        -> \__other_mod: privados ajenos
-\__mylhmc_define_color:nnn { package_name } { HTML } { 6A5ACD } % SlateBlue          -> nombre de paquete (negrita)
-\__mylhmc_define_color:nnn { class_name   } { HTML } { 8470FF } % LightSlateBlue     -> nombre de clase (negrita)
+\__mylhmc_define_color:nnn { pkgname    } { HTML } { 6A5ACD } % SlateBlue          -> nombre de paquete (negrita)
+\__mylhmc_define_color:nnn { clsname    } { HTML } { 8470FF } % LightSlateBlue     -> nombre de clase (negrita)
 
 \__mylhmc_define_color:nnn { guard / angle    } { HTML } { 4A5568 } % Gris Carbón  -> 〈 〉
 \__mylhmc_define_color:nnn { guard / name     } { HTML } { 5A6370 } % Gris Pizarra -> nombre módulo
-\__mylhmc_define_color:nnn { guard / operator } { HTML } { 95A5A6 } % Gris Plata   -> * / ( ) & | !
-\__mylhmc_define_color:nnn { module_at        } { HTML } { 008080 } % Teal         -> __spintent
-\__mylhmc_define_color:nnn { module_name      } { HTML } { 008080 } % Teal         -> nombre módulo en __spintent=
-\__mylhmc_define_color:nnn { module_eq        } { HTML } { 808080 } % Gris Medio   -> =
+\__mylhmc_define_color:nnn { guard / star  } { HTML } { 95A5A6 } % Gris Plata   -> * (guardas)
+\__mylhmc_define_color:nnn { guard / slash } { HTML } { 95A5A6 } % Gris Plata   -> / (guardas)
+\__mylhmc_define_color:nnn { guard / paren } { HTML } { 95A5A6 } % Gris Plata   -> ( ) (guardas)
+\__mylhmc_define_color:nnn { guard / amp   } { HTML } { 95A5A6 } % Gris Plata   -> & (guardas)
+\__mylhmc_define_color:nnn { guard / pipe  } { HTML } { 95A5A6 } % Gris Plata   -> | (guardas)
+\__mylhmc_define_color:nnn { guard / bang  } { HTML } { 95A5A6 } % Gris Plata   -> ! (guardas)
+\__mylhmc_define_color:nnn { module / at        } { HTML } { 008080 } % Teal         -> __spintent
+\__mylhmc_define_color:nnn { module / name      } { HTML } { 008080 } % Teal         -> nombre módulo en __spintent=
+\__mylhmc_define_color:nnn { module / eq        } { HTML } { 808080 } % Gris Medio   -> =
 
 \hook_gput_code:nnn { begindocument } { mylhmc }
   {
@@ -9226,15 +9406,6 @@ end, {"string", "string"})
         \seq_map_function:NN \g__mylhmc_colors_export_seq \__mylhmc_process_color_export:n
       }
   }
-
-\clist_const:Nn \c__mylhmc_module_cmds_clist
-  {
-    spnum , spunit , spmoney , spshort , spusep, setspintent,
-    spdate , sptime , spang  , spread , spdsym, spnewunit, spunitalias,
-    spmcm , spmcd  , spsiglo , spdiv, spmul, spnM, spnD, spnZ, spmQ,
-  }
-\clist_map_inline:Nn \c__mylhmc_module_cmds_clist
-  { \__mylhmc_register_module_cmd:n {#1} }
 
 \NewDocumentCommand \myhlc { v }
   {
@@ -9254,12 +9425,12 @@ end, {"string", "string"})
   {
     \renewcommand \theCodelineNo
       {
-        \BeginAccSupp { ActualText = {} }
+        \__mylhmc_actual_text_begin:
         \group_begin:
           \color_select:n { mylhmc / guard / angle }
           \ttfamily \tiny \arabic { CodelineNo }
         \group_end:
-        \EndAccSupp {}
+        \__mylhmc_actual_text_end:
       }
   }
 
@@ -9321,12 +9492,56 @@ end, {"string", "string"})
   }
 \cs_set_eq:cN { xmacro@code* } \xmacro@code
 
+% ============================================================
+% Interfaz de usuario: \setmylhmc { key = val }
+% ============================================================
+
+\msg_new:nnnn { mylhmc } { invalid-hex-color }
+  { Invalid~color~value~'#2'~for~key~'#1':~expected~6~hex~digits~(e.g.~FF0000). }
+  { The~color~was~not~changed~and~keeps~its~previous~value. }
+\msg_new:nnnn { mylhmc } { unknown-key }
+  { Unknown~mylhmc~key~'#1'. }
+  { Check~the~color~name~(use~its~full~path,~e.g.~guard/star)~or~use~
+    provide~to~register~module~commands. }
+
+\keys_define:nn { mylhmc }
+  {
+    unknown .code:n =
+      { \msg_error:nne { mylhmc } { unknown-key } { \l_keys_key_str } } ,
+    provide .code:n =
+      { \clist_map_function:nN {#1} \__mylhmc_register_module_cmd:n } ,
+    provide .value_required:n = true ,
+  }
+
+% Genera automáticamente una clave por cada color ya registrado (mismo
+% path que su nombre, p.ej. \setmylhmc{guard/star=FF0000}). Debe ir
+% DESPUÉS de todas las llamadas a \__mylhmc_define_color:nnn de arriba,
+% ya que recorre \g__mylhmc_colors_export_seq tal como quedó poblada.
+\cs_new_protected:Npn \__mylhmc_define_color_key:nnn #1#2#3
+  {
+    \keys_define:nn { mylhmc }
+      {
+        #1 .code:n =
+          {
+            \regex_match:nnTF { ^ [0-9A-Fa-f] {6} $ } {##1}
+              { \__mylhmc_define_color:nnn { #1 } { HTML } {##1} }
+              { \msg_error:nnnn { mylhmc } { invalid-hex-color } { #1 } {##1} }
+          } ,
+        #1 .value_required:n = true ,
+      }
+  }
+\seq_map_inline:Nn \g__mylhmc_colors_export_seq
+  { \__mylhmc_define_color_key:nnn #1 }
+
+\NewDocumentCommand \setmylhmc { m }
+  { \keys_set:nn { mylhmc } { #1 } }
+
 \file_input_stop:
 % \iffalse
 %</mylhmcsty>
 % \fi
-% \iffalse
 %
+% \iffalse
 %<*mylhmclua>
 % \fi
 -- mylhmc.lua v2.0 2025-08-18 (node.direct + Loop/Memory Micro-Optimized)
@@ -9445,10 +9660,10 @@ local pkgstruct_names =
   P'LoadClassWithOptions' + P'LoadClass' +
   P'PassOptionsToPackage' + P'PassOptionsToClass' +
   P'DocumentMetadata' +
-  P'IfFormatAtLeast'    * (P'TF' + P'T' + P'F') +
-  P'IfPackageLoaded'    * (P'WithOptions') ^ -1 * (P'TF' + P'T' + P'F') +
-  P'IfFileExists'       * (P'TF' + P'T' + P'F') +
-  P'IfDocumentMetadata' * (P'TF' + P'T' + P'F') +
+  P'IfFormatAtLeast'    * (P'TF' + P'T' + P'F') ^ -1 +
+  P'IfPackageLoaded'    * (P'WithOptions') ^ -1 * (P'TF' + P'T' + P'F') ^ -1 +
+  P'IfFileExists'       * (P'TF' + P'T' + P'F') ^ -1 +
+  P'IfDocumentMetadata' * (P'TF' + P'T' + P'F') ^ -1 +
   P'NewHook' + P'NewReversedHook' + P'NewMirroredHookPair' +
   P'AddToHook' * (P'WithArguments') ^ -1 +
   P'RemoveFromHook' + P'UseHook' + P'UseOneTimeHook' +
@@ -9523,6 +9738,45 @@ local keys_module_arg_names =
    P'show' + P'log') *
   P':' * P'n' * sig_chars ^ 0
 
+-- \file_..., \lua_load_module:n, y la familia clásica \input/\include/
+-- \InputIfFileExists: primer argumento = nombre de archivo. Cada literal
+-- incluye su propio ':' (los nombres expl3 no comparten prefijo real
+-- una vez incluido el ':', porque divergen en la letra siguiente).
+local file_arg_names =
+  P'file_input_raw:'          * sig_chars ^ 1 +
+  P'file_input:'              * sig_chars ^ 1 +
+  P'file_if_exist_input:'     * sig_chars ^ 1 +
+  P'file_if_exist_p:'         * sig_chars ^ 1 +
+  P'file_if_exist:'           * sig_chars ^ 1 +
+  P'file_forget:'             * sig_chars ^ 1 +
+  P'file_hex_dump:'           * sig_chars ^ 1 +
+  P'file_get_full_name:'      * sig_chars ^ 1 +
+  P'file_get:'                * sig_chars ^ 1 +
+  P'file_full_name:'          * sig_chars ^ 1 +
+  P'file_parse_full_name_apply:' * sig_chars ^ 1 +
+  P'file_parse_full_name:'    * sig_chars ^ 1 +
+  P'lua_load_module:'         * sig_chars ^ 1 +
+  P'includeonly' + P'input' + P'include' + P'InputIfFileExists'
+
+-- \hook_gput_code:nnn, \hook_gput_code_with_args:nnn, \hook_gremove_code:nn
+-- (label en arg2) y \hook_gset_rule:nnnn (labels en arg2 Y arg4). El
+-- argumento 'hook' (arg1) y 'code'/'relation' (arg3) NO se tocan aquí:
+-- siguen su coloreado normal (código real en el caso de 'code').
+local hook_label_names =
+  P'hook_gput_code_with_args:' * sig_chars ^ 1 +
+  P'hook_gput_code:'           * sig_chars ^ 1 +
+  P'hook_gremove_code:'        * sig_chars ^ 1 +
+  P'hook_gset_rule:'           * sig_chars ^ 1
+
+-- Convención de nombres de hook predefinidos: package/NOMBRE/before,
+-- class/NOMBRE/after, file/NOMBRE.ext/before, etc. Global: aparece como
+-- texto plano dentro del argumento {hook} de \UseHook, \AddToHook,
+-- \hook_use:n, \hook_new:n, el propio arg1 de la familia de arriba, etc.
+-- Solo coloreamos el NOMBRE de en medio; el resto queda sin tocar.
+local hook_name_convention =
+  (P'package' + P'class' + P'file') * P'/' *
+  (P(1) - P'/') ^ 1 * P'/' * (P'before' + P'after')
+
 local msgerror_names =
   P'msg_error:nneee'
 
@@ -9532,9 +9786,17 @@ local msg_generic_names =
              P'redirect_name' + P'redirect_class' + P'log' + P'term') *
   P':' * sig_chars ^ 1
 
+-- Paréntesis balanceados (con soporte de anidación, p.ej. e:infix($x,$y)
+-- dentro de otro grupo): mismo idioma recursivo P{...V(1)...} que usa
+-- combined_pattern más abajo en este archivo.
+local balanced_parens
+balanced_parens = P{ P'(' * ((P(1) - S'()') + V(1)) ^ 0 * P')' }
+
 local intent_names =
-  P':prefix' + P':postfix' + P':function' + P':nofix' +
-  P':silent' + P':time' + P':date' + P':infix'
+  P':' * S' \t' ^ 0 *
+  (P'prefix' + P'postfix' + P'function' + P'nofix' +
+   P'silent' + P'time' + P'date' + P'infix') *
+  balanced_parens ^ -1
 
 local dollar_var_pattern = P'$' * (alpha + digit + P'_') ^ 1
 
@@ -9600,6 +9862,9 @@ local code_rules = {
   {44, P'\\' * keys_module_arg_names},
   {40, P'\\' * msgerror_names},
   {41, P'\\' * msg_generic_names},
+  {46, P'\\' * file_arg_names},
+  {47, P'\\' * hook_label_names},
+  {48, hook_name_convention},
   {37, P'\\' * pkgstruct_names},
   {25, P'\\' * structure_names},
   {14, P'\\' * ltcmd_def_names},
@@ -9752,9 +10017,17 @@ end
 local color_data, push_templates, module_user_cmds = {}, {}, {}
 
 register_tex_cmd('register_module_cmd', function(name)
+  local original = name
   name = s_match(name, '^%s*(.-)%s*$') or name
   local clean = s_sub(name, 1, 1) == '\\' and s_sub(name, 2) or name
+  -- quitar un '*' final (variante con asterisco, estilo \section*): el
+  -- colorizer siempre separa nombre + '*' antes de consultar
+  -- module_user_cmds, así que registrar "nuevo*" tal cual no serviría.
+  clean = s_match(clean, '^(.-)%*$') or clean
   local bare  = s_match(clean, '^(.-):[NnVvoxefpTFwDcq]+$') or clean
+  if s_find(original, 'nuevo', 1, true) or s_find(original, 'Comando', 1, true) then
+    texio.write_nl('[[REG-DEBUG]] original=[' .. original .. '] clean=[' .. clean .. '] bare=[' .. bare .. ']')
+  end
   if bare and bare ~= '' then
     module_user_cmds[bare], module_user_cmds[clean] = true, true
   end
@@ -9879,7 +10152,7 @@ local type_colors = {
   [4] ='publicvar',  [5] ='privatefun', [6] ='publicfun',
   [8] ='brace',      [9] ='comment',    [10]='scan',
   [11]='quark',      [12]='number',     [13]='danger',
-  [14]='ltcmd',      [16]='key',
+  [14]='ltcmd',      [16]='keyfun',
   [17]='escape',     [18]='escape',     [19]='constant',
   [20]='constant',   [21]='math',       [22]='compare',
   [23]='latex_cmd',  [24]='argument',   [25]='structure',
@@ -9888,6 +10161,8 @@ local type_colors = {
   [34]='publicfun',  [35]='unit',       [36]='compare',
   [37]='pkgstruct',  [38]='mathml',     [39]='publicfun',  [40]='publicfun',
   [41]='publicfun',  [42]='intent',     [43]='mathml_var', [44]='publicfun',
+  [46]='publicfun',
+  [47]='publicfun',  [48]='module_name',
 }
 
 local csname_positions = {}
@@ -9947,6 +10222,34 @@ local pkgcls_argnum      = 0
 local pkgcls_brace_depth = 0
 local pkgcls_color       = nil
 
+-- \RequirePackage [opciones] {pkg} y \LoadClass [opciones] {cls}: los
+-- corchetes opcionales, si aparecen, contienen una lista de opciones
+-- (key=value, ...) -> mismo tratamiento keyname. Si en vez de '[' llega
+-- '{' directamente (sin opciones), pkgcls_bracket_pending se limpia sin
+-- activar nada.
+local pkgcls_bracket_pending = false
+local pkgcls_bracket_active  = false
+local pkgcls_bracket_depth   = 0
+
+-- Nombre de archivo: \file_..., \lua_load_module:n, \IfFileExists
+-- (activado desde el handler de tipo 37), \input/\include/
+-- \InputIfFileExists. Solo el primer argumento -> colorize_filename.
+-- \includeonly recibe una LISTA separada por comas -> file_arg_is_list.
+local in_file_arg     = false
+local file_arg_depth  = 0
+local file_arg_done   = false
+local file_arg_is_list = false
+
+-- \hook_gput_code:nnn/_with_args:nnn/\hook_gremove_code:nn (label en
+-- arg2) y \hook_gset_rule:nnnn (labels en arg2 Y arg4, con 'relation'
+-- en arg3 sin colorear). hook_label_positions guarda qué números de
+-- argumento deben colorearse como module_name.
+local in_hook_label        = false
+local hook_label_depth     = 0
+local hook_label_argnum    = 0
+local hook_label_total_n   = 0
+local hook_label_positions = nil
+
 local colorize_code
 
 local function reset_csname_state()
@@ -9958,6 +10261,10 @@ local function module_aware_color(chunk, base_color)
   local name = s_sub(chunk, 1, 1) == '\\' and s_sub(chunk, 2) or chunk
   local colon = s_find(name, ':', 1, true)
   local bare = colon and s_sub(name, 1, colon - 1) or name
+  if s_find(name, 'nuevo', 1, true) or s_find(name, 'Comando', 1, true) then
+    texio.write_nl('[[MOD-DEBUG]] chunk=[' .. chunk .. '] name=[' .. name .. '] bare=[' .. bare
+      .. '] registered_bare=' .. tostring(module_user_cmds[bare]) .. ' registered_name=' .. tostring(module_user_cmds[name]))
+  end
   if module_user_cmds[bare] or module_user_cmds[name] then
     return 'module_name'
   end
@@ -10113,6 +10420,9 @@ local function colorize_mathml_intent(text, fid, rh, rt)
     local c, b = s_sub(text, i, i), s_byte(text, i)
     if c == ':' then
       local j = i + 1
+      -- saltar espacios opcionales entre ':' y la palabra de intent
+      while j <= len and s_byte(text, j) == 32 do j = j + 1 end
+      local word_start = j
       while j <= len do
         local cb = s_byte(text, j)
         if (cb >= 65 and cb <= 90) or (cb >= 97 and cb <= 122) or
@@ -10121,8 +10431,12 @@ local function colorize_mathml_intent(text, fid, rh, rt)
       end
       local h, t = colored_str(':', 'signature', fid)
       rh, rt = append(rh, rt, h, t)
-      if j > i + 1 then
-        h, t = colored_str(s_sub(text, i+1, j-1), 'ltcmd_arg', fid)
+      if word_start > i + 1 then
+        h, t = str_to_nodes(s_sub(text, i+1, word_start-1), fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      if j > word_start then
+        h, t = colored_str(s_sub(text, word_start, j-1), 'ltcmd_arg', fid)
         rh, rt = append(rh, rt, h, t)
       end
       i = j
@@ -10160,6 +10474,54 @@ local function colorize_mathml_intent(text, fid, rh, rt)
       in_mathml_intent, in_mathml_arg = saved_intent, saved_arg
       rh, rt = append(rh, rt, ch, ct); i = j
     end
+  end
+  return rh, rt
+end
+
+-- Nombre de archivo: divide en '.' (color 'signature', ya existente)
+-- y el resto del texto (color 'filename', independiente y editable).
+local function colorize_filename(text, fid, rh, rt)
+  local i, len, start = 1, #text, 1
+  while i <= len do
+    if s_sub(text, i, i) == '.' then
+      if i > start then
+        local h, t = colored_str(s_sub(text, start, i - 1), 'filename', fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      local h, t = colored_str('.', 'signature', fid)
+      rh, rt = append(rh, rt, h, t)
+      start = i + 1
+    end
+    i = i + 1
+  end
+  if start <= len then
+    local h, t = colored_str(s_sub(text, start), 'filename', fid)
+    rh, rt = append(rh, rt, h, t)
+  end
+  return rh, rt
+end
+
+-- Lista de archivos separados por comas (\includeonly{cap1,cap2,cap3}):
+-- mismo tratamiento de '.' que colorize_filename, y además separa por
+-- ',' (color 'brace', igual que el resto de comas separadoras del archivo).
+local function colorize_filename_list(text, fid, rh, rt)
+  local i, len, start = 1, #text, 1
+  while i <= len do
+    local c = s_sub(text, i, i)
+    if c == '.' or c == ',' then
+      if i > start then
+        local h, t = colored_str(s_sub(text, start, i - 1), 'filename', fid)
+        rh, rt = append(rh, rt, h, t)
+      end
+      local h, t = colored_str(c, c == '.' and 'signature' or 'brace', fid)
+      rh, rt = append(rh, rt, h, t)
+      start = i + 1
+    end
+    i = i + 1
+  end
+  if start <= len then
+    local h, t = colored_str(s_sub(text, start), 'filename', fid)
+    rh, rt = append(rh, rt, h, t)
   end
   return rh, rt
 end
@@ -10293,6 +10655,24 @@ local function colorize_plain_text(text, fid, rh, rt)
   elseif pkgcls_pending and pkgcls_brace_depth == 1
          and pkgcls_argnum == pkgcls_target_arg then
     h, tl = colored_str_bold(text, pkgcls_color, fid)
+  elseif pkgcls_pending and pkgcls_brace_depth == 1
+         and pkgcls_target_arg == 2 and pkgcls_argnum == 1 then
+    -- \PassOptionsToPackage/\PassOptionsToClass: primer argumento =
+    -- lista de opciones (key=value, ...), mismo tratamiento que keyname.
+    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+  elseif pkgcls_bracket_active and pkgcls_bracket_depth == 1 then
+    -- \RequirePackage/\LoadClass [opciones]: mismo tratamiento keyname.
+    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+  elseif in_file_arg and not file_arg_done and file_arg_depth == 1 then
+    if file_arg_is_list then
+      rh, rt = colorize_filename_list(text, fid, rh, rt)
+    else
+      rh, rt = colorize_filename(text, fid, rh, rt)
+    end
+    h, tl = nil, nil
+  elseif in_hook_label and hook_label_depth == 1
+         and hook_label_positions[hook_label_argnum] then
+    h, tl = colored_str(text, 'module_name', fid)
   else h, tl = str_to_nodes(text, fid) end
   return append(rh, rt, h, tl)
 end
@@ -10364,6 +10744,16 @@ colorize_code = function(line, fid)
           pkgcls_brace_depth = pkgcls_brace_depth + 1
           if pkgcls_brace_depth == 1 then
             pkgcls_argnum = pkgcls_argnum + 1
+          end
+        end
+        pkgcls_bracket_pending = false
+        if in_file_arg and not file_arg_done then
+          file_arg_depth = file_arg_depth + 1
+        end
+        if in_hook_label then
+          hook_label_depth = hook_label_depth + 1
+          if hook_label_depth == 1 then
+            hook_label_argnum = hook_label_argnum + 1
           end
         end
       elseif chunk == '}' then
@@ -10446,8 +10836,37 @@ colorize_code = function(line, fid)
             pkgcls_pending = false
           end
         end
+        if in_file_arg and not file_arg_done and file_arg_depth > 0 then
+          file_arg_depth = file_arg_depth - 1
+          if file_arg_depth == 0 then
+            file_arg_done, in_file_arg = true, false
+          end
+        end
+        if in_hook_label and hook_label_depth > 0 then
+          hook_label_depth = hook_label_depth - 1
+          if hook_label_depth == 0 and hook_label_argnum >= hook_label_total_n then
+            in_hook_label = false
+          end
+        end
       end
       h, tl = colored_str(chunk, 'brace', fid)
+    elseif t == 3 then
+      if chunk == '[' then
+        if pkgcls_bracket_pending then
+          pkgcls_bracket_active, pkgcls_bracket_depth, pkgcls_bracket_pending =
+            true, 1, false
+        elseif pkgcls_bracket_active then
+          pkgcls_bracket_depth = pkgcls_bracket_depth + 1
+        end
+      elseif chunk == ']' then
+        if pkgcls_bracket_active and pkgcls_bracket_depth > 0 then
+          pkgcls_bracket_depth = pkgcls_bracket_depth - 1
+          if pkgcls_bracket_depth == 0 then
+            pkgcls_bracket_active = false
+          end
+        end
+      end
+      h, tl = colored_str(chunk, 'bracket', fid)
     elseif t == 24 then
       local hashes = s_match(chunk, '^#+')
       local num    = s_sub(chunk, #hashes + 1)
@@ -10489,12 +10908,12 @@ colorize_code = function(line, fid)
             if ch == 'c' or ch == 'v' then csname_positions[cpos] = true end
           end
         end
-        h, tl = colored_str(kname, 'key', fid); rh, rt = append(rh, rt, h, tl)
+        h, tl = colored_str(kname, 'keyfun', fid); rh, rt = append(rh, rt, h, tl)
         h, tl = colored_str(':', 'signature', fid); rh, rt = append(rh, rt, h, tl)
         h, tl = colored_str(kargs, 'sigargs', fid)
-      else h, tl = colored_str(rest, 'key', fid) end
+      else h, tl = colored_str(rest, 'keyfun', fid) end
     elseif t == 9 then
-      h, tl = colored_str(s_sub(chunk, 1, 1), 'angle', fid)
+      h, tl = colored_str(s_sub(chunk, 1, 1), 'guard_angle', fid)
       rh, rt = append(rh, rt, h, tl)
       h, tl = colored_str_italic(s_sub(chunk, 2), 'comment', fid)
     elseif t == 14 then
@@ -10523,6 +10942,50 @@ colorize_code = function(line, fid)
       end
       keys_module_arg_total_n = n_count
       h, tl = emit_with_signature(chunk, 'publicfun', fid)
+    elseif t == 46 then
+      in_file_arg, file_arg_depth, file_arg_done = true, 0, false
+      -- Coincidencia de PREFIJO exacto justo tras el '\' (no substring en
+      -- cualquier parte): evita que \file_input:n "contenga" 'input' y
+      -- se confunda con el \input clásico.
+      local name_start = s_sub(chunk, 2)
+      local function starts_with(prefix)
+        return s_sub(name_start, 1, #prefix) == prefix
+      end
+      file_arg_is_list = starts_with('includeonly')
+      local base
+      if file_arg_is_list
+         or starts_with('InputIfFileExists')
+         or starts_with('include')
+         or starts_with('input') then
+        base = 'pkgstruct'
+      else
+        base = module_aware_color(chunk, 'publicfun')
+      end
+      h, tl = emit_with_signature(chunk, base, fid)
+    elseif t == 47 then
+      in_hook_label, hook_label_depth, hook_label_argnum = true, 0, 0
+      local colon = s_find(chunk, ':', 1, true)
+      local sig = colon and s_sub(chunk, colon + 1) or ''
+      local n_count = 0
+      for ch in s_gmatch(sig, '.') do
+        if ch == 'n' then n_count = n_count + 1 end
+      end
+      hook_label_total_n = n_count
+      if s_find(chunk, 'hook_gset_rule', 1, true) then
+        hook_label_positions = { [2] = true, [4] = true }
+      else
+        hook_label_positions = { [2] = true }
+      end
+      h, tl = emit_with_signature(chunk, module_aware_color(chunk, 'publicfun'), fid)
+    elseif t == 48 then
+      -- package/NOMBRE/before|after (también class/... y file/...):
+      -- colorea solo el NOMBRE de en medio.
+      local slash1 = s_find(chunk, '/', 1, true)
+      local slash2 = s_find(chunk, '/', slash1 + 1, true)
+      h, tl = str_to_nodes(s_sub(chunk, 1, slash1), fid); rh, rt = append(rh, rt, h, tl)
+      h, tl = colored_str(s_sub(chunk, slash1 + 1, slash2 - 1), 'module_name', fid)
+      rh, rt = append(rh, rt, h, tl)
+      h, tl = str_to_nodes(s_sub(chunk, slash2), fid)
     elseif t == 34 then
       h, tl = emit_with_signature(chunk, 'publicfun', fid)
       csname_positions[1] = true
@@ -10561,28 +11024,34 @@ colorize_code = function(line, fid)
       h, tl = colored_str_bold(chunk, 'structure', fid)
     elseif t == 37 then
       arg_counter = 0
+      pkgcls_bracket_pending = false
       if s_find(chunk, 'ProvidesPackage', 1, true) then
-        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'package_name'
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'pkgname'
       elseif s_find(chunk, 'ProvidesClass', 1, true) then
-        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'class_name'
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'clsname'
       elseif s_find(chunk, 'RequirePackageWithOptions', 1, true) then
-        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'package_name'
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'pkgname'
       elseif s_find(chunk, 'RequirePackage', 1, true) then
-        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'package_name'
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'pkgname'
+        pkgcls_bracket_pending = true
       elseif s_find(chunk, 'LoadClassWithOptions', 1, true) then
-        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'class_name'
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'clsname'
       elseif s_find(chunk, 'LoadClass', 1, true) then
-        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'class_name'
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'clsname'
+        pkgcls_bracket_pending = true
       elseif s_find(chunk, 'PassOptionsToPackage', 1, true) then
-        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 2, 'package_name'
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 2, 'pkgname'
       elseif s_find(chunk, 'PassOptionsToClass', 1, true) then
-        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 2, 'class_name'
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 2, 'clsname'
       elseif s_find(chunk, 'IfPackageLoaded', 1, true) then
-        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'package_name'
+        pkgcls_pending, pkgcls_target_arg, pkgcls_color = true, 1, 'pkgname'
       else
         pkgcls_pending = false
       end
       if pkgcls_pending then pkgcls_argnum, pkgcls_brace_depth = 0, 0 end
+      if s_find(chunk, 'IfFileExists', 1, true) then
+        in_file_arg, file_arg_depth, file_arg_done = true, 0, false
+      end
       h, tl = emit_with_signature(chunk, 'pkgstruct', fid)
     elseif t == 38 then
       mathml_brace_count, mathml_after_dollar = 0, false
@@ -10601,7 +11070,20 @@ colorize_code = function(line, fid)
     elseif in_mathml_arg and t ~= 8 then h, tl = colored_str(chunk, 'mathml_var', fid)
     elseif t == 42 then
       h, tl = colored_str(':', 'signature', fid); rh, rt = append(rh, rt, h, tl)
-      h, tl = colored_str(s_sub(chunk, 2), 'intent', fid)
+      local rest = s_sub(chunk, 2)
+      local ws = s_match(rest, '^([ \t]*)')
+      local after_ws = s_sub(rest, #ws + 1)
+      if ws ~= '' then
+        h, tl = str_to_nodes(ws, fid); rh, rt = append(rh, rt, h, tl)
+      end
+      local paren_start = s_find(after_ws, '(', 1, true)
+      local word = paren_start and s_sub(after_ws, 1, paren_start - 1) or after_ws
+      h, tl = colored_str(word, 'intent', fid); rh, rt = append(rh, rt, h, tl)
+      if paren_start then
+        local paren_content = s_sub(after_ws, paren_start)
+        rh, rt = colorize_mathml_intent(paren_content, fid, rh, rt)
+      end
+      h, tl = nil, nil
     elseif t == 43 then
       h, tl = colored_str('$', 'math', fid); rh, rt = append(rh, rt, h, tl)
       h, tl = colored_str(s_sub(chunk, 2), 'mathml_var', fid)
@@ -10626,7 +11108,12 @@ colorize_code = function(line, fid)
         if b == 64 or b == 33 or b == 38 or b == 94 or b == 42 then
           local part = (cur == 2 and '\\' or '') .. s_sub(chunk, cur, i - 1)
           if #part > 0 then
-            h, tl = colored_str(part, 'latex_cmd', fid); rh, rt = append(rh, rt, h, tl)
+            local pcolor = module_aware_color(part, 'latex_cmd')
+            if s_find(part, 'nuevo', 1, true) then
+              texio.write_nl('[[CALL-DEBUG]] part=[' .. part .. '] pcolor=[' .. pcolor .. '] color_data_module_name=' .. tostring(color_data['module_name'] ~= nil))
+            end
+            h, tl = colored_str(part, pcolor, fid)
+            rh, rt = append(rh, rt, h, tl)
           end
           local color_name = (b == 64 and 'arroba') or (b == 42 and 'star') or 'escape'
           h, tl = colored_str(s_sub(chunk, i, i), color_name, fid)
@@ -10634,7 +11121,8 @@ colorize_code = function(line, fid)
         end
       end
       if cur <= len then
-        h, tl = colored_str((cur == 2 and '\\' or '') .. s_sub(chunk, cur), 'latex_cmd', fid)
+        local trailing = (cur == 2 and '\\' or '') .. s_sub(chunk, cur)
+        h, tl = colored_str(trailing, module_aware_color(trailing, 'latex_cmd'), fid)
       else h, tl = nil, nil end
     elseif t == 4 then
       h, tl = colored_str(chunk, module_aware_color(chunk, 'publicvar'), fid)
@@ -10657,7 +11145,7 @@ end
 
 local function make_angle_nodes(content_head, content_tail, angle_color, fid)
   local lm_fid = get_lm_fid(fid)
-  local cname = (color_data[angle_color] and angle_color) or 'angle'
+  local cname = (color_data[angle_color] and angle_color) or 'guard_angle'
   local lg, rg = d_new('glyph'), d_new('glyph')
   d_setfield(lg, 'font', lm_fid)
   d_setfield(lg, 'char', LM_LANGLE)
@@ -10674,6 +11162,20 @@ local function make_angle_nodes(content_head, content_tail, angle_color, fid)
   return rh, rt
 end
 
+-- Mapea cada símbolo de guarda a su propio color independiente
+-- (antes todos compartían 'operator'; ahora cada uno es editable aparte).
+local function guard_symbol_color(b)
+  if b == 42 then return 'guard_star'    -- *
+  elseif b == 47 then return 'guard_slash'  -- /
+  elseif b == 40 or b == 41 then return 'guard_paren' -- ( )
+  elseif b == 38 then return 'guard_amp'    -- &
+  elseif b == 124 then return 'guard_pipe'  -- |
+  elseif b == 33 then return 'guard_bang'   -- !
+  end
+  return 'guard_star' -- fallback (inalcanzable: los 6 casos cubren todos
+                       -- los bytes que colorize_guard_expr le pasa a esta función)
+end
+
 local function colorize_guard_expr(expr, fid)
   local rh, rt, name_start, len = nil, nil, 1, #expr
   for i = 1, len do
@@ -10681,18 +11183,18 @@ local function colorize_guard_expr(expr, fid)
     if b == 33 or b == 32 or b == 38 or b == 40 or b == 41 or b == 42 or
        b == 47 or b == 124 then
       if name_start <= i - 1 then
-        local h, t = colored_str(s_sub(expr, name_start, i - 1), 'name', fid)
+        local h, t = colored_str(s_sub(expr, name_start, i - 1), 'guard_name', fid)
         rh, rt = append(rh, rt, h, t)
       end
       name_start = i + 1
       if b ~= 32 then
-        local h, t = colored_str(s_sub(expr, i, i), 'operator', fid)
+        local h, t = colored_str(s_sub(expr, i, i), guard_symbol_color(b), fid)
         rh, rt = append(rh, rt, h, t)
       end
     end
   end
   if name_start <= len then
-    local h, t = colored_str(s_sub(expr, name_start, len), 'name', fid)
+    local h, t = colored_str(s_sub(expr, name_start, len), 'guard_name', fid)
     rh, rt = append(rh, rt, h, t)
   end
   return rh, rt
@@ -10702,7 +11204,7 @@ local function render_guard(line, fid)
   local rest = s_gsub(line, '^%s*', '')
   local close = s_find(rest, '>', 2)
   if not close then
-    local h, t = colored_str('%', 'angle', fid)
+    local h, t = colored_str('%', 'guard_angle', fid)
     if h then n_write(d_tonode(h)) end
     h, t = colored_str_italic(line, 'comment', fid)
     if h then n_write(d_tonode(h)) end
@@ -10724,14 +11226,15 @@ local function render_guard(line, fid)
     local sigil, expr, first = '', inner, s_sub(inner, 1, 1)
     if first == '*' or first == '/' then sigil = first; expr = s_sub(inner, 2) end
     if sigil ~= '' then
-      h, t = colored_str(sigil, 'operator', fid); ch, ct = append(ch, ct, h, t)
+      h, t = colored_str(sigil, guard_symbol_color(s_byte(sigil)), fid)
+      ch, ct = append(ch, ct, h, t)
     end
     if expr ~= '' then
       h, t = colorize_guard_expr(expr, fid); ch, ct = append(ch, ct, h, t)
     end
   end
 
-  local rh, rt = make_angle_nodes(ch, ct, 'angle', fid)
+  local rh, rt = make_angle_nodes(ch, ct, 'guard_angle', fid)
   if rh then n_write(d_tonode(rh)) end
   if after and after ~= '' then
     local ah, at = colorize_code(after, fid); if ah then n_write(d_tonode(ah)) end
@@ -10764,6 +11267,27 @@ local function init_line_state()
   end
 end
 
+-- Reemplazo mínimo de \BeginAccSupp{ActualText={}}/\EndAccSupp{} (accsupp)
+-- vía whatsit pdf_literal directo: envuelve contenido en un Span PDF con
+-- ActualText vacío, para que no se copie al extraer/seleccionar texto
+-- (usado para ocultar el número de línea del texto copiado). mode=2
+-- ('direct'): el literal se inserta exactamente en el punto del content
+-- stream, sin reordenamiento -- necesario para que BDC/EMC queden bien
+-- balanceados alrededor del contenido que envuelven.
+register_tex_cmd('actual_text_begin', function()
+  local n = d_new('whatsit', 'pdf_literal')
+  d_setfield(n, 'mode', 2)
+  d_setfield(n, 'data', '/Span << /ActualText () >> BDC')
+  n_write(d_tonode(n))
+end, {})
+
+register_tex_cmd('actual_text_end', function()
+  local n = d_new('whatsit', 'pdf_literal')
+  d_setfield(n, 'mode', 2)
+  d_setfield(n, 'data', 'EMC')
+  n_write(d_tonode(n))
+end, {})
+
 register_tex_cmd('inline', function()
   local text = t_get_macro('l__mylhmc_verbatim_line_tl')
   if not text or text == '' then return end
@@ -10788,7 +11312,7 @@ register_tex_cmd('process_line', function()
     local trimmed = s_match(rest, '^%s*(.*)')
     if s_sub(trimmed, 1, 1) == '<' then render_guard(rest, fid)
     else
-      local h, t = colored_str(s_sub(line, 1, 1), 'angle', fid)
+      local h, t = colored_str(s_sub(line, 1, 1), 'guard_angle', fid)
       if h then n_write(d_tonode(h)) end
       h, t = colored_str_italic(s_sub(line, 2), 'comment', fid)
       if h then n_write(d_tonode(h)) end
