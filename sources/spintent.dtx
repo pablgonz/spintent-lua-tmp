@@ -570,7 +570,7 @@
     keywordstyle  = [2]{\color{pkgstruct}},%
     keywords      = [2]{usepackage,hypersetup},%,
 % Other words MathML cms
-    keywordstyle  = [3]{\color{mathml}},%
+    keywordstyle  = [3]{\color{mathtag}},%
     keywords      = [3]{MathMLintent,MathMLarg, invisibletimes, luamml_attribute, luamml_annotate, DocumentMetadata,},%,
 % Other words 4
     keywordstyle  = [4]{\color{latex_cmd}},%
@@ -9286,7 +9286,7 @@ end, {"string", "string"})
 %<*mylhmcsty>
 % \fi
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2025-08-18}{2.0}
+\ProvidesExplPackage{mylhmc}{2025-08-19}{2.0}
   {Line-by-line macrocode reader for l3doc in Lua}
 \sys_if_engine_luatex:F
   {
@@ -9375,30 +9375,30 @@ end, {"string", "string"})
 \__mylhmc_define_color:nnn { structure  } { HTML } { 004085 } % Azul Denim (bold) -> \NeedsTeXFormat \ProvidesExplPackage
 \__mylhmc_define_color:nnn { unit       } { HTML } { E67E22 } % Naranja Calabaza  -> pt em cm mu
 \__mylhmc_define_color:nnn { pkgstruct  } { HTML } { 064FA5 } % Azul cuerpo       -> \RequirePackage \IfPackageLoadedTF
-\__mylhmc_define_color:nnn { hyperref   } { HTML } { 6D4C41 } % Marrón cálido     -> \href \hyperlink \hypertarget etc
-\__mylhmc_define_color:nnn { mathml     } { HTML } { 2036D2 } % Azul MathML       -> \MathMLintent \MathMLarg \luamml_annotate:en
-\__mylhmc_define_color:nnn { mathml_var } { HTML } { 008000 } % Verde Puro         -> $foo identifiers in MathMLintent/MathMLarg
-\__mylhmc_define_color:nnn { intent     } { HTML } { 5C658A } % Azul Pizarra       -> :prefix :postfix :infix :silent etc (global)
-\__mylhmc_define_color:nnn { filename   } { HTML } { 4A5568 } % Gris Carbón        -> \file_... \input \include \IfFileExists (nombre de archivo)
-\__mylhmc_define_color:nnn { percent    } { HTML } { 4A5568 } % Gris Carbón        -> %
-\__mylhmc_define_color:nnn { arroba     } { HTML } { D81B60 } % Rosa Eléctrico     -> @
-\__mylhmc_define_color:nnn { star       } { HTML } { D81B60 } % Rosa Eléctrico     -> *
-\__mylhmc_define_color:nnn { keyname    } { HTML } { 483D8B } % Gris Índigo        -> cifras-sep read-sign terse clear
-\__mylhmc_define_color:nnn { other_np   } { HTML } { D32F2F } % Rojo Sangre        -> \__other_mod: privados ajenos
-\__mylhmc_define_color:nnn { pkgname    } { HTML } { 6A5ACD } % SlateBlue          -> nombre de paquete (negrita)
-\__mylhmc_define_color:nnn { clsname    } { HTML } { 8470FF } % LightSlateBlue     -> nombre de clase (negrita)
+\__mylhmc_define_color:nnn { support    } { HTML } { 3587B1 } % Azul Boston       -> hyperref, fontspec, unicode-math
+\__mylhmc_define_color:nnn { mathtag    } { HTML } { 2036D2 } % Azul MathML       -> \MathMLintent \MathMLarg \luamml_annotate:en \tagpdfsetup etc
+\__mylhmc_define_color:nnn { mathml_var } { HTML } { 008000 } % Verde Puro        -> $foo identifiers in MathMLintent/MathMLarg
+\__mylhmc_define_color:nnn { intent     } { HTML } { 5C658A } % Azul Pizarra      -> :prefix :postfix :infix :silent etc (global)
+\__mylhmc_define_color:nnn { filename   } { HTML } { 4A5568 } % Gris Carbón       -> \file_... \input \include \IfFileExists (nombre de archivo)
+\__mylhmc_define_color:nnn { percent    } { HTML } { 4A5568 } % Gris Carbón       -> %
+\__mylhmc_define_color:nnn { arroba     } { HTML } { D81B60 } % Rosa Eléctrico    -> @
+\__mylhmc_define_color:nnn { star       } { HTML } { D81B60 } % Rosa Eléctrico    -> *
+\__mylhmc_define_color:nnn { keyname    } { HTML } { 483D8B } % Gris Índigo       -> cifras-sep read-sign terse clear
+\__mylhmc_define_color:nnn { other_np   } { HTML } { D32F2F } % Rojo Sangre       -> \__other_mod: privados ajenos
+\__mylhmc_define_color:nnn { pkgname    } { HTML } { 6A5ACD } % SlateBlue         -> nombre de paquete (negrita)
+\__mylhmc_define_color:nnn { clsname    } { HTML } { 8470FF } % LightSlateBlue    -> nombre de clase (negrita)
 
-\__mylhmc_define_color:nnn { guard / angle    } { HTML } { 4A5568 } % Gris Carbón  -> 〈 〉
-\__mylhmc_define_color:nnn { guard / name     } { HTML } { 5A6370 } % Gris Pizarra -> nombre módulo
+\__mylhmc_define_color:nnn { guard / angle } { HTML } { 4A5568 } % Gris Carbón  -> 〈 〉
+\__mylhmc_define_color:nnn { guard / name  } { HTML } { 5A6370 } % Gris Pizarra -> nombre módulo
 \__mylhmc_define_color:nnn { guard / star  } { HTML } { 95A5A6 } % Gris Plata   -> * (guardas)
 \__mylhmc_define_color:nnn { guard / slash } { HTML } { 95A5A6 } % Gris Plata   -> / (guardas)
 \__mylhmc_define_color:nnn { guard / paren } { HTML } { 95A5A6 } % Gris Plata   -> ( ) (guardas)
 \__mylhmc_define_color:nnn { guard / amp   } { HTML } { 95A5A6 } % Gris Plata   -> & (guardas)
 \__mylhmc_define_color:nnn { guard / pipe  } { HTML } { 95A5A6 } % Gris Plata   -> | (guardas)
 \__mylhmc_define_color:nnn { guard / bang  } { HTML } { 95A5A6 } % Gris Plata   -> ! (guardas)
-\__mylhmc_define_color:nnn { module / at        } { HTML } { 008080 } % Teal         -> __spintent
-\__mylhmc_define_color:nnn { module / name      } { HTML } { 008080 } % Teal         -> nombre módulo en __spintent=
-\__mylhmc_define_color:nnn { module / eq        } { HTML } { 808080 } % Gris Medio   -> =
+\__mylhmc_define_color:nnn { module / at   } { HTML } { 008080 } % Teal         -> __spintent
+\__mylhmc_define_color:nnn { module / name } { HTML } { 008080 } % Teal         -> nombre módulo en __spintent=
+\__mylhmc_define_color:nnn { module / eq   } { HTML } { 808080 } % Gris Medio   -> =
 
 \hook_gput_code:nnn { begindocument } { mylhmc }
   {
@@ -9541,11 +9541,11 @@ end, {"string", "string"})
 % \iffalse
 %</mylhmcsty>
 % \fi
-% \iffalse
 %
+% \iffalse
 %<*mylhmclua>
 % \fi
--- mylhmc.lua v2.0 2025-08-18 (node.direct + Loop/Memory Micro-Optimized)
+-- mylhmc.lua v2.0 2025-08-19 (node.direct + Loop/Memory Micro-Optimized)
 -- LuaLaTeX syntax highlighter for l3doc macrocode environments
 
 local require      = require
@@ -9681,16 +9681,22 @@ local pkgstruct_names =
 -- Familia hyperref: comandos públicos, ninguno con prefijo real de otro
 -- (todos divergen justo tras "hyper" o son nombres completamente
 -- distintos), así que el orden dentro de la alternancia no es crítico.
-local hyperref_names =
+local support_names =
   P'hyperlink' + P'hypertarget' + P'hyperbaseurl' + P'hyperimage' +
   P'hyperdef' + P'hyperget' + P'hypersetup' + P'hyperref' +
   P'href' + P'nolinkurl' + P'url' +
   P'autopageref' + P'autoref' +
   P'pdfstringdef' +
   P'currentpdfbookmark' + P'subpdfbookmark' + P'belowpdfbookmark' + P'pdfbookmark' +
-  P'texorpdfstring' + P'phantomsection'
+  P'texorpdfstring' + P'phantomsection' +
+  -- fontspec: sin colisiones de prefijo entre sí (verificado con texlua).
+  P'setmainfont' + P'setsansfont' + P'setmonofont' + P'fontspec' +
+  P'setboldmathrm' + P'setmathrm' + P'setmathsf' + P'setmathtt' +
+  P'IfFontExistsTF' + P'addfontfeature' + P'defaultfontfeatures' +
+  -- unicode-math:
+  P'setmathfont' + P'unimathsetup'
 
-local mathml_names =
+local mathtag_names =
   P'MathMLintent' + P'MathMLarg' +
   P'luamml_annotate:nen' + P'luamml_annotate:en' +
   P'luamml_attribute:een' + P'luamml_attribute_core:een' +
@@ -9729,7 +9735,19 @@ local mathml_names =
   P'tag_struct_object_ref:n' +
   P'tag_struct_insert_annot:nn' +
   P'tag_struct_parent_int:' +
-  P'tag_struct_gput_ref:nnn' + P'tag_struct_gput:nnn'
+  P'tag_struct_gput_ref:nnn' + P'tag_struct_gput:nnn' +
+  -- latex-lab-math / latex-lab-mathintent: comandos públicos del sistema
+  -- de tagging de matemáticas -- mismo color 'mathtag', sin firma expl3
+  -- ni estado especial (ninguno activa in_mathml_intent/in_mathml_arg).
+  P'MathCollectTrue' + P'MathCollectFalse' + P'm@th' +
+  P'SuspendTagging' + P'UseMathForPositioningText' + P'UseStructureName' +
+  P'invisibletimes' + P'functionapplication' +
+  -- tagpdf: comandos públicos estilo LaTeX2e (sin guión bajo, no
+  -- colisionan con los \tag_*:n de arriba, que sí llevan guión bajo).
+  P'tagpdfsetup' + P'tagtool' +
+  P'tagmcifinTF' + P'tagmcuse' + P'tagmcbegin' + P'tagmcend' +
+  P'tagstructbegin' + P'tagstructend' + P'tagstructuse' +
+  P'ShowTagging'
 
 local keys_names =
   P'keys_define:' * S'Ncn' * P'n' +
@@ -9867,7 +9885,7 @@ local code_rules = {
   {10, P'\\' * P's_'  * (alpha + S'_') ^ 1},
   {11, P'\\' * P'q__' * (alpha + S'_') ^ 1},
   {11, P'\\' * P'q_'  * (alpha + S'_') ^ 1},
-  {38, P'\\' * mathml_names},
+  {38, P'\\' * mathtag_names},
   {39, P'\\' * keys_names},
   {44, P'\\' * keys_module_arg_names},
   {40, P'\\' * msgerror_names},
@@ -9876,7 +9894,7 @@ local code_rules = {
   {47, P'\\' * hook_label_names},
   {48, hook_name_convention},
   {37, P'\\' * pkgstruct_names},
-  {49, P'\\' * hyperref_names},
+  {49, P'\\' * support_names},
   {25, P'\\' * structure_names},
   {14, P'\\' * ltcmd_def_names},
   {33, P'\\' * ltcmd_use_names},
@@ -10132,13 +10150,32 @@ end
 -- espacios repetidos en puro kerning sin carácter extraíble, o incluso
 -- provocan que el lector de PDF inserte un salto de línea espurio ante
 -- un hueco horizontal ancho sin texto extraíble de por medio). Uso
--- previsto: solo indentación/espacios de alineación, por eso no hace
--- falta escapar '(' ')' '\' -- si se reutiliza para texto arbitrario,
--- agregar ese escapado antes.
+-- previsto: SOLO indentación/espacios de alineación (siempre ASCII de
+-- un byte) -- por eso convertir byte a byte a UTF-16BE es seguro aquí.
+-- Si esta función se reutiliza alguna vez para texto arbitrario con
+-- caracteres UTF-8 multibyte, este bucle byte-a-byte NO sería
+-- suficiente (habría que decodificar codepoints Unicode reales, no
+-- bytes crudos) -- habría que revisarlo antes de reutilizar.
+--
+-- EXPERIMENTO 2 (el 1, sustituir U+0020 por U+00A0, no funcionó en
+-- Acrobat -- la heurística de recorte no distingue el TIPO de espacio):
+-- se antepone un centinela U+200B (ZERO WIDTH SPACE) ANTES de los
+-- espacios reales dentro del valor de ActualText. A diferencia de
+-- U+00A0, Unicode NO clasifica U+200B como espacio en blanco (categoría
+-- Zs) sino como carácter de formato (Cf) -- si la heurística de Acrobat
+-- recorta basándose en "¿el primer carácter extraído de la fila es
+-- espacio?", este centinela invisible rompe esa condición sin alterar
+-- el glifo visible (que sigue siendo el espacio normal).
 local function actual_text_wrap(text, fid)
   local begin_n = d_new('whatsit', 'pdf_literal')
   d_setfield(begin_n, 'mode', 2)
-  d_setfield(begin_n, 'data', '/Span << /ActualText (' .. text .. ') >> BDC')
+  -- Notación hex nativa del PDF (<...>): BOM UTF-16BE (FEFF) + centinela
+  -- ZWSP (200B) + cada carácter real como 4 dígitos hex.
+  local hex_content = 'FEFF200B'
+  for i = 1, #text do
+    hex_content = hex_content .. s_format('%04X', s_byte(text, i))
+  end
+  d_setfield(begin_n, 'data', '/Span << /ActualText <' .. hex_content .. '> >> BDC')
   local end_n = d_new('whatsit', 'pdf_literal')
   d_setfield(end_n, 'mode', 2)
   d_setfield(end_n, 'data', 'EMC')
@@ -10214,10 +10251,10 @@ local type_colors = {
   [26]='publicfun',  [28]='quote',      [29]='brace',
   [30]='publicfun',  [31]='publicfun',  [33]='ltcmd_arg',
   [34]='publicfun',  [35]='unit',       [36]='compare',
-  [37]='pkgstruct',  [38]='mathml',     [39]='publicfun',  [40]='publicfun',
+  [37]='pkgstruct',  [38]='mathtag',    [39]='publicfun',  [40]='publicfun',
   [41]='publicfun',  [42]='intent',     [44]='publicfun',
   [46]='publicfun',
-  [47]='publicfun',  [48]='module_name', [49]='hyperref',
+  [47]='publicfun',  [48]='module_name', [49]='support',
 }
 
 local csname_positions = {}
@@ -10305,11 +10342,29 @@ local hook_label_argnum    = 0
 local hook_label_total_n   = 0
 local hook_label_positions = nil
 
--- \hypersetup{key=val, ...}: único argumento tratado como lista de
--- claves, mismo tratamiento visual que el cuerpo de \keys_define:nn/
--- \keys_set:nn (colorize_trimmed_keyname).
-local in_hypersetup    = false
-local hypersetup_depth = 0
+-- \hypersetup{key=val,...}, \tagpdfsetup{...}, \tagtool{...},
+-- \tagmcbegin{...}, \tagstructbegin{...}, \ShowTagging{...}, y también
+-- \unimathsetup{...}/\addfontfeature{...}/\defaultfontfeatures{...}:
+-- único argumento tratado como lista de claves, mismo tratamiento
+-- visual que el cuerpo de \keys_define:nn/\keys_set:nn
+-- (colorize_trimmed_keyname).
+local in_single_keyval    = false
+local single_keyval_depth = 0
+
+-- \setmainfont{fuente}[features] y familia (fontspec/unicode-math): el
+-- ORDEN es inverso a \RequirePackage[opciones]{pkg} (llave primero,
+-- corchete opcional después) -- mecanismo independiente de
+-- pkgcls_bracket_*. font_brace_pending/depth trackea la primera llave
+-- (nombre de fuente, SIN color especial); al cerrarse, se activa
+-- font_bracket_pending esperando un '[' opcional. Salvaguarda: se
+-- limpia al final de cada línea (en process_line/inline) para no
+-- "contaminar" un [...] no relacionado en una línea posterior si el
+-- comando se usó sin features.
+local font_brace_pending   = false
+local font_brace_depth     = 0
+local font_bracket_pending = false
+local font_bracket_active  = false
+local font_bracket_depth   = 0
 
 local colorize_code
 
@@ -10730,7 +10785,9 @@ local function colorize_plain_text(text, fid, rh, rt)
   elseif in_hook_label and hook_label_depth == 1
          and hook_label_positions[hook_label_argnum] then
     h, tl = colored_str(text, 'module_name', fid)
-  elseif in_hypersetup and hypersetup_depth == 1 then
+  elseif in_single_keyval and single_keyval_depth == 1 then
+    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+  elseif font_bracket_active and font_bracket_depth == 1 then
     rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   else h, tl = str_to_nodes_ws_safe(text, fid) end
   return append(rh, rt, h, tl)
@@ -10815,9 +10872,15 @@ colorize_code = function(line, fid)
             hook_label_argnum = hook_label_argnum + 1
           end
         end
-        if in_hypersetup then
-          hypersetup_depth = hypersetup_depth + 1
+        if in_single_keyval then
+          single_keyval_depth = single_keyval_depth + 1
         end
+        if font_brace_pending then
+          font_brace_depth = font_brace_depth + 1
+        end
+        -- Si esperábamos un '[' opcional y en cambio llega otra '{'
+        -- (sin corchete de por medio), descartamos la espera.
+        font_bracket_pending = false
       elseif chunk == '}' then
         if in_csname then
           if csname_depth > 0 then csname_depth = csname_depth - 1
@@ -10910,10 +10973,17 @@ colorize_code = function(line, fid)
             in_hook_label = false
           end
         end
-        if in_hypersetup and hypersetup_depth > 0 then
-          hypersetup_depth = hypersetup_depth - 1
-          if hypersetup_depth == 0 then
-            in_hypersetup = false
+        if in_single_keyval and single_keyval_depth > 0 then
+          single_keyval_depth = single_keyval_depth - 1
+          if single_keyval_depth == 0 then
+            in_single_keyval = false
+          end
+        end
+        if font_brace_pending and font_brace_depth > 0 then
+          font_brace_depth = font_brace_depth - 1
+          if font_brace_depth == 0 then
+            font_brace_pending = false
+            font_bracket_pending = true
           end
         end
       end
@@ -10926,11 +10996,23 @@ colorize_code = function(line, fid)
         elseif pkgcls_bracket_active then
           pkgcls_bracket_depth = pkgcls_bracket_depth + 1
         end
+        if font_bracket_pending then
+          font_bracket_active, font_bracket_depth, font_bracket_pending =
+            true, 1, false
+        elseif font_bracket_active then
+          font_bracket_depth = font_bracket_depth + 1
+        end
       elseif chunk == ']' then
         if pkgcls_bracket_active and pkgcls_bracket_depth > 0 then
           pkgcls_bracket_depth = pkgcls_bracket_depth - 1
           if pkgcls_bracket_depth == 0 then
             pkgcls_bracket_active = false
+          end
+        end
+        if font_bracket_active and font_bracket_depth > 0 then
+          font_bracket_depth = font_bracket_depth - 1
+          if font_bracket_depth == 0 then
+            font_bracket_active = false
           end
         end
       end
@@ -11126,10 +11208,23 @@ colorize_code = function(line, fid)
       end
       h, tl = emit_with_signature(chunk, 'pkgstruct', fid)
     elseif t == 49 then
-      if s_find(chunk, 'hypersetup', 1, true) then
-        in_hypersetup, hypersetup_depth = true, 0
+      if s_find(chunk, 'hypersetup', 1, true)
+         or s_find(chunk, 'unimathsetup', 1, true)
+         or s_find(chunk, 'addfontfeature', 1, true)
+         or s_find(chunk, 'defaultfontfeatures', 1, true) then
+        in_single_keyval, single_keyval_depth = true, 0
+      elseif s_find(chunk, 'setmainfont', 1, true)
+         or s_find(chunk, 'setsansfont', 1, true)
+         or s_find(chunk, 'setmonofont', 1, true)
+         or s_find(chunk, 'setboldmathrm', 1, true)
+         or s_find(chunk, 'setmathrm', 1, true)
+         or s_find(chunk, 'setmathsf', 1, true)
+         or s_find(chunk, 'setmathtt', 1, true)
+         or s_find(chunk, 'setmathfont', 1, true)
+         or s_find(chunk, 'fontspec', 1, true) then
+        font_brace_pending, font_brace_depth = true, 0
       end
-      h, tl = emit_with_signature(chunk, 'hyperref', fid)
+      h, tl = emit_with_signature(chunk, 'support', fid)
     elseif t == 38 then
       mathml_brace_count, mathml_after_dollar = 0, false
       if s_find(chunk, 'MathMLintent', 1, true) then
@@ -11137,7 +11232,16 @@ colorize_code = function(line, fid)
       elseif s_find(chunk, 'MathMLarg', 1, true) then
         in_mathml_arg, in_mathml_intent = true, false
       else in_mathml_intent, in_mathml_arg = false, false end
-      h, tl = emit_with_signature(chunk, 'mathml', fid)
+      if s_find(chunk, 'tagpdfsetup', 1, true)
+         or s_find(chunk, 'tagtool', 1, true)
+         or s_find(chunk, 'tagmcbegin', 1, true)
+         or s_find(chunk, 'tagstructbegin', 1, true)
+         or s_find(chunk, 'ShowTagging', 1, true)
+         or s_find(chunk, 'tag_struct_begin:n', 1, true)
+         or s_find(chunk, 'tag_mc_begin:n', 1, true) then
+        in_single_keyval, single_keyval_depth = true, 0
+      end
+      h, tl = emit_with_signature(chunk, 'mathtag', fid)
     elseif in_mathml_intent and t ~= 8 then
       if t == 21 then mathml_after_dollar = true; h, tl = colored_str(s_sub(chunk, 1, 1), 'math', fid)
       elseif mathml_after_dollar then
@@ -11342,12 +11446,25 @@ local function init_line_state()
 end
 
 -- Reemplazo mínimo de \BeginAccSupp{ActualText={}}/\EndAccSupp{} (accsupp)
--- vía whatsit pdf_literal directo: envuelve contenido en un Span PDF con
--- ActualText vacío, para que no se copie al extraer/seleccionar texto
--- (usado para ocultar el número de línea del texto copiado). mode=2
--- ('direct'): el literal se inserta exactamente en el punto del content
--- stream, sin reordenamiento -- necesario para que BDC/EMC queden bien
--- balanceados alrededor del contenido que envuelven.
+-- vía whatsit pdf_literal directo: envuelve el número de línea en un
+-- Span PDF con ActualText vacío, para que no se copie al extraer texto.
+-- mode=2 ('direct'): el literal se inserta exactamente en el punto del
+-- content stream, sin reordenamiento -- necesario para que BDC/EMC
+-- queden bien balanceados alrededor del contenido que envuelven.
+--
+-- HISTORIAL de intentos descartados (ver conversación para detalle):
+-- - <FEFF200B> (BOM + centinela de ancho cero U+200B): pensado para
+--   evitar un caso límite teórico de ActualText vacío -- nunca
+--   confirmado como problema real, y en cambio introdujo un espacio
+--   extra visible al inicio de cada línea copiada (el U+200B se
+--   extrae como carácter real y algunos visores lo renderizan con
+--   ancho). Descartado.
+-- - /Artifact BMC/EMC: probado durante la investigación del recorte de
+--   indentación en Adobe Acrobat -- no resolvió ese problema (quedó
+--   documentado como limitación conocida) y además dejó de ocultar el
+--   número de línea correctamente. Descartado.
+-- Versión actual: ActualText vacío simple, la única confirmada sin
+-- efectos secundarios.
 register_tex_cmd('actual_text_begin', function()
   local n = d_new('whatsit', 'pdf_literal')
   d_setfield(n, 'mode', 2)
@@ -11372,6 +11489,7 @@ register_tex_cmd('inline', function()
   local fid = f_current()
   local rh, rt = colorize_code(text, fid)
   if rh then n_write(d_tonode(rh)) end
+  font_bracket_pending = false
 end, {})
 
 register_tex_cmd('process_line', function()
@@ -11404,6 +11522,7 @@ register_tex_cmd('process_line', function()
     rh, rt = append(rh, rt, ch, ct)
     if rh then n_write(d_tonode(rh)) end
   end
+  font_bracket_pending = false
 end, {})
 % \iffalse
 %</mylhmclua>
