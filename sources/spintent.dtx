@@ -593,9 +593,10 @@
     keywords      = [6]{article, l3doc,},%
 % Reserved words 7 (spintent cmd)
     keywordstyle  = [7]{\color{module_name}},%
-    keywords      = [7]{spnum, spunit, spmoney, spshort, spdiv, spang, sptime, spdate, spsiglo, spmcm, spnD, spnM, %
-                    spmcd, spmul, spread, spdsym, spmsym, spnewunit, spunitalias, spnZ, spmQ , setspintent, spreadsym,
-                    spusep, },%
+    keywords      = [7]{setspintent, spnum, spunit, spnewunit, spunitalias, spmoney, spshort, spsiglo, sptime, %
+                        spdate, spread, spdsym, spmsym, spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, %
+                        spang, spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle, sparc, spmarc,%
+                        spPoly, spAfig, spPfig,},%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -2707,8 +2708,8 @@
 %
 % \begin{function}{\spnZ}
 %   \begin{syntax}
-%     \ics*{spnZ}\mymarg{número entero}
-%     \ics*{spnZ}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}
+%     |\spnZ|\mymarg{número entero}
+%     |\spnZ|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}
 %   \end{syntax}
 %   El comando \ics*{spnZ} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento} obligatorio \mymarg{número entero} el cual se procesa
@@ -2749,8 +2750,8 @@
 %
 % \begin{function}{\spmQ}
 %   \begin{syntax}
-%     \ics*{spmQ}\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
-%     \ics*{spmQ}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
+%     |\spmQ|\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
+%     |\spmQ|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
 %   \end{syntax}
 %   El comando \ics*{spmQ} trabaja en \emph{modo matemático} y recibe
 %   \emph{tres argumentos obligatorios}: \mymarg{número entero},
@@ -2842,11 +2843,6 @@
 % \mynvmath{NVDA/MathCAT} verbalizará la lectura de los paréntesis; si se
 % establece en |false|, \mynvmath{NVDA/MathCAT} no los verbalizará.
 %
-%^^A \section{Utilidades para geometría}
-%
-%^^A El paquete \mypkg*[no-index]{spintent} provee utilidades para trabajar con geometría
-%^^A (plana), que describiremos en esta sección.
-%
 % \section{Utilidades para geometría plana}
 %
 % El paquete \mypkg*[no-index]{spintent} provee comandos para trabajar
@@ -2861,9 +2857,10 @@
 %   Todos los comandos de esta sección aceptan como puntos solo
 %   \emph{letras mayúsculas} como base, con modificadores opcionales de
 %   subíndice `|_{...}|' o prima `|'|'. La única excepción es
-%   |\sprecta| en \emph{notación de nombre}, que acepta también
-%   \emph{letras minúsculas}. Los subíndices deben escribirse siempre
-%   con la notación |A_{...}| y no con |A_n| sin llaves.
+%   |\sprecta| cuando el \emph{argumento} es de la forma \mymarg{letra},
+%   que acepta \emph{letras minúsculas}. Los subíndices siempre deben
+%   escribirse de la forma correcta usando |_{...}| como |A_{...}| y
+%   nunca como |A_n| sin llaves que funciona solo por coincidencia.
 % \end{important}
 %
 % \subsection*{El comando \cs[no-index]{spPoint}}\label{subsec:spPoint}
@@ -2872,14 +2869,12 @@
 %
 % \begin{function}{\spPoint}
 %   \begin{syntax}
-%     \ics*{spPoint}\mymarg{punto}
-%     \ics*{spPoint}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto}
+%     |\spPoint|\mymarg{punto}
+%     |\spPoint|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto}
 %   \end{syntax}
 %   El comando \ics*{spPoint} trabaja en \emph{modo matemático} y
-%   recibe en \mymarg{punto} una \emph{única letra mayúscula} con
-%   modificador opcional de subíndice `|_{...}|' o prima `|'|'.
-%   Representa un punto geométrico como entidad abstracta, sin
-%   coordenadas.
+%   recibe el \emph{argumento obligatorio} \mymarg{punto} el cual es una \emph{única letra mayúscula}
+%   con un modificador opcional de subíndice `|_{...}|' o prima `|'|'.
 %
 %   \smallskip
 %
@@ -2916,96 +2911,84 @@
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[spPoint]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} de «punto». El valor de esta llave \emph{siempre} debe
-% pasarse entre llaves `|{ }|'. Si se establece en |{el}|,
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«el punto A»} en lugar de
-% \emph{«punto A»}; si no se establece, no se antepone ninguna palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar la palabra \emph{«punto»}. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spPoint]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} la palabra
-% «punto». Útil cuando el nombre del objeto ya aparece en el texto que
-% rodea a la expresión matemática. Con |silent-cmd=true|,
-% \mynvmath{NVDA/MathCAT} verbalizará solo \emph{«A»} en lugar de
-% \emph{«punto A»}.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% de la palabra \emph{«punto»}. Si se establece en |true|
+% \mynvmath{NVDA/MathCAT} NO verbalizará la palabra; si se establece en |false|
+% \mynvmath{NVDA/MathCAT} SÍ la verbalizará.
 %
 % \subsection*{El comando \cs[no-index]{sprecta}}\label{subsec:sprecta}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\sprecta}
-%   \begin{syntax}
-%     \ics*{sprecta}\mymarg{puntos}
-%     \ics*{sprecta}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{puntos}
-%   \end{syntax}
+%   \begin{minipage}[t]{0.4\linewidth}
+%     |\sprecta|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\par
+%     |\sprecta|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\par
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.55\linewidth}
+%     |\sprecta|\mymarg{letra}\par
+%     |\sprecta|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{letra}
+%   \end{minipage}
+%
+% \medskip
+%
 %   El comando \ics*{sprecta} trabaja en \emph{modo matemático} y
-%   admite \emph{dos notaciones} detectadas automáticamente según el
-%   contenido de \mymarg{puntos}:
-%
-%   \smallskip
-%
-%   \emph{Notación de dos puntos}: cuando \mymarg{puntos} contiene una
-%   coma, se aplica \cs{overleftrightarrow} sobre los puntos. Por
-%   ejemplo, |$\sprecta{A, B}$| imprimirá `$\overleftrightarrow{AB}$'
-%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«recta A B»}.
-%
-%   \smallskip
-%
-%   \emph{Notación de nombre}: cuando \mymarg{puntos} no contiene
-%   coma, se imprime el nombre sin ningún decorador visual. Por
-%   ejemplo, |$\sprecta{m}$| imprimirá `$m$' y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«recta m»}; |$\sprecta{L_{1}}$| imprimirá
-%   `$L_{1}$' y verbalizará \emph{«recta L sub uno»}.
-% \end{function}
+%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma \mymarg{letra} o
+%   \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}. Si el \emph{argumento}
+%   es de la forma \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   se aplica |\overleftrightarrow| en la impresión; si el \emph{argumento}
+%   no contiene coma y es de la forma \mymarg{letra} (mayúscula o minúscula),
+%   se imprimirá solo la \mymarg{letra} sin aplicar |\overleftrightarrow|.
 %
 % \smallskip
 %
-% \begin{important}*
-%   En la \emph{notación de nombre} se aceptan tanto letras mayúsculas
-%   como minúsculas ($m$, $r$, $l$, $s$, $L_1$, $L_2$). En esta
-%   notación, con la llave |read-cmd=school| \mynvmath{NVDA/MathCAT}
-%   siempre verbaliza sin «mayúscula» ya que el nombre forma parte del
-%   texto verbalizado directamente.
-% \end{important}
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val}, |$\sprecta{A, B}$|
+%   imprimirá `$\overleftrightarrow{AB}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«recta A B»}; |$\sprecta{m}$|
+%   imprimirá `$m$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«recta m»}.
+% \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{sprecta}}
 %
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[sprecta]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% puntos. Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza
-% las letras directamente sin anteponer «mayúscula»: |$\sprecta{A, B}$|
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} y al argumento
+% \mymarg{letra} cuando está en mayúscula. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
+% verbaliza las letras directamente sin anteponer «mayúscula»: |$\sprecta{A, B}$|
 % se verbaliza \emph{«recta A B»}; si se establece en |mathcat|,
-% \mynvmath{NVDA/MathCAT} aplica sus propias reglas de habla, que
-% pueden incluir el prefijo «mayúscula» según la configuración del
-% usuario. Esta llave no afecta la \emph{notación de nombre}.
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» según la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[sprecta]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} de «recta». El valor de esta llave \emph{siempre} debe
-% pasarse entre llaves `|{ }|'. Si se establece en |{la}|,
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«la recta A B»} en lugar de
-% \emph{«recta A B»}; si no se establece, no se antepone ninguna
-% palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar la palabra \emph{«recta»}. El valor de esta llave \emph{siempre} debe
+% pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[sprecta]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} la palabra
-% «recta». Útil cuando el nombre del objeto ya aparece en el texto que
-% rodea a la expresión matemática. Con |silent-cmd=true|,
-% \mynvmath{NVDA/MathCAT} verbalizará solo los puntos o el nombre, sin
-% anteponer «recta».
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% de la palabra \emph{«recta»}. Si se establece en |true| \mynvmath{NVDA/MathCAT}
+% NO verbalizará la palabra; si se establece en |false| \mynvmath{NVDA/MathCAT}
+% SÍ la verbalizará.
 %
 % \subsection*{El comando \cs[no-index]{sprayo}}\label{subsec:sprayo}
 %
@@ -3013,76 +2996,73 @@
 %
 % \begin{function}{\sprayo}
 %   \begin{syntax}
-%     \ics*{sprayo}\mymarg{puntos}
-%     \ics*{sprayo}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{puntos}
+%     |\sprayo|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%     |\sprayo|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{syntax}
 %   El comando \ics*{sprayo} trabaja en \emph{modo matemático} y
-%   representa un \emph{rayo} con origen en el primer punto y dirección
-%   hacia el segundo. La salida visual usa \cs{overrightarrow}.
+%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}.
+%   Representa un \emph{rayo} o \emph{semirecta} con origen en el primer
+%   punto y dirección hacia el segundo, aplicando |\overrightarrow| en la impresión.
 %
 %   \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
 %   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
 %   |$\sprayo{A, B}$| imprimirá `$\overrightarrow{AB}$' en la salida
-%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«rayo A B»}.
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«rayo A B»}.
 % \end{function}
-%
-% \smallskip
-%
-% \begin{important}*
-%   El rayo $\overrightarrow{AB}$ y el rayo $\overrightarrow{BA}$ son
-%   objetos distintos — el orden de los puntos determina la dirección.
-% \end{important}
 %
 % \subsubsection*{Llaves para \cs[no-index]{sprayo}}
 %
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[sprayo]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% puntos del rayo. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza las letras directamente sin anteponer «mayúscula»: si se
-% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
-% reglas de habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}. Si se establece
+% en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras directamente
+% sin anteponer «mayúscula»: |$\sprayo{A, B}$|
+% se verbaliza \emph{«rayo A B»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» según la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[sprayo]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} del nombre del rayo. El valor de esta llave
-% \emph{siempre} debe pasarse entre llaves `|{ }|'. Si se establece en
-% |{el}|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«el rayo A B»} en
-% lugar de \emph{«rayo A B»}; si no se establece, no se antepone
-% ninguna palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar la palabra establecida por la llave \mykey{read-sty}.
+% El valor de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[sprayo]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} el nombre del
-% rayo. Útil cuando el objeto ya se ha mencionado en el texto. Con
-% |silent-cmd=true|, \mynvmath{NVDA/MathCAT} verbalizará solo
-% \emph{«A B»} en lugar de \emph{«rayo A B»}.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% de la palabra establecida por la llave \mykey{read-sty}. Si se establece en |true| \mynvmath{NVDA/MathCAT}
+% NO verbalizará la palabra; si se establece en |false| \mynvmath{NVDA/MathCAT}
+% SÍ la verbalizará.
 %
 % \smallskip
 %
 % \keyexampcmd{read-sty}{rayo \textnormal{\textcolor{lightgray}{\textbar}}
 %   semirrecta}{rayo}[sprayo]
 % \smallskip
-% Establece el \emph{término} que \mynvmath{NVDA/MathCAT} verbalizará
-% para este objeto. Si se establece en |rayo| (valor por defecto),
-% |$\sprayo{A, B}$| verbaliza \emph{«rayo A B»}; si se establece en
-% |semirrecta|, |$\sprayo[read-sty=semirrecta]{A, B}$| verbaliza
-% \emph{«semirrecta A B»}. La salida visual (`$\overrightarrow{AB}$')
-% es idéntica en ambos casos. La elección depende de la terminología
-% del libro de texto o del currículo nacional: en Chile y España se
-% prefiere «semirrecta»; en México y otros países de América Latina se
-% usa «rayo».
+% Establece el \emph{término} que verbalizará \mynvmath{NVDA/MathCAT}
+% el ejecutar el comando sin modificar la impresión de este. Si se utiliza |$\sprayo[read-sty=rayo]{A, B}$|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«rayo A B»}; si se utiliza
+% |$\sprayo[read-sty=semirrecta]{A, B}$|, \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«semirrecta A B»}.
+
+% \smallskip
+%
+% \begin{important}*
+%   La impresión `$\overrightarrow{AB}$' en la salida \texttt{PDF}
+%   es idéntica en ambos casos. La elección depende de la terminología
+%   del libro de texto o del currículo nacional: en Chile y España se
+%   prefiere «semirrecta»; en México y otros países de América Latina se
+%   usa «rayo».
+% \end{important}
 %
 % \subsection*{El comando \cs[no-index]{spside}}\label{subsec:spside}
 %
@@ -3090,13 +3070,13 @@
 %
 % \begin{function}{\spside}
 %   \begin{syntax}
-%     \ics*{spside}\mymarg{puntos}
-%     \ics*{spside}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{puntos}
+%     |\spside|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%     |\spside|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{syntax}
 %   El comando \ics*{spside} trabaja en \emph{modo matemático} y
-%   representa un \emph{lado}, \emph{segmento} o \emph{trazo} —según la
-%   llave \mykey[spside]{read-sty}— determinado por dos puntos. La
-%   salida visual usa \cs{overline}.
+%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}.
+%   Representa un \emph{lado}, \emph{segmento} o \emph{trazo} determinado
+%   por dos puntos, aplicando |\overline| en la impresión.
 %
 %   \smallskip
 %
@@ -3112,33 +3092,31 @@
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spside]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% puntos. Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza
-% las letras directamente sin anteponer «mayúscula»; si se establece en
-% |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias reglas de
-% habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}. Si se establece
+% en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras directamente
+% sin anteponer «mayúscula»: |$\spside{A, B}$|
+% se verbaliza \emph{«lado A B»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» según la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[spside]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} del nombre del objeto. El valor de esta llave
-% \emph{siempre} debe pasarse entre llaves `|{ }|'. Si se establece en
-% |{el}|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«el lado A B»} en
-% lugar de \emph{«lado A B»}; si no se establece, no se antepone
-% ninguna palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar la palabra establecida por la llave \mykey{read-sty}.
+% El valor de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spside]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} el nombre del
-% objeto. Útil cuando el objeto ya se ha mencionado en el texto. Con
-% |silent-cmd=true|, \mynvmath{NVDA/MathCAT} verbalizará solo
-% \emph{«A B»} en lugar de \emph{«lado A B»}.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% de la palabra establecida por la llave \mykey{read-sty}. Si se establece
+% en |true| \mynvmath{NVDA/MathCAT} NO verbalizará la palabra; si se establece
+% en |false| \mynvmath{NVDA/MathCAT} SÍ la verbalizará.
 %
 % \smallskip
 %
@@ -3146,27 +3124,23 @@
 %   segmento \textnormal{\textcolor{lightgray}{\textbar}}
 %   trazo}{lado}[spside]
 % \smallskip
-% Establece el \emph{término} que \mynvmath{NVDA/MathCAT} verbalizará
-% para el objeto. Si se establece en |lado| (valor por defecto),
-% |$\spside{A, B}$| verbaliza \emph{«lado A B»} — apropiado cuando el
-% segmento es parte de una figura geométrica, como los lados de un
-% triángulo o polígono. Si se establece en |segmento|,
-% |$\spside[read-sty=segmento]{A, B}$| verbaliza \emph{«segmento A B»}
-% — apropiado cuando el segmento se trata como objeto geométrico
-% independiente. Si se establece en |trazo|,
-% |$\spside[read-sty=trazo]{A, B}$| verbaliza \emph{«trazo A B»} —
-% terminología habitual en construcciones con regla y compás. La salida
-% visual (`$\overline{AB}$') es idéntica en los tres casos.
+% Establece el \emph{término} que verbalizará \mynvmath{NVDA/MathCAT}
+% el ejecutar el comando sin modificar la impresión de este. Si se utiliza |$\spside[read-sty=lado]{A, B}$|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«lado A B»}; si se utiliza
+% |$\spside[read-sty=segmento]{A, B}$|, \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«segmento A B»} y si se utiliza |$\spside[read-sty=trazo]{A, B}$|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«trazo A B»}
 %
 % \smallskip
 %
 % \keyexampcmd{read-arg}{nombre}{(según read-sty)}[spside]
 % \smallskip
-% Sobrescribe por completo el \emph{término} verbalizado, ignorando el
-% valor de \mykey[spside]{read-sty}. El valor de esta llave
-% \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo,
+% Sobrescribe \emph{por completo} el \emph{término} establecido por la
+% llave \mykey[spside]{read-sty} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% al ejecutar el comando sin modificar la impresión de este. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
 % |$\spside[read-arg={hipotenusa}]{A, B}$| imprimirá `$\overline{AB}$'
-% y \mynvmath{NVDA/MathCAT} verbalizará \emph{«hipotenusa A B»}.
+% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«hipotenusa A B»}.
 %
 % \subsection*{El comando \cs[no-index]{spmside}}\label{subsec:spmside}
 %
@@ -3174,14 +3148,16 @@
 %
 % \begin{function}{\spmside}
 %   \begin{syntax}
-%     \ics*{spmside}\mymarg{puntos}
-%     \ics*{spmside}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{puntos}
+%     |\spmside|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%     |\spmside|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{syntax}
+%
 %   El comando \ics*{spmside} trabaja en \emph{modo matemático} y
-%   representa la \emph{medida} del lado, segmento o trazo determinado
-%   por dos puntos. La distinción entre |\spside| y |\spmside| es
+%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}.
+%   Representa la \emph{medida} del \emph{lado}, \emph{segmento} o \emph{trazo}
+%   determinado por dos puntos. La distinción entre |\spside| y |\spmside| es
 %   semántica: |\spside| representa el \emph{objeto geométrico}
-%   ($\overline{AB}$); |\spmside| representa su \emph{medida} (un
+%   `$\overline{AB}$`; |\spmside| representa su \emph{medida} (un
 %   número real positivo).
 %
 %   \smallskip
@@ -3197,12 +3173,13 @@
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spmside]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% puntos. Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza
-% las letras directamente sin anteponer «mayúscula»; si se establece en
-% |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias reglas de
-% habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}. Si se establece
+% en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras directamente
+% sin anteponer «mayúscula»: |$\spmside{A, B}$|
+% se verbaliza \emph{«medida del lado A B»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» según la configuración del usuario.
 %
 % \smallskip
 %
