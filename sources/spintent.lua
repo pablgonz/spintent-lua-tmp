@@ -69,7 +69,7 @@ end
 -- Combina trim + minúsculas para los casos que no necesitan conservar
 -- el case original después (a diferencia de luafun_spmoney_lookup_data,
 -- que sí reutiliza la versión sin s_lower para la detección ISO).
-local function normalize_key(str)
+local function spintent_normalize_key(str)
     return str and s_lower(spintent_trim(str)) or ""
 end
 
@@ -403,7 +403,7 @@ local spintent_tex_accents = {
     ["\\\"u"] = "ü", ["\\\"U"] = "Ü", ["\\~n"] = "ñ", ["\\~N"] = "Ñ"
 }
 
-local function sanitize_for_screen_reader(raw_string)
+local function spintent_sanitize_for_screen_reader(raw_string)
     if not raw_string then return "" end
     local clean = s_gsub(raw_string, "[{}]", "")
     clean = s_gsub(clean, "\\[\'~\x22].", spintent_tex_accents)
@@ -418,7 +418,7 @@ register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
     end
 
     -- Sanitizamos y aglutinamos para MathCAT
-    local clean_spoken_name = sanitize_for_screen_reader(spoken_name)
+    local clean_spoken_name = spintent_sanitize_for_screen_reader(spoken_name)
 
     spintent_custom_spunit_spoken_names[unit_symbol] = clean_spoken_name
     spintent_custom_spunit_aliases[unit_symbol] = true
@@ -662,7 +662,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
 end, { "string" })
 
 register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
-    local clean = normalize_key(raw_input)
+    local clean = spintent_normalize_key(raw_input)
     local resolved_symbol = spintent_internal_currencies[clean]
     local resolved_spoken = nil
 
@@ -830,7 +830,7 @@ local spintent_ord_tens = {
   [9] = "nonagésim"
 }
 
-local function get_semantic_ordinal(val, suffix)
+local function spintent_get_semantic_ordinal(val, suffix)
   if val < 1 or val > 99 then
     return val .. (spintent_spshort_ord_suffixes[suffix] or suffix)
   end
@@ -885,7 +885,7 @@ local spintent_spshort_ord_grammar = P({
 })
 
 local function spintent_spshort_execute_analysis(raw_input)
-  local clean_input = normalize_key(raw_input)
+  local clean_input = spintent_normalize_key(raw_input)
 
   local dict_match = spintent_spshort_dict[clean_input]
   if not dict_match then
@@ -928,7 +928,7 @@ local function spintent_spshort_execute_analysis(raw_input)
       end
     end
 
-    local semantic_read = get_semantic_ordinal(tonumber(num_part), suffix_part)
+    local semantic_read = spintent_get_semantic_ordinal(tonumber(num_part), suffix_part)
 
     token_set_macro("l__spintent_spshort_luaset_status_str", "success")
     token_set_macro("l__spintent_spshort_luaset_layout_str", "superscript")
@@ -1055,7 +1055,7 @@ local spintent_date_pattern = Ct(
 -- Función auxiliar: Validar que el día y mes existan (¡incluyendo bisiestos!)
 local days_in_month = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 
-local function is_valid_date(d, m, y)
+local function spintent_is_valid_date(d, m, y)
     if m < 1 or m > 12 then return false end
     if d < 1 then return false end
 
@@ -1102,7 +1102,7 @@ register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
     local num_y, num_m, num_d = tonumber(year), tonumber(month), tonumber(day)
 
     -- Lógica 2: Validación de calendario real
-    if not (num_y and num_m and num_d) or not is_valid_date(num_d, num_m, num_y) then
+    if not (num_y and num_m and num_d) or not spintent_is_valid_date(num_d, num_m, num_y) then
         token_set_macro("l__spintent_spdate_luaset_error_str", "true")
         return
     end
@@ -1179,7 +1179,7 @@ local function spintent_lcm_algorithm(val_a, val_b)
     return math_floor((val_a * val_b) / spintent_gcd_algorithm(val_a, val_b))
 end
 
-local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
+local function spintent_execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
     local numbers = {}
     token_set_macro("l__spintent_spmcm_spmcd_luaset_error_str", "false")
 
@@ -1214,11 +1214,11 @@ local function execute_mcm_mcd_result(raw_csv_list, tl_out, operation_fn)
 end
 
 register_tex_cmd("luafun_calculate_mcd", function(raw_csv_list)
-    execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcd_luaset_mcd_value_tl", spintent_gcd_algorithm)
+    spintent_execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcd_luaset_mcd_value_tl", spintent_gcd_algorithm)
 end, { "string" })
 
 register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
-    execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcm_luaset_mcm_value_tl", spintent_lcm_algorithm)
+    spintent_execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcm_luaset_mcm_value_tl", spintent_lcm_algorithm)
 end, { "string" })
 
 -- 8. SÍSTEMA SEXAGESIMAL (\spang)
@@ -1280,12 +1280,12 @@ local function spintent_calculate_divisors(n_val, limit)
     return t_concat(results, ", "), is_truncated
 end
 
-local function execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
+local function spintent_execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
     -- Asumimos que expl3 ya usó luafun_clean_split_and_set y garantizó que raw_n
     -- es un número natural puro. ¡Solo convertimos y calculamos!
     local num_n = tonumber(raw_n)
 
-    local clean_limit = normalize_key(raw_limit)
+    local clean_limit = spintent_normalize_key(raw_limit)
     local num_limit = tonumber(clean_limit) or 0
     if clean_limit == "all" or clean_limit == "" then
         num_limit = 0
@@ -1306,16 +1306,16 @@ local function execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
 end
 
 register_tex_cmd("luafun_calcular_nM", function(raw_n, raw_limit)
-    execute_spnM_spnD_result(raw_n, raw_limit, true)
+    spintent_execute_spnM_spnD_result(raw_n, raw_limit, true)
 end, { "string", "string" })
 
 register_tex_cmd("luafun_calcular_nD", function(raw_n, raw_limit)
-    execute_spnM_spnD_result(raw_n, raw_limit, false)
+    spintent_execute_spnM_spnD_result(raw_n, raw_limit, false)
 end, { "string", "string" })
 
 -- 10. NÚMEROS MIXTOS, code for \spmQ (see https://tex.stackexchange.com/q/764828)
 
-local font_cache         = {}
+local spintent_font_cache         = {}
 local spintent_measuring = false
 
 -- Tabla constante: nunca cambia entre llamadas, se construye una sola vez
@@ -1327,13 +1327,13 @@ local spintent_mathstyle_names = {
     [6] = "scriptscript", [7] = "scriptscript",
 }
 
-local function is_digit(n)
+local function spintent_is_digit(n)
     return n.char >= 48 and n.char <= 57
 end
 
-local function get_scaled_font(id, factor)
+local function spintent_get_scaled_font(id, factor)
     local key = tostring(id) .. ":" .. tostring(factor)
-    if font_cache[key] then return font_cache[key] end
+    if spintent_font_cache[key] then return spintent_font_cache[key] end
     local old_font = font.getfont(id)
     if not old_font then return id end
     local spec = {}
@@ -1343,14 +1343,14 @@ local function get_scaled_font(id, factor)
     if not ok or not data then return id end
     local new_id = font.define(data)
     fonts.hashes.identifiers[new_id] = data
-    font_cache[key] = new_id
+    spintent_font_cache[key] = new_id
     return new_id
 end
 
-local function scale_glyphs(head, factor)
+local function spintent_scale_glyphs(head, factor)
     for n in node.traverse_glyph(head) do
-        if is_digit(n) then
-            local new_id = get_scaled_font(n.font, factor)
+        if spintent_is_digit(n) then
+            local new_id = spintent_get_scaled_font(n.font, factor)
             n.font = new_id
             local f = font.getfont(new_id)
             if f and f.characters then
@@ -1366,7 +1366,7 @@ local function scale_glyphs(head, factor)
     return head
 end
 
-local function build_char_noads(str)
+local function spintent_build_char_noads(str)
     local head, tail
     for i = 1, #str do
         local kernel = node.new("math_char")
@@ -1381,9 +1381,9 @@ local function build_char_noads(str)
     return head
 end
 
-local function build_submlist_noad(str)
+local function spintent_build_submlist_noad(str)
     local mlist  = node.new("sub_mlist")
-    mlist.head   = build_char_noads(str)
+    mlist.head   = spintent_build_char_noads(str)
     local noad   = node.new("noad")
     noad.subtype = 0
     noad.nucleus = mlist
@@ -1393,7 +1393,7 @@ end
 -- Movida a nivel de módulo: no captura nada específico de una llamada a
 -- \spmQ (dt/cmd son parámetros explícitos, no upvalues), así que crear
 -- un closure nuevo por invocación era trabajo evitable.
-local function medir_frac(dt, cmd)
+local function spintent_medir_frac(dt, cmd)
     spintent_measuring = true
     tex.runtoks(function()
         tex.sprint(
@@ -1413,25 +1413,25 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
         (spintent_mathstyle_names[tonumber(tex.mathstyle)] or "text")
 
     -- 1. Medir fracción
-    local frac_height, frac_depth = medir_frac(display_type, frac_cmd)
+    local frac_height, frac_depth = spintent_medir_frac(display_type, frac_cmd)
     local ht_frac_real = frac_height + frac_depth
 
     -- 2. Construir y medir la hlist del entero UNA sola vez, antes de
     --    escalarla. Antes se llamaba node.mlist_to_hlist dos veces sobre
     --    la misma estructura (una para medir y descartar, otra para
     --    escalar) — la operación más costosa de esta función. Como
-    --    build_submlist_noad/build_char_noads son puras (sin efectos
+    --    spintent_build_submlist_noad/spintent_build_char_noads son puras (sin efectos
     --    secundarios) y spintent_measuring no se lee en ningún lado,
     --    medir antes de escalar produce los mismos valores sin pagar
     --    el costo de una segunda conversión mlist->hlist.
-    local h_esc = node.mlist_to_hlist(build_submlist_noad(entero), display_type, false)
+    local h_esc = node.mlist_to_hlist(spintent_build_submlist_noad(entero), display_type, false)
     local ht_entero = h_esc.height + h_esc.depth
 
     -- 3. Factor
     local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
 
     -- 4. Escalar la misma hlist ya medida
-    scale_glyphs(h_esc.list, factor)
+    spintent_scale_glyphs(h_esc.list, factor)
 
     -- 5. Ancho y Glyph nodes físicos (Bucle fusionado y acelerado por C)
     local ancho = 0
@@ -1439,9 +1439,9 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
 
     for n in d_traverse(d_todirect(h_esc.list)) do
         ancho = ancho + d_getfield(n, "width")
-        -- Reconvertimos a userdata temporalmente porque is_digit lo espera así
+        -- Reconvertimos a userdata temporalmente porque spintent_is_digit lo espera así
         local n_user = d_tonode(n)
-        if is_digit(n_user) then
+        if spintent_is_digit(n_user) then
             glyph_nodes[#glyph_nodes + 1] = n_user
         end
     end
@@ -1491,50 +1491,60 @@ end, {"string", "string"})
 
 -- ============================================================
 -- §12  GEOMETRÍA PLANA
---      \splado, \spmlado, \spsegmento, \spmsegmento,
---      \sprayo, \spsemirecta, \sprecta, \sparco, \spmarco
+--      Orden: Punto · Recta · Rayo · Segmento · Ángulo · Arco ·
+--      Polígono (incluye \spAfig / \spPfig)
+--
+--      Comandos cubiertos: \spPoint, \sprecta, \sprayo, \spside,
+--      \spmside, \spangle, \spmangle, \sparc, \spmarc, \spPoly,
+--      \spAfig, \spPfig
 -- ============================================================
 
--- Prefijo compartido para todas las macros TeX de la familia geo
-local geo_pfx = "l__spintent_geo_"
+-- ------------------------------------------------------------
+-- Gramática y utilidades compartidas por toda la familia
+-- ------------------------------------------------------------
 
--- Gramática LPeg para puntos geométricos (solo mayúsculas)
-local geo_cont_sub = C((1 - P"}")^1)
-local geo_primas   = C(P"'"^1)
+local spintent_geo_cont_sub = C((1 - P"}")^1)
+local spintent_geo_primas   = C(P"'"^1)
 
-local geo_punto = Ct(
+local spintent_geo_punto = Ct(
     C(R"AZ") *
     (
-        P"_{" * geo_cont_sub * P"}" * Cc"sub"
-        + geo_primas              * Cc"prima"
-        + Cc""                    * Cc""
+        P"_{" * spintent_geo_cont_sub * P"}" * Cc"sub"
+        + spintent_geo_primas             * Cc"prima"
+        + Cc""                            * Cc""
     )
 )
 
--- geo_sep — separador de coma entre puntos geométricos.
+-- Separador de coma entre puntos geométricos.
 -- IMPORTANTE: no usa spintent_opt_spaces aquí, porque esa función
 -- descarta espacios vía "/ ''" (captura de sustitución). Esa captura,
--- usada DENTRO de un Ct externo (geo_grammar, geo_poly_grammar), no
--- se descarta — se inserta como elemento string "" suelto en la tabla
--- resultante, duplicando el conteo real de puntos. Aquí se usa un
--- patrón puro sin captura para evitarlo.
-local geo_ws     = S" \t\r\n"
-local geo_ws_opt = geo_ws^0
-local geo_sep    = geo_ws_opt * P"," * geo_ws_opt
-local geo_grammar = Ct( geo_punto * (geo_sep * geo_punto)^0 * P(-1) )
+-- usada DENTRO de un Ct externo, no se descarta — se inserta como
+-- elemento string "" suelto en la tabla resultante, duplicando el
+-- conteo real de puntos. Se usa un patrón puro sin captura.
+local spintent_geo_ws     = S" \t\r\n"
+local spintent_geo_ws_opt = spintent_geo_ws^0
+local spintent_geo_sep    = spintent_geo_ws_opt * P"," * spintent_geo_ws_opt
 
--- Gramática LPeg para nombre propio de recta (mayúsculas Y minúsculas)
-local geo_nombre_recta = Ct(
+local spintent_geo_grammar =
+    Ct( spintent_geo_punto * (spintent_geo_sep * spintent_geo_punto)^0 * P(-1) )
+
+-- Gramática sin anclaje final, usada donde se necesita re-chequear
+-- cardinalidad exacta (\spPoly, \spAfig, \spPfig)
+local spintent_geo_poly_grammar =
+    Ct( spintent_geo_punto * (spintent_geo_sep * spintent_geo_punto)^0 )
+
+-- Gramática para nombre propio de recta (mayúsculas Y minúsculas)
+local spintent_geo_nombre_recta = Ct(
     C(R"AZ" + R"az") *
     (
-        P"_{" * geo_cont_sub * P"}" * Cc"sub"
-        + geo_primas              * Cc"prima"
-        + Cc""                    * Cc""
+        P"_{" * spintent_geo_cont_sub * P"}" * Cc"sub"
+        + spintent_geo_primas             * Cc"prima"
+        + Cc""                            * Cc""
     )
 )
 
 -- Tabla de conversión de subíndices numéricos a texto
-local geo_num_a_texto = {
+local spintent_geo_num_a_texto = {
     ["0"] = "cero",  ["1"] = "uno",   ["2"] = "dos",
     ["3"] = "tres",  ["4"] = "cuatro",["5"] = "cinco",
     ["6"] = "seis",  ["7"] = "siete", ["8"] = "ocho",
@@ -1542,13 +1552,13 @@ local geo_num_a_texto = {
 }
 
 -- Prefijos para primas
-local geo_prima_prefijo = {
+local spintent_geo_prima_prefijo = {
     "prima", "doble-prima", "triple-prima", "cuádruple-prima"
 }
 
 -- Constructor de intent literal
 -- Si cmd == "" (silent-cmd=true en school) omite el concepto
-local function geo_build_intent(cmd, puntos)
+local function spintent_geo_build_intent(cmd, puntos)
     local partes = {}
     if cmd ~= "" then
         partes[#partes + 1] = cmd
@@ -1558,22 +1568,22 @@ local function geo_build_intent(cmd, puntos)
         partes[#partes + 1] = letra
         if tipo == "sub" then
             partes[#partes + 1] = "sub"
-            partes[#partes + 1] = geo_num_a_texto[mod] or mod
+            partes[#partes + 1] = spintent_geo_num_a_texto[mod] or mod
         elseif tipo == "prima" then
             local n = #mod
-            partes[#partes + 1] = geo_prima_prefijo[n] or (n .. "-prima")
+            partes[#partes + 1] = spintent_geo_prima_prefijo[n] or (n .. "-prima")
         end
     end
     return t_concat(partes, "-")
 end
 
 -- Constructor de intent para nombre propio de recta
-local function geo_build_intent_nombre(cmd, nombre)
-    return geo_build_intent(cmd, { nombre })
+local function spintent_geo_build_intent_nombre(cmd, nombre)
+    return spintent_geo_build_intent(cmd, { nombre })
 end
 
 -- Constructor del visual para \overline/\overrightarrow/\overleftrightarrow/\widearc
-local function geo_build_visual(puntos)
+local function spintent_geo_build_visual(puntos)
     local partes = {}
     for _, pt in ipairs(puntos) do
         local letra, mod, tipo = pt[1], pt[2], pt[3]
@@ -1591,7 +1601,7 @@ local function geo_build_visual(puntos)
 end
 
 -- Constructor del visual para nombre propio de recta
-local function geo_build_visual_nombre(nombre)
+local function spintent_geo_build_visual_nombre(nombre)
     local letra, mod, tipo = nombre[1], nombre[2], nombre[3]
     if tipo == "sub" then
         return letra .. "_{" .. mod .. "}"
@@ -1604,21 +1614,65 @@ local function geo_build_visual_nombre(nombre)
     end
 end
 
--- Función principal expuesta a expl3
--- cmd:    "lado" | "segmento" | "rayo" | "semirrecta" | "recta" | "arco" | ...
--- csv:    "A, B" | "A_{1}, B_{1}" | "L_{1}" | "m" | ...
--- mode:   "school" | "mathcat"
--- silent: "true" | "false"
+-- ------------------------------------------------------------
+-- §12.1  PUNTO — \spPoint
+-- ------------------------------------------------------------
+local spintent_geo_single_point_grammar = spintent_geo_punto * P(-1)
+
+register_tex_cmd("luafun_geo_point_parse_and_set",
+    function(csv, mode, silent)
+    csv = spintent_trim(csv)
+
+    local cmd_base   = "punto"
+    local cmd_intent = (silent == "true") and "" or cmd_base
+
+    local punto = spintent_geo_single_point_grammar:match(csv)
+    if not punto then
+        token_set_macro("l__spintent_geo_error_str",  "true")
+        token_set_macro("l__spintent_geo_intent_str", "")
+        token_set_macro("l__spintent_geo_visual_tl",  "")
+        return
+    end
+
+    token_set_macro("l__spintent_geo_error_str", "false")
+
+    if mode == "school" then
+        token_set_macro("l__spintent_geo_intent_str",
+                        spintent_geo_build_intent_nombre(cmd_intent, punto))
+        token_set_macro("l__spintent_geo_visual_tl",
+                        spintent_geo_build_visual_nombre(punto))
+    else
+        local mathcat_intent
+        if silent == "true" then
+            mathcat_intent = "_" .. cmd_base .. ":prefix($pt):silent"
+        else
+            mathcat_intent = "_" .. cmd_base .. ":prefix($pt)"
+        end
+        token_set_macro("l__spintent_geo_intent_str", mathcat_intent)
+        token_set_macro("l__spintent_geo_visual_tl",
+                        spintent_geo_build_visual_nombre(punto))
+    end
+end, { "string", "string", "string" })
+
+-- ------------------------------------------------------------
+-- §12.2  RECTA, RAYO, SEGMENTO Y ARCO
+--        \sprecta, \sprayo, \spside, \spmside, \sparc, \spmarc
+--
+-- Los seis comparten la misma función Lua genérica de dos puntos,
+-- registrada una sola vez a continuación. El parámetro "cmd" recibido
+-- desde expl3 determina el concepto verbalizado ("recta", "rayo",
+-- "lado", "segmento", "trazo", "arco", ...); el visual (\overline,
+-- \overrightarrow, \overleftrightarrow, \widearc) se decide del lado
+-- expl3 según qué comando público invocó la función.
+-- ------------------------------------------------------------
 register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv, mode, silent)
     csv = spintent_trim(csv)
 
-    -- En modo school con silent=true, omitimos el concepto del intent
     local cmd_intent = cmd
     if mode == "school" and silent == "true" then
         cmd_intent = ""
     end
 
-    -- En modo mathcat con silent=true, añadimos :silent al intent de función
     local mathcat_intent
     if silent == "true" then
         mathcat_intent = "_" .. cmd .. ":prefix($pts):silent"
@@ -1626,101 +1680,86 @@ register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv, mode, silent)
         mathcat_intent = "_" .. cmd .. ":prefix($pts)"
     end
 
-    -- Detección automática: ¿tiene coma? → dos puntos; si no → nombre propio
     local tiene_coma = s_match(csv, ",")
 
     if tiene_coma then
-        local puntos = geo_grammar:match(csv)
+        local puntos = spintent_geo_grammar:match(csv)
         if not puntos or #puntos == 0 then
-            token_set_macro(geo_pfx .. "error_str",     "true")
-            token_set_macro(geo_pfx .. "intent_str",    "")
-            token_set_macro(geo_pfx .. "visual_tl",     "")
-            token_set_macro(geo_pfx .. "is_nombre_str", "false")
+            token_set_macro("l__spintent_geo_error_str",     "true")
+            token_set_macro("l__spintent_geo_intent_str",    "")
+            token_set_macro("l__spintent_geo_visual_tl",     "")
+            token_set_macro("l__spintent_geo_is_nombre_str", "false")
             return
         end
-        token_set_macro(geo_pfx .. "error_str",     "false")
-        token_set_macro(geo_pfx .. "is_nombre_str", "false")
+        token_set_macro("l__spintent_geo_error_str",     "false")
+        token_set_macro("l__spintent_geo_is_nombre_str", "false")
         if mode == "school" then
-            token_set_macro(geo_pfx .. "intent_str",
-                            geo_build_intent(cmd_intent, puntos))
-            token_set_macro(geo_pfx .. "visual_tl",
-                            geo_build_visual(puntos))
+            token_set_macro("l__spintent_geo_intent_str",
+                            spintent_geo_build_intent(cmd_intent, puntos))
+            token_set_macro("l__spintent_geo_visual_tl",
+                            spintent_geo_build_visual(puntos))
         else
-            token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
-            token_set_macro(geo_pfx .. "visual_tl",
-                            geo_build_visual(puntos))
+            token_set_macro("l__spintent_geo_intent_str", mathcat_intent)
+            token_set_macro("l__spintent_geo_visual_tl",
+                            spintent_geo_build_visual(puntos))
         end
     else
-        local nombre = geo_nombre_recta:match(csv)
+        local nombre = spintent_geo_nombre_recta:match(csv)
         if not nombre then
-            token_set_macro(geo_pfx .. "error_str",     "true")
-            token_set_macro(geo_pfx .. "intent_str",    "")
-            token_set_macro(geo_pfx .. "visual_tl",     "")
-            token_set_macro(geo_pfx .. "is_nombre_str", "false")
+            token_set_macro("l__spintent_geo_error_str",     "true")
+            token_set_macro("l__spintent_geo_intent_str",    "")
+            token_set_macro("l__spintent_geo_visual_tl",     "")
+            token_set_macro("l__spintent_geo_is_nombre_str", "false")
             return
         end
-        token_set_macro(geo_pfx .. "error_str",     "false")
-        token_set_macro(geo_pfx .. "is_nombre_str", "true")
+        token_set_macro("l__spintent_geo_error_str",     "false")
+        token_set_macro("l__spintent_geo_is_nombre_str", "true")
         if mode == "school" then
-            token_set_macro(geo_pfx .. "intent_str",
-                            geo_build_intent_nombre(cmd_intent, nombre))
-            token_set_macro(geo_pfx .. "visual_tl",
-                            geo_build_visual_nombre(nombre))
+            token_set_macro("l__spintent_geo_intent_str",
+                            spintent_geo_build_intent_nombre(cmd_intent, nombre))
+            token_set_macro("l__spintent_geo_visual_tl",
+                            spintent_geo_build_visual_nombre(nombre))
         else
-            token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
-            token_set_macro(geo_pfx .. "visual_tl",
-                            geo_build_visual_nombre(nombre))
+            token_set_macro("l__spintent_geo_intent_str", mathcat_intent)
+            token_set_macro("l__spintent_geo_visual_tl",
+                            spintent_geo_build_visual_nombre(nombre))
         end
     end
 end, { "string", "string", "string", "string" })
 
--- Gramática LPeg para argumento de \spangulo / \spmangulo
--- Tres casos:
---   1. Tres puntos con coma: A, O, B  → ángulo-A-O-B
---   2. Un punto solo mayúscula:  A    → ángulo-en-A
---   3. Nombre propio: \alpha, 1, ABC  → ángulo-X
+-- ------------------------------------------------------------
+-- §12.3  ÁNGULO — \spangle, \spmangle
+-- ------------------------------------------------------------
+local spintent_geo_angulo_un_punto = spintent_geo_punto * P(-1)
 
--- Caso 3: nombre propio — cualquier string sin coma
--- Lo pasamos tal cual a token_set_macro para que LaTeX lo tipografíe
--- No intentamos parsearlo: puede ser \alpha, 1, ABC, etc.
-local geo_angulo_nombre = C((1 - P",")^1)
-
--- Detección de "un solo punto mayúscula" (caso 2)
--- Coincide con: A | A_{1} | A' — igual que geo_punto pero solo uno
-local geo_angulo_un_punto = geo_punto * P(-1)
-
-local function geo_build_intent_angulo(cmd, csv, silent)
-    -- cmd: "ángulo" | "ángulo-recto" | "medida-del-ángulo" | etc.
+local function spintent_geo_build_intent_angulo(cmd, csv, silent)
     local cmd_intent = (silent == "true") and "" or cmd
 
     local tiene_coma = s_match(csv, ",")
 
     if tiene_coma then
-        -- Caso 1: tres puntos A, O, B
-        local puntos = geo_grammar:match(csv)
+        local puntos = spintent_geo_grammar:match(csv)
         if not puntos or #puntos == 0 then
             return nil, nil, nil
         end
-        local intent = geo_build_intent(cmd_intent, puntos)
-        local visual = geo_build_visual(puntos)
+        local intent = spintent_geo_build_intent(cmd_intent, puntos)
+        local visual = spintent_geo_build_visual(puntos)
         return intent, visual, "tres-puntos"
     else
-        -- ¿Es un solo punto mayúscula?
-        local un_punto = geo_angulo_un_punto:match(csv)
+        local un_punto = spintent_geo_angulo_un_punto:match(csv)
         if un_punto then
-            -- Caso 2: un punto → "ángulo-en-A"
             local letra  = un_punto[1]
             local mod    = un_punto[2]
             local tipo   = un_punto[3]
-            -- Construir la parte "en-A" del intent
             local partes_en = { "en" }
             partes_en[#partes_en + 1] = letra
             if tipo == "sub" then
                 partes_en[#partes_en + 1] = "sub"
-                partes_en[#partes_en + 1] = geo_num_a_texto[mod] or mod
+                partes_en[#partes_en + 1] = spintent_geo_num_a_texto[mod] or mod
             elseif tipo == "prima" then
                 local n = #mod
-                partes_en[#partes_en + 1] = geo_prima_prefijo[n] or (n .. "-prima")
+                partes_en[#partes_en + 1] =
+                    spintent_geo_prima_prefijo[n] or (n .. "-prima")
             end
             local sufijo = t_concat(partes_en, "-")
             local intent
@@ -1729,14 +1768,11 @@ local function geo_build_intent_angulo(cmd, csv, silent)
             else
                 intent = cmd_intent .. "-" .. sufijo
             end
-            local visual = geo_build_visual_nombre(un_punto)
+            local visual = spintent_geo_build_visual_nombre(un_punto)
             return intent, visual, "un-punto"
         else
-            -- Caso 3: nombre propio (\alpha, 1, ABC, etc.)
             local nombre = spintent_trim(csv)
             if nombre == "" then return nil, nil, nil end
-            -- Para el intent, usamos el nombre tal cual
-            -- pero escapamos caracteres conflictivos
             local nombre_intent = s_gsub(nombre, "[\\{}%s]", "-")
             nombre_intent = s_gsub(nombre_intent, "%-%-+", "-")
             local intent
@@ -1754,7 +1790,6 @@ register_tex_cmd("luafun_geo_angulo_parse_and_set",
     function(cmd, csv, mode, silent, recto)
     csv = spintent_trim(csv)
 
-    -- cmd base según recto
     local cmd_base
     if recto == "true" then
         cmd_base = cmd .. "-recto"
@@ -1763,141 +1798,38 @@ register_tex_cmd("luafun_geo_angulo_parse_and_set",
     end
 
     local intent, visual, caso =
-        geo_build_intent_angulo(cmd_base, csv, silent)
+        spintent_geo_build_intent_angulo(cmd_base, csv, silent)
 
     if not intent then
-        token_set_macro(geo_pfx .. "error_str",       "true")
-        token_set_macro(geo_pfx .. "intent_str",      "")
-        token_set_macro(geo_pfx .. "visual_tl",       "")
-        token_set_macro(geo_pfx .. "angulo_caso_str", "")
+        token_set_macro("l__spintent_geo_error_str",       "true")
+        token_set_macro("l__spintent_geo_intent_str",      "")
+        token_set_macro("l__spintent_geo_visual_tl",       "")
+        token_set_macro("l__spintent_geo_angulo_caso_str", "")
         return
     end
 
-    token_set_macro(geo_pfx .. "error_str", "false")
-    token_set_macro(geo_pfx .. "angulo_caso_str", caso)
+    token_set_macro("l__spintent_geo_error_str", "false")
+    token_set_macro("l__spintent_geo_angulo_caso_str", caso)
 
     if mode == "school" then
-        token_set_macro(geo_pfx .. "intent_str", intent)
-        token_set_macro(geo_pfx .. "visual_tl",  visual)
+        token_set_macro("l__spintent_geo_intent_str", intent)
+        token_set_macro("l__spintent_geo_visual_tl",  visual)
     else
-        -- modo mathcat
         local mathcat_intent
         if silent == "true" then
             mathcat_intent = "_" .. cmd_base .. ":prefix($pts):silent"
         else
             mathcat_intent = "_" .. cmd_base .. ":prefix($pts)"
         end
-        token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
-        token_set_macro(geo_pfx .. "visual_tl",  visual)
+        token_set_macro("l__spintent_geo_intent_str", mathcat_intent)
+        token_set_macro("l__spintent_geo_visual_tl",  visual)
     end
 end, { "string", "string", "string", "string", "string" })
 
--- ============================================================
--- \spPoly
--- ============================================================
-
-local geo_poly_npts = {
-    [3] = { cmd = "triángulo", sym = "triangle" },
-    [4] = { cmd = "cuadrado",  sym = "square"   },
-}
-
-local geo_poly_grammar = Ct( geo_punto * (geo_sep * geo_punto)^0 )
-
-register_tex_cmd("luafun_geo_poly_parse_and_set",
-    function(csv, mode)
-    csv = spintent_trim(csv)
-
-    local tiene_coma = s_match(csv, ",")
-    if not tiene_coma then
-        token_set_macro(geo_pfx .. "error_str",        "true")
-        token_set_macro(geo_pfx .. "intent_str",       "")
-        token_set_macro(geo_pfx .. "intent_pts_str",   "")
-        token_set_macro(geo_pfx .. "visual_tl",        "")
-        token_set_macro(geo_pfx .. "poly_sym_str",     "")
-        return
-    end
-
-    local puntos = geo_poly_grammar:match(csv)
-    if not puntos or #puntos < 3 then
-        token_set_macro(geo_pfx .. "error_str",        "true")
-        token_set_macro(geo_pfx .. "intent_str",       "")
-        token_set_macro(geo_pfx .. "intent_pts_str",   "")
-        token_set_macro(geo_pfx .. "visual_tl",        "")
-        token_set_macro(geo_pfx .. "poly_sym_str",     "")
-        return
-    end
-
-    local info     = geo_poly_npts[#puntos]
-    local cmd_base = info and info.cmd or "polígono"
-    local sym      = info and info.sym or ""
-
-    token_set_macro(geo_pfx .. "error_str",      "false")
-    token_set_macro(geo_pfx .. "poly_sym_str",   sym)
-    token_set_macro(geo_pfx .. "intent_pts_str",
-                    geo_build_intent("", puntos))
-
-    if mode == "school" then
-        token_set_macro(geo_pfx .. "intent_str",
-                        geo_build_intent(cmd_base, puntos))
-        token_set_macro(geo_pfx .. "visual_tl",
-                        geo_build_visual(puntos))
-    else
-        token_set_macro(geo_pfx .. "intent_str",
-                        "_" .. cmd_base .. ":prefix($pts)")
-        token_set_macro(geo_pfx .. "visual_tl",
-                        geo_build_visual(puntos))
-    end
-end, { "string", "string" })
-
--- ============================================================
--- \spPoint
--- ============================================================
-
--- Un solo punto, siempre mayúscula, con anclaje P(-1) para
--- rechazar cualquier residuo (p.ej. "AB" no es un punto válido).
-local geo_single_point_grammar = geo_punto * P(-1)
-
-register_tex_cmd("luafun_geo_point_parse_and_set",
-    function(csv, mode, silent)
-    csv = spintent_trim(csv)
-
-    local cmd_base   = "punto"
-    local cmd_intent = (silent == "true") and "" or cmd_base
-
-    local punto = geo_single_point_grammar:match(csv)
-    if not punto then
-        token_set_macro(geo_pfx .. "error_str",  "true")
-        token_set_macro(geo_pfx .. "intent_str", "")
-        token_set_macro(geo_pfx .. "visual_tl",  "")
-        return
-    end
-
-    token_set_macro(geo_pfx .. "error_str", "false")
-
-    if mode == "school" then
-        token_set_macro(geo_pfx .. "intent_str",
-                        geo_build_intent_nombre(cmd_intent, punto))
-        token_set_macro(geo_pfx .. "visual_tl",
-                        geo_build_visual_nombre(punto))
-    else
-        local mathcat_intent
-        if silent == "true" then
-            mathcat_intent = "_" .. cmd_base .. ":prefix($pt):silent"
-        else
-            mathcat_intent = "_" .. cmd_base .. ":prefix($pt)"
-        end
-        token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
-        token_set_macro(geo_pfx .. "visual_tl",
-                        geo_build_visual_nombre(punto))
-    end
-end, { "string", "string", "string" })
-
--- ============================================================
--- \spAfig / \spPfig — área y perímetro de figuras poligonales
--- ============================================================
-
--- Extiende el mapeo de \spPoly con más nombres de polígono
-local geo_poly_npts_ext = {
+-- ------------------------------------------------------------
+-- §12.4  POLÍGONO — \spPoly, \spAfig, \spPfig
+-- ------------------------------------------------------------
+local spintent_geo_poly_npts = {
     [3] = { cmd = "triángulo",  sym = "triangle" },
     [4] = { cmd = "cuadrado",   sym = "square"   },
     [5] = { cmd = "pentágono",  sym = ""         },
@@ -1906,77 +1838,114 @@ local geo_poly_npts_ext = {
     [8] = { cmd = "octágono",   sym = ""         },
 }
 
--- op: "área" | "perímetro"
--- csv: "" | "A, B, C" | ...
--- mode: "school" | "mathcat"
--- print_sym: "true" | "false"
--- read_arg: "" | "trapecio" | "triángulo escaleno" | ...
+register_tex_cmd("luafun_geo_poly_parse_and_set",
+    function(csv, mode)
+    csv = spintent_trim(csv)
+
+    local tiene_coma = s_match(csv, ",")
+    if not tiene_coma then
+        token_set_macro("l__spintent_geo_error_str",      "true")
+        token_set_macro("l__spintent_geo_intent_str",     "")
+        token_set_macro("l__spintent_geo_intent_pts_str", "")
+        token_set_macro("l__spintent_geo_visual_tl",      "")
+        token_set_macro("l__spintent_geo_poly_sym_str",   "")
+        return
+    end
+
+    local puntos = spintent_geo_poly_grammar:match(csv)
+    if not puntos or #puntos < 3 then
+        token_set_macro("l__spintent_geo_error_str",      "true")
+        token_set_macro("l__spintent_geo_intent_str",     "")
+        token_set_macro("l__spintent_geo_intent_pts_str", "")
+        token_set_macro("l__spintent_geo_visual_tl",      "")
+        token_set_macro("l__spintent_geo_poly_sym_str",   "")
+        return
+    end
+
+    local info     = spintent_geo_poly_npts[#puntos]
+    local cmd_base = info and info.cmd or "polígono"
+    local sym      = info and info.sym or ""
+
+    token_set_macro("l__spintent_geo_error_str",      "false")
+    token_set_macro("l__spintent_geo_poly_sym_str",   sym)
+    token_set_macro("l__spintent_geo_intent_pts_str",
+                    spintent_geo_build_intent("", puntos))
+
+    if mode == "school" then
+        token_set_macro("l__spintent_geo_intent_str",
+                        spintent_geo_build_intent(cmd_base, puntos))
+        token_set_macro("l__spintent_geo_visual_tl",
+                        spintent_geo_build_visual(puntos))
+    else
+        token_set_macro("l__spintent_geo_intent_str",
+                        "_" .. cmd_base .. ":prefix($pts)")
+        token_set_macro("l__spintent_geo_visual_tl",
+                        spintent_geo_build_visual(puntos))
+    end
+end, { "string", "string" })
+
 register_tex_cmd("luafun_geo_fig_parse_and_set",
     function(op, csv, mode, print_sym, read_arg)
     csv = spintent_trim(csv)
     read_arg = spintent_trim(read_arg)
 
-    -- Caso vacío: solo el símbolo A / P, sin subíndice
     if csv == "" then
-        token_set_macro(geo_pfx .. "error_str",    "false")
-        token_set_macro(geo_pfx .. "poly_sym_str", "")
-        token_set_macro(geo_pfx .. "intent_str",   op)
-        token_set_macro(geo_pfx .. "visual_tl",    "")
+        token_set_macro("l__spintent_geo_error_str",    "false")
+        token_set_macro("l__spintent_geo_poly_sym_str", "")
+        token_set_macro("l__spintent_geo_intent_str",   op)
+        token_set_macro("l__spintent_geo_visual_tl",    "")
         return
     end
 
     local tiene_coma = s_match(csv, ",")
     if not tiene_coma then
-        token_set_macro(geo_pfx .. "error_str",    "true")
-        token_set_macro(geo_pfx .. "intent_str",   "")
-        token_set_macro(geo_pfx .. "visual_tl",    "")
-        token_set_macro(geo_pfx .. "poly_sym_str", "")
+        token_set_macro("l__spintent_geo_error_str",    "true")
+        token_set_macro("l__spintent_geo_intent_str",   "")
+        token_set_macro("l__spintent_geo_visual_tl",    "")
+        token_set_macro("l__spintent_geo_poly_sym_str", "")
         return
     end
 
-    local puntos = geo_poly_grammar:match(csv)
+    local puntos = spintent_geo_poly_grammar:match(csv)
     if not puntos or #puntos < 3 then
-        token_set_macro(geo_pfx .. "error_str",    "true")
-        token_set_macro(geo_pfx .. "intent_str",   "")
-        token_set_macro(geo_pfx .. "visual_tl",    "")
-        token_set_macro(geo_pfx .. "poly_sym_str", "")
+        token_set_macro("l__spintent_geo_error_str",    "true")
+        token_set_macro("l__spintent_geo_intent_str",   "")
+        token_set_macro("l__spintent_geo_visual_tl",    "")
+        token_set_macro("l__spintent_geo_poly_sym_str", "")
         return
     end
 
-    local info      = geo_poly_npts_ext[#puntos]
-    local cmd_fig   = (read_arg ~= "" and read_arg)
-                       or (info and info.cmd)
-                       or "polígono"
-    local sym       = (info and info.sym) or ""
+    local info    = spintent_geo_poly_npts[#puntos]
+    local cmd_fig = (read_arg ~= "" and read_arg)
+                    or (info and info.cmd)
+                    or "polígono"
+    local sym     = (info and info.sym) or ""
 
-    token_set_macro(geo_pfx .. "error_str", "false")
-    token_set_macro(geo_pfx .. "poly_sym_str",
+    token_set_macro("l__spintent_geo_error_str", "false")
+    token_set_macro("l__spintent_geo_poly_sym_str",
                     (print_sym == "true") and sym or "")
-    token_set_macro(geo_pfx .. "visual_tl",
-                    geo_build_visual(puntos))
+    token_set_macro("l__spintent_geo_visual_tl",
+                    spintent_geo_build_visual(puntos))
 
-    -- Intent: "área-del-triángulo-A-B-C" / "perímetro-del-cuadrado-A-B-C-D"
     local conector = "del"
-    -- concordancia simple: "de la" si el nombre termina en vocal + "a"
-    -- (regla suficiente para los sustantivos usados aquí: todos son
-    -- masculinos: triángulo, cuadrado, pentágono, ... , polígono)
     local partes = { op, conector, cmd_fig }
     for _, pt in ipairs(puntos) do
         local letra, mod, tipo = pt[1], pt[2], pt[3]
         partes[#partes + 1] = letra
         if tipo == "sub" then
             partes[#partes + 1] = "sub"
-            partes[#partes + 1] = geo_num_a_texto[mod] or mod
+            partes[#partes + 1] = spintent_geo_num_a_texto[mod] or mod
         elseif tipo == "prima" then
             local n = #mod
-            partes[#partes + 1] = geo_prima_prefijo[n] or (n .. "-prima")
+            partes[#partes + 1] =
+                spintent_geo_prima_prefijo[n] or (n .. "-prima")
         end
     end
 
     if mode == "school" then
-        token_set_macro(geo_pfx .. "intent_str", t_concat(partes, "-"))
+        token_set_macro("l__spintent_geo_intent_str", t_concat(partes, "-"))
     else
-        token_set_macro(geo_pfx .. "intent_str",
+        token_set_macro("l__spintent_geo_intent_str",
                         "_" .. op .. "-" .. conector .. "-" .. cmd_fig ..
                         ":prefix($pts)")
     end

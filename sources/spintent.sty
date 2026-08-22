@@ -2512,24 +2512,29 @@
 \str_new:N \l__spintent_geo_intent_str
 \tl_new:N  \l__spintent_geo_visual_tl
 \str_new:N \l__spintent_geo_is_nombre_str
-\str_new:N  \l__spintent_splado_mode_str
-\tl_new:N   \l__spintent_splado_prefix_tl
-\bool_new:N \l__spintent_splado_silent_cmd_bool
-\msg_new:nnnn { spintent } { splado-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \splado:~'#1'. }
+\str_new:N \l__spintent_geo_poly_sym_str
+\str_new:N \l__spintent_geo_intent_pts_str
+\str_new:N \l__spintent_geo_angulo_caso_str
+\tl_new:N  \l__spintent_geo_side_cmd_tl
+\tl_new:N  \l__spintent_geo_fig_op_tl
+\str_new:N  \l__spintent_spPoint_mode_str
+\tl_new:N   \l__spintent_spPoint_prefix_tl
+\bool_new:N \l__spintent_spPoint_silent_cmd_bool
+\msg_new:nnnn { spintent } { spPoint-invalid-point }
+  { Invalid~point~format~in~\token_to_str:N \spPoint:~'#1'. }
   {
-    The~argument~must~be~a~comma-separated~list~of~uppercase~
-    letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
+    The~argument~must~be~a~single~uppercase~letter~with~an~optional~
+    subscript~(\_{...})~or~prime~(').\\
+    Valid~examples:~'A',~'A_\{1\}',~'A'''.
   }
-\keys_define:nn { spintent / splado }
+\keys_define:nn { spintent / spPoint }
   {
     read-cmd            .choices:nn = { school , mathcat }
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l__spintent_splado_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_splado_mode_str { mathcat } }
+            {1} { \str_set:Nn \l__spintent_spPoint_mode_str { school  } }
+            {2} { \str_set:Nn \l__spintent_spPoint_mode_str { mathcat } }
           }
       },
     read-cmd            .initial:n  = school,
@@ -2538,567 +2543,68 @@
       \msg_error:nneee { spintent } { unknown-choice }
         { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
     prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_splado_prefix_tl {#1} },
+      { \__spintent_sanitize_affix:Nn \l__spintent_spPoint_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_splado_silent_cmd_bool,
+    silent-cmd          .bool_set:N = \l__spintent_spPoint_silent_cmd_bool,
     silent-cmd          .initial:n  = false,
     silent-cmd          .value_required:n = true,
     unknown             .code:n =
       {
-        \str_set:Nn \l__spintent_command_name_str { splado }
+        \str_set:Nn \l__spintent_command_name_str { spPoint }
         \__spintent_unknown_keys_cmd:n {#1}
       },
   }
-\cs_new_protected:Nn \__spintent_splado_print:n
+\cs_new_protected:Nn \__spintent_spPoint_print:n
   {
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { lado }
+    \__spintent_luafun_geo_point_parse_and_set:nnn
       { \exp_not:n {#1} }
-      { \l__spintent_splado_mode_str }
-      { \bool_if:NTF \l__spintent_splado_silent_cmd_bool { true } { false } }
+      { \l__spintent_spPoint_mode_str }
+      { \bool_if:NTF \l__spintent_spPoint_silent_cmd_bool { true } { false } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
-        \msg_error:nne { spintent } { splado-invalid-points }
+        \msg_error:nne { spintent } { spPoint-invalid-point }
           { \exp_not:n {#1} }
       }
-    \str_if_eq:VnTF \l__spintent_splado_mode_str { school }
+    \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_splado_prefix_tl
-              { \tl_use:N \l__spintent_splado_prefix_tl - }
+            \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
+              { \tl_use:N \l__spintent_spPoint_prefix_tl - }
             \l__spintent_geo_intent_str
           }
-          {
-            \c__spintent_invisible_sep_tl
-            \overline { \l__spintent_geo_visual_tl }
-          }
+          { \c__spintent_invisible_sep_tl \l__spintent_geo_visual_tl }
         \__spintent_invisible_sep:
       }
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_splado_prefix_tl
-              { \tl_use:N \l__spintent_splado_prefix_tl - }
+            \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
+              { \tl_use:N \l__spintent_spPoint_prefix_tl - }
             \l__spintent_geo_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
-            \overline
-              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
+            \MathMLarg { pt } { \l__spintent_geo_visual_tl }
           }
         \__spintent_invisible_sep:
       }
   }
-\cs_new_protected:Nn \__spintent_splado_exec:nn
+\cs_new_protected:Nn \__spintent_spPoint_exec:nn
   {
-    \keys_set:nn { spintent / splado } { #1 }
-    \__spintent_splado_print:n { #2 }
+    \keys_set:nn { spintent / spPoint } { #1 }
+    \__spintent_spPoint_print:n { #2 }
   }
-\NewDocumentCommand \splado { O{} m }
+\NewDocumentCommand \spPoint { O{} m }
   {
     \mode_if_math:TF
       {
         \group_begin:
-          \__spintent_splado_exec:nn { #1 } { #2 }
+          \__spintent_spPoint_exec:nn { #1 } { #2 }
         \group_end:
       }
-      { \msg_error:nnn { spintent } { need-math-mode } { \splado } }
-  }
-\str_new:N  \l__spintent_spmlado_mode_str
-\tl_new:N   \l__spintent_spmlado_prefix_tl
-\bool_new:N \l__spintent_spmlado_silent_cmd_bool
-\bool_new:N \l__spintent_spmlado_overline_bool
-\msg_new:nnnn { spintent } { spmlado-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \spmlado:~'#1'. }
-  {
-    The~argument~must~be~a~comma-separated~list~of~uppercase~
-    letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
-  }
-\keys_define:nn { spintent / spmlado }
-  {
-    read-cmd            .choices:nn = { school , mathcat }
-      {
-        \int_case:nn { \l_keys_choice_int }
-          {
-            {1} { \str_set:Nn \l__spintent_spmlado_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spmlado_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    overline            .bool_set:N = \l__spintent_spmlado_overline_bool,
-    overline            .initial:n  = false,
-    overline            .value_required:n = true,
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spmlado_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spmlado_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { spmlado }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
-  }
-\cs_new_protected:Nn \__spintent_spmlado_print:n
-  {
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { medida-del-lado }
-      { \exp_not:n {#1} }
-      { \l__spintent_spmlado_mode_str }
-      { \bool_if:NTF \l__spintent_spmlado_silent_cmd_bool { true } { false } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
-      {
-        \msg_error:nne { spintent } { spmlado-invalid-points }
-          { \exp_not:n {#1} }
-      }
-    \str_if_eq:VnTF \l__spintent_spmlado_mode_str { school }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spmlado_prefix_tl
-              { \tl_use:N \l__spintent_spmlado_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \bool_if:NTF \l__spintent_spmlado_overline_bool
-              {
-                \MathMLintent { :silent } { \operatorname { m } }
-                \overline { \l__spintent_geo_visual_tl }
-              }
-              { \l__spintent_geo_visual_tl }
-          }
-        \__spintent_invisible_sep:
-      }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spmlado_prefix_tl
-              { \tl_use:N \l__spintent_spmlado_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \bool_if:NTF \l__spintent_spmlado_overline_bool
-              {
-                \MathMLintent { :silent } { \operatorname { m } }
-                \overline
-                  { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-              }
-              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-          }
-        \__spintent_invisible_sep:
-      }
-  }
-\cs_new_protected:Nn \__spintent_spmlado_exec:nn
-  {
-    \keys_set:nn { spintent / spmlado } { #1 }
-    \__spintent_spmlado_print:n { #2 }
-  }
-\NewDocumentCommand \spmlado { O{} m }
-  {
-    \mode_if_math:TF
-      {
-        \group_begin:
-          \__spintent_spmlado_exec:nn { #1 } { #2 }
-        \group_end:
-      }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spmlado } }
-  }
-\str_new:N  \l__spintent_spsegmento_mode_str
-\tl_new:N   \l__spintent_spsegmento_prefix_tl
-\bool_new:N \l__spintent_spsegmento_silent_cmd_bool
-\msg_new:nnnn { spintent } { spsegmento-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \spsegmento:~'#1'. }
-  {
-    The~argument~must~be~a~comma-separated~list~of~uppercase~
-    letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
-  }
-\keys_define:nn { spintent / spsegmento }
-  {
-    read-cmd            .choices:nn = { school , mathcat }
-      {
-        \int_case:nn { \l_keys_choice_int }
-          {
-            {1} { \str_set:Nn \l__spintent_spsegmento_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spsegmento_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spsegmento_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spsegmento_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { spsegmento }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
-  }
-\cs_new_protected:Nn \__spintent_spsegmento_print:n
-  {
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { segmento }
-      { \exp_not:n {#1} }
-      { \l__spintent_spsegmento_mode_str }
-      { \bool_if:NTF \l__spintent_spsegmento_silent_cmd_bool { true } { false } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
-      {
-        \msg_error:nne { spintent } { spsegmento-invalid-points }
-          { \exp_not:n {#1} }
-      }
-    \str_if_eq:VnTF \l__spintent_spsegmento_mode_str { school }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spsegmento_prefix_tl
-              { \tl_use:N \l__spintent_spsegmento_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \overline { \l__spintent_geo_visual_tl }
-          }
-        \__spintent_invisible_sep:
-      }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spsegmento_prefix_tl
-              { \tl_use:N \l__spintent_spsegmento_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \overline
-              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-          }
-        \__spintent_invisible_sep:
-      }
-  }
-\cs_new_protected:Nn \__spintent_spsegmento_exec:nn
-  {
-    \keys_set:nn { spintent / spsegmento } { #1 }
-    \__spintent_spsegmento_print:n { #2 }
-  }
-\NewDocumentCommand \spsegmento { O{} m }
-  {
-    \mode_if_math:TF
-      {
-        \group_begin:
-          \__spintent_spsegmento_exec:nn { #1 } { #2 }
-        \group_end:
-      }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spsegmento } }
-  }
-\str_new:N  \l__spintent_spmsegmento_mode_str
-\tl_new:N   \l__spintent_spmsegmento_prefix_tl
-\bool_new:N \l__spintent_spmsegmento_silent_cmd_bool
-\bool_new:N \l__spintent_spmsegmento_overline_bool
-\msg_new:nnnn { spintent } { spmsegmento-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \spmsegmento:~'#1'. }
-  {
-    The~argument~must~be~a~comma-separated~list~of~uppercase~
-    letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
-  }
-\keys_define:nn { spintent / spmsegmento }
-  {
-    read-cmd            .choices:nn = { school , mathcat }
-      {
-        \int_case:nn { \l_keys_choice_int }
-          {
-            {1} { \str_set:Nn \l__spintent_spmsegmento_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spmsegmento_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    overline            .bool_set:N = \l__spintent_spmsegmento_overline_bool,
-    overline            .initial:n  = false,
-    overline            .value_required:n = true,
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spmsegmento_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spmsegmento_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { spmsegmento }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
-  }
-\cs_new_protected:Nn \__spintent_spmsegmento_print:n
-  {
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { medida-del-segmento }
-      { \exp_not:n {#1} }
-      { \l__spintent_spmsegmento_mode_str }
-      { \bool_if:NTF \l__spintent_spmsegmento_silent_cmd_bool { true } { false } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
-      {
-        \msg_error:nne { spintent } { spmsegmento-invalid-points }
-          { \exp_not:n {#1} }
-      }
-    \str_if_eq:VnTF \l__spintent_spmsegmento_mode_str { school }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spmsegmento_prefix_tl
-              { \tl_use:N \l__spintent_spmsegmento_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \bool_if:NTF \l__spintent_spmsegmento_overline_bool
-              {
-                \MathMLintent { :silent } { \operatorname { m } }
-                \overline { \l__spintent_geo_visual_tl }
-              }
-              { \l__spintent_geo_visual_tl }
-          }
-        \__spintent_invisible_sep:
-      }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spmsegmento_prefix_tl
-              { \tl_use:N \l__spintent_spmsegmento_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \bool_if:NTF \l__spintent_spmsegmento_overline_bool
-              {
-                \MathMLintent { :silent } { \operatorname { m } }
-                \overline
-                  { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-              }
-              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-          }
-        \__spintent_invisible_sep:
-      }
-  }
-\cs_new_protected:Nn \__spintent_spmsegmento_exec:nn
-  {
-    \keys_set:nn { spintent / spmsegmento } { #1 }
-    \__spintent_spmsegmento_print:n { #2 }
-  }
-\NewDocumentCommand \spmsegmento { O{} m }
-  {
-    \mode_if_math:TF
-      {
-        \group_begin:
-          \__spintent_spmsegmento_exec:nn { #1 } { #2 }
-        \group_end:
-      }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spmsegmento } }
-  }
-\str_new:N  \l__spintent_sprayo_mode_str
-\tl_new:N   \l__spintent_sprayo_prefix_tl
-\bool_new:N \l__spintent_sprayo_silent_cmd_bool
-\msg_new:nnnn { spintent } { sprayo-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'. }
-  {
-    The~argument~must~be~a~comma-separated~list~of~exactly~two~
-    uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
-  }
-\keys_define:nn { spintent / sprayo }
-  {
-    read-cmd            .choices:nn = { school , mathcat }
-      {
-        \int_case:nn { \l_keys_choice_int }
-          {
-            {1} { \str_set:Nn \l__spintent_sprayo_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_sprayo_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_sprayo_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_sprayo_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { sprayo }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
-  }
-\cs_new_protected:Nn \__spintent_sprayo_print:n
-  {
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { rayo }
-      { \exp_not:n {#1} }
-      { \l__spintent_sprayo_mode_str }
-      { \bool_if:NTF \l__spintent_sprayo_silent_cmd_bool { true } { false } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
-      {
-        \msg_error:nne { spintent } { sprayo-invalid-points }
-          { \exp_not:n {#1} }
-      }
-    \str_if_eq:VnTF \l__spintent_sprayo_mode_str { school }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_sprayo_prefix_tl
-              { \tl_use:N \l__spintent_sprayo_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \overrightarrow { \l__spintent_geo_visual_tl }
-          }
-        \__spintent_invisible_sep:
-      }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_sprayo_prefix_tl
-              { \tl_use:N \l__spintent_sprayo_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \overrightarrow
-              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-          }
-        \__spintent_invisible_sep:
-      }
-  }
-\cs_new_protected:Nn \__spintent_sprayo_exec:nn
-  {
-    \keys_set:nn { spintent / sprayo } { #1 }
-    \__spintent_sprayo_print:n { #2 }
-  }
-\NewDocumentCommand \sprayo { O{} m }
-  {
-    \mode_if_math:TF
-      {
-        \group_begin:
-          \__spintent_sprayo_exec:nn { #1 } { #2 }
-        \group_end:
-      }
-      { \msg_error:nnn { spintent } { need-math-mode } { \sprayo } }
-  }
-\str_new:N  \l__spintent_spsemirecta_mode_str
-\tl_new:N   \l__spintent_spsemirecta_prefix_tl
-\bool_new:N \l__spintent_spsemirecta_silent_cmd_bool
-\msg_new:nnnn { spintent } { spsemirecta-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \spsemirecta:~'#1'. }
-  {
-    The~argument~must~be~a~comma-separated~list~of~exactly~two~
-    uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
-  }
-\keys_define:nn { spintent / spsemirecta }
-  {
-    read-cmd            .choices:nn = { school , mathcat }
-      {
-        \int_case:nn { \l_keys_choice_int }
-          {
-            {1} { \str_set:Nn \l__spintent_spsemirecta_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spsemirecta_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spsemirecta_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spsemirecta_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { spsemirecta }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
-  }
-\cs_new_protected:Nn \__spintent_spsemirecta_print:n
-  {
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { semirrecta }
-      { \exp_not:n {#1} }
-      { \l__spintent_spsemirecta_mode_str }
-      { \bool_if:NTF \l__spintent_spsemirecta_silent_cmd_bool { true } { false } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
-      {
-        \msg_error:nne { spintent } { spsemirecta-invalid-points }
-          { \exp_not:n {#1} }
-      }
-    \str_if_eq:VnTF \l__spintent_spsemirecta_mode_str { school }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spsemirecta_prefix_tl
-              { \tl_use:N \l__spintent_spsemirecta_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \overrightarrow { \l__spintent_geo_visual_tl }
-          }
-        \__spintent_invisible_sep:
-      }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spsemirecta_prefix_tl
-              { \tl_use:N \l__spintent_spsemirecta_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \overrightarrow
-              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-          }
-        \__spintent_invisible_sep:
-      }
-  }
-\cs_new_protected:Nn \__spintent_spsemirecta_exec:nn
-  {
-    \keys_set:nn { spintent / spsemirecta } { #1 }
-    \__spintent_spsemirecta_print:n { #2 }
-  }
-\NewDocumentCommand \spsemirecta { O{} m }
-  {
-    \mode_if_math:TF
-      {
-        \group_begin:
-          \__spintent_spsemirecta_exec:nn { #1 } { #2 }
-        \group_end:
-      }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spsemirecta } }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spPoint } }
   }
 \str_new:N  \l__spintent_sprecta_mode_str
 \tl_new:N   \l__spintent_sprecta_prefix_tl
@@ -3161,10 +2667,7 @@
                   { \tl_use:N \l__spintent_sprecta_prefix_tl - }
                 \l__spintent_geo_intent_str
               }
-              {
-                \c__spintent_invisible_sep_tl
-                \l__spintent_geo_visual_tl
-              }
+              { \c__spintent_invisible_sep_tl \l__spintent_geo_visual_tl }
             \__spintent_invisible_sep:
           }
           {
@@ -3227,24 +2730,25 @@
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \sprecta } }
   }
-\str_new:N  \l__spintent_sparco_mode_str
-\tl_new:N   \l__spintent_sparco_prefix_tl
-\bool_new:N \l__spintent_sparco_silent_cmd_bool
-\msg_new:nnnn { spintent } { sparco-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \sparco:~'#1'. }
+\str_new:N  \l__spintent_sprayo_mode_str
+\tl_new:N   \l__spintent_sprayo_prefix_tl
+\bool_new:N \l__spintent_sprayo_silent_cmd_bool
+\str_new:N  \l__spintent_sprayo_read_sty_str
+\msg_new:nnnn { spintent } { sprayo-invalid-points }
+  { Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'. }
   {
-    The~argument~must~be~a~comma-separated~list~of~uppercase~
-    letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
+    The~argument~must~be~a~comma-separated~list~of~exactly~two~
+    uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
     Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
   }
-\keys_define:nn { spintent / sparco }
+\keys_define:nn { spintent / sprayo }
   {
     read-cmd            .choices:nn = { school , mathcat }
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l__spintent_sparco_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_sparco_mode_str { mathcat } }
+            {1} { \str_set:Nn \l__spintent_sprayo_mode_str { school  } }
+            {2} { \str_set:Nn \l__spintent_sprayo_mode_str { mathcat } }
           }
       },
     read-cmd            .initial:n  = school,
@@ -3253,261 +2757,350 @@
       \msg_error:nneee { spintent } { unknown-choice }
         { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
     prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_sparco_prefix_tl {#1} },
+      { \__spintent_sanitize_affix:Nn \l__spintent_sprayo_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_sparco_silent_cmd_bool,
+    silent-cmd          .bool_set:N = \l__spintent_sprayo_silent_cmd_bool,
     silent-cmd          .initial:n  = false,
     silent-cmd          .value_required:n = true,
+    read-sty            .choices:nn = { rayo , semirrecta }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l__spintent_sprayo_read_sty_str { rayo       } }
+            {2} { \str_set:Nn \l__spintent_sprayo_read_sty_str { semirrecta } }
+          }
+      },
+    read-sty            .initial:n  = rayo,
+    read-sty            .value_required:n = true,
+    read-sty / unknown  .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-sty } { rayo,~semirrecta } { \exp_not:n {#1} },
     unknown             .code:n =
       {
-        \str_set:Nn \l__spintent_command_name_str { sparco }
+        \str_set:Nn \l__spintent_command_name_str { sprayo }
         \__spintent_unknown_keys_cmd:n {#1}
       },
   }
-\cs_new_protected:Nn \__spintent_sparco_print:n
+\cs_new_protected:Nn \__spintent_sprayo_print:n
   {
     \__spintent_luafun_geo_parse_and_set:nnnn
-      { arco }
+      { \l__spintent_sprayo_read_sty_str }
       { \exp_not:n {#1} }
-      { \l__spintent_sparco_mode_str }
-      { \bool_if:NTF \l__spintent_sparco_silent_cmd_bool { true } { false } }
+      { \l__spintent_sprayo_mode_str }
+      { \bool_if:NTF \l__spintent_sprayo_silent_cmd_bool { true } { false } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
-        \msg_error:nne { spintent } { sparco-invalid-points }
+        \msg_error:nne { spintent } { sprayo-invalid-points }
           { \exp_not:n {#1} }
       }
-    \str_if_eq:VnTF \l__spintent_sparco_mode_str { school }
+    \str_if_eq:VnTF \l__spintent_sprayo_mode_str { school }
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_sparco_prefix_tl
-              { \tl_use:N \l__spintent_sparco_prefix_tl - }
+            \tl_if_empty:NF \l__spintent_sprayo_prefix_tl
+              { \tl_use:N \l__spintent_sprayo_prefix_tl - }
             \l__spintent_geo_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
-            \cs_if_exist:NTF \widearc
-              { \widearc { \l__spintent_geo_visual_tl } }
-              { \Umathaccent 0 0 "23DC { \l__spintent_geo_visual_tl } }
+            \overrightarrow { \l__spintent_geo_visual_tl }
           }
         \__spintent_invisible_sep:
       }
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_sparco_prefix_tl
-              { \tl_use:N \l__spintent_sparco_prefix_tl - }
+            \tl_if_empty:NF \l__spintent_sprayo_prefix_tl
+              { \tl_use:N \l__spintent_sprayo_prefix_tl - }
             \l__spintent_geo_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
-            \cs_if_exist:NTF \widearc
-              {
-                \widearc
-                  { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-              }
-              {
-                \Umathaccent 0 0 "23DC
-                  { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-              }
+            \overrightarrow
+              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
           }
         \__spintent_invisible_sep:
       }
   }
-\cs_new_protected:Nn \__spintent_sparco_exec:nn
+\cs_new_protected:Nn \__spintent_sprayo_exec:nn
   {
-    \keys_set:nn { spintent / sparco } { #1 }
-    \__spintent_sparco_print:n { #2 }
+    \keys_set:nn { spintent / sprayo } { #1 }
+    \__spintent_sprayo_print:n { #2 }
   }
-\NewDocumentCommand \sparco { O{} m }
+\NewDocumentCommand \sprayo { O{} m }
   {
     \mode_if_math:TF
       {
         \group_begin:
-          \__spintent_sparco_exec:nn { #1 } { #2 }
+          \__spintent_sprayo_exec:nn { #1 } { #2 }
         \group_end:
       }
-      { \msg_error:nnn { spintent } { need-math-mode } { \sparco } }
+      { \msg_error:nnn { spintent } { need-math-mode } { \sprayo } }
   }
-\str_new:N  \l__spintent_spmarco_mode_str
-\tl_new:N   \l__spintent_spmarco_prefix_tl
-\bool_new:N \l__spintent_spmarco_silent_cmd_bool
-\msg_new:nnnn { spintent } { spmarco-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \spmarco:~'#1'. }
+\clist_map_inline:nn { side , mside }
   {
-    The~argument~must~be~a~comma-separated~list~of~uppercase~
-    letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
+    \str_new:c  { l__spintent_sp #1 _mode_str        }
+    \tl_new:c   { l__spintent_sp #1 _prefix_tl       }
+    \bool_new:c { l__spintent_sp #1 _silent_cmd_bool }
+    \str_new:c  { l__spintent_sp #1 _read_sty_str    }
+    \str_new:c  { l__spintent_sp #1 _read_arg_str    }
+    \bool_new:c { l__spintent_sp #1 _print_m_bool    }
   }
-\keys_define:nn { spintent / spmarco }
+\clist_map_inline:nn { side , mside }
   {
-    read-cmd            .choices:nn = { school , mathcat }
+    \msg_new:nnnn { spintent } { sp #1 -invalid-points }
+      { Invalid~point~format~in~##1:~'##2'. }
       {
-        \int_case:nn { \l_keys_choice_int }
+        The~argument~must~be~a~comma-separated~list~of~uppercase~
+        letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
+        Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
+      }
+  }
+\clist_map_inline:nn { side , mside }
+  {
+    \keys_define:nn { spintent / sp #1 }
+      {
+        read-cmd            .choices:nn = { school , mathcat }
           {
-            {1} { \str_set:Nn \l__spintent_spmarco_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spmarco_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spmarco_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spmarco_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { spmarco }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l__spintent_sp #1 _mode_str } { school  } }
+                {2} { \str_set:cn { l__spintent_sp #1 _mode_str } { mathcat } }
+              }
+          },
+        read-cmd            .initial:n  = school,
+        read-cmd            .value_required:n = true,
+        read-cmd / unknown  .code:n =
+          \msg_error:nneee { spintent } { unknown-choice }
+            { read-cmd } { school,~mathcat } { \exp_not:n {##1} },
+        prefix              .code:n =
+          { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
+        prefix              .initial:n  = ,
+        prefix              .value_required:n = true,
+        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
+        silent-cmd          .initial:n  = false,
+        silent-cmd          .value_required:n = true,
+        read-sty            .choices:nn = { lado , segmento , trazo }
+          {
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l__spintent_sp #1 _read_sty_str } { lado      } }
+                {2} { \str_set:cn { l__spintent_sp #1 _read_sty_str } { segmento  } }
+                {3} { \str_set:cn { l__spintent_sp #1 _read_sty_str } { trazo     } }
+              }
+          },
+        read-sty            .initial:n  = lado,
+        read-sty            .value_required:n = true,
+        read-sty / unknown  .code:n =
+          \msg_error:nneee { spintent } { unknown-choice }
+            { read-sty } { lado,~segmento,~trazo } { \exp_not:n {##1} },
+        read-arg            .code:n =
+          { \str_set:cn { l__spintent_sp #1 _read_arg_str } {##1} },
+        read-arg            .initial:n  = ,
+        read-arg            .value_required:n = true,
+        print-m             .bool_set:c = { l__spintent_sp #1 _print_m_bool },
+        print-m             .initial:n  = false,
+        print-m             .value_required:n = true,
+        unknown             .code:n =
+          {
+            \str_set:Nn \l__spintent_command_name_str { sp #1 }
+            \__spintent_unknown_keys_cmd:n {##1}
+          },
+      }
   }
-\cs_new_protected:Nn \__spintent_spmarco_print:n
+\cs_new_protected:Nn \__spintent_spside_process:nn
   {
+    \tl_set:Nn \l__spintent_geo_side_cmd_tl
+      {
+        \str_if_empty:cTF { l__spintent_sp #1 _read_arg_str }
+          { \tl_use:c { l__spintent_sp #1 _read_sty_str } }
+          { \tl_use:c { l__spintent_sp #1 _read_arg_str } }
+      }
+    \str_if_eq:eeTF {#1} { mside }
+      { \tl_put_left:Nn \l__spintent_geo_side_cmd_tl { medida-del- } }
+      { }
     \__spintent_luafun_geo_parse_and_set:nnnn
-      { medida-del-arco }
-      { \exp_not:n {#1} }
-      { \l__spintent_spmarco_mode_str }
-      { \bool_if:NTF \l__spintent_spmarco_silent_cmd_bool { true } { false } }
+      { \l__spintent_geo_side_cmd_tl }
+      { \exp_not:n {#2} }
+      { \tl_use:c { l__spintent_sp #1 _mode_str } }
+      { \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool } { true } { false } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
-        \msg_error:nne { spintent } { spmarco-invalid-points }
-          { \exp_not:n {#1} }
+        \msg_error:nnee { spintent } { sp #1 -invalid-points }
+          { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \str_if_eq:VnTF \l__spintent_spmarco_mode_str { school }
+    \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_spmarco_prefix_tl
-              { \tl_use:N \l__spintent_spmarco_prefix_tl - }
+            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
             \l__spintent_geo_intent_str
           }
           {
-            \MathMLintent { :silent } { \operatorname { m } }
-            \cs_if_exist:NTF \widearc
-              { \widearc { \l__spintent_geo_visual_tl } }
-              { \Umathaccent 0 0 "23DC { \l__spintent_geo_visual_tl } }
+            \c__spintent_invisible_sep_tl
+            \str_if_eq:eeT {#1} { mside }
+              {
+                \bool_if:cT { l__spintent_sp #1 _print_m_bool }
+                  { \MathMLintent { :silent } { \operatorname { m } } }
+              }
+            \overline { \l__spintent_geo_visual_tl }
           }
         \__spintent_invisible_sep:
       }
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_spmarco_prefix_tl
-              { \tl_use:N \l__spintent_spmarco_prefix_tl - }
+            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
             \l__spintent_geo_intent_str
           }
           {
-            \MathMLintent { :silent } { \operatorname { m } }
-            \cs_if_exist:NTF \widearc
+            \c__spintent_invisible_sep_tl
+            \str_if_eq:eeT {#1} { mside }
               {
-                \widearc
-                  { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
+                \bool_if:cT { l__spintent_sp #1 _print_m_bool }
+                  { \MathMLintent { :silent } { \operatorname { m } } }
               }
-              {
-                \Umathaccent 0 0 "23DC
-                  { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
-              }
+            \overline
+              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
           }
         \__spintent_invisible_sep:
       }
   }
-\cs_new_protected:Nn \__spintent_spmarco_exec:nn
+\cs_new_protected:Nn \__spintent_spside_exec:nnn
   {
-    \keys_set:nn { spintent / spmarco } { #1 }
-    \__spintent_spmarco_print:n { #2 }
+    \keys_set:nn { spintent / sp #1 } { #2 }
+    \__spintent_spside_process:nn { #1 } { #3 }
   }
-\NewDocumentCommand \spmarco { O{} m }
+\NewDocumentCommand \spside { O{} m }
   {
     \mode_if_math:TF
       {
         \group_begin:
-          \__spintent_spmarco_exec:nn { #1 } { #2 }
+          \__spintent_spside_exec:nnn { side } { #1 } { #2 }
         \group_end:
       }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spmarco } }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spside } }
   }
-\str_new:N \l__spintent_geo_angulo_caso_str
-\str_new:N  \l__spintent_spangulo_mode_str
-\tl_new:N   \l__spintent_spangulo_prefix_tl
-\bool_new:N \l__spintent_spangulo_silent_cmd_bool
-\bool_new:N \l__spintent_spangulo_recto_bool
-\msg_new:nnnn { spintent } { spangulo-invalid-arg }
-  { Invalid~format~in~\token_to_str:N \spangulo:~'#1'. }
+\NewDocumentCommand \spmside { O{} m }
   {
-    The~argument~must~be~one~of:\\
-    - three~uppercase~points~separated~by~commas~(e.g.\ 'A,~O,~B');\\
-    - a~single~uppercase~point~with~optional~subscript~or~prime~
-      (e.g.\ 'A',~'A_\{1\}');\\
-    - an~angle~name~(e.g.\ '\string\alpha',~'1',~'ABC').
-  }
-\keys_define:nn { spintent / spangulo }
-  {
-    read-cmd            .choices:nn = { school , mathcat }
+    \mode_if_math:TF
       {
-        \int_case:nn { \l_keys_choice_int }
+        \group_begin:
+          \__spintent_spside_exec:nnn { mside } { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spmside } }
+  }
+\clist_map_inline:nn { angle , mangle }
+  {
+    \str_new:c  { l__spintent_sp #1 _mode_str        }
+    \tl_new:c   { l__spintent_sp #1 _prefix_tl       }
+    \bool_new:c { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_new:c { l__spintent_sp #1 _recto_bool      }
+    \bool_new:c { l__spintent_sp #1 _print_m_bool    }
+  }
+\clist_map_inline:nn { angle , mangle }
+  {
+    \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
+      { Invalid~format~in~##1:~'##2'. }
+      {
+        The~argument~must~be~one~of:\\
+        - three~uppercase~points~separated~by~commas~(e.g.\ 'A,~O,~B');\\
+        - a~single~uppercase~point~with~optional~subscript~or~prime~
+          (e.g.\ 'A',~'A_\{1\}');\\
+        - an~angle~name~(e.g.\ '\string\alpha',~'1',~'ABC').
+      }
+  }
+\clist_map_inline:nn { angle , mangle }
+  {
+    \keys_define:nn { spintent / sp #1 }
+      {
+        read-cmd            .choices:nn = { school , mathcat }
           {
-            {1} { \str_set:Nn \l__spintent_spangulo_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spangulo_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spangulo_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spangulo_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
-    recto               .bool_set:N = \l__spintent_spangulo_recto_bool,
-    recto               .initial:n  = false,
-    recto               .value_required:n = true,
-    unknown             .code:n =
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l__spintent_sp #1 _mode_str } { school  } }
+                {2} { \str_set:cn { l__spintent_sp #1 _mode_str } { mathcat } }
+              }
+          },
+        read-cmd            .initial:n  = school,
+        read-cmd            .value_required:n = true,
+        read-cmd / unknown  .code:n =
+          \msg_error:nneee { spintent } { unknown-choice }
+            { read-cmd } { school,~mathcat } { \exp_not:n {##1} },
+        prefix              .code:n =
+          { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
+        prefix              .initial:n  = ,
+        prefix              .value_required:n = true,
+        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
+        silent-cmd          .initial:n  = false,
+        silent-cmd          .value_required:n = true,
+        recto               .bool_set:c = { l__spintent_sp #1 _recto_bool },
+        recto               .initial:n  = false,
+        recto               .value_required:n = true,
+        print-m             .bool_set:c = { l__spintent_sp #1 _print_m_bool },
+        print-m             .initial:n  = false,
+        print-m             .value_required:n = true,
+        unknown             .code:n =
+          {
+            \str_set:Nn \l__spintent_command_name_str { sp #1 }
+            \__spintent_unknown_keys_cmd:n {##1}
+          },
+      }
+  }
+\cs_new_protected:Nn \__spintent_spangle_sym:n
+  {
+    \str_if_eq:eeTF {#1} { mangle }
       {
-        \str_set:Nn \l__spintent_command_name_str { spangulo }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
+        \bool_if:cTF { l__spintent_sp #1 _print_m_bool }
+          {
+            \bool_if:cTF { l__spintent_sp #1 _recto_bool }
+              { \rightangle } { \angle }
+          }
+          {
+            \bool_if:cTF { l__spintent_sp #1 _recto_bool }
+              { \measuredrightangle } { \measuredangle }
+          }
+      }
+      {
+        \bool_if:cTF { l__spintent_sp #1 _recto_bool }
+          { \rightangle } { \angle }
+      }
   }
-\cs_new_protected:Nn \__spintent_spangulo_sym:
+\cs_new_protected:Nn \__spintent_spangle_process:nn
   {
-    \bool_if:NTF \l__spintent_spangulo_recto_bool
-      { \rightangle }
-      { \angle }
-  }
-\cs_new_protected:Nn \__spintent_spangulo_print:n
-  {
+    \str_if_eq:eeTF {#1} { mangle }
+      { \str_set:Nn \l__spintent_geo_side_cmd_tl { medida-del-ángulo } }
+      { \str_set:Nn \l__spintent_geo_side_cmd_tl { ángulo } }
     \__spintent_luafun_geo_angulo_parse_and_set:nnnnn
-      { ángulo }
-      { \exp_not:n {#1} }
-      { \l__spintent_spangulo_mode_str }
-      { \bool_if:NTF \l__spintent_spangulo_silent_cmd_bool { true } { false } }
-      { \bool_if:NTF \l__spintent_spangulo_recto_bool      { true } { false } }
+      { \l__spintent_geo_side_cmd_tl }
+      { \exp_not:n {#2} }
+      { \tl_use:c { l__spintent_sp #1 _mode_str } }
+      { \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool } { true } { false } }
+      { \bool_if:cTF { l__spintent_sp #1 _recto_bool }      { true } { false } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
-        \msg_error:nne { spintent } { spangulo-invalid-arg }
-          { \exp_not:n {#1} }
+        \msg_error:nnee { spintent } { sp #1 -invalid-arg }
+          { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \str_if_eq:VnTF \l__spintent_spangulo_mode_str { school }
+    \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_spangulo_prefix_tl
-              { \tl_use:N \l__spintent_spangulo_prefix_tl - }
+            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
             \l__spintent_geo_intent_str
           }
           {
-            \c__spintent_invisible_sep_tl
-            \__spintent_spangulo_sym:
+            \str_if_eq:eeT {#1} { mangle }
+              {
+                \bool_if:cT { l__spintent_sp #1 _print_m_bool }
+                  { \MathMLintent { :silent } { \operatorname { m } } }
+              }
+            \__spintent_spangle_sym:n {#1}
             \l__spintent_geo_visual_tl
           }
         \__spintent_invisible_sep:
@@ -3515,157 +3108,173 @@
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_spangulo_prefix_tl
-              { \tl_use:N \l__spintent_spangulo_prefix_tl - }
+            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
+            \l__spintent_geo_intent_str
+          }
+          {
+            \str_if_eq:eeT {#1} { mangle }
+              {
+                \bool_if:cT { l__spintent_sp #1 _print_m_bool }
+                  { \MathMLintent { :silent } { \operatorname { m } } }
+              }
+            \__spintent_spangle_sym:n {#1}
+            \MathMLarg { pts } { \l__spintent_geo_visual_tl }
+          }
+        \__spintent_invisible_sep:
+      }
+  }
+\cs_new_protected:Nn \__spintent_spangle_exec:nnn
+  {
+    \keys_set:nn { spintent / sp #1 } { #2 }
+    \__spintent_spangle_process:nn { #1 } { #3 }
+  }
+\NewDocumentCommand \spangle { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_spangle_exec:nnn { angle } { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spangle } }
+  }
+\NewDocumentCommand \spmangle { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_spangle_exec:nnn { mangle } { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spmangle } }
+  }
+\clist_map_inline:nn { arc , marc }
+  {
+    \str_new:c  { l__spintent_sp #1 _mode_str        }
+    \tl_new:c   { l__spintent_sp #1 _prefix_tl       }
+    \bool_new:c { l__spintent_sp #1 _silent_cmd_bool }
+  }
+\clist_map_inline:nn { arc , marc }
+  {
+    \msg_new:nnnn { spintent } { sp #1 -invalid-points }
+      { Invalid~point~format~in~##1:~'##2'. }
+      {
+        The~argument~must~be~a~comma-separated~list~of~uppercase~
+        letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
+        Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
+      }
+  }
+\clist_map_inline:nn { arc , marc }
+  {
+    \keys_define:nn { spintent / sp #1 }
+      {
+        read-cmd            .choices:nn = { school , mathcat }
+          {
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l__spintent_sp #1 _mode_str } { school  } }
+                {2} { \str_set:cn { l__spintent_sp #1 _mode_str } { mathcat } }
+              }
+          },
+        read-cmd            .initial:n  = school,
+        read-cmd            .value_required:n = true,
+        read-cmd / unknown  .code:n =
+          \msg_error:nneee { spintent } { unknown-choice }
+            { read-cmd } { school,~mathcat } { \exp_not:n {##1} },
+        prefix              .code:n =
+          { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
+        prefix              .initial:n  = ,
+        prefix              .value_required:n = true,
+        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
+        silent-cmd          .initial:n  = false,
+        silent-cmd          .value_required:n = true,
+        unknown             .code:n =
+          {
+            \str_set:Nn \l__spintent_command_name_str { sp #1 }
+            \__spintent_unknown_keys_cmd:n {##1}
+          },
+      }
+  }
+\cs_new_protected:Nn \__spintent_sparc_deco:n
+  {
+    \cs_if_exist:NTF \widearc
+      { \widearc {#1} }
+      { \Umathaccent 0 0 "23DC {#1} }
+  }
+\cs_new_protected:Nn \__spintent_sparc_process:nn
+  {
+    \str_if_eq:eeTF {#1} { marc }
+      { \str_set:Nn \l__spintent_geo_side_cmd_tl { medida-del-arco } }
+      { \str_set:Nn \l__spintent_geo_side_cmd_tl { arco } }
+    \__spintent_luafun_geo_parse_and_set:nnnn
+      { \l__spintent_geo_side_cmd_tl }
+      { \exp_not:n {#2} }
+      { \tl_use:c { l__spintent_sp #1 _mode_str } }
+      { \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool } { true } { false } }
+    \str_if_eq:VnT \l__spintent_geo_error_str { true }
+      {
+        \msg_error:nnee { spintent } { sp #1 -invalid-points }
+          { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
             \l__spintent_geo_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
-            \__spintent_spangulo_sym:
-            \MathMLarg { pts } { \l__spintent_geo_visual_tl }
-          }
-        \__spintent_invisible_sep:
-      }
-  }
-\cs_new_protected:Nn \__spintent_spangulo_exec:nn
-  {
-    \keys_set:nn { spintent / spangulo } { #1 }
-    \__spintent_spangulo_print:n { #2 }
-  }
-\NewDocumentCommand \spangulo { O{} m }
-  {
-    \mode_if_math:TF
-      {
-        \group_begin:
-          \__spintent_spangulo_exec:nn { #1 } { #2 }
-        \group_end:
-      }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spangulo } }
-  }
-\str_new:N  \l__spintent_spmangulo_mode_str
-\tl_new:N   \l__spintent_spmangulo_prefix_tl
-\bool_new:N \l__spintent_spmangulo_silent_cmd_bool
-\bool_new:N \l__spintent_spmangulo_recto_bool
-\bool_new:N \l__spintent_spmangulo_print_m_bool
-\msg_new:nnnn { spintent } { spmangulo-invalid-arg }
-  { Invalid~format~in~\token_to_str:N \spmangulo:~'#1'. }
-  {
-    The~argument~must~be~one~of:\\
-    - three~uppercase~points~separated~by~commas~(e.g.\ 'A,~O,~B');\\
-    - a~single~uppercase~point~with~optional~subscript~or~prime~
-      (e.g.\ 'A',~'A_\{1\}');\\
-    - an~angle~name~(e.g.\ '\string\alpha',~'1',~'ABC').
-  }
-\keys_define:nn { spintent / spmangulo }
-  {
-    read-cmd            .choices:nn = { school , mathcat }
-      {
-        \int_case:nn { \l_keys_choice_int }
-          {
-            {1} { \str_set:Nn \l__spintent_spmangulo_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spmangulo_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spmangulo_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spmangulo_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
-    recto               .bool_set:N = \l__spintent_spmangulo_recto_bool,
-    recto               .initial:n  = false,
-    recto               .value_required:n = true,
-    print-m             .bool_set:N = \l__spintent_spmangulo_print_m_bool,
-    print-m             .initial:n  = false,
-    print-m             .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { spmangulo }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
-  }
-\cs_new_protected:Nn \__spintent_spmangulo_sym:
-  {
-    \bool_if:NTF \l__spintent_spmangulo_print_m_bool
-      {
-        \bool_if:NTF \l__spintent_spmangulo_recto_bool
-          { \rightangle }
-          { \angle }
-      }
-      {
-        \bool_if:NTF \l__spintent_spmangulo_recto_bool
-          { \measuredrightangle }
-          { \measuredangle }
-      }
-  }
-\cs_new_protected:Nn \__spintent_spmangulo_print:n
-  {
-    \__spintent_luafun_geo_angulo_parse_and_set:nnnnn
-      { medida-del-ángulo }
-      { \exp_not:n {#1} }
-      { \l__spintent_spmangulo_mode_str }
-      { \bool_if:NTF \l__spintent_spmangulo_silent_cmd_bool { true } { false } }
-      { \bool_if:NTF \l__spintent_spmangulo_recto_bool      { true } { false } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
-      {
-        \msg_error:nne { spintent } { spmangulo-invalid-arg }
-          { \exp_not:n {#1} }
-      }
-    \str_if_eq:VnTF \l__spintent_spmangulo_mode_str { school }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spmangulo_prefix_tl
-              { \tl_use:N \l__spintent_spmangulo_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \bool_if:NT \l__spintent_spmangulo_print_m_bool
+            \str_if_eq:eeT {#1} { marc }
               { \MathMLintent { :silent } { \operatorname { m } } }
-            \__spintent_spmangulo_sym:
-            \l__spintent_geo_visual_tl
+            \__spintent_sparc_deco:n { \l__spintent_geo_visual_tl }
           }
         \__spintent_invisible_sep:
       }
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_spmangulo_prefix_tl
-              { \tl_use:N \l__spintent_spmangulo_prefix_tl - }
+            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
             \l__spintent_geo_intent_str
           }
           {
-            \bool_if:NT \l__spintent_spmangulo_print_m_bool
+            \c__spintent_invisible_sep_tl
+            \str_if_eq:eeT {#1} { marc }
               { \MathMLintent { :silent } { \operatorname { m } } }
-            \__spintent_spmangulo_sym:
-            \MathMLarg { pts } { \l__spintent_geo_visual_tl }
+            \__spintent_sparc_deco:n
+              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
           }
         \__spintent_invisible_sep:
       }
   }
-\cs_new_protected:Nn \__spintent_spmangulo_exec:nn
+\cs_new_protected:Nn \__spintent_sparc_exec:nnn
   {
-    \keys_set:nn { spintent / spmangulo } { #1 }
-    \__spintent_spmangulo_print:n { #2 }
+    \keys_set:nn { spintent / sp #1 } { #2 }
+    \__spintent_sparc_process:nn { #1 } { #3 }
   }
-\NewDocumentCommand \spmangulo { O{} m }
+\NewDocumentCommand \sparc { O{} m }
   {
     \mode_if_math:TF
       {
         \group_begin:
-          \__spintent_spmangulo_exec:nn { #1 } { #2 }
+          \__spintent_sparc_exec:nnn { arc } { #1 } { #2 }
         \group_end:
       }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spmangulo } }
+      { \msg_error:nnn { spintent } { need-math-mode } { \sparc } }
   }
-\str_new:N \l__spintent_geo_poly_sym_str
-\str_new:N \l__spintent_geo_intent_pts_str
+\NewDocumentCommand \spmarc { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_sparc_exec:nnn { marc } { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spmarc } }
+  }
 \str_new:N  \l__spintent_spPoly_mode_str
 \tl_new:N   \l__spintent_spPoly_prefix_tl
 \bool_new:N \l__spintent_spPoly_print_sym_bool
@@ -3676,9 +3285,6 @@
     uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
     Valid~examples:~'A,~B,~C',~'A_\{1\},~B_\{1\},~C_\{1\}'.
   }
-\msg_new:nnnn { spintent } { spPoly-too-few-points }
-  { Too~few~points~in~\token_to_str:N \spPoly:~'#1'. }
-  { At~least~three~points~are~required. }
 \keys_define:nn { spintent / spPoly }
   {
     read-cmd            .choices:nn = { school , mathcat }
@@ -3728,7 +3334,6 @@
       }
     \bool_if:NTF \l__spintent_spPoly_print_sym_bool
       {
-        % print-sym = true: símbolo silenciado + intent con nombre
         \str_if_eq:VnTF \l__spintent_spPoly_mode_str { school }
           {
             \MathMLintent
@@ -3740,9 +3345,7 @@
               {
                 \c__spintent_invisible_sep_tl
                 \str_if_empty:NF \l__spintent_geo_poly_sym_str
-                  {
-                    \MathMLintent { :silent } { \__spintent_spPoly_sym: }
-                  }
+                  { \MathMLintent { :silent } { \__spintent_spPoly_sym: } }
                 \l__spintent_geo_visual_tl
               }
             \__spintent_invisible_sep:
@@ -3757,16 +3360,13 @@
               {
                 \c__spintent_invisible_sep_tl
                 \str_if_empty:NF \l__spintent_geo_poly_sym_str
-                  {
-                    \MathMLintent { :silent } { \__spintent_spPoly_sym: }
-                  }
+                  { \MathMLintent { :silent } { \__spintent_spPoly_sym: } }
                 \MathMLarg { pts } { \l__spintent_geo_visual_tl }
               }
             \__spintent_invisible_sep:
           }
       }
       {
-        % print-sym = false: solo vértices, sin símbolo ni nombre
         \str_if_eq:VnTF \l__spintent_spPoly_mode_str { school }
           {
             \MathMLintent
@@ -3775,10 +3375,7 @@
                   { \tl_use:N \l__spintent_spPoly_prefix_tl - }
                 \l__spintent_geo_intent_pts_str
               }
-              {
-                \c__spintent_invisible_sep_tl
-                \l__spintent_geo_visual_tl
-              }
+              { \c__spintent_invisible_sep_tl \l__spintent_geo_visual_tl }
             \__spintent_invisible_sep:
           }
           {
@@ -3811,143 +3408,60 @@
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPoly } }
   }
-\str_new:N  \l__spintent_spPoint_mode_str
-\tl_new:N   \l__spintent_spPoint_prefix_tl
-\bool_new:N \l__spintent_spPoint_silent_cmd_bool
-\msg_new:nnnn { spintent } { spPoint-invalid-point }
-  { Invalid~point~format~in~\token_to_str:N \spPoint:~'#1'. }
+\clist_map_inline:nn { Afig , Pfig }
   {
-    The~argument~must~be~a~single~uppercase~letter~with~an~optional~
-    subscript~(\_{...})~or~prime~(').\\
-    Valid~examples:~'A',~'A_\{1\}',~'A'''.
+    \str_new:c  { l__spintent_sp #1 _mode_str        }
+    \tl_new:c   { l__spintent_sp #1 _prefix_tl       }
+    \bool_new:c { l__spintent_sp #1 _print_sym_bool  }
+    \str_new:c  { l__spintent_sp #1 _read_arg_str    }
   }
-\keys_define:nn { spintent / spPoint }
+\clist_map_inline:nn { Afig , Pfig }
   {
-    read-cmd            .choices:nn = { school , mathcat }
+    \msg_new:nnnn { spintent } { sp #1 -invalid-points }
+      { Invalid~point~format~in~##1:~'##2'. }
       {
-        \int_case:nn { \l_keys_choice_int }
-          {
-            {1} { \str_set:Nn \l__spintent_spPoint_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spPoint_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spPoint_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spPoint_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { spPoint }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
-  }
-\cs_new_protected:Nn \__spintent_spPoint_print:n
-  {
-    \__spintent_luafun_geo_point_parse_and_set:nnn
-      { \exp_not:n {#1} }
-      { \l__spintent_spPoint_mode_str }
-      { \bool_if:NTF \l__spintent_spPoint_silent_cmd_bool { true } { false } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
-      {
-        \msg_error:nne { spintent } { spPoint-invalid-point }
-          { \exp_not:n {#1} }
-      }
-    \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
-              { \tl_use:N \l__spintent_spPoint_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \l__spintent_geo_visual_tl
-          }
-        \__spintent_invisible_sep:
-      }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
-              { \tl_use:N \l__spintent_spPoint_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \MathMLarg { pt } { \l__spintent_geo_visual_tl }
-          }
-        \__spintent_invisible_sep:
+        The~argument~must~be~empty,~or~a~comma-separated~list~of~at~
+        least~three~uppercase~letters~with~optional~subscripts~
+        (\_{...})~or~primes~(').\\
+        Valid~examples:~'()',~'(A,~B,~C)',~'(A_\{1\},~B_\{1\},~C_\{1\})'.
       }
   }
-\cs_new_protected:Nn \__spintent_spPoint_exec:nn
+\clist_map_inline:nn { Afig , Pfig }
   {
-    \keys_set:nn { spintent / spPoint } { #1 }
-    \__spintent_spPoint_print:n { #2 }
-  }
-\NewDocumentCommand \spPoint { O{} m }
-  {
-    \mode_if_math:TF
+    \keys_define:nn { spintent / sp #1 }
       {
-        \group_begin:
-          \__spintent_spPoint_exec:nn { #1 } { #2 }
-        \group_end:
-      }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spPoint } }
-  }
-\str_new:N  \l__spintent_spAfig_mode_str
-\tl_new:N   \l__spintent_spAfig_prefix_tl
-\bool_new:N \l__spintent_spAfig_print_sym_bool
-\str_new:N  \l__spintent_spAfig_read_arg_str
-\msg_new:nnnn { spintent } { spAfig-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \spAfig:~'#1'. }
-  {
-    The~argument~must~be~empty,~or~a~comma-separated~list~of~at~
-    least~three~uppercase~letters~with~optional~subscripts~
-    (\_{...})~or~primes~(').\\
-    Valid~examples:~'()',~'(A,~B,~C)',~'(A_\{1\},~B_\{1\},~C_\{1\})'.
-  }
-\keys_define:nn { spintent / spAfig }
-  {
-    read-cmd            .choices:nn = { school , mathcat }
-      {
-        \int_case:nn { \l_keys_choice_int }
+        read-cmd            .choices:nn = { school , mathcat }
           {
-            {1} { \str_set:Nn \l__spintent_spAfig_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spAfig_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spAfig_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    print-sym           .bool_set:N = \l__spintent_spAfig_print_sym_bool,
-    print-sym           .initial:n  = true,
-    print-sym           .value_required:n = true,
-    read-arg            .code:n =
-      { \str_set:Nn \l__spintent_spAfig_read_arg_str {#1} },
-    read-arg            .initial:n  = ,
-    read-arg            .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { spAfig }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l__spintent_sp #1 _mode_str } { school  } }
+                {2} { \str_set:cn { l__spintent_sp #1 _mode_str } { mathcat } }
+              }
+          },
+        read-cmd            .initial:n  = school,
+        read-cmd            .value_required:n = true,
+        read-cmd / unknown  .code:n =
+          \msg_error:nneee { spintent } { unknown-choice }
+            { read-cmd } { school,~mathcat } { \exp_not:n {##1} },
+        prefix              .code:n =
+          { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
+        prefix              .initial:n  = ,
+        prefix              .value_required:n = true,
+        print-sym           .bool_set:c = { l__spintent_sp #1 _print_sym_bool },
+        print-sym           .initial:n  = true,
+        print-sym           .value_required:n = true,
+        read-arg            .code:n =
+          { \str_set:cn { l__spintent_sp #1 _read_arg_str } {##1} },
+        read-arg            .initial:n  = ,
+        read-arg            .value_required:n = true,
+        unknown             .code:n =
+          {
+            \str_set:Nn \l__spintent_command_name_str { sp #1 }
+            \__spintent_unknown_keys_cmd:n {##1}
+          },
+      }
   }
-\cs_new_protected:Nn \__spintent_spAfig_sym:
+\cs_new_protected:Nn \__spintent_spfig_sym:
   {
     \str_case:Vn \l__spintent_geo_poly_sym_str
       {
@@ -3955,33 +3469,39 @@
         { square   } { \mdlgwhtsquare }
       }
   }
-\cs_new_protected:Nn \__spintent_spAfig_print:n
+\tl_new:N \l__spintent_geo_fig_op_tl
+\cs_new_protected:Nn \__spintent_spfig_process:nn
   {
+    \str_if_eq:eeTF {#1} { Afig }
+      { \tl_set:Nn \l__spintent_geo_fig_op_tl { área } }
+      { \tl_set:Nn \l__spintent_geo_fig_op_tl { perímetro } }
     \__spintent_luafun_geo_fig_parse_and_set:nnnnn
-      { área }
-      { \exp_not:n {#1} }
-      { \l__spintent_spAfig_mode_str }
-      { \bool_if:NTF \l__spintent_spAfig_print_sym_bool { true } { false } }
-      { \l__spintent_spAfig_read_arg_str }
+      { \l__spintent_geo_fig_op_tl }
+      { \exp_not:n {#2} }
+      { \tl_use:c { l__spintent_sp #1 _mode_str } }
+      { \bool_if:cTF { l__spintent_sp #1 _print_sym_bool } { true } { false } }
+      { \tl_use:c { l__spintent_sp #1 _read_arg_str } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
-        \msg_error:nne { spintent } { spAfig-invalid-points }
-          { \exp_not:n {#1} }
+        \msg_error:nnee { spintent } { sp #1 -invalid-points }
+          { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \str_if_eq:VnTF \l__spintent_spAfig_mode_str { school }
+    \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_spAfig_prefix_tl
-              { \tl_use:N \l__spintent_spAfig_prefix_tl - }
+            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
             \l__spintent_geo_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
-            \mathcal { A }
+            \str_if_eq:eeTF {#1} { Afig }
+              { \mathcal { A } } { \mathcal { P } }
             \tl_if_empty:NF \l__spintent_geo_visual_tl
               {
-                \c_math_subscript_token { \__spintent_spAfig_sym: \l__spintent_geo_visual_tl }
+                \c_math_subscript_token
+                  { \__spintent_spfig_sym: \l__spintent_geo_visual_tl }
               }
           }
         \__spintent_invisible_sep:
@@ -3989,18 +3509,19 @@
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l__spintent_spAfig_prefix_tl
-              { \tl_use:N \l__spintent_spAfig_prefix_tl - }
+            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
             \l__spintent_geo_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
-            \mathcal { A }
+            \str_if_eq:eeTF {#1} { Afig }
+              { \mathcal { A } } { \mathcal { P } }
             \tl_if_empty:NF \l__spintent_geo_visual_tl
               {
                 \c_math_subscript_token
                   {
-                    \__spintent_spAfig_sym:
+                    \__spintent_spfig_sym:
                     \MathMLarg { pts } { \l__spintent_geo_visual_tl }
                   }
               }
@@ -4008,10 +3529,10 @@
         \__spintent_invisible_sep:
       }
   }
-\cs_new_protected:Nn \__spintent_spAfig_exec:nn
+\cs_new_protected:Nn \__spintent_spfig_exec:nnn
   {
-    \keys_set:nn { spintent / spAfig } { #1 }
-    \__spintent_spAfig_print:n { #2 }
+    \keys_set:nn { spintent / sp #1 } { #2 }
+    \__spintent_spfig_process:nn { #1 } { #3 }
   }
 \NewDocumentCommand \spAfig { O{} d() }
   {
@@ -4019,121 +3540,11 @@
       {
         \group_begin:
           \tl_if_novalue:nTF {#2}
-            { \__spintent_spAfig_exec:nn { #1 } { } }
-            { \__spintent_spAfig_exec:nn { #1 } { #2 } }
+            { \__spintent_spfig_exec:nnn { Afig } { #1 } { } }
+            { \__spintent_spfig_exec:nnn { Afig } { #1 } { #2 } }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spAfig } }
-  }
-\str_new:N  \l__spintent_spPfig_mode_str
-\tl_new:N   \l__spintent_spPfig_prefix_tl
-\bool_new:N \l__spintent_spPfig_print_sym_bool
-\str_new:N  \l__spintent_spPfig_read_arg_str
-\msg_new:nnnn { spintent } { spPfig-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \spPfig:~'#1'. }
-  {
-    The~argument~must~be~empty,~or~a~comma-separated~list~of~at~
-    least~three~uppercase~letters~with~optional~subscripts~
-    (\_{...})~or~primes~(').\\
-    Valid~examples:~'()',~'(A,~B,~C)',~'(A_\{1\},~B_\{1\},~C_\{1\})'.
-  }
-\keys_define:nn { spintent / spPfig }
-  {
-    read-cmd            .choices:nn = { school , mathcat }
-      {
-        \int_case:nn { \l_keys_choice_int }
-          {
-            {1} { \str_set:Nn \l__spintent_spPfig_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spPfig_mode_str { mathcat } }
-          }
-      },
-    read-cmd            .initial:n  = school,
-    read-cmd            .value_required:n = true,
-    read-cmd / unknown  .code:n =
-      \msg_error:nneee { spintent } { unknown-choice }
-        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
-    prefix              .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spPfig_prefix_tl {#1} },
-    prefix              .initial:n  = ,
-    prefix              .value_required:n = true,
-    print-sym           .bool_set:N = \l__spintent_spPfig_print_sym_bool,
-    print-sym           .initial:n  = true,
-    print-sym           .value_required:n = true,
-    read-arg            .code:n =
-      { \str_set:Nn \l__spintent_spPfig_read_arg_str {#1} },
-    read-arg            .initial:n  = ,
-    read-arg            .value_required:n = true,
-    unknown             .code:n =
-      {
-        \str_set:Nn \l__spintent_command_name_str { spPfig }
-        \__spintent_unknown_keys_cmd:n {#1}
-      },
-  }
-\cs_new_protected:Nn \__spintent_spPfig_sym:
-  {
-    \str_case:Vn \l__spintent_geo_poly_sym_str
-      {
-        { triangle } { \triangle      }
-        { square   } { \mdlgwhtsquare }
-      }
-  }
-\cs_new_protected:Nn \__spintent_spPfig_print:n
-  {
-    \__spintent_luafun_geo_fig_parse_and_set:nnnnn
-      { perímetro }
-      { \exp_not:n {#1} }
-      { \l__spintent_spPfig_mode_str }
-      { \bool_if:NTF \l__spintent_spPfig_print_sym_bool { true } { false } }
-      { \l__spintent_spPfig_read_arg_str }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
-      {
-        \msg_error:nne { spintent } { spPfig-invalid-points }
-          { \exp_not:n {#1} }
-      }
-    \str_if_eq:VnTF \l__spintent_spPfig_mode_str { school }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spPfig_prefix_tl
-              { \tl_use:N \l__spintent_spPfig_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \mathcal { P }
-            \tl_if_empty:NF \l__spintent_geo_visual_tl
-              {
-                \c_math_subscript_token { \__spintent_spPfig_sym: \l__spintent_geo_visual_tl }
-              }
-          }
-        \__spintent_invisible_sep:
-      }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l__spintent_spPfig_prefix_tl
-              { \tl_use:N \l__spintent_spPfig_prefix_tl - }
-            \l__spintent_geo_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \mathcal { P }
-            \tl_if_empty:NF \l__spintent_geo_visual_tl
-              {
-                \c_math_subscript_token
-                  {
-                    \__spintent_spPfig_sym:
-                    \MathMLarg { pts } { \l__spintent_geo_visual_tl }
-                  }
-              }
-          }
-        \__spintent_invisible_sep:
-      }
-  }
-\cs_new_protected:Nn \__spintent_spPfig_exec:nn
-  {
-    \keys_set:nn { spintent / spPfig } { #1 }
-    \__spintent_spPfig_print:n { #2 }
   }
 \NewDocumentCommand \spPfig { O{} d() }
   {
@@ -4141,8 +3552,8 @@
       {
         \group_begin:
           \tl_if_novalue:nTF {#2}
-            { \__spintent_spPfig_exec:nn { #1 } { } }
-            { \__spintent_spPfig_exec:nn { #1 } { #2 } }
+            { \__spintent_spfig_exec:nnn { Pfig } { #1 } { } }
+            { \__spintent_spfig_exec:nnn { Pfig } { #1 } { #2 } }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPfig } }
