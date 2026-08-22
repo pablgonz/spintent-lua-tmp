@@ -148,7 +148,7 @@
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.98}
-\def\filedate{2026-08-19}
+\def\filedate{2026-08-20}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -2866,11 +2866,9 @@
 %
 % El paquete \mypkg*[no-index]{spintent} provee comandos para trabajar
 % con los objetos y medidas de la \emph{geometría plana} descritos en
-% esta sección. Todos los comandos de esta sección trabajan en
-% \emph{modo matemático} y comparten la misma infraestructura en el
-% módulo \myluamod{}, que construye el \emph{intent} \mynvmath{MathML}
-% apropiado y devuelve el contenido visual para el decorador
-% correspondiente.
+% esta sección. Todos los comandos trabajan en \emph{modo matemático}
+% y comparten el mismo módulo \myluamod{} para construir la
+% verbalización correcta.
 %
 % \smallskip
 %
@@ -2879,29 +2877,23 @@
 %   \emph{letras mayúsculas} como base de cada punto geométrico, con
 %   modificadores opcionales de subíndice `|_{...}|' o prima `|'|'.
 %   La única excepción es |\sprecta| en \emph{notación de nombre}, que
-%   acepta también \emph{letras minúsculas}. Las letras minúsculas, los
-%   dígitos sueltos fuera de |_{...}|, y cualquier otro token producirán
-%   un \enquote{error}. Los subíndices deben escribirse siempre con la
-%   notación |A_{...}| y no con |A_n| sin llaves.
+%   acepta también \emph{letras minúsculas}. Los subíndices deben
+%   escribirse siempre con la notación |A_{...}| y no con |A_n| sin
+%   llaves.
 % \end{important}
 %
 % \begin{important}*
-%   La verbalización de las \emph{letras mayúsculas} que forman los
-%   puntos geométricos depende de la configuración de
-%   \mynvmath{NVDA/MathCAT}. Cuando la opción
-%   \texttt{CapitalLetters\_UseWord} está activa en \mynvmath{MathCAT}
-%   (valor por defecto en español), cada letra mayúscula se verbaliza
-%   con el prefijo \emph{«mayúscula»}. Esta limitación afecta al modo
-%   |mathcat| y \emph{no} al modo |school|, donde el \emph{intent}
-%   literal controla completamente la verbalización. Para suprimir el
-%   prefijo \emph{«mayúscula»} en todos los comandos matemáticos, el
-%   usuario debe desactivar la opción \texttt{CapitalLetters\_UseWord}
-%   en el diálogo de preferencias de \mynvmath{MathCAT} dentro de
-%   \mynvmath{NVDA} (\emph{Preferencias} → \emph{Opciones} →
-%   \emph{MathCAT}).
+%   La verbalización de las letras mayúsculas depende de la
+%   configuración de \mynvmath{NVDA/MathCAT}. Con la llave
+%   \mykey{read-cmd}|=school| (valor por defecto), \mynvmath{NVDA/MathCAT}
+%   verbaliza las letras directamente sin anteponer «mayúscula». Con
+%   \mykey{read-cmd}|=mathcat|, \mynvmath{NVDA/MathCAT} aplica sus
+%   propias reglas de habla, que pueden incluir el prefijo «mayúscula»
+%   según la configuración del usuario.
 % \end{important}
 %
-% \subsubsection*{Llaves comunes a todos los comandos de geometría plana}
+% \subsubsection*{Llaves comunes a todos los comandos de geometría
+%   plana}\label{subsec:geo-llaves-comunes}
 %
 % Los siguientes \mymeta{keys} están disponibles en todos los comandos
 % de esta sección con la misma semántica:
@@ -2909,42 +2901,39 @@
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[splado]
 % \smallskip
-% Establece la \emph{estrategia de verbalización} que utiliza el módulo
-% \myluamod{} al construir el \emph{intent} \mynvmath{MathML}. Si se
-% establece en |school|, el módulo construye un \emph{intent literal}
-% completo (p.~ej.\ |lado-A-B|) que \mynvmath{NVDA/MathCAT} verbaliza
-% directamente como texto, sin aplicar ninguna regla de mayúsculas;
-% si se establece en |mathcat|, el módulo construye un \emph{intent}
-% de función con referencia a argumento (p.~ej.\
-% |_lado:prefix($pts)|) y deja que \mynvmath{NVDA/MathCAT} verbalice
-% el contenido de los puntos con sus propias reglas de habla.
+% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará
+% los puntos del objeto geométrico. Si se establece en |school|,
+% \mynvmath{NVDA/MathCAT} verbaliza las letras de los puntos
+% directamente sin anteponer «mayúscula»: por ejemplo,
+% |$\splado{A, B}$| se verbaliza \emph{«lado A B»}; si se establece
+% en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias reglas de
+% habla sobre los puntos: por ejemplo, |$\splado{A, B}$| puede
+% verbalizarse \emph{«lado mayúscula A mayúscula B»} dependiendo de
+% la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[splado]
 % \smallskip
-% Establece el \emph{prefijo} que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«antes»} del nombre del concepto en el \emph{intent}. El valor
-% de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Si
-% se establece en |{el}|, el \emph{intent} resultante será
-% |el-lado-A-B| y \mynvmath{NVDA/MathCAT} verbalizará \emph{«el lado
-% A B»}; si no se establece, no se antepone ningún prefijo.
+% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{antes} del nombre del objeto geométrico. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Si se
+% establece en |{el}|, \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«el lado A B»} en lugar de \emph{«lado A B»}; si no se
+% establece, no se antepone ninguna palabra.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[splado]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} el nombre del
-% concepto geométrico en la verbalización. Esta llave es útil cuando el
-% nombre del objeto ya aparece en el texto que rodea a la expresión
-% matemática, evitando que se verbalice dos veces. Por ejemplo, al
-% escribir «el lado $\ldots$» en el texto, si el comando tiene
-% |silent-cmd=true|, \mynvmath{NVDA/MathCAT} verbalizará solo
-% \emph{«A B»} en lugar de \emph{«lado A B»}. En modo |school|, el
-% módulo \myluamod{} omite el nombre del concepto del \emph{intent}
-% literal; en modo |mathcat|, añade |:silent| al \emph{intent} de
-% función.
+% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} el nombre
+% del objeto geométrico. Esta llave es útil cuando el nombre del
+% objeto ya aparece en el texto que rodea a la expresión matemática,
+% evitando que se verbalice dos veces. Por ejemplo, al escribir
+% «el lado~$\ldots$» en el texto con |silent-cmd=true|,
+% \mynvmath{NVDA/MathCAT} verbalizará solo \emph{«A B»} en lugar de
+% \emph{«lado A B»}.
 %
 % \subsection*{El comando \cs[no-index]{splado}}\label{subsec:splado}
 %
@@ -2981,8 +2970,8 @@
 %   El comando \ics*{spmlado} trabaja en \emph{modo matemático} y
 %   representa la \emph{medida de un lado} de una figura geométrica.
 %   La distinción entre |\splado| y |\spmlado| es semántica: |\splado|
-%   representa el \emph{objeto geométrico}; |\spmlado| representa su
-%   \emph{medida} (un número real positivo).
+%   representa el \emph{objeto geométrico} ($\overline{AB}$);
+%   |\spmlado| representa su \emph{medida} (un número real positivo).
 %
 %   \smallskip
 %
@@ -2997,14 +2986,13 @@
 % \keyexampcmd{overline}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmlado]
 % \smallskip
-% Establece la \emph{notación visual} del resultado devuelto por
-% |\spmlado|. Si se establece en |true|, |$\spmlado[overline=true]{A, B}$|
-% imprimirá `$\operatorname{m}\overline{AB}$' en la salida \texttt{PDF},
+% Establece la \emph{notación visual} de la medida. Si se establece
+% en |true|, |$\spmlado[overline=true]{A, B}$| imprimirá
+% `$\operatorname{m}\overline{AB}$' en la salida \texttt{PDF},
 % notación habitual en libros de texto que prefieren hacer explícita
-% la referencia al objeto geométrico; si se establece en |false|,
-% imprimirá simplemente `$AB$'. En ambos casos \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«medida del lado A B»}, ya que el \emph{intent}
-% \mynvmath{MathML} es idéntico.
+% la referencia al objeto; si se establece en |false|, imprimirá
+% simplemente `$AB$'. En ambos casos \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«medida del lado A B»}.
 %
 % \subsection*{El comando \cs[no-index]{spsegmento}}\label{subsec:spsegmento}
 %
@@ -3018,9 +3006,9 @@
 %   El comando \ics*{spsegmento} trabaja en \emph{modo matemático} y
 %   representa un \emph{segmento geométrico como objeto independiente},
 %   no como parte de una figura. La salida visual es idéntica a la de
-%   |\splado| ($\overline{AB}$); la diferencia es exclusivamente
-%   semántica: el \emph{intent} \mynvmath{MathML} comienza con
-%   |segmento-| en lugar de |lado-|.
+%   |\splado| ($\overline{AB}$); la diferencia es en la verbalización:
+%   \mynvmath{NVDA/MathCAT} dirá \emph{«segmento A B»} en lugar de
+%   \emph{«lado A B»}.
 %
 %   \smallskip
 %
@@ -3034,15 +3022,13 @@
 % \smallskip
 %
 % \begin{important}*
-%   La distinción entre |\splado| y |\spsegmento| es pedagógica y
-%   depende del contexto del documento. |\splado| debe usarse cuando
-%   el segmento es parte de una figura (los \emph{lados} de un
-%   triángulo o polígono); |\spsegmento| debe usarse cuando el
-%   segmento se trata como un objeto geométrico independiente.
-%   Por ejemplo: \emph{«los lados congruentes del triángulo son
-%   $\overline{AB}$ y $\overline{AC}$»} vs.\
-%   \emph{«los segmentos $\overline{AB}$ y $\overline{CD}$ son
-%   congruentes»}.
+%   La elección entre |\splado| y |\spsegmento| depende del contexto
+%   del documento. |\splado| se usa cuando el segmento es parte de una
+%   figura (los \emph{lados} de un triángulo o polígono); |\spsegmento|
+%   se usa cuando el segmento se trata como objeto independiente.
+%   Por ejemplo: \emph{«los lados $\overline{AB}$ y $\overline{AC}$
+%   son congruentes»} vs.\ \emph{«los segmentos $\overline{AB}$ y
+%   $\overline{CD}$ son congruentes»}.
 % \end{important}
 %
 % \subsection*{El comando \cs[no-index]{spmsegmento}}\label{subsec:spmsegmento}
@@ -3056,9 +3042,9 @@
 %   \end{syntax}
 %   El comando \ics*{spmsegmento} trabaja en \emph{modo matemático} y
 %   representa la \emph{medida de un segmento geométrico como objeto
-%   independiente}. Sigue la misma estructura que |\spmlado|, con
-%   |medida-del-segmento| como nombre del concepto en el \emph{intent}
-%   \mynvmath{MathML}.
+%   independiente}. Sigue la misma estructura que |\spmlado|, con la
+%   diferencia de que \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida
+%   del segmento A B»} en lugar de \emph{«medida del lado A B»}.
 %
 %   \smallskip
 %
@@ -3077,9 +3063,9 @@
 % Establece la \emph{notación visual} con la misma semántica que en
 % |\spmlado| (\S\ref{subsec:spmlado}). Si se establece en |true|,
 % |$\spmsegmento[overline=true]{A, B}$| imprimirá
-% `$\operatorname{m}\overline{AB}$' en la salida \texttt{PDF};
-% si se establece en |false|, imprimirá `$AB$'. En ambos casos
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del segmento A B»}.
+% `$\operatorname{m}\overline{AB}$'; si se establece en |false|,
+% imprimirá `$AB$'. En ambos casos \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«medida del segmento A B»}.
 %
 % \subsection*{El comando \cs[no-index]{sprayo}}\label{subsec:sprayo}
 %
@@ -3092,8 +3078,7 @@
 %   \end{syntax}
 %   El comando \ics*{sprayo} trabaja en \emph{modo matemático} y
 %   representa un \emph{rayo} con origen en el primer punto y dirección
-%   hacia el segundo. La salida visual usa \cs{overrightarrow} sobre
-%   los puntos.
+%   hacia el segundo. La salida visual usa \cs{overrightarrow}.
 %
 %   \smallskip
 %
@@ -3107,10 +3092,8 @@
 % \smallskip
 %
 % \begin{important}*
-%   El comando |\sprayo| siempre representa un rayo con origen en el
-%   \emph{primer punto} y dirección hacia el \emph{segundo}: el rayo
-%   $\overrightarrow{AB}$ y el rayo $\overrightarrow{BA}$ son objetos
-%   distintos.
+%   El rayo $\overrightarrow{AB}$ y el rayo $\overrightarrow{BA}$ son
+%   objetos distintos — el orden de los puntos determina la dirección.
 % \end{important}
 %
 % \subsection*{El comando \cs[no-index]{spsemirecta}}\label{subsec:spsemirecta}
@@ -3124,9 +3107,9 @@
 %   \end{syntax}
 %   El comando \ics*{spsemirecta} trabaja en \emph{modo matemático} y
 %   es el gemelo terminológico de |\sprayo|: la salida visual
-%   ($\overrightarrow{AB}$), la estructura de llaves y el parser Lua
-%   son idénticos; la diferencia es exclusivamente el término
-%   verbalizado.
+%   ($\overrightarrow{AB}$) y las llaves son idénticas; la diferencia
+%   es que \mynvmath{NVDA/MathCAT} verbalizará \emph{«semirrecta A B»}
+%   en lugar de \emph{«rayo A B»}.
 %
 %   \smallskip
 %
@@ -3141,11 +3124,10 @@
 %
 % \begin{important}*
 %   La elección entre |\sprayo| y |\spsemirecta| depende de la
-%   terminología del libro de texto o del currículo nacional. En
-%   Chile y España se prefiere \emph{«semirrecta»}; en México y
-%   otros países de América Latina se usa \emph{«rayo»}. Ambos
-%   comandos son semánticamente equivalentes — la distinción es
-%   puramente terminológica.
+%   terminología del libro de texto o del currículo nacional. En Chile
+%   y España se prefiere \emph{«semirrecta»}; en México y otros países
+%   de América Latina se usa \emph{«rayo»}. Ambos comandos son
+%   equivalentes — la diferencia es puramente terminológica.
 % \end{important}
 %
 % \subsection*{El comando \cs[no-index]{sprecta}}\label{subsec:sprecta}
@@ -3158,25 +3140,20 @@
 %     \ics*{sprecta}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{puntos}
 %   \end{syntax}
 %   El comando \ics*{sprecta} trabaja en \emph{modo matemático} y
-%   admite \emph{dos notaciones} detectadas automáticamente según el
-%   contenido de \mymarg{puntos}:
+%   admite \emph{dos notaciones} detectadas automáticamente:
 %
 %   \smallskip
 %
 %   \emph{Notación de dos puntos}: cuando \mymarg{puntos} contiene una
-%   coma (p.~ej.\ |A, B|), el módulo \myluamod{} aplica
-%   \cs{overleftrightarrow} sobre los puntos. Por ejemplo,
-%   |$\sprecta{A, B}$| imprimirá `$\overleftrightarrow{AB}$' en la
-%   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«recta A B»}.
+%   coma, se aplica \cs{overleftrightarrow} sobre los puntos. Por
+%   ejemplo, |$\sprecta{A, B}$| imprimirá `$\overleftrightarrow{AB}$'
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«recta A B»}.
 %
 %   \smallskip
 %
 %   \emph{Notación de nombre}: cuando \mymarg{puntos} no contiene
-%   coma (p.~ej.\ |L_{1}| o |m|), el módulo \myluamod{} interpreta
-%   el argumento como el \emph{nombre propio} de la recta y lo
-%   imprime sin ningún decorador visual. Por ejemplo, |$\sprecta{m}$|
-%   imprimirá `$m$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   coma, se imprime el nombre sin ningún decorador visual. Por
+%   ejemplo, |$\sprecta{m}$| imprimirá `$m$' y \mynvmath{NVDA/MathCAT}
 %   verbalizará \emph{«recta m»}; |$\sprecta{L_{1}}$| imprimirá
 %   `$L_{1}$' y verbalizará \emph{«recta L sub uno»}.
 % \end{function}
@@ -3184,16 +3161,11 @@
 % \smallskip
 %
 % \begin{important}*
-%   A diferencia del resto de los comandos de la familia geo, en la
-%   \emph{notación de nombre} de |\sprecta| se aceptan tanto
-%   \emph{letras mayúsculas} como \emph{minúsculas} como base del
-%   nombre, ya que en geometría es habitual designar rectas con letras
-%   minúsculas ($m$, $r$, $l$, $s$) además de con letras mayúsculas
-%   con subíndice ($L_1$, $L_2$). En la \emph{notación de nombre},
-%   el \emph{intent} literal controla completamente la verbalización
-%   — el problema de «mayúscula» no aplica aquí porque el nombre forma
-%   parte del string del \emph{intent} y \mynvmath{NVDA/MathCAT} lo
-%   verbaliza como texto puro.
+%   En la \emph{notación de nombre} se aceptan tanto letras mayúsculas
+%   como minúsculas ($m$, $r$, $l$, $s$, $L_1$, $L_2$). En la
+%   \emph{notación de nombre}, la llave |read-cmd=school| siempre
+%   verbaliza sin «mayúscula» ya que el nombre forma parte del texto
+%   verbalizado directamente.
 % \end{important}
 %
 % \subsection*{El comando \cs[no-index]{sparco}}\label{subsec:sparco}
@@ -3209,7 +3181,7 @@
 %   representa un \emph{arco} geométrico. La salida visual usa
 %   \cs{widearc} cuando está disponible (provisto por los paquetes
 %   \mypkg{yhmath} o \mypkg{MnSymbol}), o |\overset{\frown}{}| como
-%   alternativa cuando \cs{widearc} no está definido.
+%   alternativa.
 %
 %   \smallskip
 %
@@ -3234,8 +3206,7 @@
 %   de |\spmlado| y |\spmsegmento|, no existe la llave
 %   \mykey[spmarco]{overline} porque la notación
 %   $\operatorname{m}\overset{\frown}{AB}$ es la única forma estándar
-%   para la medida de un arco: |\operatorname{m}| siempre se antepone
-%   al decorador visual.
+%   para la medida de un arco.
 %
 %   \smallskip
 %
@@ -3257,56 +3228,44 @@
 %     \ics*{spangulo}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{arg}
 %   \end{syntax}
 %   El comando \ics*{spangulo} trabaja en \emph{modo matemático} y
-%   admite \emph{tres notaciones} detectadas automáticamente según el
-%   contenido de \mymarg{arg}:
+%   admite \emph{tres notaciones} detectadas automáticamente:
 %
 %   \smallskip
 %
 %   \emph{Notación de tres puntos}: cuando \mymarg{arg} contiene una
-%   coma (p.~ej.\ |A, O, B|), el módulo \myluamod{} interpreta el
-%   argumento como tres puntos geométricos donde el segundo es el
-%   \emph{vértice}. Por ejemplo, |$\spangulo{A, O, B}$| imprimirá
-%   `$\angle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«ángulo A O B»}.
+%   coma (p.~ej.\ |A, O, B|), el segundo punto es el \emph{vértice}.
+%   Por ejemplo, |$\spangulo{A, O, B}$| imprimirá `$\angle AOB$' y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo A O B»}.
 %
 %   \smallskip
 %
-%   \emph{Notación de un punto}: cuando \mymarg{arg} no contiene coma
-%   y es una sola letra mayúscula con modificadores opcionales
-%   (p.~ej.\ |A| o |A_{1}|), el módulo \myluamod{} produce el
-%   \emph{intent} |ángulo-en-A|. Por ejemplo, |$\spangulo{A}$|
-%   imprimirá `$\angle A$' en la salida \texttt{PDF} y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo en A»}.
+%   \emph{Notación de un punto}: cuando \mymarg{arg} es una sola
+%   letra mayúscula (p.~ej.\ |A| o |A_{1}|), representa el
+%   \emph{ángulo en ese vértice}. Por ejemplo, |$\spangulo{A}$|
+%   imprimirá `$\angle A$' y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«ángulo en A»}.
 %
 %   \smallskip
 %
 %   \emph{Notación de nombre}: cuando \mymarg{arg} no contiene coma
-%   y no es una sola letra mayúscula (p.~ej.\ |\alpha|, |1|, |ABC|),
-%   el módulo \myluamod{} usa el argumento como nombre del ángulo.
-%   Por ejemplo, |$\spangulo{\alpha}$| imprimirá `$\angle\alpha$' en
-%   la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«ángulo alfa»}.
+%   y no es una sola letra mayúscula (p.~ej.\ |\alpha|, |1|, |ABC|).
+%   Por ejemplo, |$\spangulo{\alpha}$| imprimirá `$\angle\alpha$' y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo alfa»}.
 % \end{function}
 %
-% \subsubsection*{Llaves adicionales para \cs[no-index]{spangulo}}
-%
-% Además de las llaves comunes \mykey[spangulo]{read-cmd},
-% \mykey[spangulo]{prefix} y \mykey[spangulo]{silent-cmd}
-% (\S\ref{subsec:geo-llaves-comunes}), |\spangulo| posee:
+% \subsubsection*{Llave adicional para \cs[no-index]{spangulo}}
 %
 % \keyexampcmd{recto}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spangulo]
 % \smallskip
-% Establece si el \emph{ángulo} representado es un \emph{ángulo recto},
-% cambiando el símbolo visual y el \emph{intent}
-% \mynvmath{MathML}. Si se establece en |true|,
-% |$\spangulo[recto=true]{A}$| imprimirá `$\rightangle A$' en la
-% salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«ángulo recto en A»}; si se establece en |false|, imprimirá
-% `$\angle A$' y verbalizará \emph{«ángulo en A»}. La misma llave
-% aplica a la notación de tres puntos: |$\spangulo[recto=true]{A, O, B}$|
-% imprimirá `$\rightangle AOB$' y verbalizará \emph{«ángulo recto
-% A O B»}.
+% Establece si el ángulo es un \emph{ángulo recto}, cambiando el
+% símbolo visual y la verbalización. Si se establece en |true|,
+% |$\spangulo[recto=true]{A}$| imprimirá `$\rightangle A$' y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo recto en A»};
+% si se establece en |false|, imprimirá `$\angle A$' y verbalizará
+% \emph{«ángulo en A»}. La misma llave aplica a la notación de tres
+% puntos: |$\spangulo[recto=true]{A, O, B}$| imprimirá
+% `$\rightangle AOB$' y verbalizará \emph{«ángulo recto A O B»}.
 %
 % \subsection*{El comando \cs[no-index]{spmangulo}}\label{subsec:spmangulo}
 %
@@ -3319,46 +3278,288 @@
 %   \end{syntax}
 %   El comando \ics*{spmangulo} trabaja en \emph{modo matemático} y
 %   representa la \emph{medida de un ángulo}. Admite las mismas tres
-%   notaciones que |\spangulo| y siempre antepone |\operatorname{m}|
-%   al símbolo del ángulo, ya que $m\angle AOB$ es la notación
-%   estándar para la medida de un ángulo.
+%   notaciones que |\spangulo| (\S\ref{subsec:spangulo}).
 %
 %   \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
 %   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%   |$\spmangulo{A, O, B}$| imprimirá `$\operatorname{m}\angle AOB$'
-%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   |$\spmangulo{A, O, B}$| imprimirá `$\measuredangle AOB$' en la
+%   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
 %   \emph{«medida del ángulo A O B»}; |$\spmangulo{A}$| imprimirá
-%   `$\operatorname{m}\angle A$' y verbalizará \emph{«medida del
-%   ángulo en A»}.
+%   `$\measuredangle A$' y verbalizará \emph{«medida del ángulo en
+%   A»}.
 % \end{function}
 %
 % \subsubsection*{Llaves adicionales para \cs[no-index]{spmangulo}}
+%
+% \keyexampcmd{print-m}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spmangulo]
+% \smallskip
+% Establece la \emph{notación visual} de la medida del ángulo. Si se
+% establece en |false| (valor por defecto), se usa el símbolo
+% $\measuredangle$, que ya incorpora la noción de medida sin necesidad
+% de anteponer una letra: |$\spmangulo{A, O, B}$| imprimirá
+% `$\measuredangle AOB$'. Si se establece en |true|, se antepone
+% |\operatorname{m}| al símbolo $\angle$ simple:
+% |$\spmangulo[print-m=true]{A, O, B}$| imprimirá `$\operatorname{m}
+% \angle AOB$'. En ambos casos \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«medida del ángulo A O B»}.
+%
+% \smallskip
 %
 % \keyexampcmd{recto}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmangulo]
 % \smallskip
 % Establece si el ángulo cuya medida se representa es un
 % \emph{ángulo recto}, con la misma semántica que en |\spangulo|
-% (\S\ref{subsec:spangulo}). Si se establece en |true|,
-% |$\spmangulo[recto=true]{A}$| imprimirá
-% `$\operatorname{m}\rightangle A$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del ángulo recto
-% en A»}.
+% (\S\ref{subsec:spangulo}). Esta llave funciona de forma
+% \emph{independiente} de \mykey[spmangulo]{print-m}: si se establece
+% en |true| junto con |print-m=false| (los valores por defecto),
+% |$\spmangulo[recto=true]{A}$| imprimirá `$\measuredrightangle A$'
+% y \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del ángulo
+% recto en A»}; si se establece en |true| junto con |print-m=true|,
+% |$\spmangulo[recto=true, print-m=true]{A}$| imprimirá
+% `$\operatorname{m}\rightangle A$' con la misma verbalización.
 %
 % \smallskip
 %
 % \begin{important}*
-%   Cuando se usa |$\spmangulo[recto=true]{A}$| en un enunciado donde
-%   el ángulo recto ya se ha mencionado en el texto, la llave
-%   \mykey[spmangulo]{silent-cmd} permite suprimir la verbalización
-%   completa del concepto, dejando que \mynvmath{NVDA/MathCAT}
-%   verbalice solo el nombre del punto. Por ejemplo, «la medida del
-%   ángulo recto en $A$ es |$\spmangulo[recto=true,silent-cmd=true]{A}$|»
-%   verbalizará \emph{«noventa grados»} si se añade la medida, o
-%   simplemente \emph{«en A»} si solo aparece el símbolo.
+%   Cuando el ángulo recto ya se menciona en el texto que rodea la
+%   expresión, la llave \mykey[spmangulo]{silent-cmd}|=true| evita
+%   que \mynvmath{NVDA/MathCAT} lo verbalice de nuevo. Por ejemplo,
+%   «la medida del ángulo recto en~$A$ es~|$\spmangulo[recto=true,|
+%   |silent-cmd=true]{A}$|» verbalizará solo \emph{«en A»}.
 % \end{important}
+%
+% \subsection*{El comando \cs[no-index]{spPoly}}\label{subsec:spPoly}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spPoly}
+%   \begin{syntax}
+%     \ics*{spPoly}\mymarg{puntos}
+%     \ics*{spPoly}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{puntos}
+%   \end{syntax}
+%   El comando \ics*{spPoly} trabaja en \emph{modo matemático} y
+%   recibe en \mymarg{puntos} una lista de \emph{al menos tres letras
+%   mayúsculas} separadas por comas. El tipo de figura y su símbolo
+%   visual se determinan automáticamente según el número de puntos:
+%   tres puntos producen un triángulo; cuatro puntos producen un
+%   cuadrado; cinco o más puntos producen un polígono genérico sin
+%   símbolo.
+%
+%   \smallskip
+%
+%   Con la llave \mykey[spPoly]{print-sym}|=true| (valor por
+%   defecto), |$\spPoly{A, B, C}$| imprimirá `$\triangle ABC$' en
+%   la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«triángulo A B C»}; |$\spPoly{A, B, C, D}$| imprimirá
+%   `$\mdlgwhtsquare ABCD$' y verbalizará \emph{«cuadrado A B C D»};
+%   |$\spPoly{A, B, C, D, E}$| imprimirá `$ABCDE$' y verbalizará
+%   \emph{«A B C D E»}.
+% \end{function}
+%
+% \smallskip
+%
+% \begin{important}*
+%   Para figuras de cuatro lados que no son cuadrados (rectángulo,
+%   paralelogramo, rombo, trapecio) o para polígonos de más de cuatro
+%   lados, el nombre de la figura va en el texto que rodea la
+%   expresión y |\spPoly| se usa con \mykey[spPoly]{print-sym}|=false|
+%   para tipografiar solo los vértices. Por ejemplo: «el rectángulo
+%   |$\spPoly[print-sym=false]{A, B, C, D}$|» imprimirá `$ABCD$' y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«el rectángulo A B C
+%   D»} sin repetir el nombre.
+% \end{important}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spPoly}}
+%
+% \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spPoly]
+% \smallskip
+% Establece si se imprime el símbolo visual de la figura y
+% \mynvmath{NVDA/MathCAT} verbaliza su nombre. Si se establece en
+% |true|, |$\spPoly{A, B, C}$| imprimirá `$\triangle ABC$' y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«triángulo A B C»}; si
+% se establece en |false|, |$\spPoly[print-sym=false]{A, B, C}$|
+% imprimirá `$ABC$' y \mynvmath{NVDA/MathCAT} verbalizará solo
+% \emph{«A B C»}. Para polígonos de cinco o más puntos esta llave
+% no tiene efecto — siempre se imprimen solo los vértices.
+%
+% \smallskip
+%
+% El resto de las llaves \mykey[spPoly]{read-cmd} y
+% \mykey[spPoly]{prefix} siguen la misma semántica que en |\splado|
+% (\S\ref{subsec:splado}).
+%
+% \smallskip
+%
+% \begin{important}*
+%   La llave \mykey[spPoly]{silent-cmd} es un \emph{alias} de
+%   \mykey[spPoly]{print-sym}|=false|, incluida por consistencia con
+%   el resto de los comandos de geometría plana.
+% \end{important}
+%
+%
+% \subsection*{El comando \cs[no-index]{spPoint}}\label{subsec:spPoint}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spPoint}
+%   \begin{syntax}
+%     \ics*{spPoint}\mymarg{punto}
+%     \ics*{spPoint}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto}
+%   \end{syntax}
+%   El comando \ics*{spPoint} trabaja en \emph{modo matemático} y
+%   recibe en \mymarg{punto} una \emph{única letra mayúscula} con
+%   modificador opcional de subíndice `|_{...}|' o prima `|'|'.
+%   Representa un punto geométrico como entidad abstracta, sin
+%   coordenadas.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spPoint{A}$| imprimirá `$A$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«punto A»};
+%   |$\spPoint{A_{1}}$| imprimirá `$A_1$' y verbalizará
+%   \emph{«punto A sub uno»}.
+% \end{function}
+%
+% \smallskip
+%
+% \begin{important}*
+%   El comando |\spPoint| solo acepta \emph{un punto}. Para pares o
+%   listas de puntos (lados, segmentos, rayos, rectas, arcos,
+%   polígonos), véanse los comandos correspondientes de esta sección.
+% \end{important}
+%
+% Las llaves \mykey[spPoint]{read-cmd}, \mykey[spPoint]{prefix} y
+% \mykey[spPoint]{silent-cmd} siguen la misma semántica que en
+% |\splado| (\S\ref{subsec:splado}).
+%
+% \subsection*{El comando \cs[no-index]{spAfig}}\label{subsec:spAfig}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spAfig}
+%   \begin{syntax}
+%     \ics*{spAfig}
+%     \ics*{spAfig}(\mymeta{puntos})
+%     \ics*{spAfig}\myoarg{key \textnormal{\textcolor{gray}{=}} val}(\mymeta{puntos})
+%   \end{syntax}
+%   El comando \ics*{spAfig} trabaja en \emph{modo matemático} y
+%   representa el \emph{área} de una figura poligonal. A diferencia
+%   del resto de los comandos de geometría plana, el argumento
+%   \mymeta{puntos} se delimita con \emph{paréntesis} en lugar de
+%   llaves, y es \emph{completamente opcional} — se puede escribir
+%   |\spAfig| solo, sin paréntesis, para obtener el símbolo del área
+%   sin ninguna figura asociada.
+%
+%   \smallskip
+%
+%   Si se usa sin paréntesis, |$\spAfig$| imprimirá `$\mathcal{A}$'
+%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«área»}. Si se proporcionan tres o cuatro puntos, el tipo
+%   de figura se determina automáticamente por el número de vértices
+%   y se imprime como subíndice: |$\spAfig(A, B, C)$| imprimirá
+%   `$\mathcal{A}_{\triangle ABC}$' y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«área del triángulo A B C»};
+%   |$\spAfig(A, B, C, D)$| imprimirá `$\mathcal{A}_{\text{\rlap{$\mdlgwhtsquare$}\hspace{1.1em}}ABCD}$'
+%   y verbalizará \emph{«área del cuadrado A B C D»}. Con cinco o
+%   más puntos, el subíndice solo contiene los vértices, y
+%   \mynvmath{NVDA/MathCAT} verbaliza el nombre del polígono
+%   correspondiente (pentágono, hexágono, etc.) sin símbolo visual.
+% \end{function}
+%
+% \smallskip
+%
+% \begin{important}*
+%   El subíndice de |\spAfig| solo identifica la figura por sus
+%   vértices — nunca contiene medidas (base, altura, lados). Para
+%   expresar el cálculo mismo, la medida se escribe aparte en la
+%   ecuación: por ejemplo, `$\mathcal{A}_{\triangle ABC} =
+%   \dfrac{b \cdot h}{2}$'.
+% \end{important}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spAfig}}
+%
+% \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spAfig]
+% \smallskip
+% Establece si se imprime el \emph{símbolo visual} de la figura
+% (\cs{triangle} o \cs{mdlgwhtsquare}) dentro del subíndice. Esta
+% llave solo tiene efecto cuando el número de vértices es tres o
+% cuatro. Si se establece en |false|,
+% |$\spAfig[print-sym=false](A, B, C)$| imprimirá
+% `$\mathcal{A}_{ABC}$' sin el símbolo del triángulo, mientras que
+% \mynvmath{NVDA/MathCAT} sigue verbalizando \emph{«área del
+% triángulo A B C»} — la llave afecta solo lo visual, no la
+% verbalización.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{nombre}{(automático)}[spAfig]
+% \smallskip
+% Sobrescribe el \emph{nombre de la figura} que \mynvmath{NVDA/MathCAT}
+% verbaliza, sin afectar el símbolo visual ni el número de vértices.
+% Es especialmente útil con cuatro vértices, donde la cardinalidad
+% por sí sola no puede distinguir un cuadrado de un rectángulo, un
+% rombo, un paralelogramo o un trapecio. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo,
+% |$\spAfig[read-arg={trapecio}](A, B, C, D)$| imprimirá
+% `$\mathcal{A}_{\mdlgwhtsquare ABCD}$' (el símbolo por defecto de
+% cuatro vértices) pero \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«área del trapecio A B C D»}. Para además ocultar el símbolo,
+% que en este caso no representa correctamente un trapecio,
+% combínese con \mykey[spAfig]{print-sym}|=false|:
+% |$\spAfig[read-arg={trapecio}, print-sym=false](A, B, C, D)$|
+% imprimirá `$\mathcal{A}_{ABCD}$' con la misma verbalización.
+% También sirve para precisar un triángulo: |$\spAfig[read-arg={triángulo escaleno}](A, B, C)$|
+% imprimirá `$\mathcal{A}_{\triangle ABC}$' y verbalizará \emph{«área del triángulo escaleno A B C»}.
+%
+% \smallskip
+%
+% Las llaves \mykey[spAfig]{read-cmd} y \mykey[spAfig]{prefix} siguen
+% la misma semántica que en |\splado| (\S\ref{subsec:splado}).
+%
+% \subsection*{El comando \cs[no-index]{spPfig}}\label{subsec:spPfig}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spPfig}
+%   \begin{syntax}
+%     \ics*{spPfig}
+%     \ics*{spPfig}(\mymeta{puntos})
+%     \ics*{spPfig}\myoarg{key \textnormal{\textcolor{gray}{=}} val}(\mymeta{puntos})
+%   \end{syntax}
+%   El comando \ics*{spPfig} es el homólogo de |\spAfig| para el
+%   \emph{perímetro} de una figura poligonal: misma sintaxis, mismas
+%   llaves, mismo comportamiento, usando $\mathcal{P}$ como símbolo.
+%
+%   \smallskip
+%
+%   Si se usa sin paréntesis, |$\spPfig$| imprimirá `$\mathcal{P}$'
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro»}. Con
+%   vértices, |$\spPfig(A, B, C)$| imprimirá `$\mathcal{P}_{\triangle ABC}$'
+%   y verbalizará \emph{«perímetro del triángulo A B C»}.
+% \end{function}
+%
+% \smallskip
+%
+% Las llaves \mykey[spPfig]{print-sym}, \mykey[spPfig]{read-arg},
+% \mykey[spPfig]{read-cmd} y \mykey[spPfig]{prefix} siguen exactamente
+% la misma semántica que las correspondientes de |\spAfig|
+% (\S\ref{subsec:spAfig}).
+%
+% \begin{important}*
+%   Para el área y el perímetro de un \emph{círculo} o una
+%   \emph{circunferencia}, |\spAfig| y |\spPfig| no son los comandos
+%   adecuados — véase |\spCirc|, que provee la notación propia de
+%   estos objetos.
+% \end{important}
+%
 %
 % \newpage
 %
@@ -3591,7 +3792,7 @@
 %    \end{macrocode}
 % Now declare the \mypkg*[no-index]{spintent} package.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-08-19} {0.98} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-20} {0.98} {Spanish parse intents}
 %    \end{macrocode}
 %
 % We check if the requirements for running the \mypkg*[no-index]{spintent} package
@@ -8302,18 +8503,14 @@
 %
 %   The variable \myhlc|\l_@@_geo_intent_str| stores the
 %   \mynvmath{MathML} |intent| string constructed by the Lua module
-%   for the current geometric command. In |school| mode it holds a
-%   literal intent such as |lado-A-B| or |arco-A-sub-uno-B-sub-uno|;
-%   in |mathcat| mode it holds the fixity form
-%   |_lado:prefix($pts)| or |_lado:prefix($pts):silent|.
+%   for the current geometric command.
 %
 %   \smallskip
 %
 %   The variable \myhlc|\l_@@_geo_visual_tl| stores the concatenated
 %   token list of the geometric points as they will be typeset inside
-%   the visual decorator (|\overline|, |\overrightarrow|,
-%   |\overleftrightarrow|, |\widearc|, or none). It is shared across
-%   all commands of the \texttt{geo} family.
+%   the visual decorator. It is shared across all commands of the
+%   \texttt{geo} family.
 %
 %   \smallskip
 %
@@ -8360,9 +8557,7 @@
 %   The boolean variable \myhlc|\l_@@_splado_silent_cmd_bool| stores
 %   the value set by the key \mykey[splado]{silent-cmd}. When |true|,
 %   the Lua parser omits the concept name |lado| from the |intent|
-%   string in |school| mode, or appends |:silent| in |mathcat| mode,
-%   so that \mynvmath{NVDA/MathCAT} does not verbalize the concept
-%   name when it has already been stated in the surrounding text.
+%   string in |school| mode, or appends |:silent| in |mathcat| mode.
 %    \begin{macrocode}
 \str_new:N  \l_@@_splado_mode_str
 \tl_new:N   \l_@@_splado_prefix_tl
@@ -8390,14 +8585,7 @@
 %
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, unknown}
 %   We define the keys \mykey[splado]{read-cmd}, \mykey[splado]{prefix}
-%   and \mykey[splado]{silent-cmd} for the command |\splado|. The key
-%   \mykey[splado]{read-cmd} controls whether the Lua parser builds a
-%   fully literal |intent| string (|school|) or a fixity expression
-%   with a |$pts| argument reference (|mathcat|). The key
-%   \mykey[splado]{prefix} allows prepending a sanitized string to the
-%   |intent|. The key \mykey[splado]{silent-cmd} suppresses the
-%   verbalization of the concept name |lado| by the Lua parser, useful
-%   when the surrounding text already names the geometric object.
+%   and \mykey[splado]{silent-cmd} for the command |\splado|.
 %    \begin{macrocode}
 \keys_define:nn { spintent / splado }
   {
@@ -8434,15 +8622,15 @@
 %
 % \begin{macro}[int]{\@@_splado_print:n}
 %   The function \myhlc|\@@_splado_print:n| is the main rendering
-%   function for |\splado|. It takes the comma-separated list of
-%   geometric points in `|#1|' and calls
+%   function for |\splado|. It calls
 %   \myhlc|\@@_luafun_geo_parse_and_set:nnnn| passing |lado|, the
-%   point list, the current mode from \cs{l_@@_splado_mode_str}, and
-%   the silent flag derived from \cs{l_@@_splado_silent_cmd_bool}.
-%   After checking \cs{l_@@_geo_error_str}, it dispatches on the
-%   verbalization mode to build the \cs{MathMLintent} with
+%   point list, the current mode and the silent flag. After checking
+%   \cs{l_@@_geo_error_str}, it builds the \cs{MathMLintent} with
 %   \cs{overline} applied to \cs{l_@@_geo_visual_tl}, using
-%   \cs{MathMLarg}\marg{pts} in |mathcat| mode.
+%   \cs{MathMLarg}\marg{pts} in |mathcat| mode. The call to
+%   \myhlc|\@@_invisible_sep:| is placed \emph{after} the
+%   \cs{MathMLintent} to correctly close the \lstinline+<mrow>+
+%   generated by \mypkg{luamml}.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_splado_print:n
   {
@@ -8458,7 +8646,6 @@
       }
     \str_if_eq:VnTF \l_@@_splado_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_splado_prefix_tl
@@ -8469,9 +8656,9 @@
             \c_@@_invisible_sep_tl
             \overline { \l_@@_geo_visual_tl }
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_splado_prefix_tl
@@ -8483,16 +8670,13 @@
             \overline
               { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_splado_exec:nn}
-%   The function \myhlc|\@@_splado_exec:nn| receives the optional
-%   \mymeta{keys} in `|#1|' and the point list in `|#2|'. It first
-%   sets the keys via \cs{keys_set:nn} in the |spintent/splado|
-%   namespace, then delegates rendering to \myhlc|\@@_splado_print:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_splado_exec:nn
   {
@@ -8503,10 +8687,6 @@
 % \end{macro}
 %
 % \begin{macro}{\splado}
-%   The command |\splado| is the public interface for typesetting
-%   geometric line segments as parts of a figure, with
-%   \mynvmath{MathML} semantics. It enforces math mode, opens a local
-%   group, and delegates execution to \myhlc|\@@_splado_exec:nn|.
 %    \begin{macrocode}
 \NewDocumentCommand \splado { O{} m }
   {
@@ -8526,12 +8706,11 @@
 % The user-level command |\spmlado| provides a semantic interface for
 % typesetting the \emph{\enquote{measure of a line segment as part of
 % a figure}} (\emph{medida del lado} in Spanish). It passes
-% |medida-del-lado| as the concept name to
-% \myhlc|\@@_luafun_geo_parse_and_set:nnnn|. The key
-% \mykey[spmlado]{overline} controls the visual notation: when |true|,
-% |\operatorname{m}| is prepended and \cs{overline} is applied; when
-% |false|, only the raw point tokens are typeset. The
-% \mynvmath{MathML} |intent| is identical in both cases.
+% |medida-del-lado| as the concept name. The key
+% \mykey[spmlado]{overline} controls the visual notation. When
+% |\operatorname{m}| is present, it is wrapped in
+% \cs{MathMLintent}\marg{:silent} to prevent \mynvmath{MathCAT} from
+% inserting an unwanted pause between it and the overline decorator.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spmlado}}
 %
@@ -8549,10 +8728,9 @@
 %
 %   The boolean variable \myhlc|\l_@@_spmlado_overline_bool| controls
 %   the visual notation set by the key \mykey[spmlado]{overline}. When
-%   |true|, the rendering function \myhlc|\@@_spmlado_print:n| typesets
-%   |\operatorname{m}| followed by \cs{overline} applied to the point
-%   tokens; when |false|, only the raw point tokens are typeset without
-%   any decoration.
+%   |true|, \cs{MathMLintent}\marg{:silent}\marg{\cs{operatorname}\marg{m}}
+%   is prepended and \cs{overline} is applied; when |false|, only the
+%   raw point tokens are typeset.
 %    \begin{macrocode}
 \str_new:N  \l_@@_spmlado_mode_str
 \tl_new:N   \l_@@_spmlado_prefix_tl
@@ -8564,8 +8742,6 @@
 % \subsubsection{Definition of error messages for \cs[no-index]{spmlado}}
 %
 % \begin{macro}[int]{spmlado-invalid-points}
-%   Exception triggered when the comma-separated list of geometric
-%   points contains invalid tokens.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spmlado-invalid-points }
   { Invalid~point~format~in~\token_to_str:N \spmlado:~'#1'. }
@@ -8580,15 +8756,6 @@
 % \subsubsection{Definition of keys for \cs[no-index]{spmlado}}
 %
 % \begin{macro}[int]{read-cmd, overline, prefix, silent-cmd, unknown}
-%   We define the keys \mykey[spmlado]{read-cmd},
-%   \mykey[spmlado]{overline}, \mykey[spmlado]{prefix} and
-%   \mykey[spmlado]{silent-cmd} for the command |\spmlado|. The keys
-%   \mykey[spmlado]{read-cmd}, \mykey[spmlado]{prefix} and
-%   \mykey[spmlado]{silent-cmd} follow the same semantics as in
-%   |\splado| (\S\ref{cmd:splado}). The key \mykey[spmlado]{overline}
-%   controls whether |\operatorname{m}\overline{...}| or the raw
-%   tokens are typeset; the \mynvmath{MathML} |intent| is always
-%   |medida-del-lado-...|.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spmlado }
   {
@@ -8628,11 +8795,13 @@
 %
 % \begin{macro}[int]{\@@_spmlado_print:n}
 %   The function \myhlc|\@@_spmlado_print:n| proceeds identically to
-%   \myhlc|\@@_splado_print:n| (\S\ref{cmd:splado}), except that it
-%   passes |medida-del-lado| as the concept name and dispatches on
-%   \cs{l_@@_spmlado_overline_bool} to select the visual output.
-%   When |true|, |\operatorname{m}| is prepended and \cs{overline}
-%   is applied; when |false|, only the raw tokens are typeset.
+%   \myhlc|\@@_splado_print:n| (\S\ref{cmd:splado}), passing
+%   |medida-del-lado| as the concept name and dispatching on
+%   \cs{l_@@_spmlado_overline_bool}. When |true|,
+%   \cs{MathMLintent}\marg{:silent}\marg{\cs{operatorname}\marg{m}}
+%   is placed inside the \cs{MathMLintent} content before \cs{overline},
+%   preventing \mynvmath{MathCAT} from inserting a pause between the
+%   two elements.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmlado_print:n
   {
@@ -8648,7 +8817,6 @@
       }
     \str_if_eq:VnTF \l_@@_spmlado_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spmlado_prefix_tl
@@ -8656,17 +8824,16 @@
             \l_@@_geo_intent_str
           }
           {
-            \c_@@_invisible_sep_tl
             \bool_if:NTF \l_@@_spmlado_overline_bool
               {
-                \operatorname { m }
+                \MathMLintent { :silent } { \operatorname { m } }
                 \overline { \l_@@_geo_visual_tl }
               }
               { \l_@@_geo_visual_tl }
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spmlado_prefix_tl
@@ -8674,25 +8841,21 @@
             \l_@@_geo_intent_str
           }
           {
-            \c_@@_invisible_sep_tl
             \bool_if:NTF \l_@@_spmlado_overline_bool
               {
-                \operatorname { m }
+                \MathMLintent { :silent } { \operatorname { m } }
                 \overline
                   { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
               }
               { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spmlado_exec:nn}
-%   The function \myhlc|\@@_spmlado_exec:nn| receives the optional
-%   \mymeta{keys} in `|#1|' and the point list in `|#2|'. It first
-%   sets the keys via \cs{keys_set:nn} in the |spintent/spmlado|
-%   namespace, then delegates rendering to \myhlc|\@@_spmlado_print:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmlado_exec:nn
   {
@@ -8703,10 +8866,6 @@
 % \end{macro}
 %
 % \begin{macro}{\spmlado}
-%   The command |\spmlado| is the public interface for typesetting the
-%   measure of a line segment as part of a figure. It enforces math
-%   mode, opens a local group, and delegates execution to
-%   \myhlc|\@@_spmlado_exec:nn|.
 %    \begin{macrocode}
 \NewDocumentCommand \spmlado { O{} m }
   {
@@ -8725,12 +8884,8 @@
 %
 % The user-level command |\spsegmento| provides a semantic interface
 % for typesetting \emph{\enquote{line segments}} as independent
-% geometric objects (\emph{segmentos} in Spanish). It passes
-% |segmento| as the concept name to
-% \myhlc|\@@_luafun_geo_parse_and_set:nnnn|. The visual output and
-% key structure are identical to those of |\splado|; the difference
-% is exclusively semantic: the \mynvmath{MathML} |intent| starts with
-% |segmento-| rather than |lado-|.
+% geometric objects. It passes |segmento| as the concept name.
+% Visual output and key structure are identical to |\splado|.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spsegmento}}
 %
@@ -8738,11 +8893,8 @@
 %   \l_@@_spsegmento_mode_str,
 %   \l_@@_spsegmento_prefix_tl,
 %   \l_@@_spsegmento_silent_cmd_bool}
-%   The variables \myhlc|\l_@@_spsegmento_mode_str|,
-%   \myhlc|\l_@@_spsegmento_prefix_tl| and
-%   \myhlc|\l_@@_spsegmento_silent_cmd_bool| follow the same
-%   semantics as the corresponding variables of |\splado|
-%   (\S\ref{cmd:splado}).
+%   All three variables follow the same semantics as the corresponding
+%   variables of |\splado| (\S\ref{cmd:splado}).
 %    \begin{macrocode}
 \str_new:N  \l_@@_spsegmento_mode_str
 \tl_new:N   \l_@@_spsegmento_prefix_tl
@@ -8753,8 +8905,6 @@
 % \subsubsection{Definition of error messages for \cs[no-index]{spsegmento}}
 %
 % \begin{macro}[int]{spsegmento-invalid-points}
-%   Exception triggered when the comma-separated list of geometric
-%   points contains invalid tokens.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spsegmento-invalid-points }
   { Invalid~point~format~in~\token_to_str:N \spsegmento:~'#1'. }
@@ -8769,11 +8919,6 @@
 % \subsubsection{Definition of keys for \cs[no-index]{spsegmento}}
 %
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, unknown}
-%   We define the keys \mykey[spsegmento]{read-cmd},
-%   \mykey[spsegmento]{prefix} and \mykey[spsegmento]{silent-cmd}
-%   for the command |\spsegmento|, following the same semantics as
-%   in |\splado| (\S\ref{cmd:splado}), with |segmento| as the concept
-%   name passed to the Lua parser.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spsegmento }
   {
@@ -8810,10 +8955,8 @@
 %
 % \begin{macro}[int]{\@@_spsegmento_print:n}
 %   The function \myhlc|\@@_spsegmento_print:n| proceeds identically
-%   to \myhlc|\@@_splado_print:n| (\S\ref{cmd:splado}), except that
-%   it passes |segmento| as the concept name, producing intents of
-%   the form |segmento-A-B| in |school| mode and
-%   |_segmento:prefix($pts)| in |mathcat| mode.
+%   to \myhlc|\@@_splado_print:n| (\S\ref{cmd:splado}), passing
+%   |segmento| as the concept name.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spsegmento_print:n
   {
@@ -8829,7 +8972,6 @@
       }
     \str_if_eq:VnTF \l_@@_spsegmento_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spsegmento_prefix_tl
@@ -8840,9 +8982,9 @@
             \c_@@_invisible_sep_tl
             \overline { \l_@@_geo_visual_tl }
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spsegmento_prefix_tl
@@ -8854,6 +8996,7 @@
             \overline
               { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -8888,10 +9031,9 @@
 %
 % The user-level command |\spmsegmento| provides a semantic interface
 % for typesetting the \emph{\enquote{measure of a line segment as an
-% independent object}} (\emph{medida del segmento} in Spanish). It
-% passes |medida-del-segmento| as the concept name. The key
-% \mykey[spmsegmento]{overline} and the key
-% \mykey[spmsegmento]{silent-cmd} follow the same semantics as in
+% independent object}}. It passes |medida-del-segmento| as the concept
+% name. The key \mykey[spmsegmento]{overline} and the silent
+% |\operatorname{m}| pattern follow the same semantics as in
 % |\spmlado| (\S\ref{cmd:spmlado}).
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spmsegmento}}
@@ -8967,8 +9109,8 @@
 %
 % \begin{macro}[int]{\@@_spmsegmento_print:n}
 %   The function \myhlc|\@@_spmsegmento_print:n| proceeds identically
-%   to \myhlc|\@@_spmlado_print:n| (\S\ref{cmd:spmlado}), except that
-%   it passes |medida-del-segmento| as the concept name.
+%   to \myhlc|\@@_spmlado_print:n| (\S\ref{cmd:spmlado}), passing
+%   |medida-del-segmento| as the concept name.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmsegmento_print:n
   {
@@ -8984,7 +9126,6 @@
       }
     \str_if_eq:VnTF \l_@@_spmsegmento_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spmsegmento_prefix_tl
@@ -8992,17 +9133,16 @@
             \l_@@_geo_intent_str
           }
           {
-            \c_@@_invisible_sep_tl
             \bool_if:NTF \l_@@_spmsegmento_overline_bool
               {
-                \operatorname { m }
+                \MathMLintent { :silent } { \operatorname { m } }
                 \overline { \l_@@_geo_visual_tl }
               }
               { \l_@@_geo_visual_tl }
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spmsegmento_prefix_tl
@@ -9010,15 +9150,15 @@
             \l_@@_geo_intent_str
           }
           {
-            \c_@@_invisible_sep_tl
             \bool_if:NTF \l_@@_spmsegmento_overline_bool
               {
-                \operatorname { m }
+                \MathMLintent { :silent } { \operatorname { m } }
                 \overline
                   { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
               }
               { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -9053,9 +9193,8 @@
 %
 % The user-level command |\sprayo| provides a semantic interface for
 % typesetting \emph{\enquote{rays}} (\emph{rayos} in Spanish). It
-% passes |rayo| as the concept name to
-% \myhlc|\@@_luafun_geo_parse_and_set:nnnn| and uses
-% \cs{overrightarrow} as the visual decorator.
+% passes |rayo| as the concept name and uses \cs{overrightarrow} as
+% the visual decorator.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{sprayo}}
 %
@@ -9125,9 +9264,9 @@
 %
 % \begin{macro}[int]{\@@_sprayo_print:n}
 %   The function \myhlc|\@@_sprayo_print:n| proceeds identically to
-%   \myhlc|\@@_splado_print:n| (\S\ref{cmd:splado}), except that it
-%   passes |rayo| as the concept name and uses \cs{overrightarrow}
-%   instead of \cs{overline} as the visual decorator.
+%   \myhlc|\@@_splado_print:n| (\S\ref{cmd:splado}), passing |rayo|
+%   as the concept name and using \cs{overrightarrow} instead of
+%   \cs{overline}.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprayo_print:n
   {
@@ -9143,7 +9282,6 @@
       }
     \str_if_eq:VnTF \l_@@_sprayo_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_sprayo_prefix_tl
@@ -9154,9 +9292,9 @@
             \c_@@_invisible_sep_tl
             \overrightarrow { \l_@@_geo_visual_tl }
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_sprayo_prefix_tl
@@ -9168,6 +9306,7 @@
             \overrightarrow
               { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -9202,8 +9341,7 @@
 %
 % The user-level command |\spsemirecta| is the terminological twin of
 % |\sprayo|: visual output, key structure and Lua parser are identical;
-% the only difference is the concept name |semirrecta| passed to
-% \myhlc|\@@_luafun_geo_parse_and_set:nnnn|.
+% the only difference is the concept name |semirrecta|.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spsemirecta}}
 %
@@ -9273,8 +9411,8 @@
 %
 % \begin{macro}[int]{\@@_spsemirecta_print:n}
 %   The function \myhlc|\@@_spsemirecta_print:n| proceeds identically
-%   to \myhlc|\@@_sprayo_print:n| (\S\ref{cmd:sprayo}), except that
-%   it passes |semirrecta| as the concept name.
+%   to \myhlc|\@@_sprayo_print:n| (\S\ref{cmd:sprayo}), passing
+%   |semirrecta| as the concept name.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spsemirecta_print:n
   {
@@ -9290,7 +9428,6 @@
       }
     \str_if_eq:VnTF \l_@@_spsemirecta_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spsemirecta_prefix_tl
@@ -9301,9 +9438,9 @@
             \c_@@_invisible_sep_tl
             \overrightarrow { \l_@@_geo_visual_tl }
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spsemirecta_prefix_tl
@@ -9315,6 +9452,7 @@
             \overrightarrow
               { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -9347,14 +9485,12 @@
 %
 % \subsection{The command \cs{sprecta}}\label{cmd:sprecta}
 %
-% The user-level command |\sprecta| provides a semantic interface for
-% typesetting \emph{\enquote{lines}} (\emph{rectas} in Spanish). It
-% supports two notations detected automatically by the Lua parser:
-% \emph{two-point notation} (comma present) renders
-% \cs{overleftrightarrow} over the points; \emph{name notation} (no
-% comma) renders the proper name without any visual decorator.
-% The shared variable \cs{l_@@_geo_is_nombre_str} carries the
-% detection result from Lua to the rendering function.
+% The user-level command |\sprecta| supports two notations detected
+% automatically by the Lua parser: \emph{two-point notation} (comma
+% present) renders \cs{overleftrightarrow}; \emph{name notation} (no
+% comma) renders the proper name without any visual decorator. The
+% shared variable \cs{l_@@_geo_is_nombre_str} carries the detection
+% result from Lua to the rendering function.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{sprecta}}
 %
@@ -9365,8 +9501,7 @@
 %   All three variables follow the same semantics as the corresponding
 %   variables of |\splado| (\S\ref{cmd:splado}). The name-notation
 %   branch additionally uses the shared variable
-%   \cs{l_@@_geo_is_nombre_str} (\S\ref{cmd:geo}) to dispatch the
-%   correct visual decorator.
+%   \cs{l_@@_geo_is_nombre_str} (\S\ref{cmd:geo}).
 %    \begin{macrocode}
 \str_new:N  \l_@@_sprecta_mode_str
 \tl_new:N   \l_@@_sprecta_prefix_tl
@@ -9430,11 +9565,8 @@
 %   The function \myhlc|\@@_sprecta_print:n| calls
 %   \myhlc|\@@_luafun_geo_parse_and_set:nnnn| with the concept name
 %   |recta|, then reads \cs{l_@@_geo_is_nombre_str} to dispatch
-%   between two visual branches. When |true| (name notation), the
-%   content of \cs{MathMLintent} is \cs{l_@@_geo_visual_tl} without
-%   any decorator. When |false| (two-point notation),
-%   \cs{overleftrightarrow} is applied. In |mathcat| mode,
-%   \cs{MathMLarg}\marg{pts} wraps the visual content in both branches.
+%   between the name-notation branch (no visual decorator) and the
+%   two-point branch (\cs{overleftrightarrow}).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_print:n
   {
@@ -9452,7 +9584,6 @@
       {
         \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
           {
-            \@@_invisible_sep:
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
@@ -9463,9 +9594,9 @@
                 \c_@@_invisible_sep_tl
                 \l_@@_geo_visual_tl
               }
+            \@@_invisible_sep:
           }
           {
-            \@@_invisible_sep:
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
@@ -9476,12 +9607,12 @@
                 \c_@@_invisible_sep_tl
                 \MathMLarg { pts } { \l_@@_geo_visual_tl }
               }
+            \@@_invisible_sep:
           }
       }
       {
         \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
           {
-            \@@_invisible_sep:
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
@@ -9492,9 +9623,9 @@
                 \c_@@_invisible_sep_tl
                 \overleftrightarrow { \l_@@_geo_visual_tl }
               }
+            \@@_invisible_sep:
           }
           {
-            \@@_invisible_sep:
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
@@ -9506,6 +9637,7 @@
                 \overleftrightarrow
                   { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
               }
+            \@@_invisible_sep:
           }
       }
   }
@@ -9541,12 +9673,10 @@
 %
 % The user-level command |\sparco| provides a semantic interface for
 % typesetting \emph{\enquote{arcs}} (\emph{arcos} in Spanish). It
-% passes |arco| as the concept name to
-% \myhlc|\@@_luafun_geo_parse_and_set:nnnn|. The visual decorator
-% is \cs{widearc} when available (provided by packages such as
-% \mypkg{yhmath} or \mypkg{MnSymbol}), falling back to
-% |\overset{\frown}{}| otherwise. The availability check is performed
-% at render time via \cs{cs_if_exist:NTF}.
+% passes |arco| as the concept name. The visual decorator is
+% \cs{widearc} when available, falling back to |\overset{\frown}{}|.
+% The availability check is performed at render time via
+% \cs{cs_if_exist:NTF}.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{sparco}}
 %
@@ -9616,11 +9746,12 @@
 %
 % \begin{macro}[int]{\@@_sparco_print:n}
 %   The function \myhlc|\@@_sparco_print:n| proceeds identically to
-%   \myhlc|\@@_splado_print:n| (\S\ref{cmd:splado}), except that it
-%   passes |arco| as the concept name and uses \cs{widearc} (or
-%   |\overset{\frown}{}| as fallback) as the visual decorator.
-%   The availability of \cs{widearc} is checked at render time via
-%   \cs{cs_if_exist:NTF}.
+%   \myhlc|\@@_splado_print:n| (\S\ref{cmd:splado}), passing |arco|
+%   as the concept name. The visual decorator is \cs{widearc} when
+%   available; otherwise \cs{Umathaccent}|~0~0~"23DC| is used as a
+%   fallback, which renders the arc symbol using the extensible
+%   |U+23DC| glyph from \texttt{Latin Modern Math}, always available in
+%   \hologo{LuaLaTeX}.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sparco_print:n
   {
@@ -9636,7 +9767,6 @@
       }
     \str_if_eq:VnTF \l_@@_sparco_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_sparco_prefix_tl
@@ -9647,11 +9777,11 @@
             \c_@@_invisible_sep_tl
             \cs_if_exist:NTF \widearc
               { \widearc { \l_@@_geo_visual_tl } }
-              { \overset { \frown } { \l_@@_geo_visual_tl } }
+              { \Umathaccent 0 0 "23DC { \l_@@_geo_visual_tl } }
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_sparco_prefix_tl
@@ -9666,10 +9796,11 @@
                   { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
               }
               {
-                \overset { \frown }
+                \Umathaccent 0 0 "23DC
                   { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
               }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -9703,13 +9834,11 @@
 % \subsection{The command \cs{spmarco}}\label{cmd:spmarco}
 %
 % The user-level command |\spmarco| provides a semantic interface for
-% typesetting the \emph{\enquote{measure of an arc}} (\emph{medida del
-% arco} in Spanish). It passes |medida-del-arco| as the concept name.
-% Unlike |\spmlado|, there is no \mykey[spmarco]{overline} key because
-% the notation $m\widearc{AB}$ is the only standard form for the
-% measure of an arc: |\operatorname{m}| is always prepended to the
-% visual decorator. The availability of \cs{widearc} is checked at
-% render time via \cs{cs_if_exist:NTF}.
+% typesetting the \emph{\enquote{measure of an arc}}. It passes
+% |medida-del-arco| as the concept name. The |\operatorname{m}| is
+% always present and always wrapped in \cs{MathMLintent}\marg{:silent}
+% to prevent \mynvmath{MathCAT} from inserting a pause between it and
+% the arc decorator.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spmarco}}
 %
@@ -9779,9 +9908,11 @@
 %
 % \begin{macro}[int]{\@@_spmarco_print:n}
 %   The function \myhlc|\@@_spmarco_print:n| proceeds identically to
-%   \myhlc|\@@_sparco_print:n| (\S\ref{cmd:sparco}), except that it
-%   passes |medida-del-arco| as the concept name and always prepends
-%   |\operatorname{m}| before the visual decorator.
+%   \myhlc|\@@_sparco_print:n| (\S\ref{cmd:sparco}), passing
+%   |medida-del-arco| as the concept name and always prepending
+%   \cs{MathMLintent}\marg{:silent}\marg{\cs{operatorname}\marg{m}}
+%   before the arc decorator. The same \cs{widearc}/\cs{Umathaccent}
+%   fallback applies.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmarco_print:n
   {
@@ -9797,7 +9928,6 @@
       }
     \str_if_eq:VnTF \l_@@_spmarco_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spmarco_prefix_tl
@@ -9805,15 +9935,14 @@
             \l_@@_geo_intent_str
           }
           {
-            \c_@@_invisible_sep_tl
-            \operatorname { m }
+            \MathMLintent { :silent } { \operatorname { m } }
             \cs_if_exist:NTF \widearc
               { \widearc { \l_@@_geo_visual_tl } }
-              { \overset { \frown } { \l_@@_geo_visual_tl } }
+              { \Umathaccent 0 0 "23DC { \l_@@_geo_visual_tl } }
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spmarco_prefix_tl
@@ -9821,18 +9950,18 @@
             \l_@@_geo_intent_str
           }
           {
-            \c_@@_invisible_sep_tl
-            \operatorname { m }
+            \MathMLintent { :silent } { \operatorname { m } }
             \cs_if_exist:NTF \widearc
               {
                 \widearc
                   { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
               }
               {
-                \overset { \frown }
+                \Umathaccent 0 0 "23DC
                   { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
               }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -9863,46 +9992,24 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsection{The commands \cs{spangulo} and
-%   \cs{spmangulo}}\label{cmd:spangulo}
+% \subsection{The command \cs{spangulo}}\label{cmd:spangulo}
 %
-% The user-level commands |\spangulo| and |\spmangulo| provide a
-% semantic interface for typesetting \emph{\enquote{angles}}
-% (\emph{ángulos} in Spanish) and their \emph{measures}. Unlike the
-% rest of the \texttt{geo} family, they use a dedicated Lua parser
-% \myhlc|\@@_luafun_geo_angulo_parse_and_set:nnnnn| that handles three
-% distinct notations detected automatically:
-%
-% \begin{itemize}
-%   \item \emph{Three-point notation}: when \mymarg{arg} contains a
-%   comma (e.g.\ |A, O, B|), the parser interprets the argument as
-%   three geometric points where the second is the vertex, producing
-%   intents of the form |ángulo-A-O-B|.
-%   \item \emph{Single-point notation}: when \mymarg{arg} contains no
-%   comma and matches a single uppercase point (e.g.\ |A| or |A_{1}|),
-%   the parser produces intents of the form |ángulo-en-A|, reflecting
-%   the Spanish reading \emph{«ángulo en A»}.
-%   \item \emph{Name notation}: when \mymarg{arg} contains no comma
-%   and does not match a single uppercase point (e.g.\ |\alpha|, |1|,
-%   |ABC|), the parser uses the raw input as the name, producing
-%   intents of the form |ángulo-\alpha|, |ángulo-1|, etc.
-% \end{itemize}
-%
-% The key \mykey[spangulo]{recto} switches the visual symbol from
-% \cs{angle} to \cs{rightangle} (U+221F, available via
-% \mypkg{unicode-math}) and prepends |recto| to the concept name in
-% the |intent|, so that \mynvmath{NVDA/MathCAT} verbalizes
-% \emph{«ángulo recto en A»} instead of \emph{«ángulo en A»}.
+% The user-level command |\spangulo| provides a semantic interface for
+% typesetting \emph{\enquote{angles}} (\emph{ángulos} in Spanish).
+% It uses the dedicated Lua parser
+% \myhlc|\@@_luafun_geo_angulo_parse_and_set:nnnnn| which handles
+% three notations: three-point (|A, O, B|), single-point (|A|), and
+% name (|\alpha|, |1|). The key \mykey[spangulo]{recto} switches the
+% visual symbol from \cs{angle} to \cs{rightangle} and prepends
+% |recto| to the concept name.
 %
 % \subsubsection{Definition of shared variables for
 %   \cs[no-index]{spangulo} and \cs[no-index]{spmangulo}}
 %
 % \begin{variable}[int]{\l_@@_geo_angulo_caso_str}
 %   The variable \myhlc|\l_@@_geo_angulo_caso_str| is set by the Lua
-%   parser to |tres-puntos|, |un-punto|, or |nombre| to indicate which
-%   notation was detected. It is read by the rendering functions to
-%   decide the visual output and is shared between |\spangulo| and
-%   |\spmangulo|.
+%   parser to |tres-puntos|, |un-punto|, or |nombre| to indicate
+%   which notation was detected.
 %    \begin{macrocode}
 \str_new:N \l_@@_geo_angulo_caso_str
 %    \end{macrocode}
@@ -9937,8 +10044,6 @@
 % \subsubsection{Definition of error messages for \cs[no-index]{spangulo}}
 %
 % \begin{macro}[int]{spangulo-invalid-arg}
-%   Exception triggered when the argument cannot be parsed as a valid
-%   angle notation.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spangulo-invalid-arg }
   { Invalid~format~in~\token_to_str:N \spangulo:~'#1'. }
@@ -9955,13 +10060,6 @@
 % \subsubsection{Definition of keys for \cs[no-index]{spangulo}}
 %
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, recto, unknown}
-%   We define the keys \mykey[spangulo]{read-cmd},
-%   \mykey[spangulo]{prefix}, \mykey[spangulo]{silent-cmd} and
-%   \mykey[spangulo]{recto} for the command |\spangulo|. The first
-%   three follow the same semantics as in |\splado|
-%   (\S\ref{cmd:splado}). The key \mykey[spangulo]{recto} switches
-%   the visual symbol to \cs{rightangle} and prepends |recto| to the
-%   concept name in the |intent|.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spangulo }
   {
@@ -10000,9 +10098,8 @@
 % \subsubsection{Internal functions for \cs[no-index]{spangulo}}
 %
 % \begin{macro}[int]{\@@_spangulo_sym:}
-%   The function \myhlc|\@@_spangulo_sym:| typesets the angle symbol:
-%   \cs{rightangle} when \cs{l_@@_spangulo_recto_bool} is |true|,
-%   \cs{angle} otherwise.
+%   The function \myhlc|\@@_spangulo_sym:| typesets \cs{rightangle}
+%   when \cs{l_@@_spangulo_recto_bool} is |true|, \cs{angle} otherwise.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangulo_sym:
   {
@@ -10015,13 +10112,11 @@
 %
 % \begin{macro}[int]{\@@_spangulo_print:n}
 %   The function \myhlc|\@@_spangulo_print:n| calls
-%   \myhlc|\@@_luafun_geo_angulo_parse_and_set:nnnnn| with the concept
-%   name |ángulo|, the argument, the current mode, the silent flag, and
-%   the recto flag. After checking \cs{l_@@_geo_error_str}, it reads
-%   \cs{l_@@_geo_angulo_caso_str} to dispatch the visual output:
-%   in all three notations, the visual content is
-%   \myhlc|\@@_spangulo_sym:| followed by \cs{l_@@_geo_visual_tl}
-%   (or \cs{MathMLarg}\marg{pts} in |mathcat| mode), wrapped in
+%   \myhlc|\@@_luafun_geo_angulo_parse_and_set:nnnnn| with |ángulo|
+%   as the concept name. After checking \cs{l_@@_geo_error_str}, it
+%   builds the \cs{MathMLintent} with \myhlc|\@@_spangulo_sym:|
+%   followed by \cs{l_@@_geo_visual_tl} or \cs{MathMLarg}\marg{pts}.
+%   The call to \myhlc|\@@_invisible_sep:| is placed after the
 %   \cs{MathMLintent}.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangulo_print:n
@@ -10039,7 +10134,6 @@
       }
     \str_if_eq:VnTF \l_@@_spangulo_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spangulo_prefix_tl
@@ -10051,9 +10145,9 @@
             \@@_spangulo_sym:
             \l_@@_geo_visual_tl
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spangulo_prefix_tl
@@ -10065,6 +10159,7 @@
             \@@_spangulo_sym:
             \MathMLarg { pts } { \l_@@_geo_visual_tl }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -10098,12 +10193,18 @@
 % \subsection{The command \cs{spmangulo}}\label{cmd:spmangulo}
 %
 % The user-level command |\spmangulo| provides a semantic interface
-% for typesetting the \emph{\enquote{measure of an angle}}
-% (\emph{medida del ángulo} in Spanish). It shares the Lua parser
-% \myhlc|\@@_luafun_geo_angulo_parse_and_set:nnnnn| with |\spangulo|,
-% passing |medida-del-ángulo| as the concept name. The visual output
-% always prepends |\operatorname{m}| before the angle symbol, since
-% $m\angle AOB$ is the standard notation for the measure of an angle.
+% for typesetting the \emph{\enquote{measure of an angle}}. It passes
+% |medida-del-ángulo| as the concept name. The visual symbol is
+% selected by \myhlc|\@@_spmangulo_sym:| from two independent keys:
+% \mykey[spmangulo]{print-m} chooses between the |\angle|/|\rightangle|
+% pair (used together with an explicit |\operatorname{m}|) and the
+% |\measuredangle|/|\measuredrightangle| pair (which already conveys
+% the notion of measure on its own, without |m|); \mykey[spmangulo]{recto}
+% independently chooses between the plain and right-angle variant of
+% whichever pair is active. The |\operatorname{m}| is only typeset
+% when \mykey[spmangulo]{print-m} is |true|, and is always wrapped in
+% \cs{MathMLintent}\marg{:silent} to prevent \mynvmath{MathCAT} from
+% inserting a pause between it and the angle symbol.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spmangulo}}
 %
@@ -10111,14 +10212,19 @@
 %   \l_@@_spmangulo_mode_str,
 %   \l_@@_spmangulo_prefix_tl,
 %   \l_@@_spmangulo_silent_cmd_bool,
-%   \l_@@_spmangulo_recto_bool}
+%   \l_@@_spmangulo_recto_bool,
+%   \l_@@_spmangulo_print_m_bool}
 %   All four variables follow the same semantics as the corresponding
-%   variables of |\spangulo| (\S\ref{cmd:spangulo}).
+%   variables of |\spangulo| (\S\ref{cmd:spangulo}), with the addition
+%   of \myhlc|\l_@@_spmangulo_print_m_bool|, which stores the value
+%   set by the key \mykey[spmangulo]{print-m} and selects between the
+%   two symbol pairs handled by \myhlc|\@@_spmangulo_sym:|.
 %    \begin{macrocode}
 \str_new:N  \l_@@_spmangulo_mode_str
 \tl_new:N   \l_@@_spmangulo_prefix_tl
 \bool_new:N \l_@@_spmangulo_silent_cmd_bool
 \bool_new:N \l_@@_spmangulo_recto_bool
+\bool_new:N \l_@@_spmangulo_print_m_bool
 %    \end{macrocode}
 % \end{variable}
 %
@@ -10140,7 +10246,17 @@
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spmangulo}}
 %
-% \begin{macro}[int]{read-cmd, prefix, silent-cmd, recto, unknown}
+% \begin{macro}[int]{read-cmd, prefix, silent-cmd, recto, print-m,
+%                    unknown}
+%   We define the keys \mykey[spmangulo]{read-cmd},
+%   \mykey[spmangulo]{prefix}, \mykey[spmangulo]{silent-cmd},
+%   \mykey[spmangulo]{recto} and \mykey[spmangulo]{print-m} for the
+%   command |\spmangulo|. The first four follow the same semantics as
+%   in |\spangulo| (\S\ref{cmd:spangulo}). The key
+%   \mykey[spmangulo]{print-m} controls whether |\operatorname{m}|
+%   is typeset before the angle symbol and, together with
+%   \mykey[spmangulo]{recto}, determines which of the four available
+%   symbols is used.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spmangulo }
   {
@@ -10167,6 +10283,9 @@
     recto               .bool_set:N = \l_@@_spmangulo_recto_bool,
     recto               .initial:n  = false,
     recto               .value_required:n = true,
+    print-m             .bool_set:N = \l_@@_spmangulo_print_m_bool,
+    print-m             .initial:n  = false,
+    print-m             .value_required:n = true,
     unknown             .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spmangulo }
@@ -10179,24 +10298,38 @@
 % \subsubsection{Internal functions for \cs[no-index]{spmangulo}}
 %
 % \begin{macro}[int]{\@@_spmangulo_sym:}
-%   The function \myhlc|\@@_spmangulo_sym:| typesets the angle symbol
-%   for |\spmangulo|: \cs{rightangle} when
-%   \cs{l_@@_spmangulo_recto_bool} is |true|, \cs{angle} otherwise.
+%   The function \myhlc|\@@_spmangulo_sym:| selects one of four
+%   visual symbols based on \cs{l_@@_spmangulo_print_m_bool} and
+%   \cs{l_@@_spmangulo_recto_bool}: |\angle| when |print-m| is |true|
+%   and |recto| is |false|; |\rightangle| when |print-m| is |true|
+%   and |recto| is |true|; |\measuredangle| when |print-m| is |false|
+%   and |recto| is |false|; |\measuredrightangle| when |print-m| is
+%   |false| and |recto| is |true|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmangulo_sym:
   {
-    \bool_if:NTF \l_@@_spmangulo_recto_bool
-      { \rightangle }
-      { \angle }
+    \bool_if:NTF \l_@@_spmangulo_print_m_bool
+      {
+        \bool_if:NTF \l_@@_spmangulo_recto_bool
+          { \rightangle }
+          { \angle }
+      }
+      {
+        \bool_if:NTF \l_@@_spmangulo_recto_bool
+          { \measuredrightangle }
+          { \measuredangle }
+      }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spmangulo_print:n}
-%   The function \myhlc|\@@_spmangulo_print:n| proceeds identically to
-%   \myhlc|\@@_spangulo_print:n| (\S\ref{cmd:spangulo}), except that
-%   it passes |medida-del-ángulo| as the concept name and always
-%   prepends |\operatorname{m}| before the angle symbol.
+%   The function \myhlc|\@@_spmangulo_print:n| proceeds identically
+%   to \myhlc|\@@_spangulo_print:n| (\S\ref{cmd:spangulo}), passing
+%   |medida-del-ángulo| as the concept name. The |\operatorname{m}|
+%   is typeset — wrapped in \cs{MathMLintent}\marg{:silent} — only
+%   when \cs{l_@@_spmangulo_print_m_bool} is |true|; the symbol is
+%   always typeset via \myhlc|\@@_spmangulo_sym:|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmangulo_print:n
   {
@@ -10213,7 +10346,6 @@
       }
     \str_if_eq:VnTF \l_@@_spmangulo_mode_str { school }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spmangulo_prefix_tl
@@ -10221,14 +10353,14 @@
             \l_@@_geo_intent_str
           }
           {
-            \c_@@_invisible_sep_tl
-            \operatorname { m }
+            \bool_if:NT \l_@@_spmangulo_print_m_bool
+              { \MathMLintent { :silent } { \operatorname { m } } }
             \@@_spmangulo_sym:
             \l_@@_geo_visual_tl
           }
+        \@@_invisible_sep:
       }
       {
-        \@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spmangulo_prefix_tl
@@ -10236,11 +10368,12 @@
             \l_@@_geo_intent_str
           }
           {
-            \c_@@_invisible_sep_tl
-            \operatorname { m }
+            \bool_if:NT \l_@@_spmangulo_print_m_bool
+              { \MathMLintent { :silent } { \operatorname { m } } }
             \@@_spmangulo_sym:
             \MathMLarg { pts } { \l_@@_geo_visual_tl }
           }
+        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -10271,6 +10404,899 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \subsection{The command \cs{spPoly}}\label{cmd:spPoly}
+%
+% The user-level command |\spPoly| provides a semantic interface for
+% typesetting geometric figures defined by their vertices in Spanish
+% mathematical contexts. It delegates argument parsing to the Lua
+% module \myluamod{} via
+% \myhlc|\@@_luafun_geo_poly_parse_and_set:nn|, which receives the
+% comma-separated point list and the verbalization mode. The figure
+% type and its visual symbol are determined automatically by the
+% number of points and stored in the shared variables
+% \cs{l_@@_geo_intent_str}, \cs{l_@@_geo_visual_tl} and
+% \cs{l_@@_geo_poly_sym_str}. The key \mykey[spPoly]{print-sym}
+% is handled entirely in expl3: when |true|, the visual symbol from
+% \cs{l_@@_geo_poly_sym_str} is typeset inside
+% \cs{MathMLintent}\marg{:silent} and the full |intent| string is
+% used; when |false|, only the vertex tokens are typeset and the
+% |intent| contains only the vertex labels, taken from the shared
+% variable \cs{l_@@_geo_intent_pts_str}.
+%
+% \subsubsection{Definition of shared variables for \cs[no-index]{spPoly}}
+%
+% \begin{variable}[int]{\l_@@_geo_poly_sym_str, \l_@@_geo_intent_pts_str}
+%   The variable \myhlc|\l_@@_geo_poly_sym_str| is set by the Lua
+%   parser to |triangle| (three points), |square| (four points), or
+%   an empty string (five or more points). It is read by
+%   \myhlc|\@@_spPoly_sym:| to select the correct visual symbol.
+%
+%   \smallskip
+%
+%   The variable \myhlc|\l_@@_geo_intent_pts_str| stores the |intent|
+%   string containing only the vertex labels, with no figure name
+%   prepended (e.g.\ |A-B-C| rather than |triángulo-A-B-C|). It is
+%   always set by \myhlc|\@@_luafun_geo_poly_parse_and_set:nn|
+%   alongside \cs{l_@@_geo_intent_str}, allowing the expl3 side to
+%   pick the appropriate one depending on
+%   \mykey[spPoly]{print-sym} without any further call into Lua.
+%    \begin{macrocode}
+\str_new:N \l_@@_geo_poly_sym_str
+\str_new:N \l_@@_geo_intent_pts_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{important}*
+%   The internal LPeg grammar \myhlc|geo_sep|, shared by every command
+%   of the \texttt{geo} family, previously discarded whitespace around
+%   commas via a substitution capture (|"/ ''"|). When such a capture
+%   is used \emph{inside} an outer \cs{Ct} (as in
+%   \myhlc|geo_grammar| and \myhlc|geo_poly_grammar|), \mypkg{lpeg}
+%   does not actually discard it: each consumed separator is inserted
+%   as a loose empty-string element in the resulting table, silently
+%   inflating its length. Every other command of the \texttt{geo}
+%   family iterates over this table with |ipairs| and indexes each
+%   element as |pt[1]|, |pt[2]|, |pt[3]|, which for a stray string
+%   simply yields |nil| and is a silent no-op — so the bug had no
+%   observable effect there. |\spPoly| is the only command that reads
+%   |#puntos| directly to determine the figure type from its
+%   cardinality, which is exactly where the inflated count surfaced.
+%   The grammar was corrected at its single point of definition (a
+%   capture-free whitespace pattern), fixing the count for the whole
+%   family at once rather than patching |\spPoly| in isolation.
+% \end{important}
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spPoly}}
+%
+% \begin{variable}[int]{
+%   \l_@@_spPoly_mode_str,
+%   \l_@@_spPoly_prefix_tl,
+%   \l_@@_spPoly_print_sym_bool}
+%   The variables \myhlc|\l_@@_spPoly_mode_str| and
+%   \myhlc|\l_@@_spPoly_prefix_tl| follow the same semantics as the
+%   corresponding variables of |\splado| (\S\ref{cmd:splado}).
+%
+%   \smallskip
+%
+%   The boolean variable \myhlc|\l_@@_spPoly_print_sym_bool| stores
+%   the value set by the key \mykey[spPoly]{print-sym}. When |true|,
+%   the rendering function \myhlc|\@@_spPoly_print:n| typesets the
+%   visual symbol and uses the full |intent| string including the
+%   figure name; when |false|, only the vertex tokens are typeset
+%   and the |intent| contains only the vertex labels.
+%    \begin{macrocode}
+\str_new:N  \l_@@_spPoly_mode_str
+\tl_new:N   \l_@@_spPoly_prefix_tl
+\bool_new:N \l_@@_spPoly_print_sym_bool
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spPoly}}
+%
+% \begin{macro}[int]{spPoly-invalid-points, spPoly-too-few-points}
+%   The error |spPoly-invalid-points| is raised when the argument
+%   contains no comma or invalid point tokens. The error
+%   |spPoly-too-few-points| is raised when fewer than three points
+%   are provided.
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spPoly-invalid-points }
+  { Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'. }
+  {
+    The~argument~must~be~a~comma-separated~list~of~at~least~three~
+    uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
+    Valid~examples:~'A,~B,~C',~'A_\{1\},~B_\{1\},~C_\{1\}'.
+  }
+\msg_new:nnnn { spintent } { spPoly-too-few-points }
+  { Too~few~points~in~\token_to_str:N \spPoly:~'#1'. }
+  { At~least~three~points~are~required. }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spPoly}}
+%
+% \begin{macro}[int]{read-cmd, prefix, print-sym, silent-cmd, unknown}
+%   We define the keys \mykey[spPoly]{read-cmd},
+%   \mykey[spPoly]{prefix}, \mykey[spPoly]{print-sym} and
+%   \mykey[spPoly]{silent-cmd} for the command |\spPoly|. The keys
+%   \mykey[spPoly]{read-cmd} and \mykey[spPoly]{prefix} follow the
+%   same semantics as in |\splado| (\S\ref{cmd:splado}). The key
+%   \mykey[spPoly]{print-sym} controls whether the visual symbol
+%   and the figure name are included in the output; the figure type
+%   is always determined automatically from the number of points.
+%   The key \mykey[spPoly]{silent-cmd} is a \cs{keys} alias for
+%   \mykey[spPoly]{print-sym}|=false|.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spPoly }
+  {
+    read-cmd            .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spPoly_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spPoly_mode_str { mathcat } }
+          }
+      },
+    read-cmd            .initial:n  = school,
+    read-cmd            .value_required:n = true,
+    read-cmd / unknown  .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
+    prefix              .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spPoly_prefix_tl {#1} },
+    prefix              .initial:n  = ,
+    prefix              .value_required:n = true,
+    print-sym           .bool_set:N = \l_@@_spPoly_print_sym_bool,
+    print-sym           .initial:n  = true,
+    print-sym           .value_required:n = true,
+    silent-cmd          .meta:n     = { print-sym = false },
+    unknown             .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spPoly }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spPoly}}
+%
+% \begin{macro}[int]{\@@_spPoly_sym:}
+%   The function \myhlc|\@@_spPoly_sym:| reads
+%   \cs{l_@@_geo_poly_sym_str} and typesets the corresponding visual
+%   symbol: \cs{triangle} for |triangle|, \cs{mdlgwhtsquare} for
+%   |square|, and nothing for an empty string.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPoly_sym:
+  {
+    \str_case:Vn \l_@@_geo_poly_sym_str
+      {
+        { triangle } { \triangle      }
+        { square   } { \mdlgwhtsquare }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spPoly_print:n}
+%   The function \myhlc|\@@_spPoly_print:n| is the main rendering
+%   function for |\spPoly|. It calls
+%   \myhlc|\@@_luafun_geo_poly_parse_and_set:nn| with the point list
+%   in `|#1|' and the verbalization mode from
+%   \cs{l_@@_spPoly_mode_str}. The Lua parser sets
+%   \cs{l_@@_geo_poly_sym_str}, \cs{l_@@_geo_intent_str} and
+%   \cs{l_@@_geo_visual_tl} according to the number of points.
+%
+%   \smallskip
+%
+%   After checking \cs{l_@@_geo_error_str}, the function reads
+%   \cs{l_@@_spPoly_print_sym_bool} to select one of two branches.
+%   When |true| and a symbol is available, the symbol is wrapped in
+%   \cs{MathMLintent}\marg{:silent} and the full |intent| string
+%   from \cs{l_@@_geo_intent_str} is used. When |false|, only the
+%   vertex tokens from \cs{l_@@_geo_visual_tl} are typeset, and
+%   the |intent| string contains only the vertex labels — the figure
+%   name is omitted so that \mynvmath{NVDA/MathCAT} reads only the
+%   vertices, without repeating a name already stated in the
+%   surrounding text.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPoly_print:n
+  {
+    \@@_luafun_geo_poly_parse_and_set:nn
+      { \exp_not:n {#1} }
+      { \l_@@_spPoly_mode_str }
+    \str_if_eq:VnT \l_@@_geo_error_str { true }
+      {
+        \msg_error:nne { spintent } { spPoly-invalid-points }
+          { \exp_not:n {#1} }
+      }
+    \bool_if:NTF \l_@@_spPoly_print_sym_bool
+      {
+        % print-sym = true: símbolo silenciado + intent con nombre
+        \str_if_eq:VnTF \l_@@_spPoly_mode_str { school }
+          {
+            \MathMLintent
+              {
+                \tl_if_empty:NF \l_@@_spPoly_prefix_tl
+                  { \tl_use:N \l_@@_spPoly_prefix_tl - }
+                \l_@@_geo_intent_str
+              }
+              {
+                \c_@@_invisible_sep_tl
+                \str_if_empty:NF \l_@@_geo_poly_sym_str
+                  {
+                    \MathMLintent { :silent } { \@@_spPoly_sym: }
+                  }
+                \l_@@_geo_visual_tl
+              }
+            \@@_invisible_sep:
+          }
+          {
+            \MathMLintent
+              {
+                \tl_if_empty:NF \l_@@_spPoly_prefix_tl
+                  { \tl_use:N \l_@@_spPoly_prefix_tl - }
+                \l_@@_geo_intent_str
+              }
+              {
+                \c_@@_invisible_sep_tl
+                \str_if_empty:NF \l_@@_geo_poly_sym_str
+                  {
+                    \MathMLintent { :silent } { \@@_spPoly_sym: }
+                  }
+                \MathMLarg { pts } { \l_@@_geo_visual_tl }
+              }
+            \@@_invisible_sep:
+          }
+      }
+      {
+        % print-sym = false: solo vértices, sin símbolo ni nombre
+        \str_if_eq:VnTF \l_@@_spPoly_mode_str { school }
+          {
+            \MathMLintent
+              {
+                \tl_if_empty:NF \l_@@_spPoly_prefix_tl
+                  { \tl_use:N \l_@@_spPoly_prefix_tl - }
+                \l_@@_geo_intent_pts_str
+              }
+              {
+                \c_@@_invisible_sep_tl
+                \l_@@_geo_visual_tl
+              }
+            \@@_invisible_sep:
+          }
+          {
+            \MathMLintent
+              {
+                \tl_if_empty:NF \l_@@_spPoly_prefix_tl
+                  { \tl_use:N \l_@@_spPoly_prefix_tl - }
+                \l_@@_geo_intent_pts_str
+              }
+              {
+                \c_@@_invisible_sep_tl
+                \MathMLarg { pts } { \l_@@_geo_visual_tl }
+              }
+            \@@_invisible_sep:
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spPoly_exec:nn}
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPoly_exec:nn
+  {
+    \keys_set:nn { spintent / spPoly } { #1 }
+    \@@_spPoly_print:n { #2 }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spPoly}
+%   The command |\spPoly| is the public interface for typesetting
+%   geometric figures defined by their vertices, with
+%   \mynvmath{MathML} semantics. It enforces math mode, opens a
+%   local group, and delegates execution to
+%   \myhlc|\@@_spPoly_exec:nn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spPoly { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_spPoly_exec:nn { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spPoly } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spPoint}}\label{cmd:spPoint}
+%
+% The user-level command |\spPoint| provides a semantic interface for
+% typesetting a single \emph{\enquote{geometric point}} (\emph{punto}
+% in Spanish), as an abstract entity without coordinates. It reuses
+% the point grammar \myhlc|geo_punto| and the helper functions
+% \myhlc|geo_build_intent_nombre| and \myhlc|geo_build_visual_nombre|
+% already used by the name-notation branch of |\sprecta|
+% (\S\ref{cmd:sprecta}), anchored with |P(-1)| so that any trailing
+% content beyond a single point is rejected as invalid.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spPoint}}
+%
+% \begin{variable}[int]{
+%   \l_@@_spPoint_mode_str,
+%   \l_@@_spPoint_prefix_tl,
+%   \l_@@_spPoint_silent_cmd_bool}
+%   All three variables follow the same semantics as the corresponding
+%   variables of |\splado| (\S\ref{cmd:splado}).
+%    \begin{macrocode}
+\str_new:N  \l_@@_spPoint_mode_str
+\tl_new:N   \l_@@_spPoint_prefix_tl
+\bool_new:N \l_@@_spPoint_silent_cmd_bool
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spPoint}}
+%
+% \begin{macro}[int]{spPoint-invalid-point}
+%   Exception triggered when the argument is not a single uppercase
+%   letter with an optional subscript or prime modifier.
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spPoint-invalid-point }
+  { Invalid~point~format~in~\token_to_str:N \spPoint:~'#1'. }
+  {
+    The~argument~must~be~a~single~uppercase~letter~with~an~optional~
+    subscript~(\_{...})~or~prime~(').\\
+    Valid~examples:~'A',~'A_\{1\}',~'A'''.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spPoint}}
+%
+% \begin{macro}[int]{read-cmd, prefix, silent-cmd, unknown}
+%   We define the keys \mykey[spPoint]{read-cmd},
+%   \mykey[spPoint]{prefix} and \mykey[spPoint]{silent-cmd} for the
+%   command |\spPoint|, following the same semantics as in |\splado|
+%   (\S\ref{cmd:splado}).
+%    \begin{macrocode}
+\keys_define:nn { spintent / spPoint }
+  {
+    read-cmd            .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spPoint_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spPoint_mode_str { mathcat } }
+          }
+      },
+    read-cmd            .initial:n  = school,
+    read-cmd            .value_required:n = true,
+    read-cmd / unknown  .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
+    prefix              .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spPoint_prefix_tl {#1} },
+    prefix              .initial:n  = ,
+    prefix              .value_required:n = true,
+    silent-cmd          .bool_set:N = \l_@@_spPoint_silent_cmd_bool,
+    silent-cmd          .initial:n  = false,
+    silent-cmd          .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spPoint }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spPoint}}
+%
+% \begin{macro}[int]{\@@_spPoint_print:n}
+%   The function \myhlc|\@@_spPoint_print:n| calls
+%   \myhlc|\@@_luafun_geo_point_parse_and_set:nnn| with the point
+%   label in `|#1|', the current mode, and the silent flag. Unlike
+%   the rest of the \texttt{geo} family, no visual decorator is
+%   applied — the content of \cs{MathMLintent} is simply
+%   \cs{l_@@_geo_visual_tl}, typeset directly, or wrapped in
+%   \cs{MathMLarg}\marg{pt} in |mathcat| mode.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPoint_print:n
+  {
+    \@@_luafun_geo_point_parse_and_set:nnn
+      { \exp_not:n {#1} }
+      { \l_@@_spPoint_mode_str }
+      { \bool_if:NTF \l_@@_spPoint_silent_cmd_bool { true } { false } }
+    \str_if_eq:VnT \l_@@_geo_error_str { true }
+      {
+        \msg_error:nne { spintent } { spPoint-invalid-point }
+          { \exp_not:n {#1} }
+      }
+    \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:NF \l_@@_spPoint_prefix_tl
+              { \tl_use:N \l_@@_spPoint_prefix_tl - }
+            \l_@@_geo_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \l_@@_geo_visual_tl
+          }
+        \@@_invisible_sep:
+      }
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:NF \l_@@_spPoint_prefix_tl
+              { \tl_use:N \l_@@_spPoint_prefix_tl - }
+            \l_@@_geo_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \MathMLarg { pt } { \l_@@_geo_visual_tl }
+          }
+        \@@_invisible_sep:
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spPoint_exec:nn}
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPoint_exec:nn
+  {
+    \keys_set:nn { spintent / spPoint } { #1 }
+    \@@_spPoint_print:n { #2 }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spPoint}
+%   The command |\spPoint| is the public interface for typesetting a
+%   single geometric point. It enforces math mode, opens a local
+%   group, and delegates execution to \myhlc|\@@_spPoint_exec:nn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spPoint { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_spPoint_exec:nn { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spPoint } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The commands \cs{spAfig} and \cs{spPfig}}\label{cmd:spAfig}
+%
+% The user-level commands |\spAfig| and |\spPfig| provide a semantic
+% interface for typesetting the \emph{area} and \emph{perimeter} of a
+% polygonal figure, identified by its vertices. Both share the Lua
+% parser \myhlc|\@@_luafun_geo_fig_parse_and_set:nnnnn|, which
+% receives the operator name (|área| or |perímetro|), the
+% comma-separated point list, the verbalization mode, the
+% print-symbol flag, and an optional overriding figure name.
+%
+% The vertex list is passed as a delimited optional argument
+% |d()|, following the same pattern as |\spmcd| and |\spmcm|. When
+% empty, only the bare symbol (\cs{mathcal}\marg{A} or
+% \cs{mathcal}\marg{P}) is typeset. When three or four points are
+% given, the figure type is inferred automatically (triangle or
+% square) and a visual symbol is typeset as a subscript, following
+% the same cardinality table as |\spPoly| — extended here with
+% pentágono through octágono, which have no visual symbol but do
+% receive a proper name in the verbalization. The key
+% \mykey[spAfig]{read-arg} allows overriding the inferred figure
+% name (e.g.\ |trapecio| or |paralelogramo| for four points, where
+% cardinality alone cannot distinguish them), independently of the
+% key \mykey[spAfig]{print-sym}, which controls only whether the
+% visual symbol is typeset.
+%
+% \subsubsection{Definition of shared variables for
+%   \cs[no-index]{spAfig} and \cs[no-index]{spPfig}}
+%
+% The commands reuse \cs{l_@@_geo_error_str}, \cs{l_@@_geo_intent_str},
+% \cs{l_@@_geo_visual_tl} and \cs{l_@@_geo_poly_sym_str}, already
+% declared for |\spPoly| (\S\ref{cmd:spPoly}); no new shared variables
+% are introduced.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spAfig}}
+%
+% \begin{variable}[int]{
+%   \l_@@_spAfig_mode_str,
+%   \l_@@_spAfig_prefix_tl,
+%   \l_@@_spAfig_print_sym_bool,
+%   \l_@@_spAfig_read_arg_str}
+%   The variables \myhlc|\l_@@_spAfig_mode_str| and
+%   \myhlc|\l_@@_spAfig_prefix_tl| follow the same semantics as the
+%   corresponding variables of |\splado| (\S\ref{cmd:splado}). The
+%   boolean \myhlc|\l_@@_spAfig_print_sym_bool| follows the same
+%   semantics as in |\spPoly| (\S\ref{cmd:spPoly}). The variable
+%   \myhlc|\l_@@_spAfig_read_arg_str| stores the value set by the key
+%   \mykey[spAfig]{read-arg}, which overrides the figure name inferred
+%   from the vertex count, independently of
+%   \mykey[spAfig]{print-sym}.
+%    \begin{macrocode}
+\str_new:N  \l_@@_spAfig_mode_str
+\tl_new:N   \l_@@_spAfig_prefix_tl
+\bool_new:N \l_@@_spAfig_print_sym_bool
+\str_new:N  \l_@@_spAfig_read_arg_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spAfig}}
+%
+% \begin{macro}[int]{spAfig-invalid-points}
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spAfig-invalid-points }
+  { Invalid~point~format~in~\token_to_str:N \spAfig:~'#1'. }
+  {
+    The~argument~must~be~empty,~or~a~comma-separated~list~of~at~
+    least~three~uppercase~letters~with~optional~subscripts~
+    (\_{...})~or~primes~(').\\
+    Valid~examples:~'()',~'(A,~B,~C)',~'(A_\{1\},~B_\{1\},~C_\{1\})'.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spAfig}}
+%
+% \begin{macro}[int]{read-cmd, prefix, print-sym, read-arg, unknown}
+%   We define the keys \mykey[spAfig]{read-cmd},
+%   \mykey[spAfig]{prefix}, \mykey[spAfig]{print-sym} and
+%   \mykey[spAfig]{read-arg} for the command |\spAfig|. The keys
+%   \mykey[spAfig]{read-cmd} and \mykey[spAfig]{prefix} follow the
+%   same semantics as in |\splado| (\S\ref{cmd:splado}). The key
+%   \mykey[spAfig]{print-sym} follows the same semantics as in
+%   |\spPoly| (\S\ref{cmd:spPoly}). The key \mykey[spAfig]{read-arg}
+%   overrides the figure name used in the |intent|, without affecting
+%   whether the visual symbol is typeset.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spAfig }
+  {
+    read-cmd            .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spAfig_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spAfig_mode_str { mathcat } }
+          }
+      },
+    read-cmd            .initial:n  = school,
+    read-cmd            .value_required:n = true,
+    read-cmd / unknown  .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
+    prefix              .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spAfig_prefix_tl {#1} },
+    prefix              .initial:n  = ,
+    prefix              .value_required:n = true,
+    print-sym           .bool_set:N = \l_@@_spAfig_print_sym_bool,
+    print-sym           .initial:n  = true,
+    print-sym           .value_required:n = true,
+    read-arg            .code:n =
+      { \str_set:Nn \l_@@_spAfig_read_arg_str {#1} },
+    read-arg            .initial:n  = ,
+    read-arg            .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spAfig }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spAfig}}
+%
+% \begin{macro}[int]{\@@_spAfig_sym:}
+%   The function \myhlc|\@@_spAfig_sym:| reads
+%   \cs{l_@@_geo_poly_sym_str} and typesets the corresponding visual
+%   symbol: \cs{triangle} for |triangle|, \cs{mdlgwhtsquare} for
+%   |square|, and nothing for an empty string.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spAfig_sym:
+  {
+    \str_case:Vn \l_@@_geo_poly_sym_str
+      {
+        { triangle } { \triangle      }
+        { square   } { \mdlgwhtsquare }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spAfig_print:n}
+%   The function \myhlc|\@@_spAfig_print:n| calls
+%   \myhlc|\@@_luafun_geo_fig_parse_and_set:nnnnn| with the operator
+%   name |área|, the vertex list in `|#1|' (empty when |\spAfig| is
+%   used without its delimited argument), the current mode, the
+%   print-symbol flag, and the value of
+%   \cs{l_@@_spAfig_read_arg_str}. It then builds
+%   \cs{MathMLintent}|\mathcal{A}| followed, when the vertex list
+%   is non-empty, by an |msub|-style subscript containing the visual
+%   symbol (via \myhlc|\@@_spAfig_sym:|, when
+%   \cs{l_@@_spAfig_print_sym_bool} is |true|) and the vertex tokens
+%   from \cs{l_@@_geo_visual_tl}.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spAfig_print:n
+  {
+    \@@_luafun_geo_fig_parse_and_set:nnnnn
+      { área }
+      { \exp_not:n {#1} }
+      { \l_@@_spAfig_mode_str }
+      { \bool_if:NTF \l_@@_spAfig_print_sym_bool { true } { false } }
+      { \l_@@_spAfig_read_arg_str }
+    \str_if_eq:VnT \l_@@_geo_error_str { true }
+      {
+        \msg_error:nne { spintent } { spAfig-invalid-points }
+          { \exp_not:n {#1} }
+      }
+    \str_if_eq:VnTF \l_@@_spAfig_mode_str { school }
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:NF \l_@@_spAfig_prefix_tl
+              { \tl_use:N \l_@@_spAfig_prefix_tl - }
+            \l_@@_geo_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \mathcal { A }
+            \tl_if_empty:NF \l_@@_geo_visual_tl
+              {
+                \c_math_subscript_token { \@@_spAfig_sym: \l_@@_geo_visual_tl }
+              }
+          }
+        \@@_invisible_sep:
+      }
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:NF \l_@@_spAfig_prefix_tl
+              { \tl_use:N \l_@@_spAfig_prefix_tl - }
+            \l_@@_geo_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \mathcal { A }
+            \tl_if_empty:NF \l_@@_geo_visual_tl
+              {
+                \c_math_subscript_token
+                  {
+                    \@@_spAfig_sym:
+                    \MathMLarg { pts } { \l_@@_geo_visual_tl }
+                  }
+              }
+          }
+        \@@_invisible_sep:
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spAfig_exec:nn}
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spAfig_exec:nn
+  {
+    \keys_set:nn { spintent / spAfig } { #1 }
+    \@@_spAfig_print:n { #2 }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spAfig}
+%   The command |\spAfig| is the public interface for typesetting
+%   the area of a polygonal figure. It enforces math mode, opens a
+%   local group, and delegates execution to
+%   \myhlc|\@@_spAfig_exec:nn|. The vertex list is a delimited
+%   optional argument |d()|, following the same pattern as |\spmcd|
+%   and |\spmcm|; when omitted, \cs{tl_if_novalue:nTF} substitutes an
+%   empty argument.
+%    \begin{macrocode}
+\NewDocumentCommand \spAfig { O{} d() }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \tl_if_novalue:nTF {#2}
+            { \@@_spAfig_exec:nn { #1 } { } }
+            { \@@_spAfig_exec:nn { #1 } { #2 } }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spAfig } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spPfig}}\label{cmd:spPfig}
+%
+% The user-level command |\spPfig| is the perimeter counterpart of
+% |\spAfig|: identical structure, identical keys, using |perímetro|
+% as the operator name and \cs{mathcal}\marg{P} as the symbol.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spPfig}}
+%
+% \begin{variable}[int]{
+%   \l_@@_spPfig_mode_str,
+%   \l_@@_spPfig_prefix_tl,
+%   \l_@@_spPfig_print_sym_bool,
+%   \l_@@_spPfig_read_arg_str}
+%   All four variables follow the same semantics as the corresponding
+%   variables of |\spAfig| (\S\ref{cmd:spAfig}).
+%    \begin{macrocode}
+\str_new:N  \l_@@_spPfig_mode_str
+\tl_new:N   \l_@@_spPfig_prefix_tl
+\bool_new:N \l_@@_spPfig_print_sym_bool
+\str_new:N  \l_@@_spPfig_read_arg_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spPfig}}
+%
+% \begin{macro}[int]{spPfig-invalid-points}
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spPfig-invalid-points }
+  { Invalid~point~format~in~\token_to_str:N \spPfig:~'#1'. }
+  {
+    The~argument~must~be~empty,~or~a~comma-separated~list~of~at~
+    least~three~uppercase~letters~with~optional~subscripts~
+    (\_{...})~or~primes~(').\\
+    Valid~examples:~'()',~'(A,~B,~C)',~'(A_\{1\},~B_\{1\},~C_\{1\})'.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spPfig}}
+%
+% \begin{macro}[int]{read-cmd, prefix, print-sym, read-arg, unknown}
+%    \begin{macrocode}
+\keys_define:nn { spintent / spPfig }
+  {
+    read-cmd            .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spPfig_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spPfig_mode_str { mathcat } }
+          }
+      },
+    read-cmd            .initial:n  = school,
+    read-cmd            .value_required:n = true,
+    read-cmd / unknown  .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
+    prefix              .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spPfig_prefix_tl {#1} },
+    prefix              .initial:n  = ,
+    prefix              .value_required:n = true,
+    print-sym           .bool_set:N = \l_@@_spPfig_print_sym_bool,
+    print-sym           .initial:n  = true,
+    print-sym           .value_required:n = true,
+    read-arg            .code:n =
+      { \str_set:Nn \l_@@_spPfig_read_arg_str {#1} },
+    read-arg            .initial:n  = ,
+    read-arg            .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spPfig }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spPfig}}
+%
+% \begin{macro}[int]{\@@_spPfig_sym:}
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPfig_sym:
+  {
+    \str_case:Vn \l_@@_geo_poly_sym_str
+      {
+        { triangle } { \triangle      }
+        { square   } { \mdlgwhtsquare }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spPfig_print:n}
+%   The function \myhlc|\@@_spPfig_print:n| proceeds identically to
+%   \myhlc|\@@_spAfig_print:n| (\S\ref{cmd:spAfig}), passing
+%   |perímetro| as the operator name and typesetting
+%   \cs{mathcal}\marg{P} instead of \cs{mathcal}\marg{A}.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPfig_print:n
+  {
+    \@@_luafun_geo_fig_parse_and_set:nnnnn
+      { perímetro }
+      { \exp_not:n {#1} }
+      { \l_@@_spPfig_mode_str }
+      { \bool_if:NTF \l_@@_spPfig_print_sym_bool { true } { false } }
+      { \l_@@_spPfig_read_arg_str }
+    \str_if_eq:VnT \l_@@_geo_error_str { true }
+      {
+        \msg_error:nne { spintent } { spPfig-invalid-points }
+          { \exp_not:n {#1} }
+      }
+    \str_if_eq:VnTF \l_@@_spPfig_mode_str { school }
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:NF \l_@@_spPfig_prefix_tl
+              { \tl_use:N \l_@@_spPfig_prefix_tl - }
+            \l_@@_geo_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \mathcal { P }
+            \tl_if_empty:NF \l_@@_geo_visual_tl
+              {
+                \c_math_subscript_token { \@@_spPfig_sym: \l_@@_geo_visual_tl }
+              }
+          }
+        \@@_invisible_sep:
+      }
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:NF \l_@@_spPfig_prefix_tl
+              { \tl_use:N \l_@@_spPfig_prefix_tl - }
+            \l_@@_geo_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \mathcal { P }
+            \tl_if_empty:NF \l_@@_geo_visual_tl
+              {
+                \c_math_subscript_token
+                  {
+                    \@@_spPfig_sym:
+                    \MathMLarg { pts } { \l_@@_geo_visual_tl }
+                  }
+              }
+          }
+        \@@_invisible_sep:
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spPfig_exec:nn}
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPfig_exec:nn
+  {
+    \keys_set:nn { spintent / spPfig } { #1 }
+    \@@_spPfig_print:n { #2 }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spPfig}
+%    \begin{macrocode}
+\NewDocumentCommand \spPfig { O{} d() }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \tl_if_novalue:nTF {#2}
+            { \@@_spPfig_exec:nn { #1 } { } }
+            { \@@_spPfig_exec:nn { #1 } { #2 } }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spPfig } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \subsection{Finish package}
 %
 % Finish package implementation.
@@ -10285,7 +11311,7 @@
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.98 [2026-08-19]
+     Lua module spintent.lua for spintent package - v0.98 [2026-08-20]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -11797,7 +12823,16 @@ local geo_punto = Ct(
     )
 )
 
-local geo_sep     = spintent_opt_spaces * P"," * spintent_opt_spaces
+-- geo_sep — separador de coma entre puntos geométricos.
+-- IMPORTANTE: no usa spintent_opt_spaces aquí, porque esa función
+-- descarta espacios vía "/ ''" (captura de sustitución). Esa captura,
+-- usada DENTRO de un Ct externo (geo_grammar, geo_poly_grammar), no
+-- se descarta — se inserta como elemento string "" suelto en la tabla
+-- resultante, duplicando el conteo real de puntos. Aquí se usa un
+-- patrón puro sin captura para evitarlo.
+local geo_ws     = S" \t\r\n"
+local geo_ws_opt = geo_ws^0
+local geo_sep    = geo_ws_opt * P"," * geo_ws_opt
 local geo_grammar = Ct( geo_punto * (geo_sep * geo_punto)^0 * P(-1) )
 
 -- Gramática LPeg para nombre propio de recta (mayúsculas Y minúsculas)
@@ -12066,6 +13101,196 @@ register_tex_cmd("luafun_geo_angulo_parse_and_set",
         end
         token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
         token_set_macro(geo_pfx .. "visual_tl",  visual)
+    end
+end, { "string", "string", "string", "string", "string" })
+
+-- ============================================================
+-- \spPoly
+-- ============================================================
+
+local geo_poly_npts = {
+    [3] = { cmd = "triángulo", sym = "triangle" },
+    [4] = { cmd = "cuadrado",  sym = "square"   },
+}
+
+local geo_poly_grammar = Ct( geo_punto * (geo_sep * geo_punto)^0 )
+
+register_tex_cmd("luafun_geo_poly_parse_and_set",
+    function(csv, mode)
+    csv = spintent_trim(csv)
+
+    local tiene_coma = s_match(csv, ",")
+    if not tiene_coma then
+        token_set_macro(geo_pfx .. "error_str",        "true")
+        token_set_macro(geo_pfx .. "intent_str",       "")
+        token_set_macro(geo_pfx .. "intent_pts_str",   "")
+        token_set_macro(geo_pfx .. "visual_tl",        "")
+        token_set_macro(geo_pfx .. "poly_sym_str",     "")
+        return
+    end
+
+    local puntos = geo_poly_grammar:match(csv)
+    if not puntos or #puntos < 3 then
+        token_set_macro(geo_pfx .. "error_str",        "true")
+        token_set_macro(geo_pfx .. "intent_str",       "")
+        token_set_macro(geo_pfx .. "intent_pts_str",   "")
+        token_set_macro(geo_pfx .. "visual_tl",        "")
+        token_set_macro(geo_pfx .. "poly_sym_str",     "")
+        return
+    end
+
+    local info     = geo_poly_npts[#puntos]
+    local cmd_base = info and info.cmd or "polígono"
+    local sym      = info and info.sym or ""
+
+    token_set_macro(geo_pfx .. "error_str",      "false")
+    token_set_macro(geo_pfx .. "poly_sym_str",   sym)
+    token_set_macro(geo_pfx .. "intent_pts_str",
+                    geo_build_intent("", puntos))
+
+    if mode == "school" then
+        token_set_macro(geo_pfx .. "intent_str",
+                        geo_build_intent(cmd_base, puntos))
+        token_set_macro(geo_pfx .. "visual_tl",
+                        geo_build_visual(puntos))
+    else
+        token_set_macro(geo_pfx .. "intent_str",
+                        "_" .. cmd_base .. ":prefix($pts)")
+        token_set_macro(geo_pfx .. "visual_tl",
+                        geo_build_visual(puntos))
+    end
+end, { "string", "string" })
+
+-- ============================================================
+-- \spPoint
+-- ============================================================
+
+-- Un solo punto, siempre mayúscula, con anclaje P(-1) para
+-- rechazar cualquier residuo (p.ej. "AB" no es un punto válido).
+local geo_single_point_grammar = geo_punto * P(-1)
+
+register_tex_cmd("luafun_geo_point_parse_and_set",
+    function(csv, mode, silent)
+    csv = spintent_trim(csv)
+
+    local cmd_base   = "punto"
+    local cmd_intent = (silent == "true") and "" or cmd_base
+
+    local punto = geo_single_point_grammar:match(csv)
+    if not punto then
+        token_set_macro(geo_pfx .. "error_str",  "true")
+        token_set_macro(geo_pfx .. "intent_str", "")
+        token_set_macro(geo_pfx .. "visual_tl",  "")
+        return
+    end
+
+    token_set_macro(geo_pfx .. "error_str", "false")
+
+    if mode == "school" then
+        token_set_macro(geo_pfx .. "intent_str",
+                        geo_build_intent_nombre(cmd_intent, punto))
+        token_set_macro(geo_pfx .. "visual_tl",
+                        geo_build_visual_nombre(punto))
+    else
+        local mathcat_intent
+        if silent == "true" then
+            mathcat_intent = "_" .. cmd_base .. ":prefix($pt):silent"
+        else
+            mathcat_intent = "_" .. cmd_base .. ":prefix($pt)"
+        end
+        token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
+        token_set_macro(geo_pfx .. "visual_tl",
+                        geo_build_visual_nombre(punto))
+    end
+end, { "string", "string", "string" })
+
+-- ============================================================
+-- \spAfig / \spPfig — área y perímetro de figuras poligonales
+-- ============================================================
+
+-- Extiende el mapeo de \spPoly con más nombres de polígono
+local geo_poly_npts_ext = {
+    [3] = { cmd = "triángulo",  sym = "triangle" },
+    [4] = { cmd = "cuadrado",   sym = "square"   },
+    [5] = { cmd = "pentágono",  sym = ""         },
+    [6] = { cmd = "hexágono",   sym = ""         },
+    [7] = { cmd = "heptágono",  sym = ""         },
+    [8] = { cmd = "octágono",   sym = ""         },
+}
+
+-- op: "área" | "perímetro"
+-- csv: "" | "A, B, C" | ...
+-- mode: "school" | "mathcat"
+-- print_sym: "true" | "false"
+-- read_arg: "" | "trapecio" | "triángulo escaleno" | ...
+register_tex_cmd("luafun_geo_fig_parse_and_set",
+    function(op, csv, mode, print_sym, read_arg)
+    csv = spintent_trim(csv)
+    read_arg = spintent_trim(read_arg)
+
+    -- Caso vacío: solo el símbolo A / P, sin subíndice
+    if csv == "" then
+        token_set_macro(geo_pfx .. "error_str",    "false")
+        token_set_macro(geo_pfx .. "poly_sym_str", "")
+        token_set_macro(geo_pfx .. "intent_str",   op)
+        token_set_macro(geo_pfx .. "visual_tl",    "")
+        return
+    end
+
+    local tiene_coma = s_match(csv, ",")
+    if not tiene_coma then
+        token_set_macro(geo_pfx .. "error_str",    "true")
+        token_set_macro(geo_pfx .. "intent_str",   "")
+        token_set_macro(geo_pfx .. "visual_tl",    "")
+        token_set_macro(geo_pfx .. "poly_sym_str", "")
+        return
+    end
+
+    local puntos = geo_poly_grammar:match(csv)
+    if not puntos or #puntos < 3 then
+        token_set_macro(geo_pfx .. "error_str",    "true")
+        token_set_macro(geo_pfx .. "intent_str",   "")
+        token_set_macro(geo_pfx .. "visual_tl",    "")
+        token_set_macro(geo_pfx .. "poly_sym_str", "")
+        return
+    end
+
+    local info      = geo_poly_npts_ext[#puntos]
+    local cmd_fig   = (read_arg ~= "" and read_arg)
+                       or (info and info.cmd)
+                       or "polígono"
+    local sym       = (info and info.sym) or ""
+
+    token_set_macro(geo_pfx .. "error_str", "false")
+    token_set_macro(geo_pfx .. "poly_sym_str",
+                    (print_sym == "true") and sym or "")
+    token_set_macro(geo_pfx .. "visual_tl",
+                    geo_build_visual(puntos))
+
+    -- Intent: "área-del-triángulo-A-B-C" / "perímetro-del-cuadrado-A-B-C-D"
+    local conector = "del"
+    -- concordancia simple: "de la" si el nombre termina en vocal + "a"
+    -- (regla suficiente para los sustantivos usados aquí: todos son
+    -- masculinos: triángulo, cuadrado, pentágono, ... , polígono)
+    local partes = { op, conector, cmd_fig }
+    for _, pt in ipairs(puntos) do
+        local letra, mod, tipo = pt[1], pt[2], pt[3]
+        partes[#partes + 1] = letra
+        if tipo == "sub" then
+            partes[#partes + 1] = "sub"
+            partes[#partes + 1] = geo_num_a_texto[mod] or mod
+        elseif tipo == "prima" then
+            local n = #mod
+            partes[#partes + 1] = geo_prima_prefijo[n] or (n .. "-prima")
+        end
+    end
+
+    if mode == "school" then
+        token_set_macro(geo_pfx .. "intent_str", t_concat(partes, "-"))
+    else
+        token_set_macro(geo_pfx .. "intent_str",
+                        "_" .. op .. "-" .. conector .. "-" .. cmd_fig ..
+                        ":prefix($pts)")
     end
 end, { "string", "string", "string", "string", "string" })
 % \iffalse

@@ -22,7 +22,7 @@
 -- General package identification
 module     = "spintent"
 pkgversion = "0.98"
-pkgdate    = "2026-08-19"
+pkgdate    = "2026-08-20"
 ltxrelease = "2026-11-01"
 
 -- Configuration of files for build and installation
@@ -32,12 +32,12 @@ textfiledir   = "./sources"
 sourcefiles   = {"**/*.dtx", "**/*.ins"}
 installfiles  = {"**/*.sty", "**/*.lua"}
 tdslocations  = {
-  "tex/luatex/spintent/spintent.sty",
-  "tex/luatex/spintent/spintent.lua",
-  "doc/luatex/spintent/spintent.pdf",
-  "doc/luatex/spintent/README.md",
-  "source/luatex/spintent/spintent.dtx",
-  "source/luatex/spintent/spintent.ins"
+  "tex/lualatex/spintent/spintent.sty",
+  "tex/lualatex/spintent/spintent.lua",
+  "doc/lualatex/spintent/spintent.pdf",
+  "doc/lualatex/spintent/README.md",
+  "source/lulaatex/spintent/spintent.dtx",
+  "source/lulaatex/spintent/spintent.ins"
 }
 
 -- Unpacking files from spintent.ins

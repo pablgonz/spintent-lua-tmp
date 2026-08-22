@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.98 [2026-08-19]
+     Lua module spintent.lua for spintent package - v0.98 [2026-08-20]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -1488,3 +1488,496 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     node.write(noad_user)
 
 end, {"string", "string"})
+
+-- ============================================================
+-- §12  GEOMETRÍA PLANA
+--      \splado, \spmlado, \spsegmento, \spmsegmento,
+--      \sprayo, \spsemirecta, \sprecta, \sparco, \spmarco
+-- ============================================================
+
+-- Prefijo compartido para todas las macros TeX de la familia geo
+local geo_pfx = "l__spintent_geo_"
+
+-- Gramática LPeg para puntos geométricos (solo mayúsculas)
+local geo_cont_sub = C((1 - P"}")^1)
+local geo_primas   = C(P"'"^1)
+
+local geo_punto = Ct(
+    C(R"AZ") *
+    (
+        P"_{" * geo_cont_sub * P"}" * Cc"sub"
+        + geo_primas              * Cc"prima"
+        + Cc""                    * Cc""
+    )
+)
+
+-- geo_sep — separador de coma entre puntos geométricos.
+-- IMPORTANTE: no usa spintent_opt_spaces aquí, porque esa función
+-- descarta espacios vía "/ ''" (captura de sustitución). Esa captura,
+-- usada DENTRO de un Ct externo (geo_grammar, geo_poly_grammar), no
+-- se descarta — se inserta como elemento string "" suelto en la tabla
+-- resultante, duplicando el conteo real de puntos. Aquí se usa un
+-- patrón puro sin captura para evitarlo.
+local geo_ws     = S" \t\r\n"
+local geo_ws_opt = geo_ws^0
+local geo_sep    = geo_ws_opt * P"," * geo_ws_opt
+local geo_grammar = Ct( geo_punto * (geo_sep * geo_punto)^0 * P(-1) )
+
+-- Gramática LPeg para nombre propio de recta (mayúsculas Y minúsculas)
+local geo_nombre_recta = Ct(
+    C(R"AZ" + R"az") *
+    (
+        P"_{" * geo_cont_sub * P"}" * Cc"sub"
+        + geo_primas              * Cc"prima"
+        + Cc""                    * Cc""
+    )
+)
+
+-- Tabla de conversión de subíndices numéricos a texto
+local geo_num_a_texto = {
+    ["0"] = "cero",  ["1"] = "uno",   ["2"] = "dos",
+    ["3"] = "tres",  ["4"] = "cuatro",["5"] = "cinco",
+    ["6"] = "seis",  ["7"] = "siete", ["8"] = "ocho",
+    ["9"] = "nueve",
+}
+
+-- Prefijos para primas
+local geo_prima_prefijo = {
+    "prima", "doble-prima", "triple-prima", "cuádruple-prima"
+}
+
+-- Constructor de intent literal
+-- Si cmd == "" (silent-cmd=true en school) omite el concepto
+local function geo_build_intent(cmd, puntos)
+    local partes = {}
+    if cmd ~= "" then
+        partes[#partes + 1] = cmd
+    end
+    for _, pt in ipairs(puntos) do
+        local letra, mod, tipo = pt[1], pt[2], pt[3]
+        partes[#partes + 1] = letra
+        if tipo == "sub" then
+            partes[#partes + 1] = "sub"
+            partes[#partes + 1] = geo_num_a_texto[mod] or mod
+        elseif tipo == "prima" then
+            local n = #mod
+            partes[#partes + 1] = geo_prima_prefijo[n] or (n .. "-prima")
+        end
+    end
+    return t_concat(partes, "-")
+end
+
+-- Constructor de intent para nombre propio de recta
+local function geo_build_intent_nombre(cmd, nombre)
+    return geo_build_intent(cmd, { nombre })
+end
+
+-- Constructor del visual para \overline/\overrightarrow/\overleftrightarrow/\widearc
+local function geo_build_visual(puntos)
+    local partes = {}
+    for _, pt in ipairs(puntos) do
+        local letra, mod, tipo = pt[1], pt[2], pt[3]
+        if tipo == "sub" then
+            partes[#partes + 1] = letra .. "_{" .. mod .. "}"
+        elseif tipo == "prima" then
+            local buf = { letra }
+            for _ = 1, #mod do buf[#buf + 1] = "'" end
+            partes[#partes + 1] = t_concat(buf)
+        else
+            partes[#partes + 1] = letra
+        end
+    end
+    return t_concat(partes)
+end
+
+-- Constructor del visual para nombre propio de recta
+local function geo_build_visual_nombre(nombre)
+    local letra, mod, tipo = nombre[1], nombre[2], nombre[3]
+    if tipo == "sub" then
+        return letra .. "_{" .. mod .. "}"
+    elseif tipo == "prima" then
+        local buf = { letra }
+        for _ = 1, #mod do buf[#buf + 1] = "'" end
+        return t_concat(buf)
+    else
+        return letra
+    end
+end
+
+-- Función principal expuesta a expl3
+-- cmd:    "lado" | "segmento" | "rayo" | "semirrecta" | "recta" | "arco" | ...
+-- csv:    "A, B" | "A_{1}, B_{1}" | "L_{1}" | "m" | ...
+-- mode:   "school" | "mathcat"
+-- silent: "true" | "false"
+register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv, mode, silent)
+    csv = spintent_trim(csv)
+
+    -- En modo school con silent=true, omitimos el concepto del intent
+    local cmd_intent = cmd
+    if mode == "school" and silent == "true" then
+        cmd_intent = ""
+    end
+
+    -- En modo mathcat con silent=true, añadimos :silent al intent de función
+    local mathcat_intent
+    if silent == "true" then
+        mathcat_intent = "_" .. cmd .. ":prefix($pts):silent"
+    else
+        mathcat_intent = "_" .. cmd .. ":prefix($pts)"
+    end
+
+    -- Detección automática: ¿tiene coma? → dos puntos; si no → nombre propio
+    local tiene_coma = s_match(csv, ",")
+
+    if tiene_coma then
+        local puntos = geo_grammar:match(csv)
+        if not puntos or #puntos == 0 then
+            token_set_macro(geo_pfx .. "error_str",     "true")
+            token_set_macro(geo_pfx .. "intent_str",    "")
+            token_set_macro(geo_pfx .. "visual_tl",     "")
+            token_set_macro(geo_pfx .. "is_nombre_str", "false")
+            return
+        end
+        token_set_macro(geo_pfx .. "error_str",     "false")
+        token_set_macro(geo_pfx .. "is_nombre_str", "false")
+        if mode == "school" then
+            token_set_macro(geo_pfx .. "intent_str",
+                            geo_build_intent(cmd_intent, puntos))
+            token_set_macro(geo_pfx .. "visual_tl",
+                            geo_build_visual(puntos))
+        else
+            token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
+            token_set_macro(geo_pfx .. "visual_tl",
+                            geo_build_visual(puntos))
+        end
+    else
+        local nombre = geo_nombre_recta:match(csv)
+        if not nombre then
+            token_set_macro(geo_pfx .. "error_str",     "true")
+            token_set_macro(geo_pfx .. "intent_str",    "")
+            token_set_macro(geo_pfx .. "visual_tl",     "")
+            token_set_macro(geo_pfx .. "is_nombre_str", "false")
+            return
+        end
+        token_set_macro(geo_pfx .. "error_str",     "false")
+        token_set_macro(geo_pfx .. "is_nombre_str", "true")
+        if mode == "school" then
+            token_set_macro(geo_pfx .. "intent_str",
+                            geo_build_intent_nombre(cmd_intent, nombre))
+            token_set_macro(geo_pfx .. "visual_tl",
+                            geo_build_visual_nombre(nombre))
+        else
+            token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
+            token_set_macro(geo_pfx .. "visual_tl",
+                            geo_build_visual_nombre(nombre))
+        end
+    end
+end, { "string", "string", "string", "string" })
+
+-- Gramática LPeg para argumento de \spangulo / \spmangulo
+-- Tres casos:
+--   1. Tres puntos con coma: A, O, B  → ángulo-A-O-B
+--   2. Un punto solo mayúscula:  A    → ángulo-en-A
+--   3. Nombre propio: \alpha, 1, ABC  → ángulo-X
+
+-- Caso 3: nombre propio — cualquier string sin coma
+-- Lo pasamos tal cual a token_set_macro para que LaTeX lo tipografíe
+-- No intentamos parsearlo: puede ser \alpha, 1, ABC, etc.
+local geo_angulo_nombre = C((1 - P",")^1)
+
+-- Detección de "un solo punto mayúscula" (caso 2)
+-- Coincide con: A | A_{1} | A' — igual que geo_punto pero solo uno
+local geo_angulo_un_punto = geo_punto * P(-1)
+
+local function geo_build_intent_angulo(cmd, csv, silent)
+    -- cmd: "ángulo" | "ángulo-recto" | "medida-del-ángulo" | etc.
+    local cmd_intent = (silent == "true") and "" or cmd
+
+    local tiene_coma = s_match(csv, ",")
+
+    if tiene_coma then
+        -- Caso 1: tres puntos A, O, B
+        local puntos = geo_grammar:match(csv)
+        if not puntos or #puntos == 0 then
+            return nil, nil, nil
+        end
+        local intent = geo_build_intent(cmd_intent, puntos)
+        local visual = geo_build_visual(puntos)
+        return intent, visual, "tres-puntos"
+    else
+        -- ¿Es un solo punto mayúscula?
+        local un_punto = geo_angulo_un_punto:match(csv)
+        if un_punto then
+            -- Caso 2: un punto → "ángulo-en-A"
+            local letra  = un_punto[1]
+            local mod    = un_punto[2]
+            local tipo   = un_punto[3]
+            -- Construir la parte "en-A" del intent
+            local partes_en = { "en" }
+            partes_en[#partes_en + 1] = letra
+            if tipo == "sub" then
+                partes_en[#partes_en + 1] = "sub"
+                partes_en[#partes_en + 1] = geo_num_a_texto[mod] or mod
+            elseif tipo == "prima" then
+                local n = #mod
+                partes_en[#partes_en + 1] = geo_prima_prefijo[n] or (n .. "-prima")
+            end
+            local sufijo = t_concat(partes_en, "-")
+            local intent
+            if cmd_intent == "" then
+                intent = sufijo
+            else
+                intent = cmd_intent .. "-" .. sufijo
+            end
+            local visual = geo_build_visual_nombre(un_punto)
+            return intent, visual, "un-punto"
+        else
+            -- Caso 3: nombre propio (\alpha, 1, ABC, etc.)
+            local nombre = spintent_trim(csv)
+            if nombre == "" then return nil, nil, nil end
+            -- Para el intent, usamos el nombre tal cual
+            -- pero escapamos caracteres conflictivos
+            local nombre_intent = s_gsub(nombre, "[\\{}%s]", "-")
+            nombre_intent = s_gsub(nombre_intent, "%-%-+", "-")
+            local intent
+            if cmd_intent == "" then
+                intent = nombre_intent
+            else
+                intent = cmd_intent .. "-" .. nombre_intent
+            end
+            return intent, nombre, "nombre"
+        end
+    end
+end
+
+register_tex_cmd("luafun_geo_angulo_parse_and_set",
+    function(cmd, csv, mode, silent, recto)
+    csv = spintent_trim(csv)
+
+    -- cmd base según recto
+    local cmd_base
+    if recto == "true" then
+        cmd_base = cmd .. "-recto"
+    else
+        cmd_base = cmd
+    end
+
+    local intent, visual, caso =
+        geo_build_intent_angulo(cmd_base, csv, silent)
+
+    if not intent then
+        token_set_macro(geo_pfx .. "error_str",       "true")
+        token_set_macro(geo_pfx .. "intent_str",      "")
+        token_set_macro(geo_pfx .. "visual_tl",       "")
+        token_set_macro(geo_pfx .. "angulo_caso_str", "")
+        return
+    end
+
+    token_set_macro(geo_pfx .. "error_str", "false")
+    token_set_macro(geo_pfx .. "angulo_caso_str", caso)
+
+    if mode == "school" then
+        token_set_macro(geo_pfx .. "intent_str", intent)
+        token_set_macro(geo_pfx .. "visual_tl",  visual)
+    else
+        -- modo mathcat
+        local mathcat_intent
+        if silent == "true" then
+            mathcat_intent = "_" .. cmd_base .. ":prefix($pts):silent"
+        else
+            mathcat_intent = "_" .. cmd_base .. ":prefix($pts)"
+        end
+        token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
+        token_set_macro(geo_pfx .. "visual_tl",  visual)
+    end
+end, { "string", "string", "string", "string", "string" })
+
+-- ============================================================
+-- \spPoly
+-- ============================================================
+
+local geo_poly_npts = {
+    [3] = { cmd = "triángulo", sym = "triangle" },
+    [4] = { cmd = "cuadrado",  sym = "square"   },
+}
+
+local geo_poly_grammar = Ct( geo_punto * (geo_sep * geo_punto)^0 )
+
+register_tex_cmd("luafun_geo_poly_parse_and_set",
+    function(csv, mode)
+    csv = spintent_trim(csv)
+
+    local tiene_coma = s_match(csv, ",")
+    if not tiene_coma then
+        token_set_macro(geo_pfx .. "error_str",        "true")
+        token_set_macro(geo_pfx .. "intent_str",       "")
+        token_set_macro(geo_pfx .. "intent_pts_str",   "")
+        token_set_macro(geo_pfx .. "visual_tl",        "")
+        token_set_macro(geo_pfx .. "poly_sym_str",     "")
+        return
+    end
+
+    local puntos = geo_poly_grammar:match(csv)
+    if not puntos or #puntos < 3 then
+        token_set_macro(geo_pfx .. "error_str",        "true")
+        token_set_macro(geo_pfx .. "intent_str",       "")
+        token_set_macro(geo_pfx .. "intent_pts_str",   "")
+        token_set_macro(geo_pfx .. "visual_tl",        "")
+        token_set_macro(geo_pfx .. "poly_sym_str",     "")
+        return
+    end
+
+    local info     = geo_poly_npts[#puntos]
+    local cmd_base = info and info.cmd or "polígono"
+    local sym      = info and info.sym or ""
+
+    token_set_macro(geo_pfx .. "error_str",      "false")
+    token_set_macro(geo_pfx .. "poly_sym_str",   sym)
+    token_set_macro(geo_pfx .. "intent_pts_str",
+                    geo_build_intent("", puntos))
+
+    if mode == "school" then
+        token_set_macro(geo_pfx .. "intent_str",
+                        geo_build_intent(cmd_base, puntos))
+        token_set_macro(geo_pfx .. "visual_tl",
+                        geo_build_visual(puntos))
+    else
+        token_set_macro(geo_pfx .. "intent_str",
+                        "_" .. cmd_base .. ":prefix($pts)")
+        token_set_macro(geo_pfx .. "visual_tl",
+                        geo_build_visual(puntos))
+    end
+end, { "string", "string" })
+
+-- ============================================================
+-- \spPoint
+-- ============================================================
+
+-- Un solo punto, siempre mayúscula, con anclaje P(-1) para
+-- rechazar cualquier residuo (p.ej. "AB" no es un punto válido).
+local geo_single_point_grammar = geo_punto * P(-1)
+
+register_tex_cmd("luafun_geo_point_parse_and_set",
+    function(csv, mode, silent)
+    csv = spintent_trim(csv)
+
+    local cmd_base   = "punto"
+    local cmd_intent = (silent == "true") and "" or cmd_base
+
+    local punto = geo_single_point_grammar:match(csv)
+    if not punto then
+        token_set_macro(geo_pfx .. "error_str",  "true")
+        token_set_macro(geo_pfx .. "intent_str", "")
+        token_set_macro(geo_pfx .. "visual_tl",  "")
+        return
+    end
+
+    token_set_macro(geo_pfx .. "error_str", "false")
+
+    if mode == "school" then
+        token_set_macro(geo_pfx .. "intent_str",
+                        geo_build_intent_nombre(cmd_intent, punto))
+        token_set_macro(geo_pfx .. "visual_tl",
+                        geo_build_visual_nombre(punto))
+    else
+        local mathcat_intent
+        if silent == "true" then
+            mathcat_intent = "_" .. cmd_base .. ":prefix($pt):silent"
+        else
+            mathcat_intent = "_" .. cmd_base .. ":prefix($pt)"
+        end
+        token_set_macro(geo_pfx .. "intent_str", mathcat_intent)
+        token_set_macro(geo_pfx .. "visual_tl",
+                        geo_build_visual_nombre(punto))
+    end
+end, { "string", "string", "string" })
+
+-- ============================================================
+-- \spAfig / \spPfig — área y perímetro de figuras poligonales
+-- ============================================================
+
+-- Extiende el mapeo de \spPoly con más nombres de polígono
+local geo_poly_npts_ext = {
+    [3] = { cmd = "triángulo",  sym = "triangle" },
+    [4] = { cmd = "cuadrado",   sym = "square"   },
+    [5] = { cmd = "pentágono",  sym = ""         },
+    [6] = { cmd = "hexágono",   sym = ""         },
+    [7] = { cmd = "heptágono",  sym = ""         },
+    [8] = { cmd = "octágono",   sym = ""         },
+}
+
+-- op: "área" | "perímetro"
+-- csv: "" | "A, B, C" | ...
+-- mode: "school" | "mathcat"
+-- print_sym: "true" | "false"
+-- read_arg: "" | "trapecio" | "triángulo escaleno" | ...
+register_tex_cmd("luafun_geo_fig_parse_and_set",
+    function(op, csv, mode, print_sym, read_arg)
+    csv = spintent_trim(csv)
+    read_arg = spintent_trim(read_arg)
+
+    -- Caso vacío: solo el símbolo A / P, sin subíndice
+    if csv == "" then
+        token_set_macro(geo_pfx .. "error_str",    "false")
+        token_set_macro(geo_pfx .. "poly_sym_str", "")
+        token_set_macro(geo_pfx .. "intent_str",   op)
+        token_set_macro(geo_pfx .. "visual_tl",    "")
+        return
+    end
+
+    local tiene_coma = s_match(csv, ",")
+    if not tiene_coma then
+        token_set_macro(geo_pfx .. "error_str",    "true")
+        token_set_macro(geo_pfx .. "intent_str",   "")
+        token_set_macro(geo_pfx .. "visual_tl",    "")
+        token_set_macro(geo_pfx .. "poly_sym_str", "")
+        return
+    end
+
+    local puntos = geo_poly_grammar:match(csv)
+    if not puntos or #puntos < 3 then
+        token_set_macro(geo_pfx .. "error_str",    "true")
+        token_set_macro(geo_pfx .. "intent_str",   "")
+        token_set_macro(geo_pfx .. "visual_tl",    "")
+        token_set_macro(geo_pfx .. "poly_sym_str", "")
+        return
+    end
+
+    local info      = geo_poly_npts_ext[#puntos]
+    local cmd_fig   = (read_arg ~= "" and read_arg)
+                       or (info and info.cmd)
+                       or "polígono"
+    local sym       = (info and info.sym) or ""
+
+    token_set_macro(geo_pfx .. "error_str", "false")
+    token_set_macro(geo_pfx .. "poly_sym_str",
+                    (print_sym == "true") and sym or "")
+    token_set_macro(geo_pfx .. "visual_tl",
+                    geo_build_visual(puntos))
+
+    -- Intent: "área-del-triángulo-A-B-C" / "perímetro-del-cuadrado-A-B-C-D"
+    local conector = "del"
+    -- concordancia simple: "de la" si el nombre termina en vocal + "a"
+    -- (regla suficiente para los sustantivos usados aquí: todos son
+    -- masculinos: triángulo, cuadrado, pentágono, ... , polígono)
+    local partes = { op, conector, cmd_fig }
+    for _, pt in ipairs(puntos) do
+        local letra, mod, tipo = pt[1], pt[2], pt[3]
+        partes[#partes + 1] = letra
+        if tipo == "sub" then
+            partes[#partes + 1] = "sub"
+            partes[#partes + 1] = geo_num_a_texto[mod] or mod
+        elseif tipo == "prima" then
+            local n = #mod
+            partes[#partes + 1] = geo_prima_prefijo[n] or (n .. "-prima")
+        end
+    end
+
+    if mode == "school" then
+        token_set_macro(geo_pfx .. "intent_str", t_concat(partes, "-"))
+    else
+        token_set_macro(geo_pfx .. "intent_str",
+                        "_" .. op .. "-" .. conector .. "-" .. cmd_fig ..
+                        ":prefix($pts)")
+    end
+end, { "string", "string", "string", "string", "string" })
