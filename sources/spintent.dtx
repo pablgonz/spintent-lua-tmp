@@ -584,7 +584,8 @@
                     triangleright, diamond, circ, parleft, star, centering, ast, sptext, , href, label, ref, %
                     mathord, parallel, mathstyle,.choice, .code, .meta, text, textsuperscript, cs_to_str, c_zero_skip, keys_define, %
                     mode_leave_vertical, Umathchardef,mathrm, mathbf, textstyle, addfontfeatures, mdlgwhtsquare, %
-                    left, right, Uleft, Uright, overleftrightarrow, overrightarrow, overline, triangle,  },%
+                    left, right, Uleft, Uright, overleftrightarrow, overrightarrow, overline, triangle, rightangle,%
+                    angle, measuredangle, measuredrightangle,alpha, beta, },%
 % Other words 5
     keywordstyle  = [5]{\bfseries\color{pkgname}},%
     keywords      = [5]{babel,spintent,libertinus-otf,sourcecodepro,fourier-otf,Erewhon-Math,hyperref,},%,
@@ -606,7 +607,8 @@
                     osf, nomath, mono, ScaleSF, ScaleRM, spanish, shorthands, no-text, semibold, colorlinks, pdftitle, pdfdisplaydoctitle, %
                     pdfstartview, FitH, pdfinfo, Title, Subject, range, StylisticSet, small-caps, read-arg, píxeles, px, caudal,%
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
-                    lado, trazo, mathcat,school, rayo, semirecta, en-US, math, mathml-SE, es-CL, on, off, setup, tagging, tagging-setup, lang, pdfversion, pdfstandard,},%
+                    lado, trazo, mathcat,school, rayo, semirecta, print-m, en-US, math, mathml-SE, es-CL, on, off, setup, tagging,%
+                    tagging-setup, lang, pdfversion, pdfstandard,},%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
@@ -2062,7 +2064,7 @@
 %
 % \begin{function}{\spread}
 %   \begin{syntax}
-%      \ics*{spread}\mymarg{verbalización \textnormal{NVDA}}\mymarg{símbolo matemático}
+%      |\spread|\mymarg{verbalización \textnormal{NVDA}}\mymarg{símbolo matemático}
 %   \end{syntax}
 %   El comando \ics*{spread} trabaja en \emph{modo matemático} y recibe
 %   dos \emph{argumentos obligatorios}: El primer \emph{argumento} \mymarg{verbalización \textnormal{NVDA}}
@@ -2080,8 +2082,8 @@
 %
 % \begin{function}{\spusep}
 %   \begin{syntax}
-%     \ics*{spusep}\mymarg{separador}
-%     \ics*{spusep}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{separador}
+%     |\spusep|\mymarg{separador}
+%     |\spusep|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{separador}
 %   \end{syntax}
 %   El comando \ics*{spusep} trabaja en \emph{modo matemático} y recibe el
 %   \emph{argumento obligatorio} \mymarg{separador}, el cual debe ser uno de
@@ -2147,8 +2149,8 @@
 %
 % \begin{function}{\spdsym}
 %   \begin{syntax}
-%    \ics*{spdsym}
-%    \ics*{spdsym}\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%    |\spdsym|
+%    |\spdsym|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
 %   \end{syntax}
 %   El comando \ics*{spdsym} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
@@ -2206,8 +2208,8 @@
 %
 % \begin{function}{\spmsym}
 %   \begin{syntax}
-%     \ics*{spmsym}
-%     \ics*{spmsym}\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%     |\spmsym|
+%     |\spmsym|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
 %   \end{syntax}
 %   El comando \ics*{spmsym} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
@@ -2278,8 +2280,8 @@
 %
 % \begin{function}{\spdiv}
 %   \begin{syntax}
-%     \ics*{spdiv}\mymarg{dividendo}\mymarg{divisor}
-%     \ics*{spdiv}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{dividendo}\mymarg{divisor}
+%     |\spdiv|\mymarg{dividendo}\mymarg{divisor}
+%     |\spdiv|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{dividendo}\mymarg{divisor}
 %   \end{syntax}
 %   El comando \ics*{spdiv} trabaja en \emph{modo matemático} y recibe
 %   dos \emph{argumentos obligatorios} \mymarg{dividendo} y \mymarg{divisor}.
@@ -2323,8 +2325,8 @@
 %
 % \begin{function}{\spmul}
 %   \begin{syntax}
-%     \ics*{spmul}\mymarg{factor}\mymarg{factor}
-%     \ics*{spmul}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{factor}\mymarg{factor}
+%     |\spmul|\mymarg{factor}\mymarg{factor}
+%     |\spmul|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{factor}\mymarg{factor}
 %   \end{syntax}
 %   El comando \ics*{spmul} trabaja en \emph{modo matemático} y recibe
 %   dos \emph{argumentos obligatorios} \mymarg{factor} y \mymarg{factor}.
@@ -3053,7 +3055,7 @@
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«rayo A B»}; si se utiliza
 % |$\sprayo[read-sty=semirrecta]{A, B}$|, \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«semirrecta A B»}.
-
+%
 % \smallskip
 %
 % \begin{important}*
@@ -3242,8 +3244,8 @@
 %
 % \begin{function}{\spangle}
 %   \begin{minipage}[t]{0.50\linewidth}
-%     |\spangle|\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra \textnormal{\textcolor{lightgray}{\textbar}} número}\par
-%     |\spangle|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra \textnormal{\textcolor{lightgray}{\textbar}} número}
+%     |\spangle|\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}\par
+%     |\spangle|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
 %   \end{minipage}\hfill
 %   \begin{minipage}[t]{0.45\linewidth}
 %     |\spangle|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}\par
@@ -3253,28 +3255,21 @@
 %   \medskip
 %
 %   El comando \ics*{spangle} trabaja en \emph{modo matemático} y
-%   admite \emph{tres notaciones} detectadas automáticamente:
+%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma
+%   \mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
+%   o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
+%   aplicando |\angle| o |\rightangle| en la impresión.
 %
-%   \smallskip
+% \smallskip
 %
-%   \emph{Notación de tres puntos}: cuando \mymarg{arg} contiene una
-%   coma (p.~ej.\ |A, O, B|), el segundo punto es el \emph{vértice}.
-%   Por ejemplo, |$\spangle{A, O, B}$| imprimirá `$\angle AOB$' y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo A O B»}.
-%
-%   \smallskip
-%
-%   \emph{Notación de un punto}: cuando \mymarg{arg} es una sola letra
-%   mayúscula (p.~ej.\ |A| o |A_{1}|), representa el \emph{ángulo en
-%   ese vértice}. Por ejemplo, |$\spangle{A}$| imprimirá `$\angle A$'
-%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo en A»}.
-%
-%   \smallskip
-%
-%   \emph{Notación de nombre}: cuando \mymarg{arg} no contiene coma y
-%   no es una sola letra mayúscula (p.~ej.\ |\alpha|, |1|, |ABC|). Por
-%   ejemplo, |$\spangle{\alpha}$| imprimirá `$\angle\alpha$' y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo alfa»}.
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val}, |$\spangle{A}$|
+%   imprimirá `$\angle A$' en la salida \texttt{PDF}  y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«ángulo en A»}; |$\spangle{\alpha}$| imprimirá
+%   `$\angle\alpha$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«ángulo alfa»} y |$\spangle{A, O, B}$| imprimirá
+%   `$\angle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%    verbalizará \emph{«ángulo A O B»}.
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spangle}}
@@ -3282,70 +3277,81 @@
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spangle]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% puntos del ángulo. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza las letras directamente sin anteponer «mayúscula»; si se
-% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
-% reglas de habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \mymarg{punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
+% Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
+% del argumento sin el prefijo «mayúscula»: |$\spangle{A, O, B}$|
+% se verbaliza \emph{«ángulo A O B»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» dependiendo de la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[spangle]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} de «ángulo». El valor de esta llave \emph{siempre} debe
-% pasarse entre llaves `|{ }|'. Si se establece en |{el}|,
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«el ángulo A O B»} en lugar
-% de \emph{«ángulo A O B»}; si no se establece, no se antepone ninguna
-% palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el término \emph{«ángulo»}. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spangle]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} la palabra
-% «ángulo». Útil cuando el objeto ya se ha mencionado en el texto. Con
-% |silent-cmd=true|, \mynvmath{NVDA/MathCAT} verbalizará solo
-% \emph{«A O B»} en lugar de \emph{«ángulo A O B»}.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«ángulo»}. Si se establece en |true| \mynvmath{NVDA/MathCAT}
+% NO verbalizará el término; si se establece en |false| \mynvmath{NVDA/MathCAT}
+% SÍ lo verbalizará.
 %
 % \smallskip
 %
 % \keyexampcmd{recto}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spangle]
 % \smallskip
-% Establece si el ángulo es un \emph{ángulo recto}, cambiando el
-% símbolo visual y la verbalización. Si se establece en |true|,
-% |$\spangle[recto=true]{A}$| imprimirá `$\rightangle A$' en la salida
-% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo
-% recto en A»}; si se establece en |false|, imprimirá `$\angle A$' y
-% verbalizará \emph{«ángulo en A»}. La misma llave aplica a la
-% notación de tres puntos: |$\spangle[recto=true]{A, O, B}$| imprimirá
-% `$\rightangle AOB$' y verbalizará \emph{«ángulo recto A O B»}.
+% Establece si se usará |\rightangle| en la impresión añadiendo el término \emph{«recto»}
+% a la verbalización en \mynvmath{NVDA/MathCAT}. Si se establece en |true|, |$\spangle[recto=true]{A}$|
+% imprimirá `$\rightangle A$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«ángulo recto en A»}, |$\spangle[recto=true]{A, O, B}$| imprimirá
+% `$\rightangle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«ángulo recto A O B»}; si se establece en |false|,
+% imprimirá usando |\angle| en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% omitirá el término \emph{«recto»}.
 %
 % \subsection*{El comando \cs[no-index]{spmangle}}\label{subsec:spmangle}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spmangle}
-%   \begin{syntax}
-%     \ics*{spmangle}\mymarg{arg}
-%     \ics*{spmangle}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{arg}
-%   \end{syntax}
-%   El comando \ics*{spmangle} trabaja en \emph{modo matemático} y
-%   representa la \emph{medida de un ángulo}. Admite las mismas tres
-%   notaciones que |\spangle| (\S\ref{subsec:spangle}).
+%   \begin{minipage}[t]{0.55\linewidth}
+%     |\spmangle|\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}\par
+%     |\spmangle|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.45\linewidth}
+%     |\spmangle|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}\par
+%     |\spmangle|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
+%   \end{minipage}
 %
-%   \smallskip
+%   \medskip
+%
+%   El comando \ics*{spmangle} trabaja en \emph{modo matemático} y
+%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma
+%   \mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
+%   o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
+%   aplicando |\measuredangle| o |\measuredrightangle| en la impresión.
+%   La distinción entre |\spangle| y |\spmangle| es semántica: |\spangle|
+%   representa el \emph{objeto geométrico} `$\angle A O B$`; |\spmangle|
+%   representa su \emph{medida} (un valor en grados).
+%
+% \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
-%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%   |$\spmangle{A, O, B}$| imprimirá `$\measuredangle AOB$' en la
-%   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«medida del ángulo A O B»}; |$\spmangle{A}$| imprimirá
-%   `$\measuredangle A$' y verbalizará \emph{«medida del ángulo en
-%   A»}.
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val}, |$\spmangle{A}$|
+%   imprimirá `$\measuredangle A$' en la salida \texttt{PDF}  y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«medida del ángulo en A»}; |$\spmangle{\alpha}$| imprimirá
+%   `$\measuredangle\alpha$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«medida del ángulo alfa»} y |$\spmangle{A, O, B}$| imprimirá
+%   `$\measuredangle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%    verbalizará \emph{«medida del ángulo A O B»}.
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spmangle}}
