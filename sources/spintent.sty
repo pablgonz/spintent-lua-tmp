@@ -29,7 +29,7 @@
 %% for those people who are interested.
 %% 
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage {spintent} {2026-08-20} {0.98} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-24} {0.98} {Spanish parse intents}
 \IfDocumentMetadataTF
   {
     \sys_if_engine_luatex:TF
@@ -2517,15 +2517,15 @@
 \str_new:N \l__spintent_geo_angulo_caso_str
 \tl_new:N  \l__spintent_geo_side_cmd_tl
 \tl_new:N  \l__spintent_geo_fig_op_tl
-\str_new:N  \l__spintent_spPoint_mode_str
-\tl_new:N   \l__spintent_spPoint_prefix_tl
-\bool_new:N \l__spintent_spPoint_silent_cmd_bool
+\str_new:N \l__spintent_spPoint_mode_str
+\tl_new:N  \l__spintent_spPoint_prefix_tl
 \msg_new:nnnn { spintent } { spPoint-invalid-point }
-  { Invalid~point~format~in~\token_to_str:N \spPoint:~'#1'. }
+  {
+    Invalid~point~format~in~\token_to_str:N \spPoint:~'#1'.
+  }
   {
     The~argument~must~be~a~single~uppercase~letter~with~an~optional~
     subscript~(\_{...})~or~prime~(').\\
-    Valid~examples:~'A',~'A_\{1\}',~'A'''.
   }
 \keys_define:nn { spintent / spPoint }
   {
@@ -2557,14 +2557,30 @@
   }
 \cs_new_protected:Nn \__spintent_spPoint_print:n
   {
+    \tl_set:Nn \l__spintent_geo_side_cmd_tl { punto }
     \__spintent_luafun_geo_point_parse_and_set:nnn
+      {
+        \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
+          {
+            \bool_if:NF \l__spintent_spPoint_silent_cmd_bool
+              { \l__spintent_geo_side_cmd_tl }
+          }
+          { \l__spintent_geo_side_cmd_tl }
+      }
       { \exp_not:n {#1} }
       { \l__spintent_spPoint_mode_str }
-      { \bool_if:NTF \l__spintent_spPoint_silent_cmd_bool { true } { false } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
+    \str_if_eq:VnTF \l__spintent_geo_error_str { true }
       {
         \msg_error:nne { spintent } { spPoint-invalid-point }
           { \exp_not:n {#1} }
+      }
+      {
+         \__spintent_invisible_sep:
+      }
+    \str_if_eq:VnT \l__spintent_spPoint_mode_str { mathcat }
+      {
+        \bool_if:NT \l__spintent_spPoint_silent_cmd_bool
+          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
       }
     \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
       {
@@ -2575,7 +2591,6 @@
             \l__spintent_geo_intent_str
           }
           { \c__spintent_invisible_sep_tl \l__spintent_geo_visual_tl }
-        \__spintent_invisible_sep:
       }
       {
         \MathMLintent
@@ -2588,8 +2603,7 @@
             \c__spintent_invisible_sep_tl
             \MathMLarg { pt } { \l__spintent_geo_visual_tl }
           }
-        \__spintent_invisible_sep:
-      }
+       }
   }
 \cs_new_protected:Nn \__spintent_spPoint_exec:nn
   {
@@ -2606,9 +2620,8 @@
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPoint } }
   }
-\str_new:N  \l__spintent_sprecta_mode_str
-\tl_new:N   \l__spintent_sprecta_prefix_tl
-\bool_new:N \l__spintent_sprecta_silent_cmd_bool
+\str_new:N \l__spintent_sprecta_mode_str
+\tl_new:N  \l__spintent_sprecta_prefix_tl
 \msg_new:nnnn { spintent } { sprecta-invalid-points }
   { Invalid~format~in~\token_to_str:N \sprecta:~'#1'. }
   {
@@ -2647,15 +2660,30 @@
   }
 \cs_new_protected:Nn \__spintent_sprecta_print:n
   {
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { recta }
+    \tl_set:Nn \l__spintent_geo_side_cmd_tl { recta }
+    \__spintent_luafun_geo_parse_and_set:nnn
+      {
+        \str_if_eq:VnTF \l__spintent_sprecta_mode_str { school }
+          {
+            \bool_if:NF \l__spintent_sprecta_silent_cmd_bool
+              { \l__spintent_geo_side_cmd_tl }
+          }
+          { \l__spintent_geo_side_cmd_tl }
+      }
       { \exp_not:n {#1} }
       { \l__spintent_sprecta_mode_str }
-      { \bool_if:NTF \l__spintent_sprecta_silent_cmd_bool { true } { false } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
+    \str_if_eq:VnTF \l__spintent_geo_error_str { true }
       {
         \msg_error:nne { spintent } { sprecta-invalid-points }
           { \exp_not:n {#1} }
+      }
+      {
+         \__spintent_invisible_sep: % need for MathCAT
+      }
+    \str_if_eq:VnT \l__spintent_sprecta_mode_str { mathcat }
+      {
+        \bool_if:NT \l__spintent_sprecta_silent_cmd_bool
+          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
       }
     \str_if_eq:VnTF \l__spintent_geo_is_nombre_str { true }
       {
@@ -2668,7 +2696,6 @@
                 \l__spintent_geo_intent_str
               }
               { \c__spintent_invisible_sep_tl \l__spintent_geo_visual_tl }
-            \__spintent_invisible_sep:
           }
           {
             \MathMLintent
@@ -2697,7 +2724,6 @@
                 \c__spintent_invisible_sep_tl
                 \overleftrightarrow { \l__spintent_geo_visual_tl }
               }
-            \__spintent_invisible_sep:
           }
           {
             \MathMLintent
@@ -2711,7 +2737,6 @@
                 \overleftrightarrow
                   { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
               }
-            \__spintent_invisible_sep:
           }
       }
   }
@@ -2730,10 +2755,9 @@
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \sprecta } }
   }
-\str_new:N  \l__spintent_sprayo_mode_str
-\tl_new:N   \l__spintent_sprayo_prefix_tl
-\bool_new:N \l__spintent_sprayo_silent_cmd_bool
-\str_new:N  \l__spintent_sprayo_read_sty_str
+\str_new:N \l__spintent_sprayo_mode_str
+\tl_new:N  \l__spintent_sprayo_prefix_tl
+\str_new:N \l__spintent_sprayo_read_sty_str
 \msg_new:nnnn { spintent } { sprayo-invalid-points }
   { Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'. }
   {
@@ -2784,15 +2808,26 @@
   }
 \cs_new_protected:Nn \__spintent_sprayo_print:n
   {
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { \l__spintent_sprayo_read_sty_str }
+    \__spintent_luafun_geo_parse_and_set:nnn
+      {
+        \str_if_eq:VnTF \l__spintent_sprayo_mode_str { school }
+          {
+            \bool_if:NTF \l__spintent_sprayo_silent_cmd_bool
+              { } { \l__spintent_sprayo_read_sty_str }
+          }
+          { \l__spintent_sprayo_read_sty_str }
+      }
       { \exp_not:n {#1} }
       { \l__spintent_sprayo_mode_str }
-      { \bool_if:NTF \l__spintent_sprayo_silent_cmd_bool { true } { false } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
         \msg_error:nne { spintent } { sprayo-invalid-points }
           { \exp_not:n {#1} }
+      }
+    \str_if_eq:VnT \l__spintent_sprayo_mode_str { mathcat }
+      {
+        \bool_if:NT \l__spintent_sprayo_silent_cmd_bool
+          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
       }
     \str_if_eq:VnTF \l__spintent_sprayo_mode_str { school }
       {
@@ -2840,12 +2875,10 @@
   }
 \clist_map_inline:nn { side , mside }
   {
-    \str_new:c  { l__spintent_sp #1 _mode_str        }
-    \tl_new:c   { l__spintent_sp #1 _prefix_tl       }
-    \bool_new:c { l__spintent_sp #1 _silent_cmd_bool }
-    \str_new:c  { l__spintent_sp #1 _read_sty_str    }
-    \str_new:c  { l__spintent_sp #1 _read_arg_str    }
-    \bool_new:c { l__spintent_sp #1 _print_m_bool    }
+    \str_new:c { l__spintent_sp #1 _mode_str     }
+    \tl_new:c  { l__spintent_sp #1 _prefix_tl    }
+    \str_new:c { l__spintent_sp #1 _read_sty_str }
+    \str_new:c { l__spintent_sp #1 _read_arg_str }
   }
 \clist_map_inline:nn { side , mside }
   {
@@ -2920,15 +2953,26 @@
     \str_if_eq:eeTF {#1} { mside }
       { \tl_put_left:Nn \l__spintent_geo_side_cmd_tl { medida-del- } }
       { }
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { \l__spintent_geo_side_cmd_tl }
+    \__spintent_luafun_geo_parse_and_set:nnn
+      {
+        \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
+          {
+            \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+              { } { \l__spintent_geo_side_cmd_tl }
+          }
+          { \l__spintent_geo_side_cmd_tl }
+      }
       { \exp_not:n {#2} }
       { \tl_use:c { l__spintent_sp #1 _mode_str } }
-      { \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool } { true } { false } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \str_if_eq:eeT { \tl_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
+      {
+        \bool_if:cT { l__spintent_sp #1 _silent_cmd_bool }
+          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
       }
     \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
@@ -2996,11 +3040,8 @@
   }
 \clist_map_inline:nn { angle , mangle }
   {
-    \str_new:c  { l__spintent_sp #1 _mode_str        }
-    \tl_new:c   { l__spintent_sp #1 _prefix_tl       }
-    \bool_new:c { l__spintent_sp #1 _silent_cmd_bool }
-    \bool_new:c { l__spintent_sp #1 _recto_bool      }
-    \bool_new:c { l__spintent_sp #1 _print_m_bool    }
+    \str_new:c { l__spintent_sp #1 _mode_str  }
+    \tl_new:c  { l__spintent_sp #1 _prefix_tl }
   }
 \clist_map_inline:nn { angle , mangle }
   {
@@ -3075,16 +3116,28 @@
     \str_if_eq:eeTF {#1} { mangle }
       { \str_set:Nn \l__spintent_geo_side_cmd_tl { medida-del-ángulo } }
       { \str_set:Nn \l__spintent_geo_side_cmd_tl { ángulo } }
-    \__spintent_luafun_geo_angulo_parse_and_set:nnnnn
-      { \l__spintent_geo_side_cmd_tl }
+    \bool_if:cT { l__spintent_sp #1 _recto_bool }
+      { \tl_put_right:Nn \l__spintent_geo_side_cmd_tl { -recto } }
+    \__spintent_luafun_geo_angulo_parse_and_set:nnn
+      {
+        \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
+          {
+            \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+              { } { \l__spintent_geo_side_cmd_tl }
+          }
+          { \l__spintent_geo_side_cmd_tl }
+      }
       { \exp_not:n {#2} }
       { \tl_use:c { l__spintent_sp #1 _mode_str } }
-      { \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool } { true } { false } }
-      { \bool_if:cTF { l__spintent_sp #1 _recto_bool }      { true } { false } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \str_if_eq:eeT { \tl_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
+      {
+        \bool_if:cT { l__spintent_sp #1 _silent_cmd_bool }
+          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
       }
     \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
@@ -3151,9 +3204,8 @@
   }
 \clist_map_inline:nn { arc , marc }
   {
-    \str_new:c  { l__spintent_sp #1 _mode_str        }
-    \tl_new:c   { l__spintent_sp #1 _prefix_tl       }
-    \bool_new:c { l__spintent_sp #1 _silent_cmd_bool }
+    \str_new:c { l__spintent_sp #1 _mode_str  }
+    \tl_new:c  { l__spintent_sp #1 _prefix_tl }
   }
 \clist_map_inline:nn { arc , marc }
   {
@@ -3207,15 +3259,26 @@
     \str_if_eq:eeTF {#1} { marc }
       { \str_set:Nn \l__spintent_geo_side_cmd_tl { medida-del-arco } }
       { \str_set:Nn \l__spintent_geo_side_cmd_tl { arco } }
-    \__spintent_luafun_geo_parse_and_set:nnnn
-      { \l__spintent_geo_side_cmd_tl }
+    \__spintent_luafun_geo_parse_and_set:nnn
+      {
+        \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
+          {
+            \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+              { } { \l__spintent_geo_side_cmd_tl }
+          }
+          { \l__spintent_geo_side_cmd_tl }
+      }
       { \exp_not:n {#2} }
       { \tl_use:c { l__spintent_sp #1 _mode_str } }
-      { \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool } { true } { false } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \str_if_eq:eeT { \tl_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
+      {
+        \bool_if:cT { l__spintent_sp #1 _silent_cmd_bool }
+          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
       }
     \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
@@ -3275,9 +3338,8 @@
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmarc } }
   }
-\str_new:N  \l__spintent_spPoly_mode_str
-\tl_new:N   \l__spintent_spPoly_prefix_tl
-\bool_new:N \l__spintent_spPoly_print_sym_bool
+\str_new:N \l__spintent_spPoly_mode_str
+\tl_new:N  \l__spintent_spPoly_prefix_tl
 \msg_new:nnnn { spintent } { spPoly-invalid-points }
   { Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'. }
   {
@@ -3410,10 +3472,9 @@
   }
 \clist_map_inline:nn { Afig , Pfig }
   {
-    \str_new:c  { l__spintent_sp #1 _mode_str        }
-    \tl_new:c   { l__spintent_sp #1 _prefix_tl       }
-    \bool_new:c { l__spintent_sp #1 _print_sym_bool  }
-    \str_new:c  { l__spintent_sp #1 _read_arg_str    }
+    \str_new:c { l__spintent_sp #1 _mode_str     }
+    \tl_new:c  { l__spintent_sp #1 _prefix_tl    }
+    \str_new:c { l__spintent_sp #1 _read_arg_str }
   }
 \clist_map_inline:nn { Afig , Pfig }
   {
@@ -3469,17 +3530,15 @@
         { square   } { \mdlgwhtsquare }
       }
   }
-\tl_new:N \l__spintent_geo_fig_op_tl
 \cs_new_protected:Nn \__spintent_spfig_process:nn
   {
     \str_if_eq:eeTF {#1} { Afig }
       { \tl_set:Nn \l__spintent_geo_fig_op_tl { área } }
       { \tl_set:Nn \l__spintent_geo_fig_op_tl { perímetro } }
-    \__spintent_luafun_geo_fig_parse_and_set:nnnnn
+    \__spintent_luafun_geo_fig_parse_and_set:nnnn
       { \l__spintent_geo_fig_op_tl }
       { \exp_not:n {#2} }
       { \tl_use:c { l__spintent_sp #1 _mode_str } }
-      { \bool_if:cTF { l__spintent_sp #1 _print_sym_bool } { true } { false } }
       { \tl_use:c { l__spintent_sp #1 _read_arg_str } }
     \str_if_eq:VnT \l__spintent_geo_error_str { true }
       {
@@ -3501,7 +3560,11 @@
             \tl_if_empty:NF \l__spintent_geo_visual_tl
               {
                 \c_math_subscript_token
-                  { \__spintent_spfig_sym: \l__spintent_geo_visual_tl }
+                  {
+                    \bool_if:cT { l__spintent_sp #1 _print_sym_bool }
+                      { \MathMLintent { :silent } { \__spintent_spfig_sym: } }
+                    \l__spintent_geo_visual_tl
+                  }
               }
           }
         \__spintent_invisible_sep:
@@ -3521,7 +3584,8 @@
               {
                 \c_math_subscript_token
                   {
-                    \__spintent_spfig_sym:
+                    \bool_if:cT { l__spintent_sp #1 _print_sym_bool }
+                      { \MathMLintent { :silent } { \__spintent_spfig_sym: } }
                     \MathMLarg { pts } { \l__spintent_geo_visual_tl }
                   }
               }

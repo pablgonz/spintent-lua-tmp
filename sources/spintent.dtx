@@ -149,7 +149,7 @@
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.98}
-\def\filedate{2026-08-20}
+\def\filedate{2026-08-24}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4034,7 +4034,7 @@
 %    \end{macrocode}
 % Now declare the \mypkg*[no-index]{spintent} package.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-08-20} {0.98} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-24} {0.98} {Spanish parse intents}
 %    \end{macrocode}
 %
 % We check if the requirements for running the \mypkg*[no-index]{spintent} package
@@ -8721,38 +8721,11 @@
 % \subsection{The commands of the \texttt{geo} family}\label{cmd:geo}
 %
 % The commands described in this section provide a semantic interface
-% for geometric objects in Spanish mathematical contexts. All of them
+% for geometric objects in Spanish mathematical contexts. They all
 % delegate parsing to \myluamod{}, sharing the variables
 % \cs{l_@@_geo_error_str}, \cs{l_@@_geo_intent_str} and
-% \cs{l_@@_geo_visual_tl}, and, where applicable,
-% \cs{l_@@_geo_is_nombre_str}, \cs{l_@@_geo_poly_sym_str},
-% \cs{l_@@_geo_intent_pts_str} and \cs{l_@@_geo_angulo_caso_str}.
-%
-% \smallskip
-%
-% No Lua function in this family ever receives a stringified boolean.
-% The concept name passed as |cmd| is always fully resolved by expl3
-% beforehand: an empty group when \mykey{silent-cmd} silences it in
-% |school| mode, or the literal concept name otherwise. In |mathcat|
-% mode |cmd| is always the real name, and the |:silent| suffix, when
-% needed, is appended by expl3 to \cs{l_@@_geo_intent_str}
-% \emph{after} the Lua call returns, via \cs{tl_put_right:Nn}. The
-% same discipline applies to \mykey{recto} in |\spangle|/|\spmangle|:
-% expl3 appends |-recto| to the concept name before calling Lua, never
-% passing a flag for Lua to interpret.
-%
-% \smallskip
-%
-% Several commands in this family are implemented in pairs that share
-% almost all of their structure — a plain object and its measure, or
-% the area and the perimeter of a figure. For these pairs, the
-% variable declarations, error messages and keys are generated once
-% via \cs{clist_map_inline:nn} over a short identifier, following the
-% same |:c|-based pattern already used by |\spmcd|/|\spmcm|. Inside
-% such a map, the map's own parameter is |#1|; any placeholder
-% belonging to a function defined \emph{inside} the mapped body — a
-% message text, or a key's |.code:n| property — must therefore be
-% written one level deeper, doubled to |##1|.
+% \cs{l_@@_geo_visual_tl}, constructing a valid \mynvmath{MathCAT}
+% intent.
 %
 % \subsubsection{Definition of shared variables}
 %
@@ -8761,34 +8734,8 @@
 %   \l_@@_geo_is_nombre_str, \l_@@_geo_poly_sym_str,
 %   \l_@@_geo_intent_pts_str, \l_@@_geo_angulo_caso_str,
 %   \l_@@_geo_side_cmd_tl, \l_@@_geo_fig_op_tl}
-%   The variable \myhlc|\l_@@_geo_error_str| stores the error status
-%   returned by the Lua parser; it is set to |true| when the input
-%   contains invalid tokens, and to |false| otherwise. The variables
-%   \myhlc|\l_@@_geo_intent_str| and \myhlc|\l_@@_geo_visual_tl| store
-%   the \mynvmath{MathML} |intent| string and the visual token list
-%   built by the Lua module, and are shared across every command of
-%   the family.
-%
-%   \smallskip
-%
-%   The variable \myhlc|\l_@@_geo_is_nombre_str| is used only by
-%   |\sprecta| (\S\ref{cmd:sprecta}) to flag the name-notation branch.
-%   The variables \myhlc|\l_@@_geo_poly_sym_str| and
-%   \myhlc|\l_@@_geo_intent_pts_str| are set unconditionally by the
-%   polygon parsers, holding respectively the visual symbol type
-%   (|triangle|, |square|, or an empty string) and an |intent|
-%   containing only the vertex labels with no figure name — this lets
-%   expl3 choose between the full and the vertex-only |intent| without
-%   a further call into Lua. The variable
-%   \myhlc|\l_@@_geo_angulo_caso_str| records which of the three angle
-%   notations was detected.
-%
-%   \smallskip
-%
-%   The scratch variables \myhlc|\l_@@_geo_side_cmd_tl| and
-%   \myhlc|\l_@@_geo_fig_op_tl| are used by the internal processing
-%   functions to assemble the concept name before the Lua call is
-%   made.
+%   Internal variables shared across all commands of the family to
+%   avoid repeated calls into Lua.
 %    \begin{macrocode}
 \str_new:N \l_@@_geo_error_str
 \str_new:N \l_@@_geo_intent_str
@@ -8804,21 +8751,16 @@
 %
 % \subsection{The command \cs{spPoint}}\label{cmd:spPoint}
 %
-% The user command |\spPoint| typesets a single geometric point as an
-% abstract entity, without coordinates. It reuses the point grammar
-% already used by the name-notation branch of |\sprecta|
-% (\S\ref{cmd:sprecta}), anchored so that any trailing content beyond
-% a single point is rejected as invalid.
+% The user-level command |\spPoint| provides a semantic interface for
+% a single geometric point. It delegates argument validation to the
+% Lua module \myluamod{}, constructing a valid \mynvmath{MathCAT}
+% intent.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spPoint}}
 %
 % \begin{variable}[int]{\l_@@_spPoint_mode_str, \l_@@_spPoint_prefix_tl}
-%   The variable \myhlc|\l_@@_spPoint_mode_str| stores the value set
-%   by \mykey[spPoint]{read-cmd}. The variable
-%   \myhlc|\l_@@_spPoint_prefix_tl| stores the sanitized value set by
-%   \mykey[spPoint]{prefix}. Both are assigned manually inside the
-%   keys below rather than through a direct |.str_set:N|/|.tl_set:N|
-%   property, so they require an explicit declaration here.
+%   Internal variables holding the values set by
+%   \mykey[spPoint]{read-cmd} and \mykey[spPoint]{prefix}.
 %    \begin{macrocode}
 \str_new:N \l_@@_spPoint_mode_str
 \tl_new:N  \l_@@_spPoint_prefix_tl
@@ -8833,11 +8775,12 @@
 %   optional subscript or prime modifier.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spPoint-invalid-point }
-  { Invalid~point~format~in~\token_to_str:N \spPoint:~'#1'. }
+  {
+    Invalid~point~format~in~\token_to_str:N \spPoint:~'#1'.
+  }
   {
     The~argument~must~be~a~single~uppercase~letter~with~an~optional~
     subscript~(\_{...})~or~prime~(').\\
-    Valid~examples:~'A',~'A_\{1\}',~'A'''.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -8845,11 +8788,8 @@
 % \subsubsection{Definition of keys for \cs[no-index]{spPoint}}
 %
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, unknown}
-%   We define the keys \mykey[spPoint]{read-cmd},
-%   \mykey[spPoint]{prefix} and \mykey[spPoint]{silent-cmd}. The key
-%   \mykey[spPoint]{silent-cmd} uses the |.bool_set:N| property
-%   directly on \myhlc|\l_@@_spPoint_silent_cmd_bool|, which \pkg{l3keys}
-%   declares automatically — no separate |\bool_new:N| call is needed.
+%   We define the \mymeta{keys} \mykey[spPoint]{read-cmd},
+%   \mykey[spPoint]{prefix} and \mykey[spPoint]{silent-cmd}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spPoint }
   {
@@ -8885,29 +8825,32 @@
 % \subsubsection{Internal functions for \cs[no-index]{spPoint}}
 %
 % \begin{macro}[int]{\@@_spPoint_print:n}
-%   The internal function \myhlc|\@@_spPoint_print:n| resolves the
-%   concept name — |punto| or an empty group — \emph{before} calling
-%   \myhlc|\@@_luafun_geo_point_parse_and_set:nnn|, choosing between
-%   them according to \cs{l_@@_spPoint_mode_str} and
-%   \cs{l_@@_spPoint_silent_cmd_bool}. In |mathcat| mode, it appends
-%   |:silent| to \cs{l_@@_geo_intent_str} afterward when
-%   \mykey[spPoint]{silent-cmd} is active. Lua never sees a true/false
-%   flag; it always receives an already-resolved concept name.
+%   The function \myhlc|\@@_spPoint_print:n| resolves the concept
+%   name — |punto| or an empty group — before calling the Lua module,
+%   then constructs the \mynvmath{MathML} intent from the returned
+%   values.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_print:n
   {
+    \tl_set:Nn \l_@@_geo_side_cmd_tl { punto }
     \@@_luafun_geo_point_parse_and_set:nnn
       {
         \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
-          { \bool_if:NTF \l_@@_spPoint_silent_cmd_bool { } { punto } }
-          { punto }
+          {
+            \bool_if:NF \l_@@_spPoint_silent_cmd_bool
+              { \l_@@_geo_side_cmd_tl }
+          }
+          { \l_@@_geo_side_cmd_tl }
       }
       { \exp_not:n {#1} }
       { \l_@@_spPoint_mode_str }
-    \str_if_eq:VnT \l_@@_geo_error_str { true }
+    \str_if_eq:VnTF \l_@@_geo_error_str { true }
       {
         \msg_error:nne { spintent } { spPoint-invalid-point }
           { \exp_not:n {#1} }
+      }
+      {
+         \@@_invisible_sep:
       }
     \str_if_eq:VnT \l_@@_spPoint_mode_str { mathcat }
       {
@@ -8923,7 +8866,6 @@
             \l_@@_geo_intent_str
           }
           { \c_@@_invisible_sep_tl \l_@@_geo_visual_tl }
-        \@@_invisible_sep:
       }
       {
         \MathMLintent
@@ -8936,17 +8878,15 @@
             \c_@@_invisible_sep_tl
             \MathMLarg { pt } { \l_@@_geo_visual_tl }
           }
-        \@@_invisible_sep:
-      }
+       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spPoint_exec:nn}
-%   The internal function \myhlc|\@@_spPoint_exec:nn| receives the
-%   optional \mymeta{keys} in `|#1|' and the point in `|#2|'. It sets
-%   the keys via \cs{keys_set:nn}, then delegates rendering to
-%   \myhlc|\@@_spPoint_print:n|.
+%   The function \myhlc|\@@_spPoint_exec:nn| sets the \mymeta{keys}
+%   in `|#1|' and delegates rendering to \myhlc|\@@_spPoint_print:n|
+%   with the argument in `|#2|'.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_exec:nn
   {
@@ -8957,9 +8897,8 @@
 % \end{macro}
 %
 % \begin{macro}{\spPoint}
-%   The public command |\spPoint| is the interface for typesetting a
-%   single geometric point. It enforces math mode, opens a local
-%   group, and delegates execution to \myhlc|\@@_spPoint_exec:nn|.
+%   The command |\spPoint| enforces math mode and delegates to
+%   \myhlc|\@@_spPoint_exec:nn|.
 %    \begin{macrocode}
 \NewDocumentCommand \spPoint { O{} m }
   {
@@ -9064,18 +9003,25 @@
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_print:n
   {
+    \tl_set:Nn \l_@@_geo_side_cmd_tl { recta }
     \@@_luafun_geo_parse_and_set:nnn
       {
         \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
-          { \bool_if:NTF \l_@@_sprecta_silent_cmd_bool { } { recta } }
-          { recta }
+          {
+            \bool_if:NF \l_@@_sprecta_silent_cmd_bool
+              { \l_@@_geo_side_cmd_tl }
+          }
+          { \l_@@_geo_side_cmd_tl }
       }
       { \exp_not:n {#1} }
       { \l_@@_sprecta_mode_str }
-    \str_if_eq:VnT \l_@@_geo_error_str { true }
+    \str_if_eq:VnTF \l_@@_geo_error_str { true }
       {
         \msg_error:nne { spintent } { sprecta-invalid-points }
           { \exp_not:n {#1} }
+      }
+      {
+         \@@_invisible_sep: % need for MathCAT
       }
     \str_if_eq:VnT \l_@@_sprecta_mode_str { mathcat }
       {
@@ -9093,7 +9039,6 @@
                 \l_@@_geo_intent_str
               }
               { \c_@@_invisible_sep_tl \l_@@_geo_visual_tl }
-            \@@_invisible_sep:
           }
           {
             \MathMLintent
@@ -9122,7 +9067,6 @@
                 \c_@@_invisible_sep_tl
                 \overleftrightarrow { \l_@@_geo_visual_tl }
               }
-            \@@_invisible_sep:
           }
           {
             \MathMLintent
@@ -9136,7 +9080,6 @@
                 \overleftrightarrow
                   { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
               }
-            \@@_invisible_sep:
           }
       }
   }
@@ -10517,7 +10460,7 @@
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.98 [2026-08-20]
+     Lua module spintent.lua for spintent package - v0.98 [2026-08-24]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
