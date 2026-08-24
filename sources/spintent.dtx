@@ -585,7 +585,7 @@
                     mathord, parallel, mathstyle,.choice, .code, .meta, text, textsuperscript, cs_to_str, c_zero_skip, keys_define, %
                     mode_leave_vertical, Umathchardef,mathrm, mathbf, textstyle, addfontfeatures, mdlgwhtsquare, %
                     left, right, Uleft, Uright, overleftrightarrow, overrightarrow, overline, triangle, rightangle,%
-                    angle, measuredangle, measuredrightangle,alpha, beta, },%
+                    angle, measuredangle, measuredrightangle,alpha, beta, mathcal,  },%
 % Other words 5
     keywordstyle  = [5]{\bfseries\color{pkgname}},%
     keywords      = [5]{babel,spintent,libertinus-otf,sourcecodepro,fourier-otf,Erewhon-Math,hyperref,},%,
@@ -607,8 +607,8 @@
                     osf, nomath, mono, ScaleSF, ScaleRM, spanish, shorthands, no-text, semibold, colorlinks, pdftitle, pdfdisplaydoctitle, %
                     pdfstartview, FitH, pdfinfo, Title, Subject, range, StylisticSet, small-caps, read-arg, píxeles, px, caudal,%
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
-                    lado, trazo, mathcat,school, rayo, semirecta, print-m, en-US, math, mathml-SE, es-CL, on, off, setup, tagging,%
-                    tagging-setup, lang, pdfversion, pdfstandard,},%
+                    lado, trazo, mathcat,school, rayo, semirecta, print-m, print-sym, recto, en-US, math, mathml-SE, es-CL, on, off, %
+                    setup, tagging, tagging-setup, lang, pdfversion, pdfstandard,},%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
@@ -2923,9 +2923,9 @@
 %   false}{false}[spPoint]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del término \emph{«punto»}. Si se establece en |true|
-% \mynvmath{NVDA/MathCAT} NO verbalizará el término; si se establece en |false|
-% \mynvmath{NVDA/MathCAT} SÍ lo verbalizará.
+% del término \emph{«punto»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% SÍ lo verbalizará.
 %
 % \subsection*{El comando \cs[no-index]{sprecta}}\label{subsec:sprecta}
 %
@@ -2988,8 +2988,8 @@
 %   false}{false}[sprecta]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del término \emph{«recta»}. Si se establece en |true| \mynvmath{NVDA/MathCAT}
-% NO verbalizará el término; si se establece en |false| \mynvmath{NVDA/MathCAT}
+% del término \emph{«recta»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
 % SÍ lo verbalizará.
 %
 % \subsection*{El comando \cs[no-index]{sprayo}}\label{subsec:sprayo}
@@ -3042,8 +3042,8 @@
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % del término establecido por la llave \mykey{read-sty}. Si se establece
-% en |true| \mynvmath{NVDA/MathCAT} NO verbalizará el término; si se establece
-% en |false| \mynvmath{NVDA/MathCAT} SÍ lo verbalizará.
+% en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará el término; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} SÍ lo verbalizará.
 %
 % \smallskip
 %
@@ -3075,6 +3075,7 @@
 %     |\spside|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
 %     |\spside|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{syntax}
+%
 %   El comando \ics*{spside} trabaja en \emph{modo matemático} y
 %   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}.
 %   Representa un \emph{lado}, \emph{segmento} o \emph{trazo} determinado
@@ -3117,8 +3118,8 @@
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % del término establecido por la llave \mykey{read-sty}. Si se establece
-% en |true| \mynvmath{NVDA/MathCAT} NO verbalizará el término; si se establece
-% en |false| \mynvmath{NVDA/MathCAT} SÍ lo verbalizará.
+% en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará el término; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} SÍ lo verbalizará.
 %
 % \smallskip
 %
@@ -3199,8 +3200,8 @@
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % de \emph{«medida del»} seguido por el término establecido por la llave \mykey{read-sty}.
-% Si se establece en |true| \mynvmath{NVDA/MathCAT} NO verbalizará \emph{«medida del»}
-% seguido por el término; si se establece en |false| \mynvmath{NVDA/MathCAT} SÍ lo verbalizará.
+% Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará \emph{«medida del»}
+% seguido por el término; si se establece en |false|, \mynvmath{NVDA/MathCAT} SÍ lo verbalizará.
 %
 % \smallskip
 %
@@ -3299,8 +3300,8 @@
 %   false}{false}[spangle]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del término \emph{«ángulo»}. Si se establece en |true| \mynvmath{NVDA/MathCAT}
-% NO verbalizará el término; si se establece en |false| \mynvmath{NVDA/MathCAT}
+% del término \emph{«ángulo»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
 % SÍ lo verbalizará.
 %
 % \smallskip
@@ -3359,63 +3360,56 @@
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spmangle]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% puntos del ángulo. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza las letras directamente sin anteponer «mayúscula»; si se
-% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
-% reglas de habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \mymarg{punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
+% Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
+% del argumento sin el prefijo «mayúscula»: |$\spmangle{A, O, B}$|
+% se verbaliza \emph{«medida del ángulo A O B»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» dependiendo de la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[spmangle]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} de «medida del ángulo». El valor de esta llave
-% \emph{siempre} debe pasarse entre llaves `|{ }|'. Si se establece en
-% |{la}|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«la medida del
-% ángulo en A»} en lugar de \emph{«medida del ángulo en A»}; si no se
-% establece, no se antepone ninguna palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el término \emph{«medida del ángulo»}. El valor
+% de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmangle]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} la frase
-% «medida del ángulo». Útil cuando el objeto ya se ha mencionado en el
-% texto. Con |silent-cmd=true|, \mynvmath{NVDA/MathCAT} verbalizará
-% solo \emph{«en A»} en lugar de \emph{«medida del ángulo en A»}.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«medida del ángulo»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% SÍ lo verbalizará.
 %
 % \smallskip
 %
 % \keyexampcmd{recto}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmangle]
 % \smallskip
-% Establece si el ángulo cuya medida se representa es un \emph{ángulo
-% recto}, con la misma semántica que en |\spangle|
-% (\S\ref{subsec:spangle}).
+% Establece si se usará |\measuredrightangle| en la impresión añadiendo el término \emph{«recto»}
+% a la verbalización en \mynvmath{NVDA/MathCAT}. Si se establece en |true|, |$\spmangle[recto=true]{A}$|
+% imprimirá `$\measuredrightangle A$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«medida del ángulo recto en A»}, |$\spmangle[recto=true]{A, O, B}$| imprimirá
+% `$\measuredrightangle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«medida del ángulo recto A O B»}; si se establece en |false|,
+% imprimirá usando |\measuredangle| en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% omitirá el término \emph{«recto»}.
 %
 % \smallskip
 %
 % \keyexampcmd{print-m}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmangle]
 % \smallskip
-% Establece la \emph{notación visual} de la medida. Si se establece en
-% |false| (valor por defecto), se usa el símbolo $\measuredangle$, que
-% ya incorpora la noción de medida sin necesidad de anteponer una
-% letra: |$\spmangle{A, O, B}$| imprimirá `$\measuredangle AOB$'. Si
-% se establece en |true|, se antepone |\operatorname{m}| al símbolo
-% $\angle$ simple: |$\spmangle[print-m=true]{A, O, B}$| imprimirá
-% `$\operatorname{m}\angle AOB$'. En ambos casos \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«medida del ángulo A O B»}. Esta llave funciona de
-% forma \emph{independiente} de \mykey[spmangle]{recto}: si se
-% establece en |true| junto con |recto=true|,
-% |$\spmangle[print-m=true, recto=true]{A}$| imprimirá
-% `$\operatorname{m}\rightangle A$' y verbalizará \emph{«medida del
-% ángulo recto en A»}; si se establece en |false| junto con
-% |recto=true|, |$\spmangle[recto=true]{A}$| imprimirá
-% `$\measuredrightangle A$' con la misma verbalización.
+% Establece \emph{si se imprime} la notación visual `$\mathrm{m}$' antes del argumento.
+% Si se establece en |true|, |$\spmangle[print-m=true]{A, O, B}$| imprimirá
+% `$\operatorname{m}\angle AOB$' en la salida \texttt{PDF}, si se establece
+% en |false| imprimirá `$\measuredangle AOB$' en la salida \texttt{PDF}. En ambos casos
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del ángulo A O B»}.
 %
 % \subsection*{El comando \cs[no-index]{spang}}\label{subsec:spang}
 %
@@ -3443,22 +3437,27 @@
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\sparc}
-%   \begin{syntax}
-%     \ics*{sparc}\mymarg{puntos}
-%     \ics*{sparc}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{puntos}
-%   \end{syntax}
+%   \begin{minipage}[t]{0.45\linewidth}
+%     |\sparc|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\par
+%     |\sparc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.55\linewidth}
+%     |\sparc|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}\par
+%     |\sparc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
+%   \end{minipage}
+%
+%   \medskip
+%
 %   El comando \ics*{sparc} trabaja en \emph{modo matemático} y
-%   representa un \emph{arco} geométrico. La salida visual usa un
-%   símbolo de arco extensible, tomado de \cs{widearc} cuando está
-%   disponible (provisto por los paquetes \mypkg{yhmath} o
-%   \mypkg{MnSymbol}), o del glifo extensible U+23DC de la fuente
-%   matemática cargada como alternativa.
+%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma
+%   \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
+%   Representa un arco determinado por dos o tres puntos aplicando |\widearc| en la impresión.
 %
 %   \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
 %   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%   |$\sparc{A, B}$| imprimirá `$\overset{\frown}{AB}$' en la salida
+%   |$\sparc{A, B}$| imprimirá `$\widearc{AB}$' en la salida
 %   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
 %   \emph{«arco A B»}.
 % \end{function}
@@ -3468,58 +3467,63 @@
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[sparc]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% puntos del arco. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza las letras directamente sin anteponer «mayúscula»; si se
-% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
-% reglas de habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} o
+% \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
+% Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
+% del argumento sin el prefijo «mayúscula»: |$\sparc{A, B}$|
+% se verbaliza \emph{«arco A B»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» dependiendo de la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[sparc]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} de «arco». El valor de esta llave \emph{siempre} debe
-% pasarse entre llaves `|{ }|'. Si se establece en |{el}|,
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«el arco A B»} en lugar de
-% \emph{«arco A B»}; si no se establece, no se antepone ninguna
-% palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el término \emph{«arco»}. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[sparc]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} la palabra
-% «arco». Útil cuando el objeto ya se ha mencionado en el texto. Con
-% |silent-cmd=true|, \mynvmath{NVDA/MathCAT} verbalizará solo
-% \emph{«A B»} en lugar de \emph{«arco A B»}.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«arco»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% SÍ lo verbalizará.
 %
 % \subsection*{El comando \cs[no-index]{spmarc}}\label{subsec:spmarc}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spmarc}
-%   \begin{syntax}
-%     \ics*{spmarc}\mymarg{puntos}
-%     \ics*{spmarc}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{puntos}
-%   \end{syntax}
+%   \begin{minipage}[t]{0.45\linewidth}
+%     |\spmarc|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\par
+%     |\spmarc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.55\linewidth}
+%     |\spmarc|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}\par
+%     |\spmarc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
+%   \end{minipage}
+%
+%   \medskip
+%
 %   El comando \ics*{spmarc} trabaja en \emph{modo matemático} y
-%   representa la \emph{medida de un arco}. A diferencia de |\spmside|
-%   y |\spmangle|, no existe la llave |print-m| porque la notación
-%   $\operatorname{m}\overset{\frown}{AB}$ es la única forma estándar
-%   para la medida de un arco: |\operatorname{m}| \emph{siempre} se
-%   antepone al símbolo del arco.
+%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma
+%   \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
+%   Representa la \emph{medida} del \emph{arco} determinado por dos
+%   o tres puntos. La distinción entre |\sparc| y |\spmarc| es semántica:
+%   |\sparc| representa el \emph{objeto geométrico} `$\widearc{AB}$';
+%   |\spmarc| representa su \emph{medida} (un valor en grados).
 %
 %   \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
 %   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%   |$\spmarc{A, B}$| imprimirá
-%   `$\operatorname{m}\overset{\frown}{AB}$' en la salida \texttt{PDF}
-%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del arco
-%   A B»}.
+%   |$\spmarc{A, B}$| imprimirá `$\operatorname{m}\widearc{AB}$' en la salida \texttt{PDF}
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del arco A B»}.
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spmarc}}
@@ -3527,33 +3531,32 @@
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spmarc]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% puntos del arco. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza las letras directamente sin anteponer «mayúscula»; si se
-% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
-% reglas de habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} o
+% \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
+% Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
+% del argumento sin el prefijo «mayúscula»: |$\spmarc{A, B}$|
+% se verbaliza \emph{«medida del arco A B»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» dependiendo de la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[spmarc]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} de «medida del arco». El valor de esta llave
-% \emph{siempre} debe pasarse entre llaves `|{ }|'. Si se establece en
-% |{la}|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«la medida del
-% arco A B»} en lugar de \emph{«medida del arco A B»}; si no se
-% establece, no se antepone ninguna palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el término \emph{«medida del arco»}. El valor
+% de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmarc]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{silenciará} la frase
-% «medida del arco». Útil cuando el objeto ya se ha mencionado en el
-% texto. Con |silent-cmd=true|, \mynvmath{NVDA/MathCAT} verbalizará
-% solo \emph{«A B»} en lugar de \emph{«medida del arco A B»}.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«medida del arco»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% SÍ lo verbalizará.
 %
 % \subsection*{El comando \cs[no-index]{spPoly}}\label{subsec:spPoly}
 %
@@ -3561,76 +3564,66 @@
 %
 % \begin{function}{\spPoly}
 %   \begin{syntax}
-%     \ics*{spPoly}\mymarg{puntos}
-%     \ics*{spPoly}\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{puntos}
+%     |\spPoly|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%     |\spPoly|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
 %   \end{syntax}
 %   El comando \ics*{spPoly} trabaja en \emph{modo matemático} y
-%   recibe en \mymarg{puntos} una lista de \emph{al menos tres letras
-%   mayúsculas} separadas por comas. El tipo de figura y su símbolo
-%   visual se determinan automáticamente según el número de puntos:
-%   tres puntos producen un triángulo; cuatro puntos producen un
-%   cuadrado; cinco o más puntos producen un polígono genérico sin
-%   símbolo.
+%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots},
+%   una lista de al menos tres \mymarg{puntos} separados por comas.
+%   El tipo de \emph{símbolo} en la impresión y la verbalización se
+%   determinan acorde al número de puntos en el argumento: Si son tres
+%   puntos se aplica |\triangle| y añade el término \emph{«triángulo»}
+%   a la verbalización; si son cuatro puntos se aplica |\mdlgwhtsquare|
+%   y añade el término \emph{«cuadrado»} a la verbalización; si son cinco
+%   o más puntos no se aplica níngún símbolo ni se añade verbalización.
 %
 %   \smallskip
 %
-%   Con la llave \mykey[spPoly]{print-sym}|=true| (valor por
-%   defecto), |$\spPoly{A, B, C}$| imprimirá `$\triangle ABC$' en la
-%   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spPoly{A, B, C}$| imprimirá `$\triangle ABC$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
 %   \emph{«triángulo A B C»}; |$\spPoly{A, B, C, D}$| imprimirá
 %   `$\square ABCD$' y verbalizará \emph{«cuadrado A B C D»};
 %   |$\spPoly{A, B, C, D, E}$| imprimirá `$ABCDE$' y verbalizará
 %   \emph{«A B C D E»}.
 % \end{function}
 %
-% \smallskip
-%
-% \begin{important}*
-%   Para figuras de cuatro lados que no son cuadrados (rectángulo,
-%   paralelogramo, rombo, trapecio) o para polígonos de más de cuatro
-%   lados, el nombre de la figura va en el texto que rodea la
-%   expresión y |\spPoly| se usa con \mykey[spPoly]{print-sym}|=false|
-%   para tipografiar solo los vértices. Por ejemplo: «el rectángulo
-%   |$\spPoly[print-sym=false]{A, B, C, D}$|» imprimirá `$ABCD$' y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«el rectángulo A B C
-%   D»} sin repetir el nombre.
-% \end{important}
-%
 % \subsubsection*{Llaves para \cs[no-index]{spPoly}}
 %
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spPoly]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% vértices. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza las letras directamente sin anteponer «mayúscula»; si se
-% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
-% reglas de habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}.
+% Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
+% del argumento sin el prefijo «mayúscula»: |$\spPoly{A, B, C}$|
+% se verbaliza \emph{«triángulo A B C»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» dependiendo de la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[spPoly]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} del nombre de la figura. El valor de esta llave
-% \emph{siempre} debe pasarse entre llaves `|{ }|'. Si se establece en
-% |{el}|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«el triángulo
-% A B C»} en lugar de \emph{«triángulo A B C»}; si no se establece,
-% no se antepone ninguna palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el argumento o los términos \emph{«tríangulo»} y
+% \emph{«cuadrado»} establecido por la llave |print-sym|. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{true}[spPoly]
 % \smallskip
-% Establece si se imprime el símbolo visual de la figura y
-% \mynvmath{NVDA/MathCAT} verbaliza su nombre. Si se establece en
-% |false|, |$\spPoly[print-sym=false]{A, B, C}$| imprimirá `$ABC$' sin
-% símbolo y \mynvmath{NVDA/MathCAT} verbalizará solo \emph{«A B C»};
-% si se establece en |true|, imprimirá `$\triangle ABC$' y verbalizará
-% \emph{«triángulo A B C»}. Para polígonos de cinco o más puntos esta
-% llave no tiene efecto — siempre se imprimen solo los vértices.
+% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión
+% añadiendo el término correspondiente a la verbalización en \mynvmath{NVDA/MathCAT}.
+% Si se establece en |true|, |$\spPoly[print-sym=true]{A, B, C}$|
+% imprimirá `$\triangle ABC$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«triángulo A B C»}; si se
+% establece en |false|, imprimirá `$ABC$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} omitirá el término \emph{«triángulo»}, verbalizando
+% solo \emph{«A B C»}.
 %
 % \smallskip
 %
@@ -3638,8 +3631,7 @@
 %   false}{false}[spPoly]
 % \smallskip
 % Alias de \mykey[spPoly]{print-sym}|=false|, incluido por consistencia
-% con el resto de los comandos de geometría plana. Escribir
-% |silent-cmd=true| equivale a escribir |print-sym=false|.
+% con el resto de los comandos de geometría plana.
 %
 % \subsection*{El comando \cs[no-index]{spAfig}}\label{subsec:spAfig}
 %
@@ -3647,97 +3639,84 @@
 %
 % \begin{function}{\spAfig}
 %   \begin{syntax}
-%     \ics*{spAfig}
-%     \ics*{spAfig}(\mymeta{puntos})
-%     \ics*{spAfig}\myoarg{key \textnormal{\textcolor{gray}{=}} val}(\mymeta{puntos})
+%     |\spAfig|
+%     |\spAfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
 %   \end{syntax}
 %   El comando \ics*{spAfig} trabaja en \emph{modo matemático} y
-%   representa el \emph{área} de una figura poligonal. A diferencia
-%   del resto de los comandos de geometría plana, el argumento
-%   \mymeta{puntos} se delimita con \emph{paréntesis} en lugar de
-%   llaves, y es \emph{completamente opcional}.
+%   recibe el \emph{argumento delimitado por paréntesis} \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots},
+%   el cual es \emph{completamente opcional}, representando el
+%   \emph{área} de una figura poligonal en la impresión aplicando
+%   |\mathcal{A}|.
 %
 %   \smallskip
 %
-%   Si se usa sin paréntesis, |$\spAfig$| imprimirá `$\mathcal{A}$'
-%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«área»}. Si se proporcionan tres o cuatro puntos, el tipo de
-%   figura se determina automáticamente por el número de vértices y se
-%   imprime como subíndice: |$\spAfig(A, B, C)$| imprimirá
-%   `$\mathcal{A}_{\triangle ABC}$' y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«área del triángulo A B C»};
-%   |$\spAfig(A, B, C, D)$| imprimirá `$\mathcal{A}_{\square ABCD}$'
-%   y verbalizará \emph{«área del cuadrado A B C D»}. Con cinco o más
-%   puntos, el subíndice solo contiene los vértices, y
-%   \mynvmath{NVDA/MathCAT} verbaliza el nombre del polígono
-%   correspondiente sin símbolo visual.
+%   El tipo de \emph{símbolo} añadido como subíndice y la verbalización
+%   se determinan acorde al número de puntos en el argumento: Si no se
+%   proporciona el argumento se aplica solo |\mathcal{A}|; si son tres
+%   puntos se aplica |\triangle| como subíndice y añade el término \emph{«triángulo»}
+%   a la verbalización; si son cuatro puntos se aplica |\mdlgwhtsquare|
+%   como subíndice y añade el término \emph{«cuadrado»} a la verbalización;
+%   si son cinco o más puntos no se aplica ningún símbolo pero se añade
+%   el nombre del polígono correspondiente a la verbalización.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spAfig$| imprimirá `$\mathcal{A}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«área»}; |$\spAfig(A, B, C)$|
+%   imprimirá `$\mathcal{A}_{\triangle ABC}$' y verbalizará \emph{«área
+%   del triángulo A B C»}; |$\spAfig(A, B, C, D)$| imprimirá
+%   `$\mathcal{A}_{\square ABCD}$' y verbalizará \emph{«área del
+%   cuadrado A B C D»}.
 % \end{function}
-%
-% \smallskip
-%
-% \begin{important}*
-%   El subíndice de |\spAfig| solo identifica la figura por sus
-%   vértices — nunca contiene medidas (base, altura, lados). Para
-%   expresar el cálculo mismo, la medida se escribe aparte en la
-%   ecuación: por ejemplo, `$\mathcal{A}_{\triangle ABC} =
-%   \dfrac{b \cdot h}{2}$'.
-% \end{important}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spAfig}}
 %
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spAfig]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% vértices. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza las letras directamente sin anteponer «mayúscula»; si se
-% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
-% reglas de habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}.
+% Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
+% del argumento sin el prefijo «mayúscula»: |$\spAfig(A, B, C)$|
+% se verbaliza \emph{«área del triángulo A B C»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» dependiendo de la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[spAfig]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} de «área». El valor de esta llave \emph{siempre} debe
-% pasarse entre llaves `|{ }|'. Si se establece en |{el}|,
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«el área del triángulo
-% A B C»} en lugar de \emph{«área del triángulo A B C»}; si no se
-% establece, no se antepone ninguna palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el término \emph{«área del»}. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{true}[spAfig]
 % \smallskip
-% Establece si se imprime el \emph{símbolo visual} de la figura
-% (\cs{triangle} o \cs{mdlgwhtsquare}) dentro del subíndice. Esta llave
-% solo tiene efecto cuando el número de vértices es tres o cuatro. Si
-% se establece en |false|, |$\spAfig[print-sym=false](A, B, C)$|
-% imprimirá `$\mathcal{A}_{ABC}$' sin el símbolo del triángulo,
-% mientras que \mynvmath{NVDA/MathCAT} sigue verbalizando \emph{«área
-% del triángulo A B C»} — la llave afecta solo lo visual, no la
-% verbalización.
+% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión
+% cuando el argumento contenga tres o cuatro puntos.
+% Si se establece en |true|, |$\spAfig[print-sym=true](A, B, C)$|
+% imprimirá `$\mathcal{A}_{\triangle ABC}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del triángulo A B C»};
+% si se establece en |false|, imprimirá `$\mathcal{A}_{ABC}$' en la
+% salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del triángulo A B C»}.
 %
 % \smallskip
 %
-% \keyexampcmd{read-arg}{nombre}{(automático)}[spAfig]
+% \keyexampcmd{read-arg}{nombre}{no usado}[spAfig]
 % \smallskip
-% Sobrescribe el \emph{nombre de la figura} que \mynvmath{NVDA/MathCAT}
-% verbaliza, sin afectar el símbolo visual ni el número de vértices.
-% Es especialmente útil con cuatro vértices, donde la cardinalidad por
-% sí sola no puede distinguir un cuadrado de un rectángulo, un rombo,
-% un paralelogramo o un trapecio. El valor de esta llave \emph{siempre}
-% debe pasarse entre llaves `|{ }|'. Por ejemplo,
-% |$\spAfig[read-arg={trapecio}](A, B, C, D)$| imprimirá
-% `$\mathcal{A}_{\square ABCD}$' (el símbolo por defecto de cuatro
-% vértices) pero \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del
-% trapecio A B C D»}. Para además ocultar el símbolo, que en este caso
-% no representa correctamente un trapecio, combínese con
-% \mykey[spAfig]{print-sym}|=false|:
-% |$\spAfig[read-arg={trapecio}, print-sym=false](A, B, C, D)$|
-% imprimirá `$\mathcal{A}_{ABCD}$' con la misma verbalización.
+% Sobrescribe el \emph{nombre de la figura} determinado automáticamente
+% por el número de puntos en el argumento, que será verbalizado por \mynvmath{NVDA/MathCAT}
+% al ejecutar el comando sin modificar la impresión de este. El valor de
+% esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Por
+% ejemplo: |$\spAfig[read-arg={trapecio}](A, B, C, D)$| imprimirá
+% `$\mathcal{A}_{\square ABCD}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del trapecio A B C D»}.
 %
 % \subsection*{El comando \cs[no-index]{spPfig}}\label{subsec:spPfig}
 %
@@ -3745,77 +3724,84 @@
 %
 % \begin{function}{\spPfig}
 %   \begin{syntax}
-%     \ics*{spPfig}
-%     \ics*{spPfig}(\mymeta{puntos})
-%     \ics*{spPfig}\myoarg{key \textnormal{\textcolor{gray}{=}} val}(\mymeta{puntos})
+%     |\spPfig|
+%     |\spPfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
 %   \end{syntax}
-%   El comando \ics*{spPfig} es el homólogo de |\spAfig| para el
-%   \emph{perímetro} de una figura poligonal: misma sintaxis, mismo
-%   comportamiento, usando $\mathcal{P}$ como símbolo.
+%   El comando \ics*{spPfig} trabaja en \emph{modo matemático} y
+%   recibe el \emph{argumento delimitado por paréntesis} \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots},
+%   el cual es \emph{completamente opcional}, representando el
+%   \emph{perímetro} de una figura poligonal en la impresión aplicando
+%   |\mathcal{P}|.
 %
 %   \smallskip
 %
-%   Si se usa sin paréntesis, |$\spPfig$| imprimirá `$\mathcal{P}$' en
-%   la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«perímetro»}. Con vértices, |$\spPfig(A, B, C)$| imprimirá
-%   `$\mathcal{P}_{\triangle ABC}$' y verbalizará \emph{«perímetro del
-%   triángulo A B C»}; |$\spPfig(A, B, C, D)$| imprimirá
+%   El tipo de \emph{símbolo} añadido como subíndice y la verbalización
+%   se determinan acorde al número de puntos en el argumento: Si no se
+%   proporciona el argumento se aplica solo |\mathcal{P}|; si son tres
+%   puntos se aplica |\triangle| como subíndice y añade el término \emph{«triángulo»}
+%   a la verbalización; si son cuatro puntos se aplica |\mdlgwhtsquare|
+%   como subíndice y añade el término \emph{«cuadrado»} a la verbalización;
+%   si son cinco o más puntos no se aplica ningún símbolo pero se añade
+%   el nombre del polígono correspondiente a la verbalización.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spPfig$| imprimirá `$\mathcal{P}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro»}; |$\spPfig(A, B, C)$|
+%   imprimirá `$\mathcal{P}_{\triangle ABC}$' y verbalizará \emph{«perímetro
+%   del triángulo A B C»}; |$\spPfig(A, B, C, D)$| imprimirá
 %   `$\mathcal{P}_{\square ABCD}$' y verbalizará \emph{«perímetro del
 %   cuadrado A B C D»}.
 % \end{function}
-%
-% \smallskip
-%
-% \begin{important}*
-%   Para el área y el perímetro de un \emph{círculo} o una
-%   \emph{circunferencia}, |\spAfig| y |\spPfig| no son los comandos
-%   adecuados — véase |\spCirc|, que provee la notación propia de
-%   estos objetos.
-% \end{important}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spPfig}}
 %
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spPfig]
 % \smallskip
-% Establece la forma en la que \mynvmath{NVDA/MathCAT} verbalizará los
-% vértices. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza las letras directamente sin anteponer «mayúscula»; si se
-% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
-% reglas de habla, que pueden incluir el prefijo «mayúscula» según la
-% configuración del usuario.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
+% argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}.
+% Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
+% del argumento sin el prefijo «mayúscula»: |$\spPfig(A, B, C)$|
+% se verbaliza \emph{«perímetro del triángulo A B C»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» dependiendo de la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[spPfig]
 % \smallskip
-% Establece la palabra que \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{antes} de «perímetro». El valor de esta llave \emph{siempre}
-% debe pasarse entre llaves `|{ }|'. Si se establece en |{el}|,
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«el perímetro del
-% triángulo A B C»} en lugar de \emph{«perímetro del triángulo
-% A B C»}; si no se establece, no se antepone ninguna palabra.
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el término \emph{«perímetro del»}. El valor de
+% esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{true}[spPfig]
 % \smallskip
-% Establece si se imprime el \emph{símbolo visual} de la figura dentro
-% del subíndice, con la misma semántica que en |\spAfig|
-% (\S\ref{subsec:spAfig}). Si se establece en |false|,
-% |$\spPfig[print-sym=false](A, B, C, D)$| imprimirá
-% `$\mathcal{P}_{ABCD}$' y \mynvmath{NVDA/MathCAT} sigue verbalizando
-% \emph{«perímetro del cuadrado A B C D»}.
+% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión
+% cuando el argumento contenga tres o cuatro puntos.
+% Si se establece en |true|, |$\spPfig[print-sym=true](A, B, C)$|
+% imprimirá `$\mathcal{P}_{\triangle ABC}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del triángulo A B C»};
+% si se establece en |false|, imprimirá `$\mathcal{P}_{ABC}$' en la
+% salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del triángulo A B C»}.
 %
 % \smallskip
 %
-% \keyexampcmd{read-arg}{nombre}{(automático)}[spPfig]
+% \keyexampcmd{read-arg}{nombre}{no usado}[spPfig]
 % \smallskip
-% Sobrescribe el \emph{nombre de la figura} verbalizado, con la misma
-% semántica que en |\spAfig| (\S\ref{subsec:spAfig}). El valor de esta
-% llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
-%
+% Sobrescribe el \emph{nombre de la figura} determinado automáticamente
+% por el número de puntos en el argumento, que será verbalizado por \mynvmath{NVDA/MathCAT}
+% al ejecutar el comando sin modificar la impresión de este. El valor de
+% esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Por
+% ejemplo: |$\spPfig[read-arg={trapecio}](A, B, C, D)$| imprimirá
+% `$\mathcal{P}_{\square ABCD}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del trapecio A B C D»}.
 %
 % \newpage
 %
