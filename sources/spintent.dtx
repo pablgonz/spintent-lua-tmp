@@ -8723,29 +8723,30 @@
 % The commands described in this section provide a semantic interface
 % for geometric objects in Spanish mathematical contexts. They all
 % delegate parsing to \myluamod{}, sharing the variables
-% \cs{l_@@_geo_error_str}, \cs{l_@@_geo_intent_str} and
-% \cs{l_@@_geo_visual_tl}, constructing a valid \mynvmath{MathCAT}
+% \cs{l_@@_geo_luaset_error_str}, \cs{l_@@_geo_luaset_intent_str} and
+% \cs{l_@@_geo_luaset_print_tl}, constructing a valid \mynvmath{MathCAT}
 % intent.
 %
 % \subsubsection{Definition of shared variables}
 %
 % \begin{variable}[int]{
-%   \l_@@_geo_error_str, \l_@@_geo_intent_str, \l_@@_geo_visual_tl,
-%   \l_@@_geo_is_nombre_str, \l_@@_geo_poly_sym_str,
-%   \l_@@_geo_intent_pts_str, \l_@@_geo_angulo_caso_str,
+%   \l_@@_geo_luaset_error_str, \l_@@_geo_luaset_intent_str, \l_@@_geo_luaset_print_tl,
+%   \l_@@_geo_luaset_is_name_str, \l_@@_geo_luaset_poly_sym_str,
+%   \l_@@_geo_luaset_intent_pts_str, \l_@@_geo_luaset_angulo_case_str,
 %   \l_@@_geo_side_cmd_tl, \l_@@_geo_fig_op_tl}
 %   Internal variables shared across all commands of the family to
 %   avoid repeated calls into Lua.
 %    \begin{macrocode}
-\str_new:N \l_@@_geo_error_str
-\str_new:N \l_@@_geo_intent_str
-\tl_new:N  \l_@@_geo_visual_tl
-\str_new:N \l_@@_geo_is_nombre_str
-\str_new:N \l_@@_geo_poly_sym_str
-\str_new:N \l_@@_geo_intent_pts_str
-\str_new:N \l_@@_geo_angulo_caso_str
+\str_new:N \l_@@_geo_luaset_error_str
+\str_new:N \l_@@_geo_luaset_intent_str
+\tl_new:N  \l_@@_geo_luaset_print_tl
+\str_new:N \l_@@_geo_luaset_is_name_str
+\str_new:N \l_@@_geo_luaset_poly_sym_str
+\str_new:N \l_@@_geo_luaset_intent_pts_str
+\str_new:N \l_@@_geo_luaset_angulo_case_str
 \tl_new:N  \l_@@_geo_side_cmd_tl
 \tl_new:N  \l_@@_geo_fig_op_tl
+\str_new:N \l_@@_geo_luaset_concept_str
 %    \end{macrocode}
 % \end{variable}
 %
@@ -8825,37 +8826,36 @@
 % \subsubsection{Internal functions for \cs[no-index]{spPoint}}
 %
 % \begin{macro}[int]{\@@_spPoint_print:n}
-%   The function \myhlc|\@@_spPoint_print:n| resolves the concept
-%   name — |punto| or an empty group — before calling the Lua module,
-%   then constructs the \mynvmath{MathML} intent from the returned
-%   values.
+%   The function \myhlc|\@@_spPoint_print:n| stores the fixed concept
+%   name |punto| in the shared scratch variable
+%   \cs{l_@@_geo_side_cmd_tl}, then resolves the concept name — that
+%   variable, or an empty group — before calling the Lua module,
+%   choosing between them according to \cs{l_@@_spPoint_mode_str} and
+%   \cs{l_@@_spPoint_silent_cmd_bool}. In |mathcat| mode, it appends
+%   |:silent| to \cs{l_@@_geo_luaset_intent_str} afterward when
+%   \mykey[spPoint]{silent-cmd} is active.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_print:n
   {
     \tl_set:Nn \l_@@_geo_side_cmd_tl { punto }
-    \@@_luafun_geo_point_parse_and_set:nnn
+    \@@_luafun_geo_point_parse_and_set:nn
       {
         \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
-          {
-            \bool_if:NF \l_@@_spPoint_silent_cmd_bool
-              { \l_@@_geo_side_cmd_tl }
-          }
+          { \bool_if:NTF \l_@@_spPoint_silent_cmd_bool { } { \l_@@_geo_side_cmd_tl } }
           { \l_@@_geo_side_cmd_tl }
       }
       { \exp_not:n {#1} }
-      { \l_@@_spPoint_mode_str }
-    \str_if_eq:VnTF \l_@@_geo_error_str { true }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nne { spintent } { spPoint-invalid-point }
           { \exp_not:n {#1} }
       }
-      {
-         \@@_invisible_sep:
-      }
     \str_if_eq:VnT \l_@@_spPoint_mode_str { mathcat }
       {
+        \str_set:Ne \l_@@_geo_luaset_intent_str
+          { _ \l_@@_geo_side_cmd_tl :prefix($pt) }
         \bool_if:NT \l_@@_spPoint_silent_cmd_bool
-          { \tl_put_right:Nn \l_@@_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
       {
@@ -8863,30 +8863,33 @@
           {
             \tl_if_empty:NF \l_@@_spPoint_prefix_tl
               { \tl_use:N \l_@@_spPoint_prefix_tl - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
-          { \c_@@_invisible_sep_tl \l_@@_geo_visual_tl }
+          { \c_@@_invisible_sep_tl \l_@@_geo_luaset_print_tl }
+        \@@_invisible_sep:
       }
       {
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spPoint_prefix_tl
               { \tl_use:N \l_@@_spPoint_prefix_tl - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
-            \MathMLarg { pt } { \l_@@_geo_visual_tl }
+            \MathMLarg { pt } { \l_@@_geo_luaset_print_tl }
           }
-       }
+        \@@_invisible_sep:
+      }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spPoint_exec:nn}
-%   The function \myhlc|\@@_spPoint_exec:nn| sets the \mymeta{keys}
-%   in `|#1|' and delegates rendering to \myhlc|\@@_spPoint_print:n|
-%   with the argument in `|#2|'.
+%   The function \myhlc|\@@_spPoint_exec:nn| receives the optional
+%   \mymeta{keys} in `|#1|' and the point in `|#2|'. It sets the keys
+%   via \cs{keys_set:nn}, then delegates rendering to
+%   \myhlc|\@@_spPoint_print:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_exec:nn
   {
@@ -8897,8 +8900,9 @@
 % \end{macro}
 %
 % \begin{macro}{\spPoint}
-%   The command |\spPoint| enforces math mode and delegates to
-%   \myhlc|\@@_spPoint_exec:nn|.
+%   The public command |\spPoint| is the interface for typesetting a
+%   single geometric point. It enforces math mode, opens a local
+%   group, and delegates execution to \myhlc|\@@_spPoint_exec:nn|.
 %    \begin{macrocode}
 \NewDocumentCommand \spPoint { O{} m }
   {
@@ -8920,7 +8924,7 @@
 % it is interpreted as two points and rendered with
 % \cs{overleftrightarrow}; when it contains no comma, it is interpreted
 % as a proper name and typeset without any visual decorator. The
-% shared variable \cs{l_@@_geo_is_nombre_str} carries the detection
+% shared variable \cs{l_@@_geo_luaset_is_name_str} carries the detection
 % result from Lua to the rendering function.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{sprecta}}
@@ -8948,7 +8952,6 @@
     The~argument~must~be~either~a~comma-separated~pair~of~uppercase~
     letters~(two-point~notation)~or~a~single~letter~(uppercase~or~
     lowercase)~with~optional~subscript~or~prime~(name~notation).\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'L_\{1\}',~'m',~'r'.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -8994,41 +8997,44 @@
 % \subsubsection{Internal functions for \cs[no-index]{sprecta}}
 %
 % \begin{macro}[int]{\@@_sprecta_print:n}
-%   The internal function \myhlc|\@@_sprecta_print:n| resolves the
-%   concept name in the same way as \myhlc|\@@_spPoint_print:n|
-%   (\S\ref{cmd:spPoint}), then dispatches on
-%   \cs{l_@@_geo_is_nombre_str} to select the visual branch:
+%   The internal function \myhlc|\@@_sprecta_print:n| first sets
+%   \cs{l_@@_geo_side_cmd_tl} to |recta| — a fixed literal, since
+%   |\sprecta| has no term-selecting key. Only then does it decide,
+%   according to mode and \mykey[sprecta]{silent-cmd}, whether to send
+%   \cs{l_@@_geo_side_cmd_tl} or an empty group to
+%   \myhlc|\@@_luafun_geo_parse_and_set:nnn|.
+%
+%   \smallskip
+%
+%   In |mathcat| mode, |:silent| is appended to
+%   \cs{l_@@_geo_luaset_intent_str} afterward when needed. It then dispatches
+%   on \cs{l_@@_geo_luaset_is_name_str} to select the visual branch:
 %   \cs{overleftrightarrow} for the two-point notation, or the raw
 %   name with no decorator otherwise.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_print:n
   {
     \tl_set:Nn \l_@@_geo_side_cmd_tl { recta }
-    \@@_luafun_geo_parse_and_set:nnn
+    \@@_luafun_geo_parse_and_set:nn
       {
         \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
-          {
-            \bool_if:NF \l_@@_sprecta_silent_cmd_bool
-              { \l_@@_geo_side_cmd_tl }
-          }
+          { \bool_if:NTF \l_@@_sprecta_silent_cmd_bool { } { \l_@@_geo_side_cmd_tl } }
           { \l_@@_geo_side_cmd_tl }
       }
       { \exp_not:n {#1} }
-      { \l_@@_sprecta_mode_str }
-    \str_if_eq:VnTF \l_@@_geo_error_str { true }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nne { spintent } { sprecta-invalid-points }
           { \exp_not:n {#1} }
       }
-      {
-         \@@_invisible_sep: % need for MathCAT
-      }
     \str_if_eq:VnT \l_@@_sprecta_mode_str { mathcat }
       {
+        \str_set:Ne \l_@@_geo_luaset_intent_str
+          { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
         \bool_if:NT \l_@@_sprecta_silent_cmd_bool
-          { \tl_put_right:Nn \l_@@_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
       }
-    \str_if_eq:VnTF \l_@@_geo_is_nombre_str { true }
+    \str_if_eq:VnTF \l_@@_geo_luaset_is_name_str { true }
       {
         \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
           {
@@ -9036,20 +9042,21 @@
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
                   { \tl_use:N \l_@@_sprecta_prefix_tl - }
-                \l_@@_geo_intent_str
+                \l_@@_geo_luaset_intent_str
               }
-              { \c_@@_invisible_sep_tl \l_@@_geo_visual_tl }
+              { \c_@@_invisible_sep_tl \l_@@_geo_luaset_print_tl }
+            \@@_invisible_sep:
           }
           {
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
                   { \tl_use:N \l_@@_sprecta_prefix_tl - }
-                \l_@@_geo_intent_str
+                \l_@@_geo_luaset_intent_str
               }
               {
                 \c_@@_invisible_sep_tl
-                \MathMLarg { pts } { \l_@@_geo_visual_tl }
+                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
               }
             \@@_invisible_sep:
           }
@@ -9061,25 +9068,27 @@
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
                   { \tl_use:N \l_@@_sprecta_prefix_tl - }
-                \l_@@_geo_intent_str
+                \l_@@_geo_luaset_intent_str
               }
               {
                 \c_@@_invisible_sep_tl
-                \overleftrightarrow { \l_@@_geo_visual_tl }
+                \overleftrightarrow { \l_@@_geo_luaset_print_tl }
               }
+            \@@_invisible_sep:
           }
           {
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
                   { \tl_use:N \l_@@_sprecta_prefix_tl - }
-                \l_@@_geo_intent_str
+                \l_@@_geo_luaset_intent_str
               }
               {
                 \c_@@_invisible_sep_tl
                 \overleftrightarrow
-                  { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
+                  { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
               }
+            \@@_invisible_sep:
           }
       }
   }
@@ -9118,10 +9127,10 @@
 %
 % \subsection{The command \cs{sprayo}}\label{cmd:sprayo}
 %
-% The user command |\sprayo| absorbs what used to be the separate
-% command |\spsemirecta|: the key \mykey[sprayo]{read-sty} selects
-% between the terms |rayo| and |semirrecta|, both rendered identically
-% with \cs{overrightarrow}.
+% The user command |\sprayo| provides a semantic interface for a ray.
+% The key \mykey[sprayo]{read-sty} selects the verbalized term,
+% |rayo| or |semirrecta|, both rendered identically with
+% |\overrightarrow|.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{sprayo}}
 %
@@ -9148,11 +9157,12 @@
 %   uppercase letters.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { sprayo-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'. }
+  {
+    Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'.
+  }
   {
     The~argument~must~be~a~comma-separated~list~of~exactly~two~
     uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -9160,8 +9170,10 @@
 % \subsubsection{Definition of keys for \cs[no-index]{sprayo}}
 %
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, read-sty, unknown}
-%   The key \mykey[sprayo]{read-sty} replaces the former separate
-%   command |\spsemirecta|: it defaults to |rayo| and accepts
+%   We define the \mymeta{keys} \mykey[sprayo]{read-cmd},
+%   \mykey[sprayo]{prefix}, \mykey[sprayo]{silent-cmd} and
+%   \mykey[sprayo]{read-sty}. The key \mykey[sprayo]{read-sty}
+%   selects the verbalized term: it defaults to |rayo| and accepts
 %   |semirrecta| as the alternative term.
 %    \begin{macrocode}
 \keys_define:nn { spintent / sprayo }
@@ -9213,12 +9225,12 @@
 % \begin{macro}[int]{\@@_sprayo_print:n}
 %   Resolves the concept name to \cs{l_@@_sprayo_read_sty_str} or an
 %   empty group before calling Lua, following the same pattern as
-%   |\sprecta| (\S\ref{cmd:sprecta}), and uses \cs{overrightarrow} as
+%   |\sprecta| (\S\ref{cmd:sprecta}), and uses |\overrightarrow| as
 %   the visual decorator in both branches.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprayo_print:n
   {
-    \@@_luafun_geo_parse_and_set:nnn
+    \@@_luafun_geo_parse_and_set:nn
       {
         \str_if_eq:VnTF \l_@@_sprayo_mode_str { school }
           {
@@ -9228,16 +9240,17 @@
           { \l_@@_sprayo_read_sty_str }
       }
       { \exp_not:n {#1} }
-      { \l_@@_sprayo_mode_str }
-    \str_if_eq:VnT \l_@@_geo_error_str { true }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nne { spintent } { sprayo-invalid-points }
           { \exp_not:n {#1} }
       }
     \str_if_eq:VnT \l_@@_sprayo_mode_str { mathcat }
       {
+        \str_set:Ne \l_@@_geo_luaset_intent_str
+          { _ \l_@@_sprayo_read_sty_str :prefix($pts) }
         \bool_if:NT \l_@@_sprayo_silent_cmd_bool
-          { \tl_put_right:Nn \l_@@_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:VnTF \l_@@_sprayo_mode_str { school }
       {
@@ -9245,11 +9258,11 @@
           {
             \tl_if_empty:NF \l_@@_sprayo_prefix_tl
               { \tl_use:N \l_@@_sprayo_prefix_tl - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
-            \overrightarrow { \l_@@_geo_visual_tl }
+            \overrightarrow { \l_@@_geo_luaset_print_tl }
           }
         \@@_invisible_sep:
       }
@@ -9258,12 +9271,12 @@
           {
             \tl_if_empty:NF \l_@@_sprayo_prefix_tl
               { \tl_use:N \l_@@_sprayo_prefix_tl - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \overrightarrow
-              { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
+              { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
           }
         \@@_invisible_sep:
       }
@@ -9301,10 +9314,10 @@
 %
 % \subsection{The commands \cs{spside} and \cs{spmside}}\label{cmd:spside}
 %
-% The user commands |\spside| and |\spmside| absorb what used to be
-% four separate commands: |\splado|, |\spsegmento|, |\spmlado| and
-% |\spmsegmento|. The key \mykey[spside]{read-sty} selects the
-% verbalized term — |lado|, |segmento|, or |trazo|, the latter used in
+% The user commands |\spside| and |\spmside| provide a semantic
+% interface for a side, segment or trace determined by two points.
+% The key \mykey[spside]{read-sty} selects the verbalized term —
+% |lado|, |segmento|, or |trazo|, the latter used in
 % straightedge-and-compass constructions — and the key
 % \mykey[spside]{read-arg} overrides that term entirely with a
 % free-form string. |\spmside| additionally provides
@@ -9355,11 +9368,12 @@
 \clist_map_inline:nn { side , mside }
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
-      { Invalid~point~format~in~##1:~'##2'. }
+      {
+        Invalid~point~format~in~##1:~'##2'.
+      }
       {
         The~argument~must~be~a~comma-separated~list~of~uppercase~
         letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-        Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
       }
   }
 %    \end{macrocode}
@@ -9452,7 +9466,7 @@
 %   \smallskip
 %
 %   In |mathcat| mode, |:silent| is appended to
-%   \cs{l_@@_geo_intent_str} afterward when needed. When |#1| is
+%   \cs{l_@@_geo_luaset_intent_str} afterward when needed. When |#1| is
 %   |mside| and \mykey{print-m} is |true|, |\operatorname{m}| is
 %   typeset wrapped in \cs{MathMLintent}\marg{:silent} before
 %   \cs{overline}, following the same pause-avoiding pattern already
@@ -9466,10 +9480,9 @@
           { \tl_use:c { l_@@_sp #1 _read_sty_str } }
           { \tl_use:c { l_@@_sp #1 _read_arg_str } }
       }
-    \str_if_eq:eeTF {#1} { mside }
+    \str_if_eq:eeT {#1} { mside }
       { \tl_put_left:Nn \l_@@_geo_side_cmd_tl { medida-del- } }
-      { }
-    \@@_luafun_geo_parse_and_set:nnn
+    \@@_luafun_geo_parse_and_set:nn
       {
         \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
           {
@@ -9479,16 +9492,17 @@
           { \l_@@_geo_side_cmd_tl }
       }
       { \exp_not:n {#2} }
-      { \tl_use:c { l_@@_sp #1 _mode_str } }
-    \str_if_eq:VnT \l_@@_geo_error_str { true }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeT { \tl_use:c { l_@@_sp #1 _mode_str } } { mathcat }
       {
+        \str_set:Nx \l_@@_geo_luaset_intent_str
+          { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
-          { \tl_put_right:Nn \l_@@_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
       {
@@ -9496,7 +9510,7 @@
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
@@ -9505,7 +9519,7 @@
                 \bool_if:cT { l_@@_sp #1 _print_m_bool }
                   { \MathMLintent { :silent } { \operatorname { m } } }
               }
-            \overline { \l_@@_geo_visual_tl }
+            \overline { \l_@@_geo_luaset_print_tl }
           }
         \@@_invisible_sep:
       }
@@ -9514,7 +9528,7 @@
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
@@ -9524,7 +9538,7 @@
                   { \MathMLintent { :silent } { \operatorname { m } } }
               }
             \overline
-              { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
+              { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
           }
         \@@_invisible_sep:
       }
@@ -9608,6 +9622,9 @@
 %   and \cs[no-index]{spmangle}}
 %
 % \begin{macro}[int]{spangle-invalid-arg, spmangle-invalid-arg}
+%   Both messages are generated by the same map, using the same
+%   |##1|/|##2| doubling convention as |\spside|/|\spmside|
+%   (\S\ref{cmd:spside}).
 %    \begin{macrocode}
 \clist_map_inline:nn { angle , mangle }
   {
@@ -9718,11 +9735,11 @@
 \cs_new_protected:Nn \@@_spangle_process:nn
   {
     \str_if_eq:eeTF {#1} { mangle }
-      { \str_set:Nn \l_@@_geo_side_cmd_tl { medida-del-ángulo } }
-      { \str_set:Nn \l_@@_geo_side_cmd_tl { ángulo } }
+      { \tl_set:Nn \l_@@_geo_side_cmd_tl { medida-del-ángulo } }
+      { \tl_set:Nn \l_@@_geo_side_cmd_tl { ángulo } }
     \bool_if:cT { l_@@_sp #1 _recto_bool }
       { \tl_put_right:Nn \l_@@_geo_side_cmd_tl { -recto } }
-    \@@_luafun_geo_angulo_parse_and_set:nnn
+    \@@_luafun_geo_angulo_parse_and_set:nn
       {
         \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
           {
@@ -9732,16 +9749,17 @@
           { \l_@@_geo_side_cmd_tl }
       }
       { \exp_not:n {#2} }
-      { \tl_use:c { l_@@_sp #1 _mode_str } }
-    \str_if_eq:VnT \l_@@_geo_error_str { true }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeT { \tl_use:c { l_@@_sp #1 _mode_str } } { mathcat }
       {
+        \str_set:Nx \l_@@_geo_luaset_intent_str
+          { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
-          { \tl_put_right:Nn \l_@@_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
       {
@@ -9749,7 +9767,7 @@
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \str_if_eq:eeT {#1} { mangle }
@@ -9758,7 +9776,7 @@
                   { \MathMLintent { :silent } { \operatorname { m } } }
               }
             \@@_spangle_sym:n {#1}
-            \l_@@_geo_visual_tl
+            \l_@@_geo_luaset_print_tl
           }
         \@@_invisible_sep:
       }
@@ -9767,7 +9785,7 @@
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \str_if_eq:eeT {#1} { mangle }
@@ -9776,7 +9794,7 @@
                   { \MathMLintent { :silent } { \operatorname { m } } }
               }
             \@@_spangle_sym:n {#1}
-            \MathMLarg { pts } { \l_@@_geo_visual_tl }
+            \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
           }
         \@@_invisible_sep:
       }
@@ -9785,6 +9803,8 @@
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spangle_exec:nnn}
+%   Sets the keys in the correct keyspace via \cs{keys_set:nn}, then
+%   delegates rendering to \myhlc|\@@_spangle_process:nn|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangle_exec:nnn
   {
@@ -9795,6 +9815,9 @@
 % \end{macro}
 %
 % \begin{macro}{\spangle, \spmangle}
+%   Both public commands are thin wrappers around
+%   \myhlc|\@@_spangle_exec:nnn|, passing their own short identifier
+%   as the first argument.
 %    \begin{macrocode}
 \NewDocumentCommand \spangle { O{} m }
   {
@@ -9831,7 +9854,12 @@
 % \subsubsection{Definition of variables for \cs[no-index]{sparc} and
 %   \cs[no-index]{spmarc}}
 %
-% \begin{variable}[int]{\l_@@_sp\#1_mode_str, \l_@@_sp\#1_prefix_tl}
+% \begin{variable}[int]{\l_@@_sparc_mode_str, \l_@@_spmarc_mode_str,
+%                       \l_@@_sparc_prefix_tl, \l_@@_smparc_prefix_tl}
+%   Declared once for both |arc| and |marc| via
+%   \cs{clist_map_inline:nn}. These follow the same semantics as
+%   \cs{l_@@_spPoint_mode_str} and \cs{l_@@_spPoint_prefix_tl}
+%   (\S\ref{cmd:spPoint}).
 %    \begin{macrocode}
 \clist_map_inline:nn { arc , marc }
   {
@@ -9845,15 +9873,19 @@
 %   and \cs[no-index]{spmarc}}
 %
 % \begin{macro}[int]{sparc-invalid-points, spmarc-invalid-points}
+%   Both messages are generated by the same map, using the same
+%   |##1|/|##2| doubling convention as |\spside|/|\spmside|
+%   (\S\ref{cmd:spside}).
 %    \begin{macrocode}
 \clist_map_inline:nn { arc , marc }
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
-      { Invalid~point~format~in~##1:~'##2'. }
+      {
+        Invalid~point~format~in~##1:~'##2'.
+      }
       {
         The~argument~must~be~a~comma-separated~list~of~uppercase~
         letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-        Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
       }
   }
 %    \end{macrocode}
@@ -9863,6 +9895,9 @@
 %   \cs[no-index]{spmarc}}
 %
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, unknown}
+%   The keyspaces |spintent/sparc| and |spintent/spmarc| are both
+%   generated by the same loop, each with its own independent set of
+%   keys pointing at its own |:c|-named variables.
 %    \begin{macrocode}
 \clist_map_inline:nn { arc , marc }
   {
@@ -9930,9 +9965,9 @@
 \cs_new_protected:Nn \@@_sparc_process:nn
   {
     \str_if_eq:eeTF {#1} { marc }
-      { \str_set:Nn \l_@@_geo_side_cmd_tl { medida-del-arco } }
-      { \str_set:Nn \l_@@_geo_side_cmd_tl { arco } }
-    \@@_luafun_geo_parse_and_set:nnn
+      { \tl_set:Nn \l_@@_geo_side_cmd_tl { medida-del-arco } }
+      { \tl_set:Nn \l_@@_geo_side_cmd_tl { arco } }
+    \@@_luafun_geo_parse_and_set:nn
       {
         \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
           {
@@ -9942,16 +9977,17 @@
           { \l_@@_geo_side_cmd_tl }
       }
       { \exp_not:n {#2} }
-      { \tl_use:c { l_@@_sp #1 _mode_str } }
-    \str_if_eq:VnT \l_@@_geo_error_str { true }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeT { \tl_use:c { l_@@_sp #1 _mode_str } } { mathcat }
       {
+        \str_set:Nx \l_@@_geo_luaset_intent_str
+          { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
-          { \tl_put_right:Nn \l_@@_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
       {
@@ -9959,13 +9995,13 @@
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \str_if_eq:eeT {#1} { marc }
               { \MathMLintent { :silent } { \operatorname { m } } }
-            \@@_sparc_deco:n { \l_@@_geo_visual_tl }
+            \@@_sparc_deco:n { \l_@@_geo_luaset_print_tl }
           }
         \@@_invisible_sep:
       }
@@ -9974,14 +10010,14 @@
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \str_if_eq:eeT {#1} { marc }
               { \MathMLintent { :silent } { \operatorname { m } } }
             \@@_sparc_deco:n
-              { \MathMLarg { pts } { \l_@@_geo_visual_tl } }
+              { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
           }
         \@@_invisible_sep:
       }
@@ -9990,6 +10026,8 @@
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_sparc_exec:nnn}
+%   Sets the keys in the correct keyspace via \cs{keys_set:nn}, then
+%   delegates rendering to \myhlc|\@@_sparc_process:nn|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sparc_exec:nnn
   {
@@ -10000,6 +10038,9 @@
 % \end{macro}
 %
 % \begin{macro}{\sparc, \spmarc}
+%   Both public commands are thin wrappers around
+%   \myhlc|\@@_sparc_exec:nnn|, passing their own short identifier as
+%   the first argument.
 %    \begin{macrocode}
 \NewDocumentCommand \sparc { O{} m }
   {
@@ -10030,8 +10071,8 @@
 % vertices. The figure type and its visual symbol are inferred from
 % the vertex count: three points produce a triangle, four a square,
 % five or more a generic polygon with no symbol. It never sends a
-% boolean to Lua: \cs{l_@@_geo_intent_str} (the full |intent|, with
-% the figure name) and \cs{l_@@_geo_intent_pts_str} (vertices only)
+% boolean to Lua: \cs{l_@@_geo_luaset_intent_str} (the full |intent|, with
+% the figure name) and \cs{l_@@_geo_luaset_intent_pts_str} (vertices only)
 % are both returned unconditionally, and expl3 picks between them
 % according to \mykey[spPoly]{print-sym}.
 %
@@ -10049,13 +10090,17 @@
 % \subsubsection{Definition of error messages for \cs[no-index]{spPoly}}
 %
 % \begin{macro}[int]{spPoly-invalid-points}
+%   The \enquote{error} |spPoly-invalid-points| is raised when the
+%   argument in `|#1|' is not a comma-separated list of at least
+%   three uppercase letters.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spPoly-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'. }
+  {
+    Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'.
+  }
   {
     The~argument~must~be~a~comma-separated~list~of~at~least~three~
     uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B,~C',~'A_\{1\},~B_\{1\},~C_\{1\}'.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -10103,10 +10148,13 @@
 % \subsubsection{Internal functions for \cs[no-index]{spPoly}}
 %
 % \begin{macro}[int]{\@@_spPoly_sym:}
+%   Reads \cs{l_@@_geo_luaset_poly_sym_str} and typesets the corresponding
+%   symbol: \cs{triangle} for |triangle|, \cs{mdlgwhtsquare} for
+%   |square|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_sym:
   {
-    \str_case:Vn \l_@@_geo_poly_sym_str
+    \str_case:Vn \l_@@_geo_luaset_poly_sym_str
       {
         { triangle } { \triangle      }
         { square   } { \mdlgwhtsquare }
@@ -10116,21 +10164,24 @@
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spPoly_print:n}
-%   When \mykey{print-sym} is |true|, uses \cs{l_@@_geo_intent_str}
+%   When \mykey{print-sym} is |true|, uses \cs{l_@@_geo_luaset_intent_str}
 %   and wraps \myhlc|\@@_spPoly_sym:| in
 %   \cs{MathMLintent}\marg{:silent} whenever a symbol is available;
-%   when |false|, uses \cs{l_@@_geo_intent_pts_str} and typesets no
+%   when |false|, uses \cs{l_@@_geo_luaset_intent_pts_str} and typesets no
 %   symbol at all.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_print:n
   {
-    \@@_luafun_geo_poly_parse_and_set:nn
-      { \exp_not:n {#1} }
-      { \l_@@_spPoly_mode_str }
-    \str_if_eq:VnT \l_@@_geo_error_str { true }
+    \@@_luafun_geo_poly_parse_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nne { spintent } { spPoly-invalid-points }
           { \exp_not:n {#1} }
+      }
+    \str_if_eq:VnT \l_@@_spPoly_mode_str { mathcat }
+      {
+        \str_set:Nx \l_@@_geo_luaset_intent_str
+          { _ \l_@@_geo_luaset_concept_str :prefix($pts) }
       }
     \bool_if:NTF \l_@@_spPoly_print_sym_bool
       {
@@ -10140,13 +10191,13 @@
               {
                 \tl_if_empty:NF \l_@@_spPoly_prefix_tl
                   { \tl_use:N \l_@@_spPoly_prefix_tl - }
-                \l_@@_geo_intent_str
+                \l_@@_geo_luaset_intent_str
               }
               {
                 \c_@@_invisible_sep_tl
-                \str_if_empty:NF \l_@@_geo_poly_sym_str
+                \str_if_empty:NF \l_@@_geo_luaset_poly_sym_str
                   { \MathMLintent { :silent } { \@@_spPoly_sym: } }
-                \l_@@_geo_visual_tl
+                \l_@@_geo_luaset_print_tl
               }
             \@@_invisible_sep:
           }
@@ -10155,13 +10206,13 @@
               {
                 \tl_if_empty:NF \l_@@_spPoly_prefix_tl
                   { \tl_use:N \l_@@_spPoly_prefix_tl - }
-                \l_@@_geo_intent_str
+                \l_@@_geo_luaset_intent_str
               }
               {
                 \c_@@_invisible_sep_tl
-                \str_if_empty:NF \l_@@_geo_poly_sym_str
+                \str_if_empty:NF \l_@@_geo_luaset_poly_sym_str
                   { \MathMLintent { :silent } { \@@_spPoly_sym: } }
-                \MathMLarg { pts } { \l_@@_geo_visual_tl }
+                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
               }
             \@@_invisible_sep:
           }
@@ -10173,9 +10224,9 @@
               {
                 \tl_if_empty:NF \l_@@_spPoly_prefix_tl
                   { \tl_use:N \l_@@_spPoly_prefix_tl - }
-                \l_@@_geo_intent_pts_str
+                \l_@@_geo_luaset_intent_pts_str
               }
-              { \c_@@_invisible_sep_tl \l_@@_geo_visual_tl }
+              { \c_@@_invisible_sep_tl \l_@@_geo_luaset_print_tl }
             \@@_invisible_sep:
           }
           {
@@ -10183,11 +10234,11 @@
               {
                 \tl_if_empty:NF \l_@@_spPoly_prefix_tl
                   { \tl_use:N \l_@@_spPoly_prefix_tl - }
-                \l_@@_geo_intent_pts_str
+                \l_@@_geo_luaset_intent_pts_str
               }
               {
                 \c_@@_invisible_sep_tl
-                \MathMLarg { pts } { \l_@@_geo_visual_tl }
+                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
               }
             \@@_invisible_sep:
           }
@@ -10197,6 +10248,8 @@
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spPoly_exec:nn}
+%   Sets the keys via \cs{keys_set:nn}, then delegates rendering to
+%   \myhlc|\@@_spPoly_print:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_exec:nn
   {
@@ -10207,6 +10260,7 @@
 % \end{macro}
 %
 % \begin{macro}{\spPoly}
+%   Enforces math mode and delegates to \myhlc|\@@_spPoly_exec:nn|.
 %    \begin{macrocode}
 \NewDocumentCommand \spPoly { O{} m }
   {
@@ -10227,7 +10281,7 @@
 % perimeter of a polygonal figure, using the delimited-optional
 % argument syntax |d()| already established by |\spmcd|/|\spmcm|. The
 % key \mykey[spAfig]{print-sym} is never sent to Lua: the symbol type
-% is returned unconditionally in \cs{l_@@_geo_poly_sym_str}, and expl3
+% is returned unconditionally in \cs{l_@@_geo_luaset_poly_sym_str}, and expl3
 % decides whether to wrap it in \cs{MathMLintent}\marg{:silent} —
 % the same mechanism already used by |\spPoly| (\S\ref{cmd:spPoly}).
 %
@@ -10235,12 +10289,15 @@
 %   \cs[no-index]{spPfig}}
 %
 % \begin{variable}[int]{
-%   \l_@@_sp\#1_mode_str, \l_@@_sp\#1_prefix_tl,
-%   \l_@@_sp\#1_read_arg_str}
+%   \l_@@_geo_sample_arg_print_tl, \l_@@_geo_sample_arg_intent_str,
+%   \l_@@_spAfig_mode_str, \l_@@_spPfig_mode_str, \l_@@_spAfig_prefix_tl,
+%   \l_@@_spPfig_prefix_tl, \l_@@_spAfig_read_arg_str, \l_@@_spPfig_read_arg_str,}
 %   The |_read_arg_str| variable stores the figure-name override set
 %   by \mykey[spAfig]{read-arg}, independent of
 %   \mykey[spAfig]{print-sym}.
 %    \begin{macrocode}
+\tl_new:N  \l_@@_geo_sample_arg_print_tl
+\str_new:N \l_@@_geo_sample_arg_intent_str
 \clist_map_inline:nn { Afig , Pfig }
   {
     \str_new:c { l_@@_sp #1 _mode_str     }
@@ -10254,16 +10311,34 @@
 %   and \cs[no-index]{spPfig}}
 %
 % \begin{macro}[int]{spAfig-invalid-points, spPfig-invalid-points}
+%   Both messages are generated by the same map, using the same
+%   |##1|/|##2| doubling convention as |\spside|/|\spmside|
+%   (\S\ref{cmd:spside}).
 %    \begin{macrocode}
 \clist_map_inline:nn { Afig , Pfig }
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
-      { Invalid~point~format~in~##1:~'##2'. }
+      {
+        Invalid~point~format~in~##1:~'##2'.
+      }
       {
         The~argument~must~be~empty,~or~a~comma-separated~list~of~at~
         least~three~uppercase~letters~with~optional~subscripts~
         (\_{...})~or~primes~(').\\
-        Valid~examples:~'()',~'(A,~B,~C)',~'(A_\{1\},~B_\{1\},~C_\{1\})'.
+      }
+    \msg_new:nnnn { spintent } { sp #1 -sample-arg-needs-arg }
+      {
+        #1~requires~a~parenthesized~argument~when~sample-arg=true.
+      }
+      {
+        The~{argument}~cannot~be~empty~in~sample~mode.
+      }
+    \msg_new:nnnn { spintent } { sp #1 -sample-arg-needs-read-arg }
+      {
+         #1~requires~read-arg~to~be~set~when~sample-arg=true.
+      }
+      {
+         The~key~read-arg~is~mandatory~in~sample~mode.
       }
   }
 %    \end{macrocode}
@@ -10273,6 +10348,9 @@
 %   \cs[no-index]{spPfig}}
 %
 % \begin{macro}[int]{read-cmd, prefix, print-sym, read-arg, unknown}
+%   The keyspaces |spintent/spAfig| and |spintent/spPfig| are both
+%   generated by the same loop, each with its own independent set of
+%   keys pointing at its own |:c|-named variables.
 %    \begin{macrocode}
 \clist_map_inline:nn { Afig , Pfig }
   {
@@ -10302,6 +10380,12 @@
           { \str_set:cn { l_@@_sp #1 _read_arg_str } {##1} },
         read-arg            .initial:n  = ,
         read-arg            .value_required:n = true,
+        sample-arg          .bool_set:c = { l_@@_sp #1 _sample_arg_bool },
+        sample-arg          .initial:n  = false,
+        sample-arg          .value_required:n = true,
+        silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
+        silent-cmd          .initial:n  = false,
+        silent-cmd          .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l_@@_command_name_str { sp #1 }
@@ -10316,10 +10400,13 @@
 %   \cs[no-index]{spPfig}}
 %
 % \begin{macro}[int]{\@@_spfig_sym:}
+%   Reads \cs{l_@@_geo_luaset_poly_sym_str} and typesets the corresponding
+%   symbol: \cs{triangle} for |triangle|, \cs{mdlgwhtsquare} for
+%   |square|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_sym:
   {
-    \str_case:Vn \l_@@_geo_poly_sym_str
+    \str_case:Vn \l_@@_geo_luaset_poly_sym_str
       {
         { triangle } { \triangle      }
         { square   } { \mdlgwhtsquare }
@@ -10340,17 +10427,23 @@
 \cs_new_protected:Nn \@@_spfig_process:nn
   {
     \str_if_eq:eeTF {#1} { Afig }
-      { \tl_set:Nn \l_@@_geo_fig_op_tl { área } }
-      { \tl_set:Nn \l_@@_geo_fig_op_tl { perímetro } }
-    \@@_luafun_geo_fig_parse_and_set:nnnn
-      { \l_@@_geo_fig_op_tl }
-      { \exp_not:n {#2} }
-      { \tl_use:c { l_@@_sp #1 _mode_str } }
-      { \tl_use:c { l_@@_sp #1 _read_arg_str } }
-    \str_if_eq:VnT \l_@@_geo_error_str { true }
+      {
+        \@@_luafun_geo_afig_parse_and_set:nn
+          { \exp_not:n {#2} } { \tl_use:c { l_@@_sp #1 _read_arg_str } }
+      }
+      {
+        \@@_luafun_geo_pfig_parse_and_set:nn
+          { \exp_not:n {#2} } { \tl_use:c { l_@@_sp #1 _read_arg_str } }
+      }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \str_if_eq:eeT { \tl_use:c { l_@@_sp #1 _mode_str } } { mathcat }
+      {
+        \str_set:Nx \l_@@_geo_luaset_intent_str
+          { _ \l_@@_geo_luaset_concept_str :prefix($pts) }
       }
     \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
       {
@@ -10358,19 +10451,19 @@
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \str_if_eq:eeTF {#1} { Afig }
               { \mathcal { A } } { \mathcal { P } }
-            \tl_if_empty:NF \l_@@_geo_visual_tl
+            \tl_if_empty:NF \l_@@_geo_luaset_print_tl
               {
                 \c_math_subscript_token
                   {
                     \bool_if:cT { l_@@_sp #1 _print_sym_bool }
                       { \MathMLintent { :silent } { \@@_spfig_sym: } }
-                    \l_@@_geo_visual_tl
+                    \l_@@_geo_luaset_print_tl
                   }
               }
           }
@@ -10381,19 +10474,19 @@
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_intent_str
+            \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \str_if_eq:eeTF {#1} { Afig }
               { \mathcal { A } } { \mathcal { P } }
-            \tl_if_empty:NF \l_@@_geo_visual_tl
+            \tl_if_empty:NF \l_@@_geo_luaset_print_tl
               {
                 \c_math_subscript_token
                   {
                     \bool_if:cT { l_@@_sp #1 _print_sym_bool }
                       { \MathMLintent { :silent } { \@@_spfig_sym: } }
-                    \MathMLarg { pts } { \l_@@_geo_visual_tl }
+                    \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
                   }
               }
           }
@@ -10404,6 +10497,8 @@
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spfig_exec:nnn}
+%   Sets the keys in the correct keyspace via \cs{keys_set:nn}, then
+%   delegates rendering to \myhlc|\@@_spfig_process:nn|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_exec:nnn
   {
@@ -11952,25 +12047,10 @@ end, {"string", "string"})
 
 -- ============================================================
 -- §12  GEOMETRÍA PLANA
---      Orden: Punto · Recta · Rayo · Segmento · Ángulo · Arco ·
---      Polígono (incluye \spAfig / \spPfig)
---
 --      Comandos cubiertos: \spPoint, \sprecta, \sprayo, \spside,
 --      \spmside, \spangle, \spmangle, \sparc, \spmarc, \spPoly,
 --      \spAfig, \spPfig
---
---      DISEÑO: ninguna función de esta sección recibe una bandera
---      booleana estilo "true"/"false" para interpretar internamente.
---      Todo lo que Lua recibe como "cmd" (o "op") ya viene resuelto
---      por expl3 — vacío cuando corresponde silenciar, con el
---      sufijo "-recto" ya incluido cuando corresponde, etc. Lua solo
---      construye texto a partir de strings ya decididos, igual que
---      el resto de spintent.lua nunca interpreta booleanos de expl3.
 -- ============================================================
-
--- ------------------------------------------------------------
--- Gramática y utilidades compartidas por toda la familia
--- ------------------------------------------------------------
 
 local spintent_geo_cont_sub = C((1 - P"}")^1)
 local spintent_geo_primas   = C(P"'"^1)
@@ -11984,12 +12064,10 @@ local spintent_geo_punto = Ct(
     )
 )
 
--- Separador de coma entre puntos geométricos.
--- IMPORTANTE: no usa spintent_opt_spaces aquí, porque esa función
--- descarta espacios vía "/ ''" (captura de sustitución). Esa captura,
--- usada DENTRO de un Ct externo, no se descarta — se inserta como
--- elemento string "" suelto en la tabla resultante, duplicando el
--- conteo real de puntos. Se usa un patrón puro sin captura.
+-- No usa spintent_opt_spaces: su "/ ''" (captura de sustitución),
+-- usada dentro de un Ct externo, no se descarta — se inserta como
+-- elemento string "" suelto en la tabla, duplicando el conteo real
+-- de puntos.
 local spintent_geo_ws     = S" \t\r\n"
 local spintent_geo_ws_opt = spintent_geo_ws^0
 local spintent_geo_sep    = spintent_geo_ws_opt * P"," * spintent_geo_ws_opt
@@ -11997,12 +12075,11 @@ local spintent_geo_sep    = spintent_geo_ws_opt * P"," * spintent_geo_ws_opt
 local spintent_geo_grammar =
     Ct( spintent_geo_punto * (spintent_geo_sep * spintent_geo_punto)^0 * P(-1) )
 
--- Gramática sin anclaje final, usada donde se necesita re-chequear
--- cardinalidad exacta (\spPoly, \spAfig, \spPfig)
+-- Sin anclaje final: se re-chequea la cardinalidad exacta después
+-- (\spPoly, \spAfig, \spPfig).
 local spintent_geo_poly_grammar =
     Ct( spintent_geo_punto * (spintent_geo_sep * spintent_geo_punto)^0 )
 
--- Gramática para nombre propio de recta (mayúsculas Y minúsculas)
 local spintent_geo_nombre_recta = Ct(
     C(R"AZ" + R"az") *
     (
@@ -12012,7 +12089,6 @@ local spintent_geo_nombre_recta = Ct(
     )
 )
 
--- Tabla de conversión de subíndices numéricos a texto
 local spintent_geo_num_a_texto = {
     ["0"] = "cero",  ["1"] = "uno",   ["2"] = "dos",
     ["3"] = "tres",  ["4"] = "cuatro",["5"] = "cinco",
@@ -12020,20 +12096,16 @@ local spintent_geo_num_a_texto = {
     ["9"] = "nueve",
 }
 
--- Prefijos para primas
 local spintent_geo_prima_prefijo = {
     "prima", "doble-prima", "triple-prima", "cuádruple-prima"
 }
 
--- Normaliza cualquier forma de prima (Unicode simple/doble/triple,
--- comandos ^{\prime}, ^{\prime\prime}, ^{\prime\prime\prime},
--- ^{\dprime}, ^{\trprime}) a comillas rectas ASCII antes del parseo,
--- de modo que spintent_geo_primas (que solo reconoce "'") las capture
--- sin necesidad de ampliar la gramática LPeg.
+-- Normaliza Unicode (′″‴) y comandos (^{\prime}, ^{\dprime}, ...) a
+-- comillas rectas, único formato que spintent_geo_primas reconoce.
 local function spintent_geo_normalize_primes(str)
-    str = s_gsub(str, "‴", "'''")   -- U+2034 triple prime
-    str = s_gsub(str, "″", "''")    -- U+2033 double prime
-    str = s_gsub(str, "′", "'")     -- U+2032 prime
+    str = s_gsub(str, "‴", "'''")
+    str = s_gsub(str, "″", "''")
+    str = s_gsub(str, "′", "'")
 
     str = s_gsub(str, "%^%{([^%}]*)%}", function(inner)
         if inner == "\\prime" then return "'" end
@@ -12047,13 +12119,9 @@ local function spintent_geo_normalize_primes(str)
     return str
 end
 
--- Constructor de intent literal.
--- "cmd" ya viene resuelto por expl3: string vacío significa que el
--- nombre del concepto debe omitirse (equivalente a lo que antes
--- controlaba "silent-cmd" dentro de Lua). Cuando cmd == "", el
--- resultado se envuelve igualmente en guiones bajos ("_...-") para
--- que MathCAT lo trate siempre como literal por default-text y nunca
--- caiga en sus reglas normales de mayúsculas para <mi> sueltos.
+-- cmd == "" (silent-cmd en modo school) envuelve el resultado en
+-- guiones bajos ("_...-") para que MathCAT lo trate como literal por
+-- default-text y no aplique sus reglas de mayúsculas a un <mi> suelto.
 local function spintent_geo_build_intent(cmd, puntos)
     local partes = {}
     if cmd ~= "" then
@@ -12077,12 +12145,10 @@ local function spintent_geo_build_intent(cmd, puntos)
     return resultado
 end
 
--- Constructor de intent para nombre propio de recta
 local function spintent_geo_build_intent_nombre(cmd, nombre)
     return spintent_geo_build_intent(cmd, { nombre })
 end
 
--- Constructor del visual para \overline/\overrightarrow/\overleftrightarrow/\widearc
 local function spintent_geo_build_visual(puntos)
     local partes = {}
     for _, pt in ipairs(puntos) do
@@ -12100,7 +12166,6 @@ local function spintent_geo_build_visual(puntos)
     return t_concat(partes)
 end
 
--- Constructor del visual para nombre propio de recta
 local function spintent_geo_build_visual_nombre(nombre)
     local letra, mod, tipo = nombre[1], nombre[2], nombre[3]
     if tipo == "sub" then
@@ -12116,54 +12181,34 @@ end
 
 -- ------------------------------------------------------------
 -- §12.1  PUNTO — \spPoint
---
--- cmd:  ya resuelto por expl3 — "punto" o "" (silent-cmd=true en
---       modo school), o "punto" siempre en modo mathcat (el sufijo
---       ":silent" se añade en expl3 tras recibir el intent, no aquí).
--- csv:  el punto, p.ej. "A", "A_{1}", "A'"
--- mode: "school" | "mathcat"
 -- ------------------------------------------------------------
 local spintent_geo_single_point_grammar = spintent_geo_punto * P(-1)
 
 register_tex_cmd("luafun_geo_point_parse_and_set",
-    function(cmd, csv, mode)
+    function(cmd, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
     local punto = spintent_geo_single_point_grammar:match(csv)
     if not punto then
-        token_set_macro("l__spintent_geo_error_str",  "true")
-        token_set_macro("l__spintent_geo_intent_str", "")
-        token_set_macro("l__spintent_geo_visual_tl",  "")
+        token_set_macro("l__spintent_geo_luaset_error_str",  "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str", "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",   "")
         return
     end
 
-    token_set_macro("l__spintent_geo_error_str", "false")
-
-    if mode == "school" then
-        token_set_macro("l__spintent_geo_intent_str",
-                        spintent_geo_build_intent_nombre(cmd, punto))
-    else
-        token_set_macro("l__spintent_geo_intent_str",
-                        "_" .. cmd .. ":prefix($pt)")
-    end
-    token_set_macro("l__spintent_geo_visual_tl",
+    token_set_macro("l__spintent_geo_luaset_error_str", "false")
+    token_set_macro("l__spintent_geo_luaset_intent_str",
+                    spintent_geo_build_intent_nombre(cmd, punto))
+    token_set_macro("l__spintent_geo_luaset_print_tl",
                     spintent_geo_build_visual_nombre(punto))
-end, { "string", "string", "string" })
+end, { "string", "string" })
 
 -- ------------------------------------------------------------
 -- §12.2  RECTA, RAYO, SEGMENTO Y ARCO
 --        \sprecta, \sprayo, \spside, \spmside, \sparc, \spmarc
---
--- Los seis comparten la misma función Lua genérica de dos puntos.
--- "cmd" ya viene resuelto por expl3: el nombre real del concepto
--- ("recta", "rayo", "lado", "segmento", "trazo", "arco",
--- "medida-del-lado", ...), o "" cuando corresponde silenciar en modo
--- school. En modo mathcat, "cmd" siempre es el nombre real; el
--- sufijo ":silent" (si corresponde) se añade en expl3 después de
--- recibir el intent de vuelta, no aquí.
 -- ------------------------------------------------------------
-register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv, mode)
+register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
@@ -12172,51 +12217,38 @@ register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv, mode)
     if tiene_coma then
         local puntos = spintent_geo_grammar:match(csv)
         if not puntos or #puntos == 0 then
-            token_set_macro("l__spintent_geo_error_str",     "true")
-            token_set_macro("l__spintent_geo_intent_str",    "")
-            token_set_macro("l__spintent_geo_visual_tl",     "")
-            token_set_macro("l__spintent_geo_is_nombre_str", "false")
+            token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+            token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+            token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+            token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
             return
         end
-        token_set_macro("l__spintent_geo_error_str",     "false")
-        token_set_macro("l__spintent_geo_is_nombre_str", "false")
-        if mode == "school" then
-            token_set_macro("l__spintent_geo_intent_str",
-                            spintent_geo_build_intent(cmd, puntos))
-        else
-            token_set_macro("l__spintent_geo_intent_str",
-                            "_" .. cmd .. ":prefix($pts)")
-        end
-        token_set_macro("l__spintent_geo_visual_tl",
+        token_set_macro("l__spintent_geo_luaset_error_str",    "false")
+        token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+        token_set_macro("l__spintent_geo_luaset_intent_str",
+                        spintent_geo_build_intent(cmd, puntos))
+        token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
     else
         local nombre = spintent_geo_nombre_recta:match(csv)
         if not nombre then
-            token_set_macro("l__spintent_geo_error_str",     "true")
-            token_set_macro("l__spintent_geo_intent_str",    "")
-            token_set_macro("l__spintent_geo_visual_tl",     "")
-            token_set_macro("l__spintent_geo_is_nombre_str", "false")
+            token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+            token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+            token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+            token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
             return
         end
-        token_set_macro("l__spintent_geo_error_str",     "false")
-        token_set_macro("l__spintent_geo_is_nombre_str", "true")
-        if mode == "school" then
-            token_set_macro("l__spintent_geo_intent_str",
-                            spintent_geo_build_intent_nombre(cmd, nombre))
-        else
-            token_set_macro("l__spintent_geo_intent_str",
-                            "_" .. cmd .. ":prefix($pts)")
-        end
-        token_set_macro("l__spintent_geo_visual_tl",
+        token_set_macro("l__spintent_geo_luaset_error_str",    "false")
+        token_set_macro("l__spintent_geo_luaset_is_name_str",  "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",
+                        spintent_geo_build_intent_nombre(cmd, nombre))
+        token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
     end
-end, { "string", "string", "string" })
+end, { "string", "string" })
 
 -- ------------------------------------------------------------
 -- §12.3  ÁNGULO — \spangle, \spmangle
---
--- "cmd" ya viene resuelto por expl3 — incluyendo el sufijo "-recto"
--- si corresponde, y vacío si corresponde silenciar en modo school.
 -- ------------------------------------------------------------
 local spintent_geo_angulo_un_punto = spintent_geo_punto * P(-1)
 
@@ -12234,20 +12266,9 @@ local function spintent_geo_build_intent_angulo(cmd, csv)
     else
         local un_punto = spintent_geo_angulo_un_punto:match(csv)
         if un_punto then
-            local letra  = un_punto[1]
-            local mod    = un_punto[2]
-            local tipo   = un_punto[3]
-            local partes_en = { "en" }
-            partes_en[#partes_en + 1] = letra
-            if tipo == "sub" then
-                partes_en[#partes_en + 1] = "sub"
-                partes_en[#partes_en + 1] = spintent_geo_num_a_texto[mod] or mod
-            elseif tipo == "prima" then
-                local n = #mod
-                partes_en[#partes_en + 1] =
-                    spintent_geo_prima_prefijo[n] or (n .. "-prima")
-            end
-            local sufijo = t_concat(partes_en, "-")
+            local intent_base = spintent_geo_build_intent_nombre("", un_punto)
+            local nucleo = intent_base:match("^_(.-)-$") or intent_base
+            local sufijo = "en-" .. nucleo
             local intent
             if cmd == "" then
                 intent = "_" .. sufijo .. "-"
@@ -12259,8 +12280,7 @@ local function spintent_geo_build_intent_angulo(cmd, csv)
         else
             local nombre = spintent_trim(csv)
             if nombre == "" then return nil, nil, nil end
-            local nombre_intent = s_gsub(nombre, "[\\{}%s]", "-")
-            nombre_intent = s_gsub(nombre_intent, "%-%-+", "-")
+            local nombre_intent = spintent_sanitize_for_screen_reader(nombre)
             local intent
             if cmd == "" then
                 intent = "_" .. nombre_intent .. "-"
@@ -12273,42 +12293,24 @@ local function spintent_geo_build_intent_angulo(cmd, csv)
 end
 
 register_tex_cmd("luafun_geo_angulo_parse_and_set",
-    function(cmd, csv, mode)
+    function(cmd, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
-    if mode == "school" then
-        local intent, visual, caso = spintent_geo_build_intent_angulo(cmd, csv)
-        if not intent then
-            token_set_macro("l__spintent_geo_error_str",       "true")
-            token_set_macro("l__spintent_geo_intent_str",      "")
-            token_set_macro("l__spintent_geo_visual_tl",       "")
-            token_set_macro("l__spintent_geo_angulo_caso_str", "")
-            return
-        end
-        token_set_macro("l__spintent_geo_error_str", "false")
-        token_set_macro("l__spintent_geo_angulo_caso_str", caso)
-        token_set_macro("l__spintent_geo_intent_str", intent)
-        token_set_macro("l__spintent_geo_visual_tl",  visual)
-    else
-        -- En modo mathcat solo necesitamos el visual y el caso;
-        -- el intent de función se construye directamente aquí con
-        -- el cmd ya resuelto (siempre el nombre real en este modo).
-        local _, visual, caso = spintent_geo_build_intent_angulo(cmd, csv)
-        if not visual then
-            token_set_macro("l__spintent_geo_error_str",       "true")
-            token_set_macro("l__spintent_geo_intent_str",      "")
-            token_set_macro("l__spintent_geo_visual_tl",       "")
-            token_set_macro("l__spintent_geo_angulo_caso_str", "")
-            return
-        end
-        token_set_macro("l__spintent_geo_error_str", "false")
-        token_set_macro("l__spintent_geo_angulo_caso_str", caso)
-        token_set_macro("l__spintent_geo_intent_str",
-                        "_" .. cmd .. ":prefix($pts)")
-        token_set_macro("l__spintent_geo_visual_tl",  visual)
+    local intent, visual, caso = spintent_geo_build_intent_angulo(cmd, csv)
+    if not visual then
+        token_set_macro("l__spintent_geo_luaset_error_str",       "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",      "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",        "")
+        token_set_macro("l__spintent_geo_luaset_angulo_case_str", "")
+        return
     end
-end, { "string", "string", "string" })
+
+    token_set_macro("l__spintent_geo_luaset_error_str", "false")
+    token_set_macro("l__spintent_geo_luaset_angulo_case_str", caso)
+    token_set_macro("l__spintent_geo_luaset_intent_str", intent)
+    token_set_macro("l__spintent_geo_luaset_print_tl", visual)
+end, { "string", "string" })
 
 -- ------------------------------------------------------------
 -- §12.4  POLÍGONO — \spPoly, \spAfig, \spPfig
@@ -12323,27 +12325,27 @@ local spintent_geo_poly_npts = {
 }
 
 register_tex_cmd("luafun_geo_poly_parse_and_set",
-    function(csv, mode)
+    function(csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
     local tiene_coma = s_match(csv, ",")
     if not tiene_coma then
-        token_set_macro("l__spintent_geo_error_str",      "true")
-        token_set_macro("l__spintent_geo_intent_str",     "")
-        token_set_macro("l__spintent_geo_intent_pts_str", "")
-        token_set_macro("l__spintent_geo_visual_tl",      "")
-        token_set_macro("l__spintent_geo_poly_sym_str",   "")
+        token_set_macro("l__spintent_geo_luaset_error_str",      "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
+        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",       "")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
         return
     end
 
     local puntos = spintent_geo_poly_grammar:match(csv)
     if not puntos or #puntos < 3 then
-        token_set_macro("l__spintent_geo_error_str",      "true")
-        token_set_macro("l__spintent_geo_intent_str",     "")
-        token_set_macro("l__spintent_geo_intent_pts_str", "")
-        token_set_macro("l__spintent_geo_visual_tl",      "")
-        token_set_macro("l__spintent_geo_poly_sym_str",   "")
+        token_set_macro("l__spintent_geo_luaset_error_str",      "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
+        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",       "")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
         return
     end
 
@@ -12351,59 +12353,49 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     local cmd_base = info and info.cmd or "polígono"
     local sym      = info and info.sym or ""
 
-    token_set_macro("l__spintent_geo_error_str",      "false")
-    token_set_macro("l__spintent_geo_poly_sym_str",   sym)
-    token_set_macro("l__spintent_geo_intent_pts_str",
-                    spintent_geo_build_intent("", puntos))
+    token_set_macro("l__spintent_geo_luaset_error_str",      "false")
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str",   sym)
+    token_set_macro("l__spintent_geo_luaset_concept_str",    cmd_base)
+    token_set_macro("l__spintent_geo_luaset_intent_pts_str", spintent_geo_build_intent("", puntos))
+    token_set_macro("l__spintent_geo_luaset_intent_str", spintent_geo_build_intent(cmd_base, puntos))
+    token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
+end, { "string" })
 
-    if mode == "school" then
-        token_set_macro("l__spintent_geo_intent_str",
-                        spintent_geo_build_intent(cmd_base, puntos))
-    else
-        token_set_macro("l__spintent_geo_intent_str",
-                        "_" .. cmd_base .. ":prefix($pts)")
-    end
-    token_set_macro("l__spintent_geo_visual_tl",
-                    spintent_geo_build_visual(puntos))
-end, { "string", "string" })
-
--- ------------------------------------------------------------
--- \spAfig / \spPfig
---
--- El símbolo de figura (poly_sym_str) se devuelve SIEMPRE con su
--- valor real, sin ninguna bandera de silencio — expl3 decide, tras
--- recibir la respuesta, si lo envuelve en \MathMLintent{:silent} o
--- lo omite del todo, exactamente igual que ya hace \spPoly.
--- ------------------------------------------------------------
-register_tex_cmd("luafun_geo_fig_parse_and_set",
-    function(op, csv, mode, read_arg)
+-- l__spintent_geo_luaset_concept_str lleva solo el nombre del
+-- concepto ("área-del-triángulo", sin vértices) — a diferencia del
+-- resto de la familia, aquí solo se conoce tras el parseo (por la
+-- cardinalidad), no antes.
+local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
     read_arg = spintent_trim(read_arg)
 
     if csv == "" then
-        token_set_macro("l__spintent_geo_error_str",    "false")
-        token_set_macro("l__spintent_geo_poly_sym_str", "")
-        token_set_macro("l__spintent_geo_intent_str",   op)
-        token_set_macro("l__spintent_geo_visual_tl",    "")
+        token_set_macro("l__spintent_geo_luaset_error_str",    "false")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str", "")
+        token_set_macro("l__spintent_geo_luaset_intent_str",   op)
+        token_set_macro("l__spintent_geo_luaset_concept_str",  op)
+        token_set_macro("l__spintent_geo_luaset_print_tl",     "")
         return
     end
 
     local tiene_coma = s_match(csv, ",")
     if not tiene_coma then
-        token_set_macro("l__spintent_geo_error_str",    "true")
-        token_set_macro("l__spintent_geo_intent_str",   "")
-        token_set_macro("l__spintent_geo_visual_tl",    "")
-        token_set_macro("l__spintent_geo_poly_sym_str", "")
+        token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+        token_set_macro("l__spintent_geo_luaset_concept_str",  "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str", "")
         return
     end
 
     local puntos = spintent_geo_poly_grammar:match(csv)
     if not puntos or #puntos < 3 then
-        token_set_macro("l__spintent_geo_error_str",    "true")
-        token_set_macro("l__spintent_geo_intent_str",   "")
-        token_set_macro("l__spintent_geo_visual_tl",    "")
-        token_set_macro("l__spintent_geo_poly_sym_str", "")
+        token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+        token_set_macro("l__spintent_geo_luaset_concept_str",  "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str", "")
         return
     end
 
@@ -12412,35 +12404,26 @@ register_tex_cmd("luafun_geo_fig_parse_and_set",
                     or (info and info.cmd)
                     or "polígono"
     local sym     = (info and info.sym) or ""
+    local concepto = op .. "-del-" .. cmd_fig
 
-    token_set_macro("l__spintent_geo_error_str",    "false")
-    token_set_macro("l__spintent_geo_poly_sym_str", sym)
-    token_set_macro("l__spintent_geo_visual_tl",
-                    spintent_geo_build_visual(puntos))
+    token_set_macro("l__spintent_geo_luaset_error_str",    "false")
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str", sym)
+    token_set_macro("l__spintent_geo_luaset_concept_str",  concepto)
+    token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
 
-    local conector = "del"
-    local partes = { op, conector, cmd_fig }
-    for _, pt in ipairs(puntos) do
-        local letra, mod, tipo = pt[1], pt[2], pt[3]
-        partes[#partes + 1] = letra
-        if tipo == "sub" then
-            partes[#partes + 1] = "sub"
-            partes[#partes + 1] = spintent_geo_num_a_texto[mod] or mod
-        elseif tipo == "prima" then
-            local n = #mod
-            partes[#partes + 1] =
-                spintent_geo_prima_prefijo[n] or (n .. "-prima")
-        end
-    end
+    local cuerpo = spintent_geo_build_intent("", puntos):match("^_(.-)-$")
+    token_set_macro("l__spintent_geo_luaset_intent_str", concepto .. "-" .. cuerpo)
+end
 
-    if mode == "school" then
-        token_set_macro("l__spintent_geo_intent_str", t_concat(partes, "-"))
-    else
-        token_set_macro("l__spintent_geo_intent_str",
-                        "_" .. op .. "-" .. conector .. "-" .. cmd_fig ..
-                        ":prefix($pts)")
-    end
-end, { "string", "string", "string", "string" })
+register_tex_cmd("luafun_geo_afig_parse_and_set",
+    function(csv, read_arg)
+    spintent_geo_fig_parse_and_set("área", csv, read_arg)
+end, { "string", "string" })
+
+register_tex_cmd("luafun_geo_pfig_parse_and_set",
+    function(csv, read_arg)
+    spintent_geo_fig_parse_and_set("perímetro", csv, read_arg)
+end, { "string", "string" })
 % \iffalse
 %</spintentlua>
 % \fi
