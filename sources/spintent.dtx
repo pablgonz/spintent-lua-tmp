@@ -9936,20 +9936,32 @@
 % \subsubsection{Internal functions for \cs[no-index]{sparc} and
 %   \cs[no-index]{spmarc}}
 %
-% \begin{macro}[int]{\@@_sparc_deco:n}
-%   Applies the arc decorator to its argument: \cs{widearc} when it
-%   exists in the current document — provided, for example, by
-%   \mypkg{yhmath} or \mypkg{MnSymbol} — otherwise
-%   \cs{Umathaccent}|~0~0~"23DC|, which renders the extensible U+23DC
-%   glyph from the currently loaded math font. The check is performed
-%   at render time via \cs{cs_if_exist:NTF}, so |\widearc| is never
-%   defined globally by \mypkg*[no-index]{spintent}.
+% \begin{macro}[int]{\@@_sparc_wide_arc:n}
+%   The function \myhlc|\@@_sparc_wide_arc:n| acts as a fallback when the
+%   mathematical font used in the document does not provide the command
+%   \myhlc|\widearc|. The definition of this function is a direct adaptation of a
+%   response given by Clea F. Rees (\texttt{@cfr}) to a query in the chat room of
+%   \href{https://chat.stackexchange.com/transcript/message/69167926#69167926}{TeX-SX}.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_sparc_deco:n
+\cs_new_protected_nopar:Nn \@@_sparc_wide_arc:n
+  {
+    \Umathaccent 7 \symoperators "023DC \scan_stop: {#1}
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_sparc_print_arc:n}
+%   The function \cs{\@@_sparc_print_arc:n} applies the command
+%   \myhlc|\widearc| to the argument passed to \myhlc|\sparc| or
+%   \myhlc|\spmarc|. If the mathematical font set in the document does not
+%   provide the command \myhlc|\widearc|, we will use the built-in function
+%   \myhlc|\@@_sparc_wide_arc:n|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_sparc_print_arc:n
   {
     \cs_if_exist:NTF \widearc
       { \widearc {#1} }
-      { \Umathaccent 0 0 "23DC {#1} }
+      { \@@_sparc_wide_arc:n {#1} }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -9960,7 +9972,7 @@
 %   names |arco|/|medida-del-arco|. When |#1| is |marc|,
 %   |\operatorname{m}| is always typeset, wrapped in
 %   \cs{MathMLintent}\marg{:silent}, before
-%   \myhlc|\@@_sparc_deco:n|.
+%   \myhlc|\@@_sparc_print_arc:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sparc_process:nn
   {
@@ -10001,7 +10013,7 @@
             \c_@@_invisible_sep_tl
             \str_if_eq:eeT {#1} { marc }
               { \MathMLintent { :silent } { \operatorname { m } } }
-            \@@_sparc_deco:n { \l_@@_geo_luaset_print_tl }
+            \@@_sparc_print_arc:n { \l_@@_geo_luaset_print_tl }
           }
         \@@_invisible_sep:
       }
@@ -10016,7 +10028,7 @@
             \c_@@_invisible_sep_tl
             \str_if_eq:eeT {#1} { marc }
               { \MathMLintent { :silent } { \operatorname { m } } }
-            \@@_sparc_deco:n
+            \@@_sparc_print_arc:n
               { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
           }
         \@@_invisible_sep:
@@ -10289,20 +10301,17 @@
 %   \cs[no-index]{spPfig}}
 %
 % \begin{variable}[int]{
-%   \l_@@_geo_sample_arg_print_tl, \l_@@_geo_sample_arg_intent_str,
 %   \l_@@_spAfig_mode_str, \l_@@_spPfig_mode_str, \l_@@_spAfig_prefix_tl,
-%   \l_@@_spPfig_prefix_tl, \l_@@_spAfig_read_arg_str, \l_@@_spPfig_read_arg_str,}
+%   \l_@@_spPfig_prefix_tl, \l_@@_spAfig_read_arg_tl, \l_@@_spPfig_read_arg_tl,}
 %   The |_read_arg_str| variable stores the figure-name override set
 %   by \mykey[spAfig]{read-arg}, independent of
 %   \mykey[spAfig]{print-sym}.
 %    \begin{macrocode}
-\tl_new:N  \l_@@_geo_sample_arg_print_tl
-\str_new:N \l_@@_geo_sample_arg_intent_str
 \clist_map_inline:nn { Afig , Pfig }
   {
     \str_new:c { l_@@_sp #1 _mode_str     }
     \tl_new:c  { l_@@_sp #1 _prefix_tl    }
-    \str_new:c { l_@@_sp #1 _read_arg_str }
+    \tl_new:c  { l_@@_sp #1 _read_arg_tl }
   }
 %    \end{macrocode}
 % \end{variable}
@@ -10326,26 +10335,11 @@
         least~three~uppercase~letters~with~optional~subscripts~
         (\_{...})~or~primes~(').\\
       }
-    \msg_new:nnnn { spintent } { sp #1 -sample-arg-needs-arg }
-      {
-        #1~requires~a~parenthesized~argument~when~sample-arg=true.
-      }
-      {
-        The~{argument}~cannot~be~empty~in~sample~mode.
-      }
-    \msg_new:nnnn { spintent } { sp #1 -sample-arg-needs-read-arg }
-      {
-         #1~requires~read-arg~to~be~set~when~sample-arg=true.
-      }
-      {
-         The~key~read-arg~is~mandatory~in~sample~mode.
-      }
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsubsection{Definition of keys for \cs[no-index]{spAfig} and
-%   \cs[no-index]{spPfig}}
+% \subsubsection{Definition of keys for \cs[no-index]{spAfig} and \cs[no-index]{spPfig}}
 %
 % \begin{macro}[int]{read-cmd, prefix, print-sym, read-arg, unknown}
 %   The keyspaces |spintent/spAfig| and |spintent/spPfig| are both
@@ -10377,12 +10371,9 @@
         print-sym           .initial:n  = true,
         print-sym           .value_required:n = true,
         read-arg            .code:n =
-          { \str_set:cn { l_@@_sp #1 _read_arg_str } {##1} },
+          { \@@_sanitize_affix:cn { l_@@_sp #1 _read_arg_tl } {##1} },
         read-arg            .initial:n  = ,
         read-arg            .value_required:n = true,
-        sample-arg          .bool_set:c = { l_@@_sp #1 _sample_arg_bool },
-        sample-arg          .initial:n  = false,
-        sample-arg          .value_required:n = true,
         silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
         silent-cmd          .initial:n  = false,
         silent-cmd          .value_required:n = true,
@@ -10429,23 +10420,23 @@
     \str_if_eq:eeTF {#1} { Afig }
       {
         \@@_luafun_geo_afig_parse_and_set:nn
-          { \exp_not:n {#2} } { \tl_use:c { l_@@_sp #1 _read_arg_str } }
+          { \exp_not:n {#2} } { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
       }
       {
         \@@_luafun_geo_pfig_parse_and_set:nn
-          { \exp_not:n {#2} } { \tl_use:c { l_@@_sp #1 _read_arg_str } }
+          { \exp_not:n {#2} } { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
       }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \str_if_eq:eeT { \tl_use:c { l_@@_sp #1 _mode_str } } { mathcat }
+    \str_if_eq:eeT { \str_use:c { l_@@_sp #1 _mode_str } } { mathcat }
       {
-        \str_set:Nx \l_@@_geo_luaset_intent_str
+        \str_set:Ne \l_@@_geo_luaset_intent_str
           { _ \l_@@_geo_luaset_concept_str :prefix($pts) }
       }
-    \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
+    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
         \MathMLintent
           {
