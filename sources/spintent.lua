@@ -1491,25 +1491,10 @@ end, {"string", "string"})
 
 -- ============================================================
 -- §12  GEOMETRÍA PLANA
---      Orden: Punto · Recta · Rayo · Segmento · Ángulo · Arco ·
---      Polígono (incluye \spAfig / \spPfig)
---
 --      Comandos cubiertos: \spPoint, \sprecta, \sprayo, \spside,
 --      \spmside, \spangle, \spmangle, \sparc, \spmarc, \spPoly,
 --      \spAfig, \spPfig
---
---      DISEÑO: ninguna función de esta sección recibe una bandera
---      booleana estilo "true"/"false" para interpretar internamente.
---      Todo lo que Lua recibe como "cmd" (o "op") ya viene resuelto
---      por expl3 — vacío cuando corresponde silenciar, con el
---      sufijo "-recto" ya incluido cuando corresponde, etc. Lua solo
---      construye texto a partir de strings ya decididos, igual que
---      el resto de spintent.lua nunca interpreta booleanos de expl3.
 -- ============================================================
-
--- ------------------------------------------------------------
--- Gramática y utilidades compartidas por toda la familia
--- ------------------------------------------------------------
 
 local spintent_geo_cont_sub = C((1 - P"}")^1)
 local spintent_geo_primas   = C(P"'"^1)
@@ -1523,12 +1508,10 @@ local spintent_geo_punto = Ct(
     )
 )
 
--- Separador de coma entre puntos geométricos.
--- IMPORTANTE: no usa spintent_opt_spaces aquí, porque esa función
--- descarta espacios vía "/ ''" (captura de sustitución). Esa captura,
--- usada DENTRO de un Ct externo, no se descarta — se inserta como
--- elemento string "" suelto en la tabla resultante, duplicando el
--- conteo real de puntos. Se usa un patrón puro sin captura.
+-- No usa spintent_opt_spaces: su "/ ''" (captura de sustitución),
+-- usada dentro de un Ct externo, no se descarta — se inserta como
+-- elemento string "" suelto en la tabla, duplicando el conteo real
+-- de puntos.
 local spintent_geo_ws     = S" \t\r\n"
 local spintent_geo_ws_opt = spintent_geo_ws^0
 local spintent_geo_sep    = spintent_geo_ws_opt * P"," * spintent_geo_ws_opt
@@ -1536,12 +1519,11 @@ local spintent_geo_sep    = spintent_geo_ws_opt * P"," * spintent_geo_ws_opt
 local spintent_geo_grammar =
     Ct( spintent_geo_punto * (spintent_geo_sep * spintent_geo_punto)^0 * P(-1) )
 
--- Gramática sin anclaje final, usada donde se necesita re-chequear
--- cardinalidad exacta (\spPoly, \spAfig, \spPfig)
+-- Sin anclaje final: se re-chequea la cardinalidad exacta después
+-- (\spPoly, \spAfig, \spPfig).
 local spintent_geo_poly_grammar =
     Ct( spintent_geo_punto * (spintent_geo_sep * spintent_geo_punto)^0 )
 
--- Gramática para nombre propio de recta (mayúsculas Y minúsculas)
 local spintent_geo_nombre_recta = Ct(
     C(R"AZ" + R"az") *
     (
@@ -1551,7 +1533,6 @@ local spintent_geo_nombre_recta = Ct(
     )
 )
 
--- Tabla de conversión de subíndices numéricos a texto
 local spintent_geo_num_a_texto = {
     ["0"] = "cero",  ["1"] = "uno",   ["2"] = "dos",
     ["3"] = "tres",  ["4"] = "cuatro",["5"] = "cinco",
@@ -1559,20 +1540,16 @@ local spintent_geo_num_a_texto = {
     ["9"] = "nueve",
 }
 
--- Prefijos para primas
 local spintent_geo_prima_prefijo = {
     "prima", "doble-prima", "triple-prima", "cuádruple-prima"
 }
 
--- Normaliza cualquier forma de prima (Unicode simple/doble/triple,
--- comandos ^{\prime}, ^{\prime\prime}, ^{\prime\prime\prime},
--- ^{\dprime}, ^{\trprime}) a comillas rectas ASCII antes del parseo,
--- de modo que spintent_geo_primas (que solo reconoce "'") las capture
--- sin necesidad de ampliar la gramática LPeg.
+-- Normaliza Unicode (′″‴) y comandos (^{\prime}, ^{\dprime}, ...) a
+-- comillas rectas, único formato que spintent_geo_primas reconoce.
 local function spintent_geo_normalize_primes(str)
-    str = s_gsub(str, "‴", "'''")   -- U+2034 triple prime
-    str = s_gsub(str, "″", "''")    -- U+2033 double prime
-    str = s_gsub(str, "′", "'")     -- U+2032 prime
+    str = s_gsub(str, "‴", "'''")
+    str = s_gsub(str, "″", "''")
+    str = s_gsub(str, "′", "'")
 
     str = s_gsub(str, "%^%{([^%}]*)%}", function(inner)
         if inner == "\\prime" then return "'" end
@@ -1586,13 +1563,9 @@ local function spintent_geo_normalize_primes(str)
     return str
 end
 
--- Constructor de intent literal.
--- "cmd" ya viene resuelto por expl3: string vacío significa que el
--- nombre del concepto debe omitirse (equivalente a lo que antes
--- controlaba "silent-cmd" dentro de Lua). Cuando cmd == "", el
--- resultado se envuelve igualmente en guiones bajos ("_...-") para
--- que MathCAT lo trate siempre como literal por default-text y nunca
--- caiga en sus reglas normales de mayúsculas para <mi> sueltos.
+-- cmd == "" (silent-cmd en modo school) envuelve el resultado en
+-- guiones bajos ("_...-") para que MathCAT lo trate como literal por
+-- default-text y no aplique sus reglas de mayúsculas a un <mi> suelto.
 local function spintent_geo_build_intent(cmd, puntos)
     local partes = {}
     if cmd ~= "" then
@@ -1616,12 +1589,10 @@ local function spintent_geo_build_intent(cmd, puntos)
     return resultado
 end
 
--- Constructor de intent para nombre propio de recta
 local function spintent_geo_build_intent_nombre(cmd, nombre)
     return spintent_geo_build_intent(cmd, { nombre })
 end
 
--- Constructor del visual para \overline/\overrightarrow/\overleftrightarrow/\widearc
 local function spintent_geo_build_visual(puntos)
     local partes = {}
     for _, pt in ipairs(puntos) do
@@ -1639,7 +1610,6 @@ local function spintent_geo_build_visual(puntos)
     return t_concat(partes)
 end
 
--- Constructor del visual para nombre propio de recta
 local function spintent_geo_build_visual_nombre(nombre)
     local letra, mod, tipo = nombre[1], nombre[2], nombre[3]
     if tipo == "sub" then
@@ -1655,54 +1625,34 @@ end
 
 -- ------------------------------------------------------------
 -- §12.1  PUNTO — \spPoint
---
--- cmd:  ya resuelto por expl3 — "punto" o "" (silent-cmd=true en
---       modo school), o "punto" siempre en modo mathcat (el sufijo
---       ":silent" se añade en expl3 tras recibir el intent, no aquí).
--- csv:  el punto, p.ej. "A", "A_{1}", "A'"
--- mode: "school" | "mathcat"
 -- ------------------------------------------------------------
 local spintent_geo_single_point_grammar = spintent_geo_punto * P(-1)
 
 register_tex_cmd("luafun_geo_point_parse_and_set",
-    function(cmd, csv, mode)
+    function(cmd, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
     local punto = spintent_geo_single_point_grammar:match(csv)
     if not punto then
-        token_set_macro("l__spintent_geo_error_str",  "true")
-        token_set_macro("l__spintent_geo_intent_str", "")
-        token_set_macro("l__spintent_geo_visual_tl",  "")
+        token_set_macro("l__spintent_geo_luaset_error_str",  "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str", "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",   "")
         return
     end
 
-    token_set_macro("l__spintent_geo_error_str", "false")
-
-    if mode == "school" then
-        token_set_macro("l__spintent_geo_intent_str",
-                        spintent_geo_build_intent_nombre(cmd, punto))
-    else
-        token_set_macro("l__spintent_geo_intent_str",
-                        "_" .. cmd .. ":prefix($pt)")
-    end
-    token_set_macro("l__spintent_geo_visual_tl",
+    token_set_macro("l__spintent_geo_luaset_error_str", "false")
+    token_set_macro("l__spintent_geo_luaset_intent_str",
+                    spintent_geo_build_intent_nombre(cmd, punto))
+    token_set_macro("l__spintent_geo_luaset_print_tl",
                     spintent_geo_build_visual_nombre(punto))
-end, { "string", "string", "string" })
+end, { "string", "string" })
 
 -- ------------------------------------------------------------
 -- §12.2  RECTA, RAYO, SEGMENTO Y ARCO
 --        \sprecta, \sprayo, \spside, \spmside, \sparc, \spmarc
---
--- Los seis comparten la misma función Lua genérica de dos puntos.
--- "cmd" ya viene resuelto por expl3: el nombre real del concepto
--- ("recta", "rayo", "lado", "segmento", "trazo", "arco",
--- "medida-del-lado", ...), o "" cuando corresponde silenciar en modo
--- school. En modo mathcat, "cmd" siempre es el nombre real; el
--- sufijo ":silent" (si corresponde) se añade en expl3 después de
--- recibir el intent de vuelta, no aquí.
 -- ------------------------------------------------------------
-register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv, mode)
+register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
@@ -1711,51 +1661,38 @@ register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv, mode)
     if tiene_coma then
         local puntos = spintent_geo_grammar:match(csv)
         if not puntos or #puntos == 0 then
-            token_set_macro("l__spintent_geo_error_str",     "true")
-            token_set_macro("l__spintent_geo_intent_str",    "")
-            token_set_macro("l__spintent_geo_visual_tl",     "")
-            token_set_macro("l__spintent_geo_is_nombre_str", "false")
+            token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+            token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+            token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+            token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
             return
         end
-        token_set_macro("l__spintent_geo_error_str",     "false")
-        token_set_macro("l__spintent_geo_is_nombre_str", "false")
-        if mode == "school" then
-            token_set_macro("l__spintent_geo_intent_str",
-                            spintent_geo_build_intent(cmd, puntos))
-        else
-            token_set_macro("l__spintent_geo_intent_str",
-                            "_" .. cmd .. ":prefix($pts)")
-        end
-        token_set_macro("l__spintent_geo_visual_tl",
+        token_set_macro("l__spintent_geo_luaset_error_str",    "false")
+        token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+        token_set_macro("l__spintent_geo_luaset_intent_str",
+                        spintent_geo_build_intent(cmd, puntos))
+        token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
     else
         local nombre = spintent_geo_nombre_recta:match(csv)
         if not nombre then
-            token_set_macro("l__spintent_geo_error_str",     "true")
-            token_set_macro("l__spintent_geo_intent_str",    "")
-            token_set_macro("l__spintent_geo_visual_tl",     "")
-            token_set_macro("l__spintent_geo_is_nombre_str", "false")
+            token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+            token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+            token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+            token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
             return
         end
-        token_set_macro("l__spintent_geo_error_str",     "false")
-        token_set_macro("l__spintent_geo_is_nombre_str", "true")
-        if mode == "school" then
-            token_set_macro("l__spintent_geo_intent_str",
-                            spintent_geo_build_intent_nombre(cmd, nombre))
-        else
-            token_set_macro("l__spintent_geo_intent_str",
-                            "_" .. cmd .. ":prefix($pts)")
-        end
-        token_set_macro("l__spintent_geo_visual_tl",
+        token_set_macro("l__spintent_geo_luaset_error_str",    "false")
+        token_set_macro("l__spintent_geo_luaset_is_name_str",  "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",
+                        spintent_geo_build_intent_nombre(cmd, nombre))
+        token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
     end
-end, { "string", "string", "string" })
+end, { "string", "string" })
 
 -- ------------------------------------------------------------
 -- §12.3  ÁNGULO — \spangle, \spmangle
---
--- "cmd" ya viene resuelto por expl3 — incluyendo el sufijo "-recto"
--- si corresponde, y vacío si corresponde silenciar en modo school.
 -- ------------------------------------------------------------
 local spintent_geo_angulo_un_punto = spintent_geo_punto * P(-1)
 
@@ -1773,20 +1710,9 @@ local function spintent_geo_build_intent_angulo(cmd, csv)
     else
         local un_punto = spintent_geo_angulo_un_punto:match(csv)
         if un_punto then
-            local letra  = un_punto[1]
-            local mod    = un_punto[2]
-            local tipo   = un_punto[3]
-            local partes_en = { "en" }
-            partes_en[#partes_en + 1] = letra
-            if tipo == "sub" then
-                partes_en[#partes_en + 1] = "sub"
-                partes_en[#partes_en + 1] = spintent_geo_num_a_texto[mod] or mod
-            elseif tipo == "prima" then
-                local n = #mod
-                partes_en[#partes_en + 1] =
-                    spintent_geo_prima_prefijo[n] or (n .. "-prima")
-            end
-            local sufijo = t_concat(partes_en, "-")
+            local intent_base = spintent_geo_build_intent_nombre("", un_punto)
+            local nucleo = intent_base:match("^_(.-)-$") or intent_base
+            local sufijo = "en-" .. nucleo
             local intent
             if cmd == "" then
                 intent = "_" .. sufijo .. "-"
@@ -1798,8 +1724,7 @@ local function spintent_geo_build_intent_angulo(cmd, csv)
         else
             local nombre = spintent_trim(csv)
             if nombre == "" then return nil, nil, nil end
-            local nombre_intent = s_gsub(nombre, "[\\{}%s]", "-")
-            nombre_intent = s_gsub(nombre_intent, "%-%-+", "-")
+            local nombre_intent = spintent_sanitize_for_screen_reader(nombre)
             local intent
             if cmd == "" then
                 intent = "_" .. nombre_intent .. "-"
@@ -1812,42 +1737,24 @@ local function spintent_geo_build_intent_angulo(cmd, csv)
 end
 
 register_tex_cmd("luafun_geo_angulo_parse_and_set",
-    function(cmd, csv, mode)
+    function(cmd, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
-    if mode == "school" then
-        local intent, visual, caso = spintent_geo_build_intent_angulo(cmd, csv)
-        if not intent then
-            token_set_macro("l__spintent_geo_error_str",       "true")
-            token_set_macro("l__spintent_geo_intent_str",      "")
-            token_set_macro("l__spintent_geo_visual_tl",       "")
-            token_set_macro("l__spintent_geo_angulo_caso_str", "")
-            return
-        end
-        token_set_macro("l__spintent_geo_error_str", "false")
-        token_set_macro("l__spintent_geo_angulo_caso_str", caso)
-        token_set_macro("l__spintent_geo_intent_str", intent)
-        token_set_macro("l__spintent_geo_visual_tl",  visual)
-    else
-        -- En modo mathcat solo necesitamos el visual y el caso;
-        -- el intent de función se construye directamente aquí con
-        -- el cmd ya resuelto (siempre el nombre real en este modo).
-        local _, visual, caso = spintent_geo_build_intent_angulo(cmd, csv)
-        if not visual then
-            token_set_macro("l__spintent_geo_error_str",       "true")
-            token_set_macro("l__spintent_geo_intent_str",      "")
-            token_set_macro("l__spintent_geo_visual_tl",       "")
-            token_set_macro("l__spintent_geo_angulo_caso_str", "")
-            return
-        end
-        token_set_macro("l__spintent_geo_error_str", "false")
-        token_set_macro("l__spintent_geo_angulo_caso_str", caso)
-        token_set_macro("l__spintent_geo_intent_str",
-                        "_" .. cmd .. ":prefix($pts)")
-        token_set_macro("l__spintent_geo_visual_tl",  visual)
+    local intent, visual, caso = spintent_geo_build_intent_angulo(cmd, csv)
+    if not visual then
+        token_set_macro("l__spintent_geo_luaset_error_str",       "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",      "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",        "")
+        token_set_macro("l__spintent_geo_luaset_angulo_case_str", "")
+        return
     end
-end, { "string", "string", "string" })
+
+    token_set_macro("l__spintent_geo_luaset_error_str", "false")
+    token_set_macro("l__spintent_geo_luaset_angulo_case_str", caso)
+    token_set_macro("l__spintent_geo_luaset_intent_str", intent)
+    token_set_macro("l__spintent_geo_luaset_print_tl", visual)
+end, { "string", "string" })
 
 -- ------------------------------------------------------------
 -- §12.4  POLÍGONO — \spPoly, \spAfig, \spPfig
@@ -1862,27 +1769,27 @@ local spintent_geo_poly_npts = {
 }
 
 register_tex_cmd("luafun_geo_poly_parse_and_set",
-    function(csv, mode)
+    function(csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
     local tiene_coma = s_match(csv, ",")
     if not tiene_coma then
-        token_set_macro("l__spintent_geo_error_str",      "true")
-        token_set_macro("l__spintent_geo_intent_str",     "")
-        token_set_macro("l__spintent_geo_intent_pts_str", "")
-        token_set_macro("l__spintent_geo_visual_tl",      "")
-        token_set_macro("l__spintent_geo_poly_sym_str",   "")
+        token_set_macro("l__spintent_geo_luaset_error_str",      "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
+        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",       "")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
         return
     end
 
     local puntos = spintent_geo_poly_grammar:match(csv)
     if not puntos or #puntos < 3 then
-        token_set_macro("l__spintent_geo_error_str",      "true")
-        token_set_macro("l__spintent_geo_intent_str",     "")
-        token_set_macro("l__spintent_geo_intent_pts_str", "")
-        token_set_macro("l__spintent_geo_visual_tl",      "")
-        token_set_macro("l__spintent_geo_poly_sym_str",   "")
+        token_set_macro("l__spintent_geo_luaset_error_str",      "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
+        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",       "")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
         return
     end
 
@@ -1890,59 +1797,119 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     local cmd_base = info and info.cmd or "polígono"
     local sym      = info and info.sym or ""
 
-    token_set_macro("l__spintent_geo_error_str",      "false")
-    token_set_macro("l__spintent_geo_poly_sym_str",   sym)
-    token_set_macro("l__spintent_geo_intent_pts_str",
-                    spintent_geo_build_intent("", puntos))
+    token_set_macro("l__spintent_geo_luaset_error_str",      "false")
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str",   sym)
+    token_set_macro("l__spintent_geo_luaset_concept_str",    cmd_base)
+    token_set_macro("l__spintent_geo_luaset_intent_pts_str", spintent_geo_build_intent("", puntos))
+    token_set_macro("l__spintent_geo_luaset_intent_str", spintent_geo_build_intent(cmd_base, puntos))
+    token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
+end, { "string" })
 
-    if mode == "school" then
-        token_set_macro("l__spintent_geo_intent_str",
-                        spintent_geo_build_intent(cmd_base, puntos))
-    else
-        token_set_macro("l__spintent_geo_intent_str",
-                        "_" .. cmd_base .. ":prefix($pts)")
+-- Tabla de letras válidas para el argumento único de \spAfig/\spPfig
+-- (p.ej. "F_{1}", "P", "B_{2}"). Extensible: "C" queda reservada para
+-- círculo/circunferencia, no forma parte de esta tabla.
+local spintent_geo_fig_letras = {
+    F = "figura", P = "polígono", B = "basal", L = "lateral",
+}
+
+-- Letra de la tabla, con subíndice opcional (dígitos u otra letra).
+local spintent_geo_fig_letra_sola = Ct(
+    C(S"FPBL") *
+    (
+        P"_{" * spintent_geo_cont_sub * P"}" * Cc"sub"
+        + Cc"" * Cc""
+    )
+) * P(-1)
+
+-- Dígito(s) sueltos, o una sola letra suelta (sin prefijo de tabla) —
+-- se convierten directamente en el subíndice de \mathcal{A} (o del
+-- símbolo, si print-sym!=none).
+local spintent_geo_fig_sub_simple = (C(R"09"^1) + C(R"az")) * P(-1)
+
+-- Devuelve: ok, visual, palabra, sub_spoken.
+-- "visual" es lo que se tipografía tal cual (letra+subíndice, o el
+-- número/letra suelto); "palabra" es el mapeo de la letra ("" si no
+-- hay letra); "sub_spoken" es la forma hablada del subíndice ("" si
+-- no hay subíndice). expl3 arma el intent final combinando estas
+-- piezas con su propia llave read-sub, sin que Lua sepa nada de ella.
+local function spintent_geo_fig_parse_arg(csv)
+    local con_letra = spintent_geo_fig_letra_sola:match(csv)
+    if con_letra then
+        local letra, sub, tipo = con_letra[1], con_letra[2], con_letra[3]
+        local palabra = spintent_geo_fig_letras[letra]
+        if tipo == "sub" then
+            local visual = letra .. "_{" .. sub .. "}"
+            local sub_spoken = spintent_geo_num_a_texto[sub] or sub
+            return true, visual, palabra, sub_spoken
+        else
+            return true, letra, palabra, ""
+        end
     end
-    token_set_macro("l__spintent_geo_visual_tl",
-                    spintent_geo_build_visual(puntos))
-end, { "string", "string" })
 
--- ------------------------------------------------------------
--- \spAfig / \spPfig
---
--- El símbolo de figura (poly_sym_str) se devuelve SIEMPRE con su
--- valor real, sin ninguna bandera de silencio — expl3 decide, tras
--- recibir la respuesta, si lo envuelve en \MathMLintent{:silent} o
--- lo omite del todo, exactamente igual que ya hace \spPoly.
--- ------------------------------------------------------------
-register_tex_cmd("luafun_geo_fig_parse_and_set",
-    function(op, csv, mode, read_arg)
+    local solo = spintent_geo_fig_sub_simple:match(csv)
+    if solo then
+        local sub_spoken = spintent_geo_num_a_texto[solo] or solo
+        return true, solo, "", sub_spoken
+    end
+
+    return false
+end
+
+-- l__spintent_geo_luaset_concept_str lleva solo el nombre del
+-- concepto ("área-del-triángulo", sin vértices) — a diferencia del
+-- resto de la familia, aquí solo se conoce tras el parseo (por la
+-- cardinalidad), no antes.
+local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
     read_arg = spintent_trim(read_arg)
 
     if csv == "" then
-        token_set_macro("l__spintent_geo_error_str",    "false")
-        token_set_macro("l__spintent_geo_poly_sym_str", "")
-        token_set_macro("l__spintent_geo_intent_str",   op)
-        token_set_macro("l__spintent_geo_visual_tl",    "")
+        token_set_macro("l__spintent_geo_luaset_error_str",       "false")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",    "")
+        token_set_macro("l__spintent_geo_luaset_intent_str",      op)
+        token_set_macro("l__spintent_geo_luaset_concept_str",     op)
+        token_set_macro("l__spintent_geo_luaset_print_tl",        "")
+        token_set_macro("l__spintent_geo_luaset_letra_word_str",  "")
+        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",  "")
         return
     end
 
     local tiene_coma = s_match(csv, ",")
+
     if not tiene_coma then
-        token_set_macro("l__spintent_geo_error_str",    "true")
-        token_set_macro("l__spintent_geo_intent_str",   "")
-        token_set_macro("l__spintent_geo_visual_tl",    "")
-        token_set_macro("l__spintent_geo_poly_sym_str", "")
+        local ok, visual, palabra, sub_spoken = spintent_geo_fig_parse_arg(csv)
+        if not ok then
+            token_set_macro("l__spintent_geo_luaset_error_str",   "true")
+            token_set_macro("l__spintent_geo_luaset_intent_str",  "")
+            token_set_macro("l__spintent_geo_luaset_concept_str", "")
+            token_set_macro("l__spintent_geo_luaset_print_tl",    "")
+            token_set_macro("l__spintent_geo_luaset_poly_sym_str","")
+            token_set_macro("l__spintent_geo_luaset_letra_word_str", "")
+            token_set_macro("l__spintent_geo_luaset_sub_spoken_str", "")
+            return
+        end
+        token_set_macro("l__spintent_geo_luaset_error_str",      "false")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
+        token_set_macro("l__spintent_geo_luaset_concept_str",    op)
+        token_set_macro("l__spintent_geo_luaset_print_tl",       visual)
+        token_set_macro("l__spintent_geo_luaset_letra_word_str", palabra)
+        token_set_macro("l__spintent_geo_luaset_sub_spoken_str", sub_spoken)
+        -- intent_str se deja vacío: expl3 arma el intent final con
+        -- op + palabra + sub_spoken + su propia llave read-sub.
+        token_set_macro("l__spintent_geo_luaset_intent_str", "")
         return
     end
 
     local puntos = spintent_geo_poly_grammar:match(csv)
     if not puntos or #puntos < 3 then
-        token_set_macro("l__spintent_geo_error_str",    "true")
-        token_set_macro("l__spintent_geo_intent_str",   "")
-        token_set_macro("l__spintent_geo_visual_tl",    "")
-        token_set_macro("l__spintent_geo_poly_sym_str", "")
+        token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+        token_set_macro("l__spintent_geo_luaset_concept_str",  "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str", "")
+        token_set_macro("l__spintent_geo_luaset_letra_word_str", "")
+        token_set_macro("l__spintent_geo_luaset_sub_spoken_str", "")
         return
     end
 
@@ -1951,32 +1918,25 @@ register_tex_cmd("luafun_geo_fig_parse_and_set",
                     or (info and info.cmd)
                     or "polígono"
     local sym     = (info and info.sym) or ""
+    local concepto = op .. "-del-" .. cmd_fig
 
-    token_set_macro("l__spintent_geo_error_str",    "false")
-    token_set_macro("l__spintent_geo_poly_sym_str", sym)
-    token_set_macro("l__spintent_geo_visual_tl",
-                    spintent_geo_build_visual(puntos))
+    token_set_macro("l__spintent_geo_luaset_error_str",    "false")
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str", sym)
+    token_set_macro("l__spintent_geo_luaset_concept_str",  concepto)
+    token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
+    token_set_macro("l__spintent_geo_luaset_letra_word_str", "")
+    token_set_macro("l__spintent_geo_luaset_sub_spoken_str", "")
 
-    local conector = "del"
-    local partes = { op, conector, cmd_fig }
-    for _, pt in ipairs(puntos) do
-        local letra, mod, tipo = pt[1], pt[2], pt[3]
-        partes[#partes + 1] = letra
-        if tipo == "sub" then
-            partes[#partes + 1] = "sub"
-            partes[#partes + 1] = spintent_geo_num_a_texto[mod] or mod
-        elseif tipo == "prima" then
-            local n = #mod
-            partes[#partes + 1] =
-                spintent_geo_prima_prefijo[n] or (n .. "-prima")
-        end
-    end
+    local cuerpo = spintent_geo_build_intent("", puntos):match("^_(.-)-$")
+    token_set_macro("l__spintent_geo_luaset_intent_str", concepto .. "-" .. cuerpo)
+end
 
-    if mode == "school" then
-        token_set_macro("l__spintent_geo_intent_str", t_concat(partes, "-"))
-    else
-        token_set_macro("l__spintent_geo_intent_str",
-                        "_" .. op .. "-" .. conector .. "-" .. cmd_fig ..
-                        ":prefix($pts)")
-    end
-end, { "string", "string", "string", "string" })
+register_tex_cmd("luafun_geo_afig_parse_and_set",
+    function(csv, read_arg)
+    spintent_geo_fig_parse_and_set("área", csv, read_arg)
+end, { "string", "string" })
+
+register_tex_cmd("luafun_geo_pfig_parse_and_set",
+    function(csv, read_arg)
+    spintent_geo_fig_parse_and_set("perímetro", csv, read_arg)
+end, { "string", "string" })

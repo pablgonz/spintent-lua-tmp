@@ -2508,15 +2508,16 @@
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmQ } }
   }
-\str_new:N \l__spintent_geo_error_str
-\str_new:N \l__spintent_geo_intent_str
-\tl_new:N  \l__spintent_geo_visual_tl
-\str_new:N \l__spintent_geo_is_nombre_str
-\str_new:N \l__spintent_geo_poly_sym_str
-\str_new:N \l__spintent_geo_intent_pts_str
-\str_new:N \l__spintent_geo_angulo_caso_str
+\str_new:N \l__spintent_geo_luaset_error_str
+\str_new:N \l__spintent_geo_luaset_intent_str
+\tl_new:N  \l__spintent_geo_luaset_print_tl
+\str_new:N \l__spintent_geo_luaset_is_name_str
+\str_new:N \l__spintent_geo_luaset_poly_sym_str
+\str_new:N \l__spintent_geo_luaset_intent_pts_str
+\str_new:N \l__spintent_geo_luaset_angulo_case_str
 \tl_new:N  \l__spintent_geo_side_cmd_tl
 \tl_new:N  \l__spintent_geo_fig_op_tl
+\str_new:N \l__spintent_geo_luaset_concept_str
 \str_new:N \l__spintent_spPoint_mode_str
 \tl_new:N  \l__spintent_spPoint_prefix_tl
 \msg_new:nnnn { spintent } { spPoint-invalid-point }
@@ -2558,29 +2559,24 @@
 \cs_new_protected:Nn \__spintent_spPoint_print:n
   {
     \tl_set:Nn \l__spintent_geo_side_cmd_tl { punto }
-    \__spintent_luafun_geo_point_parse_and_set:nnn
+    \__spintent_luafun_geo_point_parse_and_set:nn
       {
         \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
-          {
-            \bool_if:NF \l__spintent_spPoint_silent_cmd_bool
-              { \l__spintent_geo_side_cmd_tl }
-          }
+          { \bool_if:NTF \l__spintent_spPoint_silent_cmd_bool { } { \l__spintent_geo_side_cmd_tl } }
           { \l__spintent_geo_side_cmd_tl }
       }
       { \exp_not:n {#1} }
-      { \l__spintent_spPoint_mode_str }
-    \str_if_eq:VnTF \l__spintent_geo_error_str { true }
+    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nne { spintent } { spPoint-invalid-point }
           { \exp_not:n {#1} }
       }
-      {
-         \__spintent_invisible_sep:
-      }
     \str_if_eq:VnT \l__spintent_spPoint_mode_str { mathcat }
       {
+        \str_set:Ne \l__spintent_geo_luaset_intent_str
+          { _ \l__spintent_geo_side_cmd_tl :prefix($pt) }
         \bool_if:NT \l__spintent_spPoint_silent_cmd_bool
-          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
       {
@@ -2588,22 +2584,24 @@
           {
             \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
               { \tl_use:N \l__spintent_spPoint_prefix_tl - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
-          { \c__spintent_invisible_sep_tl \l__spintent_geo_visual_tl }
+          { \c__spintent_invisible_sep_tl \l__spintent_geo_luaset_print_tl }
+        \__spintent_invisible_sep:
       }
       {
         \MathMLintent
           {
             \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
               { \tl_use:N \l__spintent_spPoint_prefix_tl - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
-            \MathMLarg { pt } { \l__spintent_geo_visual_tl }
+            \MathMLarg { pt } { \l__spintent_geo_luaset_print_tl }
           }
-       }
+        \__spintent_invisible_sep:
+      }
   }
 \cs_new_protected:Nn \__spintent_spPoint_exec:nn
   {
@@ -2628,7 +2626,6 @@
     The~argument~must~be~either~a~comma-separated~pair~of~uppercase~
     letters~(two-point~notation)~or~a~single~letter~(uppercase~or~
     lowercase)~with~optional~subscript~or~prime~(name~notation).\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'L_\{1\}',~'m',~'r'.
   }
 \keys_define:nn { spintent / sprecta }
   {
@@ -2661,31 +2658,26 @@
 \cs_new_protected:Nn \__spintent_sprecta_print:n
   {
     \tl_set:Nn \l__spintent_geo_side_cmd_tl { recta }
-    \__spintent_luafun_geo_parse_and_set:nnn
+    \__spintent_luafun_geo_parse_and_set:nn
       {
         \str_if_eq:VnTF \l__spintent_sprecta_mode_str { school }
-          {
-            \bool_if:NF \l__spintent_sprecta_silent_cmd_bool
-              { \l__spintent_geo_side_cmd_tl }
-          }
+          { \bool_if:NTF \l__spintent_sprecta_silent_cmd_bool { } { \l__spintent_geo_side_cmd_tl } }
           { \l__spintent_geo_side_cmd_tl }
       }
       { \exp_not:n {#1} }
-      { \l__spintent_sprecta_mode_str }
-    \str_if_eq:VnTF \l__spintent_geo_error_str { true }
+    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nne { spintent } { sprecta-invalid-points }
           { \exp_not:n {#1} }
       }
-      {
-         \__spintent_invisible_sep: % need for MathCAT
-      }
     \str_if_eq:VnT \l__spintent_sprecta_mode_str { mathcat }
       {
+        \str_set:Ne \l__spintent_geo_luaset_intent_str
+          { _ \l__spintent_geo_side_cmd_tl :prefix($pts) }
         \bool_if:NT \l__spintent_sprecta_silent_cmd_bool
-          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent } }
       }
-    \str_if_eq:VnTF \l__spintent_geo_is_nombre_str { true }
+    \str_if_eq:VnTF \l__spintent_geo_luaset_is_name_str { true }
       {
         \str_if_eq:VnTF \l__spintent_sprecta_mode_str { school }
           {
@@ -2693,20 +2685,21 @@
               {
                 \tl_if_empty:NF \l__spintent_sprecta_prefix_tl
                   { \tl_use:N \l__spintent_sprecta_prefix_tl - }
-                \l__spintent_geo_intent_str
+                \l__spintent_geo_luaset_intent_str
               }
-              { \c__spintent_invisible_sep_tl \l__spintent_geo_visual_tl }
+              { \c__spintent_invisible_sep_tl \l__spintent_geo_luaset_print_tl }
+            \__spintent_invisible_sep:
           }
           {
             \MathMLintent
               {
                 \tl_if_empty:NF \l__spintent_sprecta_prefix_tl
                   { \tl_use:N \l__spintent_sprecta_prefix_tl - }
-                \l__spintent_geo_intent_str
+                \l__spintent_geo_luaset_intent_str
               }
               {
                 \c__spintent_invisible_sep_tl
-                \MathMLarg { pts } { \l__spintent_geo_visual_tl }
+                \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
               }
             \__spintent_invisible_sep:
           }
@@ -2718,25 +2711,27 @@
               {
                 \tl_if_empty:NF \l__spintent_sprecta_prefix_tl
                   { \tl_use:N \l__spintent_sprecta_prefix_tl - }
-                \l__spintent_geo_intent_str
+                \l__spintent_geo_luaset_intent_str
               }
               {
                 \c__spintent_invisible_sep_tl
-                \overleftrightarrow { \l__spintent_geo_visual_tl }
+                \overleftrightarrow { \l__spintent_geo_luaset_print_tl }
               }
+            \__spintent_invisible_sep:
           }
           {
             \MathMLintent
               {
                 \tl_if_empty:NF \l__spintent_sprecta_prefix_tl
                   { \tl_use:N \l__spintent_sprecta_prefix_tl - }
-                \l__spintent_geo_intent_str
+                \l__spintent_geo_luaset_intent_str
               }
               {
                 \c__spintent_invisible_sep_tl
                 \overleftrightarrow
-                  { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
+                  { \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl } }
               }
+            \__spintent_invisible_sep:
           }
       }
   }
@@ -2759,11 +2754,12 @@
 \tl_new:N  \l__spintent_sprayo_prefix_tl
 \str_new:N \l__spintent_sprayo_read_sty_str
 \msg_new:nnnn { spintent } { sprayo-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'. }
+  {
+    Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'.
+  }
   {
     The~argument~must~be~a~comma-separated~list~of~exactly~two~
     uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
   }
 \keys_define:nn { spintent / sprayo }
   {
@@ -2808,7 +2804,7 @@
   }
 \cs_new_protected:Nn \__spintent_sprayo_print:n
   {
-    \__spintent_luafun_geo_parse_and_set:nnn
+    \__spintent_luafun_geo_parse_and_set:nn
       {
         \str_if_eq:VnTF \l__spintent_sprayo_mode_str { school }
           {
@@ -2818,16 +2814,17 @@
           { \l__spintent_sprayo_read_sty_str }
       }
       { \exp_not:n {#1} }
-      { \l__spintent_sprayo_mode_str }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
+    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nne { spintent } { sprayo-invalid-points }
           { \exp_not:n {#1} }
       }
     \str_if_eq:VnT \l__spintent_sprayo_mode_str { mathcat }
       {
+        \str_set:Ne \l__spintent_geo_luaset_intent_str
+          { _ \l__spintent_sprayo_read_sty_str :prefix($pts) }
         \bool_if:NT \l__spintent_sprayo_silent_cmd_bool
-          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:VnTF \l__spintent_sprayo_mode_str { school }
       {
@@ -2835,11 +2832,11 @@
           {
             \tl_if_empty:NF \l__spintent_sprayo_prefix_tl
               { \tl_use:N \l__spintent_sprayo_prefix_tl - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
-            \overrightarrow { \l__spintent_geo_visual_tl }
+            \overrightarrow { \l__spintent_geo_luaset_print_tl }
           }
         \__spintent_invisible_sep:
       }
@@ -2848,12 +2845,12 @@
           {
             \tl_if_empty:NF \l__spintent_sprayo_prefix_tl
               { \tl_use:N \l__spintent_sprayo_prefix_tl - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
             \overrightarrow
-              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
+              { \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl } }
           }
         \__spintent_invisible_sep:
       }
@@ -2883,11 +2880,12 @@
 \clist_map_inline:nn { side , mside }
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
-      { Invalid~point~format~in~##1:~'##2'. }
+      {
+        Invalid~point~format~in~##1:~'##2'.
+      }
       {
         The~argument~must~be~a~comma-separated~list~of~uppercase~
         letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-        Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
       }
   }
 \clist_map_inline:nn { side , mside }
@@ -2950,10 +2948,9 @@
           { \tl_use:c { l__spintent_sp #1 _read_sty_str } }
           { \tl_use:c { l__spintent_sp #1 _read_arg_str } }
       }
-    \str_if_eq:eeTF {#1} { mside }
+    \str_if_eq:eeT {#1} { mside }
       { \tl_put_left:Nn \l__spintent_geo_side_cmd_tl { medida-del- } }
-      { }
-    \__spintent_luafun_geo_parse_and_set:nnn
+    \__spintent_luafun_geo_parse_and_set:nn
       {
         \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
           {
@@ -2963,16 +2960,17 @@
           { \l__spintent_geo_side_cmd_tl }
       }
       { \exp_not:n {#2} }
-      { \tl_use:c { l__spintent_sp #1 _mode_str } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
+    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeT { \tl_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
       {
+        \str_set:Nx \l__spintent_geo_luaset_intent_str
+          { _ \l__spintent_geo_side_cmd_tl :prefix($pts) }
         \bool_if:cT { l__spintent_sp #1 _silent_cmd_bool }
-          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
@@ -2980,7 +2978,7 @@
           {
             \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
               { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
@@ -2989,7 +2987,7 @@
                 \bool_if:cT { l__spintent_sp #1 _print_m_bool }
                   { \MathMLintent { :silent } { \operatorname { m } } }
               }
-            \overline { \l__spintent_geo_visual_tl }
+            \overline { \l__spintent_geo_luaset_print_tl }
           }
         \__spintent_invisible_sep:
       }
@@ -2998,7 +2996,7 @@
           {
             \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
               { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
@@ -3008,7 +3006,7 @@
                   { \MathMLintent { :silent } { \operatorname { m } } }
               }
             \overline
-              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
+              { \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl } }
           }
         \__spintent_invisible_sep:
       }
@@ -3114,11 +3112,11 @@
 \cs_new_protected:Nn \__spintent_spangle_process:nn
   {
     \str_if_eq:eeTF {#1} { mangle }
-      { \str_set:Nn \l__spintent_geo_side_cmd_tl { medida-del-ángulo } }
-      { \str_set:Nn \l__spintent_geo_side_cmd_tl { ángulo } }
+      { \tl_set:Nn \l__spintent_geo_side_cmd_tl { medida-del-ángulo } }
+      { \tl_set:Nn \l__spintent_geo_side_cmd_tl { ángulo } }
     \bool_if:cT { l__spintent_sp #1 _recto_bool }
       { \tl_put_right:Nn \l__spintent_geo_side_cmd_tl { -recto } }
-    \__spintent_luafun_geo_angulo_parse_and_set:nnn
+    \__spintent_luafun_geo_angulo_parse_and_set:nn
       {
         \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
           {
@@ -3128,16 +3126,17 @@
           { \l__spintent_geo_side_cmd_tl }
       }
       { \exp_not:n {#2} }
-      { \tl_use:c { l__spintent_sp #1 _mode_str } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
+    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeT { \tl_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
       {
+        \str_set:Nx \l__spintent_geo_luaset_intent_str
+          { _ \l__spintent_geo_side_cmd_tl :prefix($pts) }
         \bool_if:cT { l__spintent_sp #1 _silent_cmd_bool }
-          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
@@ -3145,7 +3144,7 @@
           {
             \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
               { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \str_if_eq:eeT {#1} { mangle }
@@ -3154,7 +3153,7 @@
                   { \MathMLintent { :silent } { \operatorname { m } } }
               }
             \__spintent_spangle_sym:n {#1}
-            \l__spintent_geo_visual_tl
+            \l__spintent_geo_luaset_print_tl
           }
         \__spintent_invisible_sep:
       }
@@ -3163,7 +3162,7 @@
           {
             \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
               { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \str_if_eq:eeT {#1} { mangle }
@@ -3172,7 +3171,7 @@
                   { \MathMLintent { :silent } { \operatorname { m } } }
               }
             \__spintent_spangle_sym:n {#1}
-            \MathMLarg { pts } { \l__spintent_geo_visual_tl }
+            \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
           }
         \__spintent_invisible_sep:
       }
@@ -3210,11 +3209,12 @@
 \clist_map_inline:nn { arc , marc }
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
-      { Invalid~point~format~in~##1:~'##2'. }
+      {
+        Invalid~point~format~in~##1:~'##2'.
+      }
       {
         The~argument~must~be~a~comma-separated~list~of~uppercase~
         letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-        Valid~examples:~'A,~B',~'A_\{1\},~B_\{1\}',~'A'',~B'''.
       }
   }
 \clist_map_inline:nn { arc , marc }
@@ -3248,18 +3248,22 @@
           },
       }
   }
-\cs_new_protected:Nn \__spintent_sparc_deco:n
+\cs_new_protected_nopar:Nn \__spintent_sparc_wide_arc:n
+  {
+    \Umathaccent 7 \symoperators "023DC \scan_stop: {#1}
+  }
+\cs_new_protected:Nn \__spintent_sparc_print_arc:n
   {
     \cs_if_exist:NTF \widearc
       { \widearc {#1} }
-      { \Umathaccent 0 0 "23DC {#1} }
+      { \__spintent_sparc_wide_arc:n {#1} }
   }
 \cs_new_protected:Nn \__spintent_sparc_process:nn
   {
     \str_if_eq:eeTF {#1} { marc }
-      { \str_set:Nn \l__spintent_geo_side_cmd_tl { medida-del-arco } }
-      { \str_set:Nn \l__spintent_geo_side_cmd_tl { arco } }
-    \__spintent_luafun_geo_parse_and_set:nnn
+      { \tl_set:Nn \l__spintent_geo_side_cmd_tl { medida-del-arco } }
+      { \tl_set:Nn \l__spintent_geo_side_cmd_tl { arco } }
+    \__spintent_luafun_geo_parse_and_set:nn
       {
         \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
           {
@@ -3269,16 +3273,17 @@
           { \l__spintent_geo_side_cmd_tl }
       }
       { \exp_not:n {#2} }
-      { \tl_use:c { l__spintent_sp #1 _mode_str } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
+    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeT { \tl_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
       {
+        \str_set:Nx \l__spintent_geo_luaset_intent_str
+          { _ \l__spintent_geo_side_cmd_tl :prefix($pts) }
         \bool_if:cT { l__spintent_sp #1 _silent_cmd_bool }
-          { \tl_put_right:Nn \l__spintent_geo_intent_str { :silent } }
+          { \tl_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent } }
       }
     \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
@@ -3286,13 +3291,13 @@
           {
             \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
               { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
             \str_if_eq:eeT {#1} { marc }
               { \MathMLintent { :silent } { \operatorname { m } } }
-            \__spintent_sparc_deco:n { \l__spintent_geo_visual_tl }
+            \__spintent_sparc_print_arc:n { \l__spintent_geo_luaset_print_tl }
           }
         \__spintent_invisible_sep:
       }
@@ -3301,14 +3306,14 @@
           {
             \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
               { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
             \str_if_eq:eeT {#1} { marc }
               { \MathMLintent { :silent } { \operatorname { m } } }
-            \__spintent_sparc_deco:n
-              { \MathMLarg { pts } { \l__spintent_geo_visual_tl } }
+            \__spintent_sparc_print_arc:n
+              { \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl } }
           }
         \__spintent_invisible_sep:
       }
@@ -3341,11 +3346,12 @@
 \str_new:N \l__spintent_spPoly_mode_str
 \tl_new:N  \l__spintent_spPoly_prefix_tl
 \msg_new:nnnn { spintent } { spPoly-invalid-points }
-  { Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'. }
+  {
+    Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'.
+  }
   {
     The~argument~must~be~a~comma-separated~list~of~at~least~three~
     uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
-    Valid~examples:~'A,~B,~C',~'A_\{1\},~B_\{1\},~C_\{1\}'.
   }
 \keys_define:nn { spintent / spPoly }
   {
@@ -3378,7 +3384,7 @@
   }
 \cs_new_protected:Nn \__spintent_spPoly_sym:
   {
-    \str_case:Vn \l__spintent_geo_poly_sym_str
+    \str_case:Vn \l__spintent_geo_luaset_poly_sym_str
       {
         { triangle } { \triangle      }
         { square   } { \mdlgwhtsquare }
@@ -3386,13 +3392,16 @@
   }
 \cs_new_protected:Nn \__spintent_spPoly_print:n
   {
-    \__spintent_luafun_geo_poly_parse_and_set:nn
-      { \exp_not:n {#1} }
-      { \l__spintent_spPoly_mode_str }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
+    \__spintent_luafun_geo_poly_parse_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nne { spintent } { spPoly-invalid-points }
           { \exp_not:n {#1} }
+      }
+    \str_if_eq:VnT \l__spintent_spPoly_mode_str { mathcat }
+      {
+        \str_set:Nx \l__spintent_geo_luaset_intent_str
+          { _ \l__spintent_geo_luaset_concept_str :prefix($pts) }
       }
     \bool_if:NTF \l__spintent_spPoly_print_sym_bool
       {
@@ -3402,13 +3411,13 @@
               {
                 \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
                   { \tl_use:N \l__spintent_spPoly_prefix_tl - }
-                \l__spintent_geo_intent_str
+                \l__spintent_geo_luaset_intent_str
               }
               {
                 \c__spintent_invisible_sep_tl
-                \str_if_empty:NF \l__spintent_geo_poly_sym_str
+                \str_if_empty:NF \l__spintent_geo_luaset_poly_sym_str
                   { \MathMLintent { :silent } { \__spintent_spPoly_sym: } }
-                \l__spintent_geo_visual_tl
+                \l__spintent_geo_luaset_print_tl
               }
             \__spintent_invisible_sep:
           }
@@ -3417,13 +3426,13 @@
               {
                 \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
                   { \tl_use:N \l__spintent_spPoly_prefix_tl - }
-                \l__spintent_geo_intent_str
+                \l__spintent_geo_luaset_intent_str
               }
               {
                 \c__spintent_invisible_sep_tl
-                \str_if_empty:NF \l__spintent_geo_poly_sym_str
+                \str_if_empty:NF \l__spintent_geo_luaset_poly_sym_str
                   { \MathMLintent { :silent } { \__spintent_spPoly_sym: } }
-                \MathMLarg { pts } { \l__spintent_geo_visual_tl }
+                \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
               }
             \__spintent_invisible_sep:
           }
@@ -3435,9 +3444,9 @@
               {
                 \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
                   { \tl_use:N \l__spintent_spPoly_prefix_tl - }
-                \l__spintent_geo_intent_pts_str
+                \l__spintent_geo_luaset_intent_pts_str
               }
-              { \c__spintent_invisible_sep_tl \l__spintent_geo_visual_tl }
+              { \c__spintent_invisible_sep_tl \l__spintent_geo_luaset_print_tl }
             \__spintent_invisible_sep:
           }
           {
@@ -3445,11 +3454,11 @@
               {
                 \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
                   { \tl_use:N \l__spintent_spPoly_prefix_tl - }
-                \l__spintent_geo_intent_pts_str
+                \l__spintent_geo_luaset_intent_pts_str
               }
               {
                 \c__spintent_invisible_sep_tl
-                \MathMLarg { pts } { \l__spintent_geo_visual_tl }
+                \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
               }
             \__spintent_invisible_sep:
           }
@@ -3472,19 +3481,21 @@
   }
 \clist_map_inline:nn { Afig , Pfig }
   {
-    \str_new:c { l__spintent_sp #1 _mode_str     }
-    \tl_new:c  { l__spintent_sp #1 _prefix_tl    }
-    \str_new:c { l__spintent_sp #1 _read_arg_str }
+    \str_new:c { l__spintent_sp #1 _mode_str      }
+    \str_new:c { l__spintent_sp #1 _print_sym_str }
+    \tl_new:c  { l__spintent_sp #1 _prefix_tl     }
+    \tl_new:c  { l__spintent_sp #1 _read_arg_tl   }
   }
 \clist_map_inline:nn { Afig , Pfig }
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
-      { Invalid~point~format~in~##1:~'##2'. }
+      {
+        Invalid~point~format~in~##1:~'##2'.
+      }
       {
         The~argument~must~be~empty,~or~a~comma-separated~list~of~at~
         least~three~uppercase~letters~with~optional~subscripts~
         (\_{...})~or~primes~(').\\
-        Valid~examples:~'()',~'(A,~B,~C)',~'(A_\{1\},~B_\{1\},~C_\{1\})'.
       }
   }
 \clist_map_inline:nn { Afig , Pfig }
@@ -3508,13 +3519,30 @@
           { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
         prefix              .initial:n  = ,
         prefix              .value_required:n = true,
-        print-sym           .bool_set:c = { l__spintent_sp #1 _print_sym_bool },
-        print-sym           .initial:n  = true,
+        print-sym           .choices:nn = { triangle , square , none }
+          {
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l__spintent_sp #1 _print_sym_str } { triangle } }
+                {2} { \str_set:cn { l__spintent_sp #1 _print_sym_str } { square   } }
+                {3} { \str_set:cn { l__spintent_sp #1 _print_sym_str } { none     } }
+              }
+          },
+        print-sym           .initial:n  = none,
         print-sym           .value_required:n = true,
+        print-sym / unknown  .code:n =
+          \msg_error:nneee { spintent } { unknown-choice }
+            { print-sym } { triangle,~square,~none } { \exp_not:n {##1} },
         read-arg            .code:n =
-          { \str_set:cn { l__spintent_sp #1 _read_arg_str } {##1} },
+          { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _read_arg_tl } {##1} },
         read-arg            .initial:n  = ,
         read-arg            .value_required:n = true,
+        read-sub            .bool_set:c = { l__spintent_sp #1 _read_sub_bool },
+        read-sub            .initial:n  = false,
+        read-sub            .value_required:n = true,
+        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
+        silent-cmd          .initial:n  = false,
+        silent-cmd          .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l__spintent_command_name_str { sp #1 }
@@ -3524,7 +3552,7 @@
   }
 \cs_new_protected:Nn \__spintent_spfig_sym:
   {
-    \str_case:Vn \l__spintent_geo_poly_sym_str
+    \str_case:Vn \l__spintent_geo_luaset_poly_sym_str
       {
         { triangle } { \triangle      }
         { square   } { \mdlgwhtsquare }
@@ -3533,37 +3561,43 @@
 \cs_new_protected:Nn \__spintent_spfig_process:nn
   {
     \str_if_eq:eeTF {#1} { Afig }
-      { \tl_set:Nn \l__spintent_geo_fig_op_tl { área } }
-      { \tl_set:Nn \l__spintent_geo_fig_op_tl { perímetro } }
-    \__spintent_luafun_geo_fig_parse_and_set:nnnn
-      { \l__spintent_geo_fig_op_tl }
-      { \exp_not:n {#2} }
-      { \tl_use:c { l__spintent_sp #1 _mode_str } }
-      { \tl_use:c { l__spintent_sp #1 _read_arg_str } }
-    \str_if_eq:VnT \l__spintent_geo_error_str { true }
+      {
+        \__spintent_luafun_geo_afig_parse_and_set:nn
+          { \exp_not:n {#2} } { \tl_use:c { l__spintent_sp #1 _read_arg_tl } }
+      }
+      {
+        \__spintent_luafun_geo_pfig_parse_and_set:nn
+          { \exp_not:n {#2} } { \tl_use:c { l__spintent_sp #1 _read_arg_tl } }
+      }
+    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \str_if_eq:eeTF { \tl_use:c { l__spintent_sp #1 _mode_str } } { school }
+    \str_if_eq:eeT { \str_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
+      {
+        \str_set:Ne \l__spintent_geo_luaset_intent_str
+          { _ \l__spintent_geo_luaset_concept_str :prefix($pts) }
+      }
+    \str_if_eq:eeTF { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
         \MathMLintent
           {
             \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
               { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
             \str_if_eq:eeTF {#1} { Afig }
               { \mathcal { A } } { \mathcal { P } }
-            \tl_if_empty:NF \l__spintent_geo_visual_tl
+            \tl_if_empty:NF \l__spintent_geo_luaset_print_tl
               {
                 \c_math_subscript_token
                   {
                     \bool_if:cT { l__spintent_sp #1 _print_sym_bool }
                       { \MathMLintent { :silent } { \__spintent_spfig_sym: } }
-                    \l__spintent_geo_visual_tl
+                    \l__spintent_geo_luaset_print_tl
                   }
               }
           }
@@ -3574,19 +3608,19 @@
           {
             \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
               { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_intent_str
+            \l__spintent_geo_luaset_intent_str
           }
           {
             \c__spintent_invisible_sep_tl
             \str_if_eq:eeTF {#1} { Afig }
               { \mathcal { A } } { \mathcal { P } }
-            \tl_if_empty:NF \l__spintent_geo_visual_tl
+            \tl_if_empty:NF \l__spintent_geo_luaset_print_tl
               {
                 \c_math_subscript_token
                   {
                     \bool_if:cT { l__spintent_sp #1 _print_sym_bool }
                       { \MathMLintent { :silent } { \__spintent_spfig_sym: } }
-                    \MathMLarg { pts } { \l__spintent_geo_visual_tl }
+                    \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
                   }
               }
           }
