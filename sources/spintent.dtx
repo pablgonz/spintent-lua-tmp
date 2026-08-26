@@ -3641,35 +3641,38 @@
 %   \begin{syntax}
 %     |\spAfig|
 %     |\spAfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%     |\spAfig|\myparg{número \textnormal{\textcolor{lightgray}{\textbar}} letra \textnormal{\textcolor{lightgray}{\textbar}} letra\_\{número\}}
 %     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
 %   \end{syntax}
 %   El comando \ics*{spAfig} trabaja en \emph{modo matemático} y
-%   recibe el \emph{argumento delimitado por paréntesis} \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots},
-%   el cual es \emph{completamente opcional}, representando el
-%   \emph{área} de una figura poligonal en la impresión aplicando
-%   |\mathcal{A}|.
+%   recibe el \emph{argumento delimitado por paréntesis}, el cual es
+%   \emph{completamente opcional}, representando el \emph{área} de
+%   una figura poligonal en la impresión aplicando |\mathcal{A}|.
 %
 %   \smallskip
 %
-%   El tipo de \emph{símbolo} añadido como subíndice y la verbalización
-%   se determinan acorde al número de puntos en el argumento: Si no se
-%   proporciona el argumento se aplica solo |\mathcal{A}|; si son tres
-%   puntos se aplica |\triangle| como subíndice y añade el término \emph{«triángulo»}
-%   a la verbalización; si son cuatro puntos se aplica |\mdlgwhtsquare|
-%   como subíndice y añade el término \emph{«cuadrado»} a la verbalización;
-%   si son cinco o más puntos no se aplica ningún símbolo pero se añade
-%   el nombre del polígono correspondiente a la verbalización.
+%   El argumento admite tres formas: una \emph{lista de vértices}
+%   \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%   (al menos tres); un \emph{número o letra sueltos}
+%   \myparg{1}, \myparg{n}; o una \emph{letra de una tabla fija}
+%   (|F|, |P|, |B|, |L|) con subíndice numérico opcional,
+%   \myparg{F}, \myparg{F\_\{1\}}.
 %
 %   \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
-%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%   |$\spAfig$| imprimirá `$\mathcal{A}$' en la salida \texttt{PDF} y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«área»}; |$\spAfig(A, B, C)$|
-%   imprimirá `$\mathcal{A}_{\triangle ABC}$' y verbalizará \emph{«área
-%   del triángulo A B C»}; |$\spAfig(A, B, C, D)$| imprimirá
-%   `$\mathcal{A}_{\square ABCD}$' y verbalizará \emph{«área del
-%   cuadrado A B C D»}.
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val} ni el argumento
+%   delimitado por paréntesis, |$\spAfig$| imprimirá `$\mathcal{A}$'
+%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«área»}. Con vértices, |$\spAfig(A, B, C)$| imprimirá
+%   `$\mathcal{A}_{\triangle ABC}$' y verbalizará \emph{«área del
+%   triángulo A B C»}. Con un número o letra sueltos, |$\spAfig(1)$|
+%   imprimirá `$\mathcal{A}_1$' y verbalizará \emph{«área uno»};
+%   |$\spAfig(n)$| imprimirá `$\mathcal{A}_n$' y verbalizará
+%   \emph{«área n»}. Con una letra de la tabla, |$\spAfig(F)$|
+%   imprimirá `$\mathcal{A}_F$' y verbalizará \emph{«área de la
+%   figura»}; |$\spAfig(F_{1})$| imprimirá `$\mathcal{A}_{F_1}$' y
+%   verbalizará \emph{«área de la figura uno»}.
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spAfig}}
@@ -3678,8 +3681,7 @@
 %   mathcat}{school}[spAfig]
 % \smallskip
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
-% argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}.
-% Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
+% argumento. Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
 % del argumento sin el prefijo «mayúscula»: |$\spAfig(A, B, C)$|
 % se verbaliza \emph{«área del triángulo A B C»}; si se establece en |mathcat|,
 % \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
@@ -3690,21 +3692,52 @@
 % \keyexampcmd{prefix}{prefijo}{no usado}[spAfig]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«área del»}. El valor de esta llave
+% \emph{antes} de verbalizar el término \emph{«área»}. El valor de esta llave
 % \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
-% \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{true}[spAfig]
+% \keyexampcmd{print-sym}{auto \textnormal{\textcolor{lightgray}{\textbar}}
+%   triangle \textnormal{\textcolor{lightgray}{\textbar}}
+%   square \textnormal{\textcolor{lightgray}{\textbar}}
+%   none}{auto}[spAfig]
 % \smallskip
-% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión
-% cuando el argumento contenga tres o cuatro puntos.
-% Si se establece en |true|, |$\spAfig[print-sym=true](A, B, C)$|
-% imprimirá `$\mathcal{A}_{\triangle ABC}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del triángulo A B C»};
-% si se establece en |false|, imprimirá `$\mathcal{A}_{ABC}$' en la
-% salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del triángulo A B C»}.
+% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión.
+% Con vértices, |auto| infiere el símbolo según el número de puntos
+% (tres o cuatro); |none| lo omite y \mynvmath{NVDA/MathCAT} verbaliza
+% solo los vértices sin nombrar la figura: |$\spAfig[print-sym=none](A, B, C)$|
+% imprimirá `$\mathcal{A}_{ABC}$' y verbalizará \emph{«área A B C»}.
+% Forzar |triangle|/|square| exige que coincida con el número real de
+% vértices; en caso contrario se produce un error. Con un número o
+% letra sueltos, |auto| y |none| se comportan igual (sin símbolo);
+% |triangle|/|square| anida el argumento bajo el símbolo:
+% |$\spAfig[print-sym=triangle](1)$| imprimirá
+% `$\mathcal{A}_{\triangle_1}$' y verbalizará \emph{«área del
+% triángulo uno»}. Esta llave no puede combinarse con una letra de la
+% tabla (|F|, |P|, |B|, |L|).
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spAfig]
+% \smallskip
+% Establece si \mynvmath{NVDA/MathCAT} antepone la palabra «sub» al
+% verbalizar el número o letra del argumento único. Si se establece en
+% |true|, |$\spAfig[read-sub=true](1)$| verbaliza \emph{«área sub
+% uno»}; si se establece en |false|, verbaliza \emph{«área uno»}. No
+% tiene efecto en la notación de vértices ni cuando el argumento es
+% una letra de la tabla sin subíndice.
+%
+% \smallskip
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spAfig]
+% \smallskip
+% Establece si se \emph{silencia por completo} la verbalización en
+% \mynvmath{NVDA/MathCAT}, sin afectar la impresión. Si se establece
+% en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará nada; si se
+% establece en |false|, \mynvmath{NVDA/MathCAT} verbalizará
+% normalmente.
 %
 % \smallskip
 %
@@ -3726,35 +3759,34 @@
 %   \begin{syntax}
 %     |\spPfig|
 %     |\spPfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%     |\spPfig|\myparg{número \textnormal{\textcolor{lightgray}{\textbar}} letra \textnormal{\textcolor{lightgray}{\textbar}} letra\_\{número\}}
 %     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
 %   \end{syntax}
 %   El comando \ics*{spPfig} trabaja en \emph{modo matemático} y
-%   recibe el \emph{argumento delimitado por paréntesis} \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots},
-%   el cual es \emph{completamente opcional}, representando el
-%   \emph{perímetro} de una figura poligonal en la impresión aplicando
-%   |\mathcal{P}|.
+%   recibe el \emph{argumento delimitado por paréntesis}, el cual es
+%   \emph{completamente opcional}, representando el \emph{perímetro}
+%   de una figura poligonal en la impresión aplicando |\mathcal{P}|.
 %
 %   \smallskip
 %
-%   El tipo de \emph{símbolo} añadido como subíndice y la verbalización
-%   se determinan acorde al número de puntos en el argumento: Si no se
-%   proporciona el argumento se aplica solo |\mathcal{P}|; si son tres
-%   puntos se aplica |\triangle| como subíndice y añade el término \emph{«triángulo»}
-%   a la verbalización; si son cuatro puntos se aplica |\mdlgwhtsquare|
-%   como subíndice y añade el término \emph{«cuadrado»} a la verbalización;
-%   si son cinco o más puntos no se aplica ningún símbolo pero se añade
-%   el nombre del polígono correspondiente a la verbalización.
+%   El argumento admite las mismas tres formas que |\spAfig|
+%   (\S\ref{subsec:spAfig}): una \emph{lista de vértices}, un
+%   \emph{número o letra sueltos}, o una \emph{letra de la tabla fija}
+%   (|F|, |P|, |B|, |L|) con subíndice numérico opcional.
 %
 %   \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
-%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%   |$\spPfig$| imprimirá `$\mathcal{P}$' en la salida \texttt{PDF} y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro»}; |$\spPfig(A, B, C)$|
-%   imprimirá `$\mathcal{P}_{\triangle ABC}$' y verbalizará \emph{«perímetro
-%   del triángulo A B C»}; |$\spPfig(A, B, C, D)$| imprimirá
-%   `$\mathcal{P}_{\square ABCD}$' y verbalizará \emph{«perímetro del
-%   cuadrado A B C D»}.
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val} ni el argumento
+%   delimitado por paréntesis, |$\spPfig$| imprimirá `$\mathcal{P}$'
+%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«perímetro»}. Con vértices, |$\spPfig(A, B, C)$| imprimirá
+%   `$\mathcal{P}_{\triangle ABC}$' y verbalizará \emph{«perímetro del
+%   triángulo A B C»}. Con un número o letra sueltos, |$\spPfig(2)$|
+%   imprimirá `$\mathcal{P}_2$' y verbalizará \emph{«perímetro dos»}.
+%   Con una letra de la tabla, |$\spPfig(P_{2})$| imprimirá
+%   `$\mathcal{P}_{P_2}$' y verbalizará \emph{«perímetro del polígono
+%   dos»}.
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spPfig}}
@@ -3763,8 +3795,7 @@
 %   mathcat}{school}[spPfig]
 % \smallskip
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
-% argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}.
-% Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
+% argumento. Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
 % del argumento sin el prefijo «mayúscula»: |$\spPfig(A, B, C)$|
 % se verbaliza \emph{«perímetro del triángulo A B C»}; si se establece en |mathcat|,
 % \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
@@ -3775,21 +3806,38 @@
 % \keyexampcmd{prefix}{prefijo}{no usado}[spPfig]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«perímetro del»}. El valor de
+% \emph{antes} de verbalizar el término \emph{«perímetro»}. El valor de
 % esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
-% \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{true}[spPfig]
+% \keyexampcmd{print-sym}{auto \textnormal{\textcolor{lightgray}{\textbar}}
+%   triangle \textnormal{\textcolor{lightgray}{\textbar}}
+%   square \textnormal{\textcolor{lightgray}{\textbar}}
+%   none}{auto}[spPfig]
 % \smallskip
-% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión
-% cuando el argumento contenga tres o cuatro puntos.
-% Si se establece en |true|, |$\spPfig[print-sym=true](A, B, C)$|
-% imprimirá `$\mathcal{P}_{\triangle ABC}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del triángulo A B C»};
-% si se establece en |false|, imprimirá `$\mathcal{P}_{ABC}$' en la
-% salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del triángulo A B C»}.
+% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión,
+% con la misma semántica que en |\spAfig| (\S\ref{subsec:spAfig}).
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spPfig]
+% \smallskip
+% Establece si \mynvmath{NVDA/MathCAT} antepone la palabra «sub» al
+% verbalizar el número o letra del argumento único, con la misma
+% semántica que en |\spAfig| (\S\ref{subsec:spAfig}).
+%
+% \smallskip
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spPfig]
+% \smallskip
+% Establece si se \emph{silencia por completo} la verbalización en
+% \mynvmath{NVDA/MathCAT}, sin afectar la impresión. Si se establece
+% en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará nada; si se
+% establece en |false|, \mynvmath{NVDA/MathCAT} verbalizará
+% normalmente.
 %
 % \smallskip
 %
@@ -8747,6 +8795,8 @@
 \tl_new:N  \l_@@_geo_side_cmd_tl
 \tl_new:N  \l_@@_geo_fig_op_tl
 \str_new:N \l_@@_geo_luaset_concept_str
+\str_new:N \l_@@_geo_luaset_letra_word_str
+\str_new:N \l_@@_geo_luaset_sub_spoken_str
 %    \end{macrocode}
 % \end{variable}
 %
@@ -10307,6 +10357,10 @@
 %   The |_read_arg_str| variable stores the figure-name override set
 %   by \mykey[spAfig]{read-arg}, independent of \mykey[spAfig]{print-sym}.
 %    \begin{macrocode}
+\tl_new:N  \l_@@_geo_sym_word_tl
+\tl_new:N  \l_@@_geo_final_print_tl
+\str_new:N \l_@@_geo_final_intent_str
+\str_new:N \l_@@_geo_mathcat_concept_str
 \clist_map_inline:nn { Afig , Pfig }
   {
     \str_new:c { l_@@_sp #1 _mode_str      }
@@ -10335,6 +10389,27 @@
         The~argument~must~be~empty,~or~a~comma-separated~list~of~at~
         least~three~uppercase~letters~with~optional~subscripts~
         (\_{...})~or~primes~(').\\
+      }
+    \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
+      { Invalid~argument~format~in~##1:~'##2'. }
+      {
+        The~argument~must~be~either~empty,~a~comma-separated~list~of~
+        vertices,~a~bare~number~or~letter~(e.g.\ '1',~'n'),~or~a~
+        table~letter~with~an~optional~subscript~(e.g.\ 'F',~'F_\{1\}').
+      }
+    \msg_new:nnnn { spintent } { sp #1 -sym-letra-conflict }
+      { print-sym~cannot~be~combined~with~a~lettered~argument~in~##1. }
+      {
+        When~print-sym~is~not~'none',~the~argument~(if~given)~must~
+        be~a~bare~number~or~letter~(e.g.~'1',~'n')~—~table~letters~
+        like~'F'~or~'P'~are~not~allowed~in~combination~with~print-sym.
+      }
+    \msg_new:nnnn { spintent } { sp #1 -sym-cardinality-conflict }
+      { print-sym~does~not~match~the~vertex~count~in~##1. }
+      {
+        The~forced~symbol~(triangle/square)~must~match~the~number~of~
+        vertices~given~—~use~'auto'~to~infer~it~automatically,~or~'none'~
+        to~omit~it.
       }
   }
 %    \end{macrocode}
@@ -10370,20 +10445,21 @@
           { \@@_sanitize_affix:cn { l_@@_sp #1 _prefix_tl } {##1} },
         prefix              .initial:n  = ,
         prefix              .value_required:n = true,
-        print-sym           .choices:nn = { triangle , square , none }
+        print-sym           .choices:nn = { auto , triangle , square , none }
           {
             \int_case:nn { \l_keys_choice_int }
               {
-                {1} { \str_set:cn { l_@@_sp #1 _print_sym_str } { triangle } }
-                {2} { \str_set:cn { l_@@_sp #1 _print_sym_str } { square   } }
-                {3} { \str_set:cn { l_@@_sp #1 _print_sym_str } { none     } }
+                {1} { \str_set:cn { l_@@_sp #1 _print_sym_str } { auto     } }
+                {2} { \str_set:cn { l_@@_sp #1 _print_sym_str } { triangle } }
+                {3} { \str_set:cn { l_@@_sp #1 _print_sym_str } { square   } }
+                {4} { \str_set:cn { l_@@_sp #1 _print_sym_str } { none     } }
               }
           },
-        print-sym           .initial:n  = none,
+        print-sym           .initial:n  = auto,
         print-sym           .value_required:n = true,
         print-sym / unknown  .code:n =
           \msg_error:nneee { spintent } { unknown-choice }
-            { print-sym } { triangle,~square,~none } { \exp_not:n {##1} },
+            { print-sym } { auto,~triangle,~square,~none } { \exp_not:n {##1} },
         read-arg            .code:n =
           { \@@_sanitize_affix:cn { l_@@_sp #1 _read_arg_tl } {##1} },
         read-arg            .initial:n  = ,
@@ -10431,49 +10507,207 @@
 %   built with \cs{c_math_subscript_token} rather than a literal |_|,
 %   since the latter is not guaranteed to act as a subscript operator
 %   inside the token stream built by \cs{MathMLintent}.
+%
+%   \smallskip
+%
+%   For the single-argument grammar (\S\ref{cmd:spAfig}), Lua returns
+%   \cs{l_@@_geo_luaset_letra_word_str} and
+%   \cs{l_@@_geo_luaset_letra_conector_str} separately: the connector
+%   (|de-la|, |del|, or empty) depends on the grammatical gender and
+%   part of speech of each table letter (|F|/|P| are nouns needing an
+%   article; |B|/|L| are adjectives, taking none), and is inserted
+%   before the word only when non-empty.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_process:nn
   {
     \str_if_eq:eeTF {#1} { Afig }
+      { \tl_set:Nn \l_@@_geo_fig_op_tl { área } }
+      { \tl_set:Nn \l_@@_geo_fig_op_tl { perímetro } }
+
+    \str_set:Ne \l_@@_geo_print_sym_str { \str_use:c { l_@@_sp #1 _print_sym_str } }
+
+    \str_if_eq:eeTF {#1} { Afig }
       {
-        \@@_luafun_geo_afig_parse_and_set:nn
-          { \exp_not:n {#2} } { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
+        \@@_luafun_geo_afig_parse_and_set:nn { \exp_not:n {#2} }
+          { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
       }
       {
-        \@@_luafun_geo_pfig_parse_and_set:nn
-          { \exp_not:n {#2} } { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
+        \@@_luafun_geo_pfig_parse_and_set:nn { \exp_not:n {#2} }
+          { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
       }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
-        \msg_error:nnee { spintent } { sp #1 -invalid-points }
+        \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
+
+    \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
+      { \tl_set:Nn \l_@@_geo_sym_word_tl { triángulo } }
+      {
+        \str_if_eq:VnTF \l_@@_geo_print_sym_str { square }
+          { \tl_set:Nn \l_@@_geo_sym_word_tl { cuadrado } }
+          { \tl_clear:N \l_@@_geo_sym_word_tl }
+      }
+    \cs_set_protected:Npn \@@_spfig_sym_choice:
+      {
+        \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
+          { \triangle } { \mdlgwhtsquare }
+      }
+
+    \tl_if_empty:nTF {#2}
+      {
+        % ---------- CASO A: argumento vacío ----------
+        \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
+          {
+            \tl_set:Nn \l_@@_geo_final_print_tl { \@@_spfig_sym_choice: }
+            \str_set:Ne \l_@@_geo_final_intent_str
+              { \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl }
+            \str_set:Ne \l_@@_geo_mathcat_concept_str
+              { \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl }
+          }
+          {
+            \str_if_eq:VnTF \l_@@_geo_print_sym_str { square }
+              {
+                \tl_set:Nn \l_@@_geo_final_print_tl { \@@_spfig_sym_choice: }
+                \str_set:Ne \l_@@_geo_final_intent_str
+                  { \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl }
+                \str_set:Ne \l_@@_geo_mathcat_concept_str
+                  { \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl }
+              }
+              {
+                % cubre "none" Y "auto" (sin cardinalidad que inferir aquí)
+                \tl_clear:N \l_@@_geo_final_print_tl
+                \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_fig_op_tl }
+                \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_fig_op_tl }
+              }
+          }
+      }
+      {
+        \str_if_eq:VnTF \l_@@_geo_luaset_intent_str { }
+          {
+            % ---------- argumento único (número/letra/tabla) ----------
+            \tl_if_empty:VTF \l_@@_geo_luaset_letra_word_str
+              {
+                % CASO B1: número/letra suelta
+                \str_if_eq:VnTF \l_@@_geo_print_sym_str { none }
+                  {
+                    \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
+                    \str_set:Ne \l_@@_geo_final_intent_str
+                      {
+                        \l_@@_geo_fig_op_tl -
+                        \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
+                        \l_@@_geo_luaset_sub_spoken_str
+                      }
+                  }
+                  {
+                    \str_if_eq:VnTF \l_@@_geo_print_sym_str { auto }
+                      {
+                        \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
+                        \str_set:Ne \l_@@_geo_final_intent_str
+                          {
+                            \l_@@_geo_fig_op_tl -
+                            \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
+                            \l_@@_geo_luaset_sub_spoken_str
+                          }
+                      }
+                      {
+                        \tl_set:Nn \l_@@_geo_final_print_tl
+                          {
+                            \@@_spfig_sym_choice:
+                            \c_math_subscript_token { \l_@@_geo_luaset_print_tl }
+                          }
+                        \str_set:Ne \l_@@_geo_final_intent_str
+                          {
+                            \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl -
+                            \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
+                            \l_@@_geo_luaset_sub_spoken_str
+                          }
+                      }
+                  }
+              }
+              {
+                % CASO B2: letra de tabla (F, P, B, L)
+                \str_if_eq:VnF \l_@@_geo_print_sym_str { none }
+                  {
+                    \str_if_eq:VnF \l_@@_geo_print_sym_str { auto }
+                      {
+                        \msg_error:nne { spintent } { sp #1 -sym-letra-conflict }
+                          { \c_backslash_str sp #1 }
+                      }
+                  }
+                \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
+                \str_set:Ne \l_@@_geo_final_intent_str
+                  {
+                    \l_@@_geo_fig_op_tl -
+                    \str_if_empty:NF \l_@@_geo_luaset_letra_conector_str
+                      { \l_@@_geo_luaset_letra_conector_str - }
+                    \l_@@_geo_luaset_letra_word_str
+                    \str_if_empty:NF \l_@@_geo_luaset_sub_spoken_str
+                      {
+                        -
+                        \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
+                        \l_@@_geo_luaset_sub_spoken_str
+                      }
+                  }
+              }
+            \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_fig_op_tl }
+          }
+          {
+            % ---------- CASO C: vértices reales (con coma) ----------
+            \str_if_eq:VnTF \l_@@_geo_print_sym_str { none }
+              {
+                \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
+                \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_pts_str }
+              }
+              {
+                \str_if_eq:VnTF \l_@@_geo_print_sym_str { auto }
+                  {
+                    \tl_set:Nn \l_@@_geo_final_print_tl
+                      {
+                        \@@_spfig_sym:
+                        \l_@@_geo_luaset_print_tl
+                      }
+                    \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_str }
+                  }
+                  {
+                    \str_if_eq:VVTF \l_@@_geo_print_sym_str \l_@@_geo_luaset_poly_sym_str
+                      {
+                        \tl_set:Nn \l_@@_geo_final_print_tl
+                          {
+                            \@@_spfig_sym:
+                            \l_@@_geo_luaset_print_tl
+                          }
+                        \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_str }
+                      }
+                      {
+                        \msg_error:nne { spintent } { sp #1 -sym-cardinality-conflict }
+                          { \c_backslash_str sp #1 }
+                      }
+                  }
+              }
+            \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_luaset_concept_str }
+          }
+      }
+
     \str_if_eq:eeT { \str_use:c { l_@@_sp #1 _mode_str } } { mathcat }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str
-          { _ \l_@@_geo_luaset_concept_str :prefix($pts) }
+        \str_set:Ne \l_@@_geo_final_intent_str
+          { _ \l_@@_geo_mathcat_concept_str :prefix($pts) }
       }
-    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
+
+    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
         \MathMLintent
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_luaset_intent_str
+            _-
           }
           {
             \c_@@_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { Afig }
-              { \mathcal { A } } { \mathcal { P } }
-            \tl_if_empty:NF \l_@@_geo_luaset_print_tl
-              {
-                \c_math_subscript_token
-                  {
-                    \bool_if:cT { l_@@_sp #1 _print_sym_bool }
-                      { \MathMLintent { :silent } { \@@_spfig_sym: } }
-                    \l_@@_geo_luaset_print_tl
-                  }
-              }
+            \str_if_eq:eeTF {#1} { Afig } { \mathcal { A } } { \mathcal { P } }
+            \tl_if_empty:NF \l_@@_geo_final_print_tl
+              { \c_math_subscript_token { \l_@@_geo_final_print_tl } }
           }
         \@@_invisible_sep:
       }
@@ -10482,21 +10716,13 @@
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
               { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_luaset_intent_str
+            \l_@@_geo_final_intent_str
           }
           {
             \c_@@_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { Afig }
-              { \mathcal { A } } { \mathcal { P } }
-            \tl_if_empty:NF \l_@@_geo_luaset_print_tl
-              {
-                \c_math_subscript_token
-                  {
-                    \bool_if:cT { l_@@_sp #1 _print_sym_bool }
-                      { \MathMLintent { :silent } { \@@_spfig_sym: } }
-                    \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
-                  }
-              }
+            \str_if_eq:eeTF {#1} { Afig } { \mathcal { A } } { \mathcal { P } }
+            \tl_if_empty:NF \l_@@_geo_final_print_tl
+              { \c_math_subscript_token { \l_@@_geo_final_print_tl } }
           }
         \@@_invisible_sep:
       }
@@ -12095,7 +12321,7 @@ local spintent_geo_nombre_recta = Ct(
         + spintent_geo_primas             * Cc"prima"
         + Cc""                            * Cc""
     )
-)
+) * P(-1)
 
 local spintent_geo_num_a_texto = {
     ["0"] = "cero",  ["1"] = "uno",   ["2"] = "dos",
@@ -12370,10 +12596,16 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
 end, { "string" })
 
 -- Tabla de letras válidas para el argumento único de \spAfig/\spPfig
--- (p.ej. "F_{1}", "P", "B_{2}"). Extensible: "C" queda reservada para
--- círculo/circunferencia, no forma parte de esta tabla.
+-- (p.ej. "F_{1}", "P", "B_{2}"). Cada letra lleva su palabra y el
+-- conector gramatical correcto: sustantivos usan "de-la"/"del" según
+-- género; adjetivos usan conector vacío (van pegados directamente
+-- tras "área"/"perímetro"). "C" queda reservada para círculo/
+-- circunferencia, no forma parte de esta tabla.
 local spintent_geo_fig_letras = {
-    F = "figura", P = "polígono", B = "basal", L = "lateral",
+    F = { palabra = "figura",   conector = "de-la" },
+    P = { palabra = "polígono", conector = "del"    },
+    B = { palabra = "basal",    conector = ""       },
+    L = { palabra = "lateral",  conector = ""       },
 }
 
 -- Letra de la tabla, con subíndice opcional (dígitos u otra letra).
@@ -12390,30 +12622,31 @@ local spintent_geo_fig_letra_sola = Ct(
 -- símbolo, si print-sym!=none).
 local spintent_geo_fig_sub_simple = (C(R"09"^1) + C(R"az")) * P(-1)
 
--- Devuelve: ok, visual, palabra, sub_spoken.
+-- Devuelve: ok, visual, palabra, conector, sub_spoken.
 -- "visual" es lo que se tipografía tal cual (letra+subíndice, o el
 -- número/letra suelto); "palabra" es el mapeo de la letra ("" si no
--- hay letra); "sub_spoken" es la forma hablada del subíndice ("" si
--- no hay subíndice). expl3 arma el intent final combinando estas
--- piezas con su propia llave read-sub, sin que Lua sepa nada de ella.
+-- hay letra); "conector" es "de-la"/"del"/"" según la letra;
+-- "sub_spoken" es la forma hablada del subíndice ("" si no hay
+-- subíndice). expl3 arma el intent final combinando estas piezas con
+-- su propia llave read-sub, sin que Lua sepa nada de ella.
 local function spintent_geo_fig_parse_arg(csv)
     local con_letra = spintent_geo_fig_letra_sola:match(csv)
     if con_letra then
         local letra, sub, tipo = con_letra[1], con_letra[2], con_letra[3]
-        local palabra = spintent_geo_fig_letras[letra]
+        local info = spintent_geo_fig_letras[letra]
         if tipo == "sub" then
             local visual = letra .. "_{" .. sub .. "}"
             local sub_spoken = spintent_geo_num_a_texto[sub] or sub
-            return true, visual, palabra, sub_spoken
+            return true, visual, info.palabra, info.conector, sub_spoken
         else
-            return true, letra, palabra, ""
+            return true, letra, info.palabra, info.conector, ""
         end
     end
 
     local solo = spintent_geo_fig_sub_simple:match(csv)
     if solo then
         local sub_spoken = spintent_geo_num_a_texto[solo] or solo
-        return true, solo, "", sub_spoken
+        return true, solo, "", "", sub_spoken
     end
 
     return false
@@ -12429,51 +12662,62 @@ local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
     read_arg = spintent_trim(read_arg)
 
     if csv == "" then
-        token_set_macro("l__spintent_geo_luaset_error_str",       "false")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",    "")
-        token_set_macro("l__spintent_geo_luaset_intent_str",      op)
-        token_set_macro("l__spintent_geo_luaset_concept_str",     op)
-        token_set_macro("l__spintent_geo_luaset_print_tl",        "")
-        token_set_macro("l__spintent_geo_luaset_letra_word_str",  "")
-        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",  "")
+        token_set_macro("l__spintent_geo_luaset_error_str",         "false")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
+        token_set_macro("l__spintent_geo_luaset_intent_str",        op)
+        token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
+        token_set_macro("l__spintent_geo_luaset_concept_str",       op)
+        token_set_macro("l__spintent_geo_luaset_print_tl",          "")
+        token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
+        token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
+        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
         return
     end
 
     local tiene_coma = s_match(csv, ",")
 
     if not tiene_coma then
-        local ok, visual, palabra, sub_spoken = spintent_geo_fig_parse_arg(csv)
+        local ok, visual, palabra, conector, sub_spoken = spintent_geo_fig_parse_arg(csv)
         if not ok then
-            token_set_macro("l__spintent_geo_luaset_error_str",   "true")
-            token_set_macro("l__spintent_geo_luaset_intent_str",  "")
-            token_set_macro("l__spintent_geo_luaset_concept_str", "")
-            token_set_macro("l__spintent_geo_luaset_print_tl",    "")
-            token_set_macro("l__spintent_geo_luaset_poly_sym_str","")
-            token_set_macro("l__spintent_geo_luaset_letra_word_str", "")
-            token_set_macro("l__spintent_geo_luaset_sub_spoken_str", "")
+            token_set_macro("l__spintent_geo_luaset_error_str",         "true")
+            token_set_macro("l__spintent_geo_luaset_intent_str",        "")
+            token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
+            token_set_macro("l__spintent_geo_luaset_concept_str",       "")
+            token_set_macro("l__spintent_geo_luaset_print_tl",          "")
+            token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
+            token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
+            token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
+            token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
             return
         end
-        token_set_macro("l__spintent_geo_luaset_error_str",      "false")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
-        token_set_macro("l__spintent_geo_luaset_concept_str",    op)
-        token_set_macro("l__spintent_geo_luaset_print_tl",       visual)
-        token_set_macro("l__spintent_geo_luaset_letra_word_str", palabra)
-        token_set_macro("l__spintent_geo_luaset_sub_spoken_str", sub_spoken)
-        -- intent_str se deja vacío: expl3 arma el intent final con
-        -- op + palabra + sub_spoken + su propia llave read-sub.
-        token_set_macro("l__spintent_geo_luaset_intent_str", "")
+        token_set_macro("l__spintent_geo_luaset_error_str",         "false")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
+        token_set_macro("l__spintent_geo_luaset_concept_str",       op)
+        token_set_macro("l__spintent_geo_luaset_print_tl",          visual)
+        token_set_macro("l__spintent_geo_luaset_letra_word_str",    palabra)
+        token_set_macro("l__spintent_geo_luaset_letra_conector_str",conector)
+        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    sub_spoken)
+        -- intent_str vacío: expl3 arma el intent final con op +
+        -- conector + palabra + sub_spoken + su propia llave read-sub.
+        -- Este vacío es también el DISCRIMINADOR que expl3 usa para
+        -- distinguir "argumento único" de "vértices" (poly_sym_str
+        -- por sí solo no sirve: también queda vacío para 5+ puntos).
+        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
+        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
         return
     end
 
     local puntos = spintent_geo_poly_grammar:match(csv)
     if not puntos or #puntos < 3 then
-        token_set_macro("l__spintent_geo_luaset_error_str",    "true")
-        token_set_macro("l__spintent_geo_luaset_intent_str",   "")
-        token_set_macro("l__spintent_geo_luaset_concept_str",  "")
-        token_set_macro("l__spintent_geo_luaset_print_tl",     "")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str", "")
-        token_set_macro("l__spintent_geo_luaset_letra_word_str", "")
-        token_set_macro("l__spintent_geo_luaset_sub_spoken_str", "")
+        token_set_macro("l__spintent_geo_luaset_error_str",         "true")
+        token_set_macro("l__spintent_geo_luaset_intent_str",        "")
+        token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
+        token_set_macro("l__spintent_geo_luaset_concept_str",       "")
+        token_set_macro("l__spintent_geo_luaset_print_tl",          "")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
+        token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
+        token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
+        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
         return
     end
 
@@ -12484,15 +12728,22 @@ local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
     local sym     = (info and info.sym) or ""
     local concepto = op .. "-del-" .. cmd_fig
 
-    token_set_macro("l__spintent_geo_luaset_error_str",    "false")
-    token_set_macro("l__spintent_geo_luaset_poly_sym_str", sym)
-    token_set_macro("l__spintent_geo_luaset_concept_str",  concepto)
+    token_set_macro("l__spintent_geo_luaset_error_str",         "false")
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str",      sym)
+    token_set_macro("l__spintent_geo_luaset_concept_str",       concepto)
     token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
-    token_set_macro("l__spintent_geo_luaset_letra_word_str", "")
-    token_set_macro("l__spintent_geo_luaset_sub_spoken_str", "")
+    token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
+    token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
+    token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
 
     local cuerpo = spintent_geo_build_intent("", puntos):match("^_(.-)-$")
     token_set_macro("l__spintent_geo_luaset_intent_str", concepto .. "-" .. cuerpo)
+    -- intent_pts_str: mismo cuerpo de vértices, pero con "op" ("área"/
+    -- "perímetro") en vez del nombre completo de la figura — usado
+    -- cuando print-sym=none pese a haber vértices reales, para
+    -- consistencia con el mismo mecanismo ya existente en \spPoly.
+    token_set_macro("l__spintent_geo_luaset_intent_pts_str",
+                    spintent_geo_build_intent(op, puntos))
 end
 
 register_tex_cmd("luafun_geo_afig_parse_and_set",
