@@ -9564,12 +9564,13 @@
           }
           {
             \c_@@_invisible_sep_tl
-            \str_if_eq:eeT {#1} { mside }
+            \str_if_eq:eeTF {#1} { side }
+              { \overline { \l_@@_geo_luaset_print_tl } }
               {
                 \bool_if:cT { l_@@_sp #1 _print_m_bool }
                   { \MathMLintent { :silent } { \operatorname { m } } }
+                \l_@@_geo_luaset_print_tl
               }
-            \overline { \l_@@_geo_luaset_print_tl }
           }
         \@@_invisible_sep:
       }
@@ -9582,13 +9583,13 @@
           }
           {
             \c_@@_invisible_sep_tl
-            \str_if_eq:eeT {#1} { mside }
+            \str_if_eq:eeTF {#1} { side }
+              { \overline { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } } }
               {
                 \bool_if:cT { l_@@_sp #1 _print_m_bool }
                   { \MathMLintent { :silent } { \operatorname { m } } }
+                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
               }
-            \overline
-              { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
           }
         \@@_invisible_sep:
       }
@@ -10771,6 +10772,364 @@
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPfig } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spCirc}}\label{cmd:spCirc}
+%
+% The user command |\spCirc| provides a semantic interface for a
+% circle or a circumference, using the delimited-optional argument
+% syntax |d()| already established by |\spmcd|/|\spmcm| and
+% |\spAfig|/|\spPfig|. The argument holds a required center point and
+% an optional radius, separated by a comma. The radius is never
+% required to declare its own kind via a key: its shape alone decides
+% whether it is a pure number, a measure (number~+~unit), a bare
+% letter, or a two-letter segment — reusing, respectively,
+% |\spnum|, |\spunit|, and |\spside|/|\spmside| directly as
+% sub-commands, rather than reimplementing any of their parsing.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spCirc}}
+%
+% \begin{variable}[int]{
+%   \l_@@_geo_luaset_circ_radio_type_str,
+%   \l_@@_geo_luaset_circ_radio_raw_str}
+%   Shared outputs of \myhlc|\@@_luafun_geo_circ_parse_and_set:n|.
+%   \myhlc|\l_@@_geo_luaset_circ_radio_type_str| holds one of
+%   |number|, |measure|, |label|, |segment|, or an empty string when
+%   no radius was given. \myhlc|\l_@@_geo_luaset_circ_radio_raw_str|
+%   holds the corresponding raw text, ready to be forwarded to the
+%   sub-command that renders it.
+%    \begin{macrocode}
+\str_new:N \l_@@_geo_luaset_circ_radio_type_str
+\str_new:N \l_@@_geo_luaset_circ_radio_raw_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{variable}[int]{
+%   \l_@@_spCirc_mode_str, \l_@@_spCirc_prefix_tl,
+%   \l_@@_spCirc_print_sym_str, \l_@@_spCirc_read_sty_str,
+%   \l_@@_spCirc_radio_sty_str, \l_@@_spCirc_sub_index_str,
+%   \l_@@_spCirc_articulo_str}
+%   \cs{l_@@_spCirc_mode_str} and \cs{l_@@_spCirc_prefix_tl} follow
+%   the same semantics as the corresponding variables of |\spPoint|
+%   (\S\ref{cmd:spPoint}). \cs{l_@@_spCirc_print_sym_str} stores the
+%   value of \mykey[spCirc]{print-sym} (|usual| or |odot|).
+%   \cs{l_@@_spCirc_read_sty_str} stores \mykey[spCirc]{read-sty}
+%   (|circun| or |circle|). \cs{l_@@_spCirc_radio_sty_str} stores
+%   \mykey[spCirc]{radio-sty}, only meaningful when the radius is a
+%   segment. \cs{l_@@_spCirc_sub_index_str} stores
+%   \mykey[spCirc]{sub-index}. \cs{l_@@_spCirc_articulo_str} is set
+%   internally by \myhlc|\@@_spCirc_word_and_article:| to |la| or
+%   |el|, matching the grammatical gender of the chosen word.
+%    \begin{macrocode}
+\str_new:N \l_@@_spCirc_mode_str
+\tl_new:N  \l_@@_spCirc_prefix_tl
+\str_new:N \l_@@_spCirc_print_sym_str
+\str_new:N \l_@@_spCirc_read_sty_str
+\str_new:N \l_@@_spCirc_radio_sty_str
+\str_new:N \l_@@_spCirc_sub_index_str
+\str_new:N \l_@@_spCirc_articulo_str
+\tl_new:N  \l_@@_spCirc_read_arg_tl
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{variable}[int]{
+%   \l_@@_geo_circ_word_tl, \l_@@_geo_circ_intent_str}
+%   Scratch variables used by \myhlc|\@@_spCirc_print:n| to assemble
+%   the chosen word (|circunferencia|/|círculo|, or the
+%   \mykey[spCirc]{read-arg} override) and the final literal |intent|
+%   string.
+%    \begin{macrocode}
+\tl_new:N  \l_@@_geo_circ_word_tl
+\str_new:N \l_@@_geo_circ_intent_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spCirc}}
+%
+% \begin{macro}[int]{spCirc-invalid-arg}
+%   Raised when the argument does not match a single center point,
+%   optionally followed by a comma and a valid radius shape.
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spCirc-invalid-arg }
+  { Invalid~argument~format~in~\token_to_str:N \spCirc:~'#1'. }
+  {
+    The~argument~must~be~a~single~point~(the~center),~optionally~
+    followed~by~a~comma~and~a~radius:~a~pure~number,~a~measure~
+    (number~+~unit),~a~single~letter,~or~two~concatenated~letters~
+    (a~segment).
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spCirc}}
+%
+% \begin{macro}[int]{read-cmd, prefix, print-sym, read-sty, radio-sty,
+%                    sub-index, read-sub, read-arg, silent-cmd,
+%                    unknown}
+%   \mykey[spCirc]{print-sym} chooses the visual symbol: |usual| for
+%   a plain |C|, |odot| (default) for |\odot|. \mykey[spCirc]{read-sty}
+%   chooses the verbalized word and its article: |circun| (default)
+%   for \emph{«la circunferencia»}, |circle| for \emph{«el
+%   círculo»}. \mykey[spCirc]{radio-sty} chooses, only when the radius
+%   is a two-letter segment, whether it is rendered as the
+%   \emph{object} (|side|, via |\spside|) or its \emph{measure}
+%   (|mside|, default, via |\spmside|). \mykey[spCirc]{sub-index} sets
+%   a subscript on the symbol; \mykey[spCirc]{read-sub} controls
+%   whether it is read with the word «sub» or as a plain number,
+%   matching the same convention as |\spAfig| (\S\ref{cmd:spAfig}).
+%    \begin{macrocode}
+\keys_define:nn { spintent / spCirc }
+  {
+    read-cmd     .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spCirc_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spCirc_mode_str { mathcat } }
+          }
+      },
+    read-cmd     .initial:n = school,
+    read-cmd     .value_required:n = true,
+    prefix       .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spCirc_prefix_tl {#1} },
+    prefix       .initial:n = ,
+    prefix       .value_required:n = true,
+    print-sym    .choices:nn = { usual , odot }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spCirc_print_sym_str { usual } }
+            {2} { \str_set:Nn \l_@@_spCirc_print_sym_str { odot  } }
+          }
+      },
+    print-sym    .initial:n = odot,
+    print-sym    .value_required:n = true,
+    read-sty     .choices:nn = { circun , circle }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spCirc_read_sty_str { circun } }
+            {2} { \str_set:Nn \l_@@_spCirc_read_sty_str { circle } }
+          }
+      },
+    read-sty     .initial:n = circun,
+    read-sty     .value_required:n = true,
+    radio-sty    .choices:nn = { side , mside }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spCirc_radio_sty_str { side  } }
+            {2} { \str_set:Nn \l_@@_spCirc_radio_sty_str { mside } }
+          }
+      },
+    radio-sty    .initial:n = mside,
+    radio-sty    .value_required:n = true,
+    sub-index    .code:n =
+      { \str_set:Nn \l_@@_spCirc_sub_index_str {#1} },
+    sub-index    .initial:n = ,
+    sub-index    .value_required:n = true,
+    read-sub     .bool_set:N = \l_@@_spCirc_read_sub_bool,
+    read-sub     .initial:n = false,
+    read-sub     .value_required:n = true,
+    read-arg     .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spCirc_read_arg_tl {#1} },
+    read-arg     .initial:n = ,
+    read-arg     .value_required:n = true,
+    silent-cmd   .bool_set:N = \l_@@_spCirc_silent_cmd_bool,
+    silent-cmd   .initial:n = false,
+    silent-cmd   .value_required:n = true,
+    unknown      .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spCirc }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spCirc}}
+%
+% \begin{macro}[int]{\@@_spCirc_sym:}
+%   Typesets \cs{odot} or the plain letter |C|, according to
+%   \mykey[spCirc]{print-sym}.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spCirc_sym:
+  { \str_if_eq:VnTF \l_@@_spCirc_print_sym_str { odot } { \odot } { C } }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spCirc_word_and_article:}
+%   Sets \cs{l_@@_geo_circ_word_tl} to the chosen word — either
+%   \mykey[spCirc]{read-arg}, or |circunferencia|/|círculo| per
+%   \mykey[spCirc]{read-sty} — and \cs{l_@@_spCirc_articulo_str} to
+%   the matching article (|la|/|el|). The article always follows
+%   \mykey[spCirc]{read-sty}, even when \mykey[spCirc]{read-arg}
+%   overrides the word itself.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spCirc_word_and_article:
+  {
+    \tl_if_empty:NTF \l_@@_spCirc_read_arg_tl
+      {
+        \str_if_eq:VnTF \l_@@_spCirc_read_sty_str { circun }
+          {
+            \tl_set:Nn \l_@@_geo_circ_word_tl { circunferencia }
+            \str_set:Nn \l_@@_spCirc_articulo_str { la }
+          }
+          {
+            \tl_set:Nn \l_@@_geo_circ_word_tl { círculo }
+            \str_set:Nn \l_@@_spCirc_articulo_str { el }
+          }
+      }
+      {
+        \tl_set:Nn \l_@@_geo_circ_word_tl { \l_@@_spCirc_read_arg_tl }
+        \str_if_eq:VnTF \l_@@_spCirc_read_sty_str { circun }
+          { \str_set:Nn \l_@@_spCirc_articulo_str { la } }
+          { \str_set:Nn \l_@@_spCirc_articulo_str { el } }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spCirc_radio_print:}
+%   Dispatches on \cs{l_@@_geo_luaset_circ_radio_type_str}, reusing
+%   the actual public sub-commands rather than reimplementing any
+%   parsing: |number| and |measure| delegate to |\spnum|/|\spunit|;
+%   |segment| delegates to |\spside|/|\spmside| according to
+%   \mykey[spCirc]{radio-sty} — both already accept the concatenated
+%   two-letter form (\S\ref{cmd:spside}) that Lua hands over here.
+%   |label| is typeset as a bare letter, with no special intent
+%   wrapping. In every case, \cs{exp_args:No} is required to expand
+%   \cs{l_@@_geo_luaset_circ_radio_raw_str} into the sub-command's
+%   argument, since a plain brace group does not expand a \texttt{str}
+%   variable on its own.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spCirc_radio_print:
+  {
+    \str_case:Vn \l_@@_geo_luaset_circ_radio_type_str
+      {
+        { number  } { \exp_args:No \spnum { \l_@@_geo_luaset_circ_radio_raw_str } }
+        { measure } { \exp_args:No \spunit { \l_@@_geo_luaset_circ_radio_raw_str } }
+        { label   } { \l_@@_geo_luaset_circ_radio_raw_str }
+        { segment }
+          {
+            \str_if_eq:VnTF \l_@@_spCirc_radio_sty_str { side }
+              { \exp_args:No \spside  { \l_@@_geo_luaset_circ_radio_raw_str } }
+              { \exp_args:No \spmside { \l_@@_geo_luaset_circ_radio_raw_str } }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spCirc_print:n}
+%   Calls \myhlc|\@@_luafun_geo_circ_parse_and_set:n| to resolve the
+%   center and classify the radius, then assembles
+%   \cs{l_@@_geo_circ_intent_str} — the word, an optional
+%   \mykey[spCirc]{sub-index} suffix, |de-centro-en-|, the center, and
+%   |-y-radio| when a radius is present. Critically, when a radius is
+%   present, the visual is split across \emph{two} separate
+%   \cs{MathMLintent} calls with \myhlc|\@@_spCirc_radio_print:| —
+%   which typesets a sub-command carrying its own independent
+%   |intent| — sitting as a \emph{sibling} in between, rather than
+%   nested inside either one. Embedding a full sub-command's own
+%   \cs{MathMLintent} inside another command's content argument makes
+%   MathCAT read only the outer literal string, exactly as observed
+%   with |mover|/|msub| structures (\S\ref{cmd:sparc}); as
+%   \emph{siblings}, both are read in sequence as one continuous
+%   phrase.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spCirc_print:n
+  {
+    \@@_luafun_geo_circ_parse_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+      {
+        \msg_error:nne { spintent } { spCirc-invalid-arg }
+          { \exp_not:n {#1} }
+      }
+    \@@_spCirc_word_and_article:
+
+    \str_set:Nx \l_@@_geo_circ_intent_str { \l_@@_geo_circ_word_tl }
+    \tl_if_empty:NF \l_@@_spCirc_sub_index_str
+      {
+        \tl_put_right:Nn \l_@@_geo_circ_intent_str
+          {
+            -
+            \bool_if:NT \l_@@_spCirc_read_sub_bool { sub - }
+            \l_@@_spCirc_sub_index_str
+          }
+      }
+    \tl_put_right:Nn \l_@@_geo_circ_intent_str
+      { -de-centro-en-\l_@@_geo_luaset_print_tl }
+    \tl_if_empty:VF \l_@@_geo_luaset_circ_radio_type_str
+      { \tl_put_right:Nn \l_@@_geo_circ_intent_str { -y-radio } }
+
+    \tl_if_empty:VTF \l_@@_geo_luaset_circ_radio_type_str
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:NF \l_@@_spCirc_prefix_tl
+              { \tl_use:N \l_@@_spCirc_prefix_tl - }
+            \l_@@_geo_circ_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \@@_spCirc_sym:
+            \tl_if_empty:NF \l_@@_spCirc_sub_index_str
+              { \c_math_subscript_token { \l_@@_spCirc_sub_index_str } }
+            ( \l_@@_geo_luaset_print_tl )
+          }
+        \@@_invisible_sep:
+      }
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:NF \l_@@_spCirc_prefix_tl
+              { \tl_use:N \l_@@_spCirc_prefix_tl - }
+            \l_@@_geo_circ_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \@@_spCirc_sym:
+            \tl_if_empty:NF \l_@@_spCirc_sub_index_str
+              { \c_math_subscript_token { \l_@@_spCirc_sub_index_str } }
+            ( \l_@@_geo_luaset_print_tl ,
+          }
+        \@@_invisible_sep:
+        \@@_spCirc_radio_print:
+        \MathMLintent { :silent } { ) }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spCirc_exec:nn}
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spCirc_exec:nn
+  {
+    \keys_set:nn { spintent / spCirc } { #1 }
+    \@@_spCirc_print:n { #2 }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spCirc}
+%   Follows the same |d()|-argument pattern as |\spmcd|/|\spmcm| and
+%   |\spAfig|/|\spPfig|; an omitted radius forwards an explicit empty
+%   group rather than the |-NoValue-| marker.
+%    \begin{macrocode}
+\NewDocumentCommand \spCirc { O{} d() }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \tl_if_novalue:nTF {#2}
+            { \@@_spCirc_exec:nn { #1 } { } }
+            { \@@_spCirc_exec:nn { #1 } { #2 } }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spCirc } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -12314,6 +12673,19 @@ local spintent_geo_grammar =
 local spintent_geo_poly_grammar =
     Ct( spintent_geo_punto * (spintent_geo_sep * spintent_geo_punto)^0 )
 
+-- Puntos concatenados sin separador (p.ej. "AB", "ABC", "A_{1}B_{2}").
+-- Misma forma de tabla de salida que spintent_geo_grammar/poly_grammar,
+-- así que spintent_geo_build_intent/build_visual la consumen sin
+-- cambios. Usada como alternativa a la lista separada por comas en
+-- \sprecta, \sprayo, \spside, \spmside, \sparc, \spmarc, \spPoly,
+-- \spAfig, \spPfig.
+local spintent_geo_puntos_concat = Ct( spintent_geo_punto^1 ) * P(-1)
+
+-- Gramática para nombre propio de recta (mayúsculas Y minúsculas).
+-- IMPORTANTE: se prueba SIEMPRE antes que spintent_geo_puntos_concat
+-- en luafun_geo_parse_and_set, para que una sola letra sin coma
+-- ("A") siga interpretándose como nombre de recta en \sprecta (no
+-- como lista de 1 punto).
 local spintent_geo_nombre_recta = Ct(
     C(R"AZ" + R"az") *
     (
@@ -12441,6 +12813,10 @@ end, { "string", "string" })
 -- ------------------------------------------------------------
 -- §12.2  RECTA, RAYO, SEGMENTO Y ARCO
 --        \sprecta, \sprayo, \spside, \spmside, \sparc, \spmarc
+--
+-- Orden de intentos en la rama sin coma: nombre de recta primero
+-- (preserva la semántica de \sprecta con una sola letra), luego
+-- puntos concatenados sin separador (nuevo), luego error.
 -- ------------------------------------------------------------
 register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
     csv = spintent_trim(csv)
@@ -12463,22 +12839,35 @@ register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
                         spintent_geo_build_intent(cmd, puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
-    else
-        local nombre = spintent_geo_nombre_recta:match(csv)
-        if not nombre then
-            token_set_macro("l__spintent_geo_luaset_error_str",    "true")
-            token_set_macro("l__spintent_geo_luaset_intent_str",   "")
-            token_set_macro("l__spintent_geo_luaset_print_tl",     "")
-            token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
-            return
-        end
+        return
+    end
+
+    local nombre = spintent_geo_nombre_recta:match(csv)
+    if nombre then
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
         token_set_macro("l__spintent_geo_luaset_is_name_str",  "true")
         token_set_macro("l__spintent_geo_luaset_intent_str",
                         spintent_geo_build_intent_nombre(cmd, nombre))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
+        return
     end
+
+    local puntos = spintent_geo_puntos_concat:match(csv)
+    if puntos and #puntos > 0 then
+        token_set_macro("l__spintent_geo_luaset_error_str",    "false")
+        token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+        token_set_macro("l__spintent_geo_luaset_intent_str",
+                        spintent_geo_build_intent(cmd, puntos))
+        token_set_macro("l__spintent_geo_luaset_print_tl",
+                        spintent_geo_build_visual(puntos))
+        return
+    end
+
+    token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+    token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+    token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+    token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
 end, { "string", "string" })
 
 -- ------------------------------------------------------------
@@ -12548,6 +12937,10 @@ end, { "string", "string" })
 
 -- ------------------------------------------------------------
 -- §12.4  POLÍGONO — \spPoly, \spAfig, \spPfig
+--
+-- \spPoly acepta ahora también puntos concatenados sin coma como
+-- alternativa a la lista separada por comas (mínimo 3 vértices en
+-- ambos casos).
 -- ------------------------------------------------------------
 local spintent_geo_poly_npts = {
     [3] = { cmd = "triángulo",  sym = "triangle" },
@@ -12564,16 +12957,13 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     csv = spintent_geo_normalize_primes(csv)
 
     local tiene_coma = s_match(csv, ",")
-    if not tiene_coma then
-        token_set_macro("l__spintent_geo_luaset_error_str",      "true")
-        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
-        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
-        token_set_macro("l__spintent_geo_luaset_print_tl",       "")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
-        return
+    local puntos
+    if tiene_coma then
+        puntos = spintent_geo_poly_grammar:match(csv)
+    else
+        puntos = spintent_geo_puntos_concat:match(csv)
     end
 
-    local puntos = spintent_geo_poly_grammar:match(csv)
     if not puntos or #puntos < 3 then
         token_set_macro("l__spintent_geo_luaset_error_str",      "true")
         token_set_macro("l__spintent_geo_luaset_intent_str",     "")
@@ -12623,12 +13013,6 @@ local spintent_geo_fig_letra_sola = Ct(
 local spintent_geo_fig_sub_simple = (C(R"09"^1) + C(R"az")) * P(-1)
 
 -- Devuelve: ok, visual, palabra, conector, sub_spoken.
--- "visual" es lo que se tipografía tal cual (letra+subíndice, o el
--- número/letra suelto); "palabra" es el mapeo de la letra ("" si no
--- hay letra); "conector" es "de-la"/"del"/"" según la letra;
--- "sub_spoken" es la forma hablada del subíndice ("" si no hay
--- subíndice). expl3 arma el intent final combinando estas piezas con
--- su propia llave read-sub, sin que Lua sepa nada de ella.
 local function spintent_geo_fig_parse_arg(csv)
     local con_letra = spintent_geo_fig_letra_sola:match(csv)
     if con_letra then
@@ -12652,10 +13036,51 @@ local function spintent_geo_fig_parse_arg(csv)
     return false
 end
 
+-- Arma y establece las variables de salida para el caso de vértices
+-- reales (lista de al menos 3 puntos), sin importar si vinieron
+-- separados por comas o concatenados sin separador.
+local function spintent_geo_fig_set_vertices(op, puntos, read_arg)
+    local info    = spintent_geo_poly_npts[#puntos]
+    local cmd_fig = (read_arg ~= "" and read_arg)
+                    or (info and info.cmd)
+                    or "polígono"
+    local sym     = (info and info.sym) or ""
+    local concepto = op .. "-del-" .. cmd_fig
+
+    token_set_macro("l__spintent_geo_luaset_error_str",         "false")
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str",      sym)
+    token_set_macro("l__spintent_geo_luaset_concept_str",       concepto)
+    token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
+    token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
+    token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
+    token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
+
+    local cuerpo = spintent_geo_build_intent("", puntos):match("^_(.-)-$")
+    token_set_macro("l__spintent_geo_luaset_intent_str", concepto .. "-" .. cuerpo)
+    token_set_macro("l__spintent_geo_luaset_intent_pts_str",
+                    spintent_geo_build_intent(op, puntos))
+end
+
+local function spintent_geo_fig_set_error()
+    token_set_macro("l__spintent_geo_luaset_error_str",         "true")
+    token_set_macro("l__spintent_geo_luaset_intent_str",        "")
+    token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
+    token_set_macro("l__spintent_geo_luaset_concept_str",       "")
+    token_set_macro("l__spintent_geo_luaset_print_tl",          "")
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
+    token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
+    token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
+    token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
+end
+
 -- l__spintent_geo_luaset_concept_str lleva solo el nombre del
 -- concepto ("área-del-triángulo", sin vértices) — a diferencia del
 -- resto de la familia, aquí solo se conoce tras el parseo (por la
 -- cardinalidad), no antes.
+--
+-- Orden de intentos sin coma: gramática de argumento único (número/
+-- letra/tabla) primero; si falla, puntos concatenados como lista de
+-- vértices (nuevo, mínimo 3); si también falla, error.
 local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
@@ -12676,20 +13101,18 @@ local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
 
     local tiene_coma = s_match(csv, ",")
 
-    if not tiene_coma then
-        local ok, visual, palabra, conector, sub_spoken = spintent_geo_fig_parse_arg(csv)
-        if not ok then
-            token_set_macro("l__spintent_geo_luaset_error_str",         "true")
-            token_set_macro("l__spintent_geo_luaset_intent_str",        "")
-            token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
-            token_set_macro("l__spintent_geo_luaset_concept_str",       "")
-            token_set_macro("l__spintent_geo_luaset_print_tl",          "")
-            token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
-            token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
-            token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
-            token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
+    if tiene_coma then
+        local puntos = spintent_geo_poly_grammar:match(csv)
+        if not puntos or #puntos < 3 then
+            spintent_geo_fig_set_error()
             return
         end
+        spintent_geo_fig_set_vertices(op, puntos, read_arg)
+        return
+    end
+
+    local ok, visual, palabra, conector, sub_spoken = spintent_geo_fig_parse_arg(csv)
+    if ok then
         token_set_macro("l__spintent_geo_luaset_error_str",         "false")
         token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
         token_set_macro("l__spintent_geo_luaset_concept_str",       op)
@@ -12697,53 +13120,22 @@ local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
         token_set_macro("l__spintent_geo_luaset_letra_word_str",    palabra)
         token_set_macro("l__spintent_geo_luaset_letra_conector_str",conector)
         token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    sub_spoken)
-        -- intent_str vacío: expl3 arma el intent final con op +
-        -- conector + palabra + sub_spoken + su propia llave read-sub.
-        -- Este vacío es también el DISCRIMINADOR que expl3 usa para
-        -- distinguir "argumento único" de "vértices" (poly_sym_str
-        -- por sí solo no sirve: también queda vacío para 5+ puntos).
+        -- intent_str vacío: expl3 arma el intent final. También es el
+        -- DISCRIMINADOR que expl3 usa para distinguir "argumento
+        -- único" de "vértices" (poly_sym_str por sí solo no sirve:
+        -- también queda vacío para 5+ puntos).
         token_set_macro("l__spintent_geo_luaset_intent_str",     "")
         token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
         return
     end
 
-    local puntos = spintent_geo_poly_grammar:match(csv)
-    if not puntos or #puntos < 3 then
-        token_set_macro("l__spintent_geo_luaset_error_str",         "true")
-        token_set_macro("l__spintent_geo_luaset_intent_str",        "")
-        token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
-        token_set_macro("l__spintent_geo_luaset_concept_str",       "")
-        token_set_macro("l__spintent_geo_luaset_print_tl",          "")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
-        token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
-        token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
-        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
+    local puntos = spintent_geo_puntos_concat:match(csv)
+    if puntos and #puntos >= 3 then
+        spintent_geo_fig_set_vertices(op, puntos, read_arg)
         return
     end
 
-    local info    = spintent_geo_poly_npts[#puntos]
-    local cmd_fig = (read_arg ~= "" and read_arg)
-                    or (info and info.cmd)
-                    or "polígono"
-    local sym     = (info and info.sym) or ""
-    local concepto = op .. "-del-" .. cmd_fig
-
-    token_set_macro("l__spintent_geo_luaset_error_str",         "false")
-    token_set_macro("l__spintent_geo_luaset_poly_sym_str",      sym)
-    token_set_macro("l__spintent_geo_luaset_concept_str",       concepto)
-    token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
-    token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
-    token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
-    token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
-
-    local cuerpo = spintent_geo_build_intent("", puntos):match("^_(.-)-$")
-    token_set_macro("l__spintent_geo_luaset_intent_str", concepto .. "-" .. cuerpo)
-    -- intent_pts_str: mismo cuerpo de vértices, pero con "op" ("área"/
-    -- "perímetro") en vez del nombre completo de la figura — usado
-    -- cuando print-sym=none pese a haber vértices reales, para
-    -- consistencia con el mismo mecanismo ya existente en \spPoly.
-    token_set_macro("l__spintent_geo_luaset_intent_pts_str",
-                    spintent_geo_build_intent(op, puntos))
+    spintent_geo_fig_set_error()
 end
 
 register_tex_cmd("luafun_geo_afig_parse_and_set",
@@ -12755,6 +13147,87 @@ register_tex_cmd("luafun_geo_pfig_parse_and_set",
     function(csv, read_arg)
     spintent_geo_fig_parse_and_set("perímetro", csv, read_arg)
 end, { "string", "string" })
+
+-- ------------------------------------------------------------
+-- §12.5  CÍRCULO/CIRCUNFERENCIA — \spCirc
+--
+-- El radio se clasifica por forma (nunca por llave): número puro,
+-- medida (número+unidad, delegada a spnum/spunit desde expl3), letra
+-- suelta, o segmento de dos letras (side/mside según radio-sty,
+-- decidido en expl3). Lua solo clasifica y extrae; no arma intent de
+-- medida (eso es trabajo ya existente de \spnum/\spunit en expl3).
+-- ------------------------------------------------------------
+local spintent_geo_single_point = spintent_geo_punto * P(-1)
+
+local spintent_geo_radio_number  = C(R"09"^1) * P(-1)
+local spintent_geo_radio_label   = C(R"az" + R"AZ") * P(-1)
+local spintent_geo_radio_segment = Ct( spintent_geo_punto * spintent_geo_punto ) * P(-1)
+
+-- "measure": empieza con dígitos y tiene algo más después (unidad),
+-- ya sea con espacio o pegado. No se valida la unidad aquí — eso
+-- queda para spunit en expl3.
+local spintent_geo_radio_measure = C(R"09"^1) * S" "^0 * (1 - P(-1))^1 * P(-1)
+
+register_tex_cmd("luafun_geo_circ_parse_and_set",
+    function(csv)
+    csv = spintent_trim(csv)
+    csv = spintent_geo_normalize_primes(csv)
+
+    local coma_pos = s_match(csv, "()%,")
+    local centro_str = coma_pos and csv:sub(1, coma_pos - 1) or csv
+    local radio_str  = coma_pos and spintent_trim(csv:sub(coma_pos + 1)) or ""
+
+    local centro = spintent_geo_single_point:match(spintent_trim(centro_str))
+    if not centro then
+        token_set_macro("l__spintent_geo_luaset_error_str",      "true")
+        token_set_macro("l__spintent_geo_luaset_print_tl",       "")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
+        return
+    end
+
+    token_set_macro("l__spintent_geo_luaset_error_str", "false")
+    token_set_macro("l__spintent_geo_luaset_print_tl",
+                    spintent_geo_build_visual_nombre(centro))
+
+    if radio_str == "" then
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
+        return
+    end
+
+    if spintent_geo_radio_segment:match(radio_str) then
+        local puntos = spintent_geo_radio_segment:match(radio_str)
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "segment")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",
+                        spintent_geo_build_visual(puntos))
+        return
+    end
+
+    if spintent_geo_radio_number:match(radio_str) then
+        local n = spintent_geo_radio_number:match(radio_str)
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "number")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  n)
+        return
+    end
+
+    if spintent_geo_radio_label:match(radio_str) then
+        local l = spintent_geo_radio_label:match(radio_str)
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "label")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  l)
+        return
+    end
+
+    if spintent_geo_radio_measure:match(radio_str) then
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "measure")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  radio_str)
+        return
+    end
+
+    token_set_macro("l__spintent_geo_luaset_error_str",           "true")
+    token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
+    token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
+end, { "string" })
 % \iffalse
 %</spintentlua>
 % \fi
