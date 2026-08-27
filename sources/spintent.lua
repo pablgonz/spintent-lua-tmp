@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.98 [2026-08-24]
+     Lua module spintent.lua for spintent package - v0.98 [2026-08-26]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -695,120 +695,120 @@ end, { "string" })
 -- 4. ABREVIATURAS Y ORDINALES (\spshort)
 
 local spintent_spshort_dict = {
-  ["dr.a"]   = { actualtext = "doctora",   layout_type = "superscript", base = "Dr.", suffix = "a" },
-  ["dr.as"]  = { actualtext = "doctoras",  layout_type = "superscript", base = "Dr.", suffix = "as" },
-  ["prof.a"] = { actualtext = "profesora", layout_type = "superscript", base = "Prof.", suffix = "a" },
-  ["d.a"]    = { actualtext = "doña",      layout_type = "superscript", base = "D.", suffix = "a" },
-  ["m.a"]    = { actualtext = "maría",     layout_type = "superscript", base = "M.", suffix = "a" },
-  ["n.o"]    = { actualtext = "número",    layout_type = "superscript", base = "N.", suffix = "o" },
-  ["n.os"]   = { actualtext = "números",   layout_type = "superscript", base = "N.", suffix = "os" },
-  ["c.ia"]   = { actualtext = "compañía",  layout_type = "superscript", base = "C.", suffix = "ia" },
+  ["dr.a"]   = { expandtxt = "doctora",   layout_type = "superscript", base = "Dr.", suffix = "a" },
+  ["dr.as"]  = { expandtxt = "doctoras",  layout_type = "superscript", base = "Dr.", suffix = "as" },
+  ["prof.a"] = { expandtxt = "profesora", layout_type = "superscript", base = "Prof.", suffix = "a" },
+  ["d.a"]    = { expandtxt = "doña",      layout_type = "superscript", base = "D.", suffix = "a" },
+  ["m.a"]    = { expandtxt = "maría",     layout_type = "superscript", base = "M.", suffix = "a" },
+  ["n.o"]    = { expandtxt = "número",    layout_type = "superscript", base = "N.", suffix = "o" },
+  ["n.os"]   = { expandtxt = "números",   layout_type = "superscript", base = "N.", suffix = "os" },
+  ["c.ia"]   = { expandtxt = "compañía",  layout_type = "superscript", base = "C.", suffix = "ia" },
 
-  ["dr.ª"] = { actualtext = "doctora", layout_type = "superscript", base = "Dr.", suffix = "a" },
-  ["d.ª"]  = { actualtext = "doña",    layout_type = "superscript", base = "D.", suffix = "a" },
-  ["n.º"]  = { actualtext = "número",  layout_type = "superscript", base = "N.", suffix = "o" },
+  ["dr.ª"] = { expandtxt = "doctora", layout_type = "superscript", base = "Dr.", suffix = "a" },
+  ["d.ª"]  = { expandtxt = "doña",    layout_type = "superscript", base = "D.", suffix = "a" },
+  ["n.º"]  = { expandtxt = "número",  layout_type = "superscript", base = "N.", suffix = "o" },
 
-  ["pág."] = { actualtext = "página",   layout_type = "linear_regular", output = "pág." },
-  ["pag."] = { actualtext = "página",   layout_type = "linear_regular", output = "pág." },
-  ["vol."] = { actualtext = "volumen",  layout_type = "linear_regular", output = "vol." },
-  ["etc."] = { actualtext = "etcétera", layout_type = "linear_regular", output = "etc." },
+  ["pág."] = { expandtxt = "página",   layout_type = "linear_regular", output = "pág." },
+  ["pag."] = { expandtxt = "página",   layout_type = "linear_regular", output = "pág." },
+  ["vol."] = { expandtxt = "volumen",  layout_type = "linear_regular", output = "vol." },
+  ["etc."] = { expandtxt = "etcétera", layout_type = "linear_regular", output = "etc." },
 
-  ["et al."]    = { actualtext = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
-  ["et. al."]   = { actualtext = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
-  ["ibíd."]     = { actualtext = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
-  ["ibid."]     = { actualtext = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
-  ["op. cit."]  = { actualtext = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
-  ["op.cit."]   = { actualtext = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
-  ["loc. cit."] = { actualtext = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
-  ["loc.cit."]  = { actualtext = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
-  ["v. gr."]    = { actualtext = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
-  ["v.gr."]     = { actualtext = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
-  ["i. e."]     = { actualtext = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
-  ["i.e."]      = { actualtext = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
-  ["e. g."]     = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
-  ["e.g."]      = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
-  ["p. ej."]    = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
-  ["p.ej."]     = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
+  ["et al."]    = { expandtxt = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
+  ["et. al."]   = { expandtxt = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
+  ["ibíd."]     = { expandtxt = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
+  ["ibid."]     = { expandtxt = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
+  ["op. cit."]  = { expandtxt = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
+  ["op.cit."]   = { expandtxt = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
+  ["loc. cit."] = { expandtxt = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
+  ["loc.cit."]  = { expandtxt = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
+  ["v. gr."]    = { expandtxt = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
+  ["v.gr."]     = { expandtxt = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
+  ["i. e."]     = { expandtxt = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
+  ["i.e."]      = { expandtxt = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
+  ["e. g."]     = { expandtxt = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
+  ["e.g."]      = { expandtxt = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
+  ["p. ej."]    = { expandtxt = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
+  ["p.ej."]     = { expandtxt = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
 
-  ["sr."]    = { actualtext = "señor",       layout_type = "linear_regular", output = "Sr." },
-  ["sra."]   = { actualtext = "señora",      layout_type = "linear_regular", output = "Sra." },
-  ["srta."]  = { actualtext = "señorita",    layout_type = "linear_regular", output = "Srta." },
-  ["dr."]    = { actualtext = "doctor",      layout_type = "linear_regular", output = "Dr." },
-  ["dra."]   = { actualtext = "doctora",     layout_type = "linear_regular", output = "Dra." },
-  ["dres."]  = { actualtext = "doctores",    layout_type = "linear_regular", output = "Dres." },
-  ["dras."]  = { actualtext = "doctoras",    layout_type = "linear_regular", output = "Dras." },
-  ["prof."]  = { actualtext = "profesor",    layout_type = "linear_regular", output = "Prof." },
-  ["profa."] = { actualtext = "profesora",   layout_type = "linear_regular", output = "Profa." },
-  ["profs."] = { actualtext = "profesores",  layout_type = "linear_regular", output = "Profs." },
-  ["ing."]   = { actualtext = "ingeniero",   layout_type = "linear_regular", output = "Ing." },
-  ["ings."]  = { actualtext = "ingenieros",  layout_type = "linear_regular", output = "Ings." },
-  ["lic."]   = { actualtext = "licenciado",  layout_type = "linear_regular", output = "Lic." },
-  ["v. b."]  = { actualtext = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
-  ["v.b."]   = { actualtext = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
+  ["sr."]    = { expandtxt = "señor",       layout_type = "linear_regular", output = "Sr." },
+  ["sra."]   = { expandtxt = "señora",      layout_type = "linear_regular", output = "Sra." },
+  ["srta."]  = { expandtxt = "señorita",    layout_type = "linear_regular", output = "Srta." },
+  ["dr."]    = { expandtxt = "doctor",      layout_type = "linear_regular", output = "Dr." },
+  ["dra."]   = { expandtxt = "doctora",     layout_type = "linear_regular", output = "Dra." },
+  ["dres."]  = { expandtxt = "doctores",    layout_type = "linear_regular", output = "Dres." },
+  ["dras."]  = { expandtxt = "doctoras",    layout_type = "linear_regular", output = "Dras." },
+  ["prof."]  = { expandtxt = "profesor",    layout_type = "linear_regular", output = "Prof." },
+  ["profa."] = { expandtxt = "profesora",   layout_type = "linear_regular", output = "Profa." },
+  ["profs."] = { expandtxt = "profesores",  layout_type = "linear_regular", output = "Profs." },
+  ["ing."]   = { expandtxt = "ingeniero",   layout_type = "linear_regular", output = "Ing." },
+  ["ings."]  = { expandtxt = "ingenieros",  layout_type = "linear_regular", output = "Ings." },
+  ["lic."]   = { expandtxt = "licenciado",  layout_type = "linear_regular", output = "Lic." },
+  ["v. b."]  = { expandtxt = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
+  ["v.b."]   = { expandtxt = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
 
-  ["s. a."]    = { actualtext = "sociedad anónima",         layout_type = "linear_caps",    output = "S.\u{00A0}A." },
-  ["s.a."]     = { actualtext = "sociedad anónima",         layout_type = "linear_caps",    output = "S.\u{00A0}A." },
-  ["ee. uu."]  = { actualtext = "estados unidos",          layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
-  ["ee.uu."]   = { actualtext = "estados unidos",           layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
-  ["dd. hh."]  = { actualtext = "derechos humanos",        layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
-  ["dd.hh."]   = { actualtext = "derechos humanos",        layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
-  ["jj. oo."]  = { actualtext = "juegos olímpicos",        layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
-  ["jj.oo."]   = { actualtext = "juegos olímpicos",        layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
-  ["ff. aa."]  = { actualtext = "fuerzas armadas",         layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
-  ["ff.aa."]   = { actualtext = "fuerzas armadas",         layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
-  ["rr. ee."]  = { actualtext = "relaciones exteriores",   layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
-  ["rr.ee."]   = { actualtext = "relaciones exteriores",   layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
-  ["cc. aa."]  = { actualtext = "comunidades autónomas",   layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
-  ["cc.aa."]   = { actualtext = "comunidades autónomas",   layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
-  ["p. d."]    = { actualtext = "posdata",                 layout_type = "linear_caps",    output = "P.\u{00A0}D." },
-  ["p.d."]     = { actualtext = "posdata",                 layout_type = "linear_caps",    output = "P.\u{00A0}D." },
+  ["s. a."]    = { expandtxt = "sociedad anónima",      layout_type = "linear_caps",    output = "S.\u{00A0}A." },
+  ["s.a."]     = { expandtxt = "sociedad anónima",      layout_type = "linear_caps",    output = "S.\u{00A0}A." },
+  ["ee. uu."]  = { expandtxt = "estados unidos",        layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
+  ["ee.uu."]   = { expandtxt = "estados unidos",        layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
+  ["dd. hh."]  = { expandtxt = "derechos humanos",      layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
+  ["dd.hh."]   = { expandtxt = "derechos humanos",      layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
+  ["jj. oo."]  = { expandtxt = "juegos olímpicos",      layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
+  ["jj.oo."]   = { expandtxt = "juegos olímpicos",      layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
+  ["ff. aa."]  = { expandtxt = "fuerzas armadas",       layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
+  ["ff.aa."]   = { expandtxt = "fuerzas armadas",       layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
+  ["rr. ee."]  = { expandtxt = "relaciones exteriores", layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
+  ["rr.ee."]   = { expandtxt = "relaciones exteriores", layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
+  ["cc. aa."]  = { expandtxt = "comunidades autónomas", layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
+  ["cc.aa."]   = { expandtxt = "comunidades autónomas", layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
+  ["p. d."]    = { expandtxt = "posdata",               layout_type = "linear_caps",    output = "P.\u{00A0}D." },
+  ["p.d."]     = { expandtxt = "posdata",               layout_type = "linear_caps",    output = "P.\u{00A0}D." },
 
 -- Solo por compatibilidad (no deben llevar punto acorde a la RAE)
-  ["d. n. i."] = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
-  ["d.n.i."]   = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
-  ["r. u. t."] = { actualtext = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
-  ["r.u.t."]   = { actualtext = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
-  ["r. u. n."] = { actualtext = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
-  ["r.u.n."]   = { actualtext = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
+  ["d. n. i."] = { expandtxt = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
+  ["d.n.i."]   = { expandtxt = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
+  ["r. u. t."] = { expandtxt = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
+  ["r.u.t."]   = { expandtxt = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
+  ["r. u. n."] = { expandtxt = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
+  ["r.u.n."]   = { expandtxt = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
 
-  ["a. c."]    = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
-  ["a.c."]     = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
-  ["d. c."]    = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
-  ["d.c."]     = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
+  ["a. c."]    = { expandtxt = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
+  ["a.c."]     = { expandtxt = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
+  ["d. c."]    = { expandtxt = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
+  ["d.c."]     = { expandtxt = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
 
-  ["dni"]      = { actualtext = "documento nacional de identidad",     layout_type = "small_caps_pure", output = "DNI" },
-  ["run"]      = { actualtext = "rol único nacional",                  layout_type = "small_caps_pure", output = "RUN" },
-  ["rut"]      = { actualtext = "rol único tributario",                layout_type = "small_caps_pure", output = "RUT" },
-  ["onu"]      = { actualtext = "organización de las naciones unidas", layout_type = "small_caps_pure", output = "ONU" },
-  ["rae"]      = { actualtext = "real academia española",             layout_type = "small_caps_pure", output = "RAE" },
-  ["ong"]      = { actualtext = "organización no gubernamental",      layout_type = "small_caps_pure", output = "ONG" },
-  ["ongs"]     = { actualtext = "organizaciones no gubernamentales",  layout_type = "small_caps_pure", output = "ONGs" },
-  ["urss"]     = { actualtext = "unión de repúblicas socialistas soviéticas", layout_type = "small_caps_pure", output = "URSS" },
-  ["oea"]      = { actualtext = "organización de los estados americanos", layout_type = "small_caps_pure", output = "OEA" },
-  ["oms"]      = { actualtext = "organización mundial de la salud",    layout_type = "small_caps_pure", output = "OMS" },
-  ["fmi"]      = { actualtext = "fondo monetario internacional",      layout_type = "small_caps_pure", output = "FMI" },
-  ["bid"]      = { actualtext = "banco interamericano de desarrollo", layout_type = "small_caps_pure", output = "BID" },
-  ["otan"]     = { actualtext = "organización del tratado del atlántico norte", layout_type = "small_caps_pure", output = "OTAN" },
-  ["unam"]     = { actualtext = "universidad nacional autónoma de méxico", layout_type = "small_caps_pure", output = "UNAM" },
-  ["pib"]      = { actualtext = "producto interno bruto",             layout_type = "small_caps_pure", output = "PIB" },
-  ["ue"]       = { actualtext = "unión europea",                       layout_type = "small_caps_pure", output = "UE" },
-  ["eau"]      = { actualtext = "emiratos árabes unidos",              layout_type = "small_caps_pure", output = "EAU" },
-  ["ru"]       = { actualtext = "reino unido",                         layout_type = "small_caps_pure", output = "RU" },
-  ["rca"]      = { actualtext = "república centroafricana",            layout_type = "small_caps_pure", output = "RCA" },
-  ["rdc"]      = { actualtext = "república democrática del congo",     layout_type = "small_caps_pure", output = "RDC" },
-  ["rfa"]      = { actualtext = "república federal alemana",           layout_type = "small_caps_pure", output = "RFA" },
-  ["rda"]      = { actualtext = "república democrática alemana",       layout_type = "small_caps_pure", output = "RDA" },
+  ["dni"]      = { expandtxt = "documento nacional de identidad",     layout_type = "small_caps_pure", output = "DNI" },
+  ["run"]      = { expandtxt = "rol único nacional",                  layout_type = "small_caps_pure", output = "RUN" },
+  ["rut"]      = { expandtxt = "rol único tributario",                layout_type = "small_caps_pure", output = "RUT" },
+  ["onu"]      = { expandtxt = "organización de las naciones unidas", layout_type = "small_caps_pure", output = "ONU" },
+  ["rae"]      = { expandtxt = "real academia española",             layout_type = "small_caps_pure", output = "RAE" },
+  ["ong"]      = { expandtxt = "organización no gubernamental",      layout_type = "small_caps_pure", output = "ONG" },
+  ["ongs"]     = { expandtxt = "organizaciones no gubernamentales",  layout_type = "small_caps_pure", output = "ONGs" },
+  ["urss"]     = { expandtxt = "unión de repúblicas socialistas soviéticas", layout_type = "small_caps_pure", output = "URSS" },
+  ["oea"]      = { expandtxt = "organización de los estados americanos", layout_type = "small_caps_pure", output = "OEA" },
+  ["oms"]      = { expandtxt = "organización mundial de la salud",    layout_type = "small_caps_pure", output = "OMS" },
+  ["fmi"]      = { expandtxt = "fondo monetario internacional",      layout_type = "small_caps_pure", output = "FMI" },
+  ["bid"]      = { expandtxt = "banco interamericano de desarrollo", layout_type = "small_caps_pure", output = "BID" },
+  ["otan"]     = { expandtxt = "organización del tratado del atlántico norte", layout_type = "small_caps_pure", output = "OTAN" },
+  ["unam"]     = { expandtxt = "universidad nacional autónoma de méxico", layout_type = "small_caps_pure", output = "UNAM" },
+  ["pib"]      = { expandtxt = "producto interno bruto",             layout_type = "small_caps_pure", output = "PIB" },
+  ["ue"]       = { expandtxt = "unión europea",                       layout_type = "small_caps_pure", output = "UE" },
+  ["eau"]      = { expandtxt = "emiratos árabes unidos",              layout_type = "small_caps_pure", output = "EAU" },
+  ["ru"]       = { expandtxt = "reino unido",                         layout_type = "small_caps_pure", output = "RU" },
+  ["rca"]      = { expandtxt = "república centroafricana",            layout_type = "small_caps_pure", output = "RCA" },
+  ["rdc"]      = { expandtxt = "república democrática del congo",     layout_type = "small_caps_pure", output = "RDC" },
+  ["rfa"]      = { expandtxt = "república federal alemana",           layout_type = "small_caps_pure", output = "RFA" },
+  ["rda"]      = { expandtxt = "república democrática alemana",       layout_type = "small_caps_pure", output = "RDA" },
 
-  ["unicef"]   = { actualtext = "fondo de las naciones unidas para la infancia", layout_type = "acronym_long",   output = "Unicef" },
-  ["unesco"]   = { actualtext = "organización de las naciones unidas para la educación, la ciencia y la cultura", layout_type = "acronym_long",   output = "Unesco" },
-  ["mercosur"] = { actualtext = "mercado común del sur",               layout_type = "acronym_long",   output = "Mercosur" },
-  ["cepal"]    = { actualtext = "comisión económica para américa latina", layout_type = "acronym_long",  output = "Cepal" },
-  ["celac"]    = { actualtext = "comunidad de estados latinoamericanos", layout_type = "acronym_long",  output = "Celac" },
-  ["unasur"]   = { actualtext = "unión de naciones suramericanas",     layout_type = "acronym_long",   output = "Unasur" },
-  ["acnur"]    = { actualtext = "alto comisionado de las naciones unidas", layout_type = "acronym_long",  output = "Acnur" },
-  ["mineduc"]  = { actualtext = "ministerio de educación",            layout_type = "acronym_long",   output = "Mineduc" },
-  ["senadis"]  = { actualtext = "servicio nacional de la discapacidad", layout_type = "acronym_long",  output = "Senadis" },
-  ["conicet"]  = { actualtext = "consejo nacional de investigaciones", layout_type = "acronym_long",   output = "Conicet" }
+  ["unicef"]   = { expandtxt = "fondo de las naciones unidas para la infancia", layout_type = "acronym_long",   output = "Unicef" },
+  ["unesco"]   = { expandtxt = "organización de las naciones unidas para la educación, la ciencia y la cultura", layout_type = "acronym_long",   output = "Unesco" },
+  ["mercosur"] = { expandtxt = "mercado común del sur",               layout_type = "acronym_long",   output = "Mercosur" },
+  ["cepal"]    = { expandtxt = "comisión económica para américa latina", layout_type = "acronym_long",  output = "Cepal" },
+  ["celac"]    = { expandtxt = "comunidad de estados latinoamericanos", layout_type = "acronym_long",  output = "Celac" },
+  ["unasur"]   = { expandtxt = "unión de naciones suramericanas",     layout_type = "acronym_long",   output = "Unasur" },
+  ["acnur"]    = { expandtxt = "alto comisionado de las naciones unidas", layout_type = "acronym_long",  output = "Acnur" },
+  ["mineduc"]  = { expandtxt = "ministerio de educación",            layout_type = "acronym_long",   output = "Mineduc" },
+  ["senadis"]  = { expandtxt = "servicio nacional de la discapacidad", layout_type = "acronym_long",  output = "Senadis" },
+  ["conicet"]  = { expandtxt = "consejo nacional de investigaciones", layout_type = "acronym_long",   output = "Conicet" }
 }
 
 local spintent_spshort_ord_suffixes = {
@@ -899,7 +899,7 @@ local function spintent_spshort_execute_analysis(raw_input)
   if dict_match then
     token_set_macro("l__spintent_spshort_luaset_status_str", "success")
     token_set_macro("l__spintent_spshort_luaset_layout_str", dict_match.layout_type)
-    token_set_macro("l__spintent_spshort_luaset_expanded_str", dict_match.actualtext)
+    token_set_macro("l__spintent_spshort_luaset_expanded_str", dict_match.expandtxt)
 
     if dict_match.layout_type == "superscript" then
       token_set_macro("l__spintent_spshort_luaset_base_str", dict_match.base)
@@ -1524,6 +1524,19 @@ local spintent_geo_grammar =
 local spintent_geo_poly_grammar =
     Ct( spintent_geo_punto * (spintent_geo_sep * spintent_geo_punto)^0 )
 
+-- Puntos concatenados sin separador (p.ej. "AB", "ABC", "A_{1}B_{2}").
+-- Misma forma de tabla de salida que spintent_geo_grammar/poly_grammar,
+-- así que spintent_geo_build_intent/build_visual la consumen sin
+-- cambios. Usada como alternativa a la lista separada por comas en
+-- \sprecta, \sprayo, \spside, \spmside, \sparc, \spmarc, \spPoly,
+-- \spAfig, \spPfig.
+local spintent_geo_puntos_concat = Ct( spintent_geo_punto^1 ) * P(-1)
+
+-- Gramática para nombre propio de recta (mayúsculas Y minúsculas).
+-- IMPORTANTE: se prueba SIEMPRE antes que spintent_geo_puntos_concat
+-- en luafun_geo_parse_and_set, para que una sola letra sin coma
+-- ("A") siga interpretándose como nombre de recta en \sprecta (no
+-- como lista de 1 punto).
 local spintent_geo_nombre_recta = Ct(
     C(R"AZ" + R"az") *
     (
@@ -1531,7 +1544,7 @@ local spintent_geo_nombre_recta = Ct(
         + spintent_geo_primas             * Cc"prima"
         + Cc""                            * Cc""
     )
-)
+) * P(-1)
 
 local spintent_geo_num_a_texto = {
     ["0"] = "cero",  ["1"] = "uno",   ["2"] = "dos",
@@ -1593,6 +1606,18 @@ local function spintent_geo_build_intent_nombre(cmd, nombre)
     return spintent_geo_build_intent(cmd, { nombre })
 end
 
+-- Constructores "puros": solo el cuerpo (puntos convertidos a texto),
+-- sin concepto ni envoltorio "_...-" — usados por las funciones que ya
+-- no reciben "cmd"/"read_arg" desde expl3 (se antepone/envuelve del
+-- lado expl3, después de la llamada).
+local function spintent_geo_build_body(puntos)
+    return spintent_geo_build_intent("", puntos):match("^_(.-)-$")
+end
+
+local function spintent_geo_build_body_nombre(nombre)
+    return spintent_geo_build_body({ nombre })
+end
+
 local function spintent_geo_build_visual(puntos)
     local partes = {}
     for _, pt in ipairs(puntos) do
@@ -1629,7 +1654,7 @@ end
 local spintent_geo_single_point_grammar = spintent_geo_punto * P(-1)
 
 register_tex_cmd("luafun_geo_point_parse_and_set",
-    function(cmd, csv)
+    function(csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
@@ -1643,16 +1668,20 @@ register_tex_cmd("luafun_geo_point_parse_and_set",
 
     token_set_macro("l__spintent_geo_luaset_error_str", "false")
     token_set_macro("l__spintent_geo_luaset_intent_str",
-                    spintent_geo_build_intent_nombre(cmd, punto))
+                    spintent_geo_build_body_nombre(punto))
     token_set_macro("l__spintent_geo_luaset_print_tl",
                     spintent_geo_build_visual_nombre(punto))
-end, { "string", "string" })
+end, { "string" })
 
 -- ------------------------------------------------------------
 -- §12.2  RECTA, RAYO, SEGMENTO Y ARCO
 --        \sprecta, \sprayo, \spside, \spmside, \sparc, \spmarc
+--
+-- Orden de intentos en la rama sin coma: nombre de recta primero
+-- (preserva la semántica de \sprecta con una sola letra), luego
+-- puntos concatenados sin separador (nuevo), luego error.
 -- ------------------------------------------------------------
-register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
+register_tex_cmd("luafun_geo_parse_and_set", function(csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
@@ -1670,33 +1699,46 @@ register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
         token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
         token_set_macro("l__spintent_geo_luaset_intent_str",
-                        spintent_geo_build_intent(cmd, puntos))
+                        spintent_geo_build_body(puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
-    else
-        local nombre = spintent_geo_nombre_recta:match(csv)
-        if not nombre then
-            token_set_macro("l__spintent_geo_luaset_error_str",    "true")
-            token_set_macro("l__spintent_geo_luaset_intent_str",   "")
-            token_set_macro("l__spintent_geo_luaset_print_tl",     "")
-            token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
-            return
-        end
+        return
+    end
+
+    local nombre = spintent_geo_nombre_recta:match(csv)
+    if nombre then
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
         token_set_macro("l__spintent_geo_luaset_is_name_str",  "true")
         token_set_macro("l__spintent_geo_luaset_intent_str",
-                        spintent_geo_build_intent_nombre(cmd, nombre))
+                        spintent_geo_build_body_nombre(nombre))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
+        return
     end
-end, { "string", "string" })
+
+    local puntos = spintent_geo_puntos_concat:match(csv)
+    if puntos and #puntos > 0 then
+        token_set_macro("l__spintent_geo_luaset_error_str",    "false")
+        token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+        token_set_macro("l__spintent_geo_luaset_intent_str",
+                        spintent_geo_build_body(puntos))
+        token_set_macro("l__spintent_geo_luaset_print_tl",
+                        spintent_geo_build_visual(puntos))
+        return
+    end
+
+    token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+    token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+    token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+    token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+end, { "string" })
 
 -- ------------------------------------------------------------
 -- §12.3  ÁNGULO — \spangle, \spmangle
 -- ------------------------------------------------------------
 local spintent_geo_angulo_un_punto = spintent_geo_punto * P(-1)
 
-local function spintent_geo_build_intent_angulo(cmd, csv)
+local function spintent_geo_build_body_angulo(csv)
     local tiene_coma = s_match(csv, ",")
 
     if tiene_coma then
@@ -1704,44 +1746,31 @@ local function spintent_geo_build_intent_angulo(cmd, csv)
         if not puntos or #puntos == 0 then
             return nil, nil, nil
         end
-        local intent = spintent_geo_build_intent(cmd, puntos)
+        local cuerpo = spintent_geo_build_body(puntos)
         local visual = spintent_geo_build_visual(puntos)
-        return intent, visual, "tres-puntos"
+        return cuerpo, visual, "tres-puntos"
     else
         local un_punto = spintent_geo_angulo_un_punto:match(csv)
         if un_punto then
-            local intent_base = spintent_geo_build_intent_nombre("", un_punto)
-            local nucleo = intent_base:match("^_(.-)-$") or intent_base
-            local sufijo = "en-" .. nucleo
-            local intent
-            if cmd == "" then
-                intent = "_" .. sufijo .. "-"
-            else
-                intent = cmd .. "-" .. sufijo
-            end
+            local base = spintent_geo_build_body_nombre(un_punto)
+            local cuerpo = "en-" .. base
             local visual = spintent_geo_build_visual_nombre(un_punto)
-            return intent, visual, "un-punto"
+            return cuerpo, visual, "un-punto"
         else
             local nombre = spintent_trim(csv)
             if nombre == "" then return nil, nil, nil end
-            local nombre_intent = spintent_sanitize_for_screen_reader(nombre)
-            local intent
-            if cmd == "" then
-                intent = "_" .. nombre_intent .. "-"
-            else
-                intent = cmd .. "-" .. nombre_intent
-            end
-            return intent, nombre, "nombre"
+            local cuerpo = spintent_sanitize_for_screen_reader(nombre)
+            return cuerpo, nombre, "nombre"
         end
     end
 end
 
 register_tex_cmd("luafun_geo_angulo_parse_and_set",
-    function(cmd, csv)
+    function(csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
-    local intent, visual, caso = spintent_geo_build_intent_angulo(cmd, csv)
+    local cuerpo, visual, caso = spintent_geo_build_body_angulo(csv)
     if not visual then
         token_set_macro("l__spintent_geo_luaset_error_str",       "true")
         token_set_macro("l__spintent_geo_luaset_intent_str",      "")
@@ -1752,12 +1781,16 @@ register_tex_cmd("luafun_geo_angulo_parse_and_set",
 
     token_set_macro("l__spintent_geo_luaset_error_str", "false")
     token_set_macro("l__spintent_geo_luaset_angulo_case_str", caso)
-    token_set_macro("l__spintent_geo_luaset_intent_str", intent)
+    token_set_macro("l__spintent_geo_luaset_intent_str", cuerpo)
     token_set_macro("l__spintent_geo_luaset_print_tl", visual)
-end, { "string", "string" })
+end, { "string" })
 
 -- ------------------------------------------------------------
 -- §12.4  POLÍGONO — \spPoly, \spAfig, \spPfig
+--
+-- \spPoly acepta ahora también puntos concatenados sin coma como
+-- alternativa a la lista separada por comas (mínimo 3 vértices en
+-- ambos casos).
 -- ------------------------------------------------------------
 local spintent_geo_poly_npts = {
     [3] = { cmd = "triángulo",  sym = "triangle" },
@@ -1774,16 +1807,13 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     csv = spintent_geo_normalize_primes(csv)
 
     local tiene_coma = s_match(csv, ",")
-    if not tiene_coma then
-        token_set_macro("l__spintent_geo_luaset_error_str",      "true")
-        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
-        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
-        token_set_macro("l__spintent_geo_luaset_print_tl",       "")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
-        return
+    local puntos
+    if tiene_coma then
+        puntos = spintent_geo_poly_grammar:match(csv)
+    else
+        puntos = spintent_geo_puntos_concat:match(csv)
     end
 
-    local puntos = spintent_geo_poly_grammar:match(csv)
     if not puntos or #puntos < 3 then
         token_set_macro("l__spintent_geo_luaset_error_str",      "true")
         token_set_macro("l__spintent_geo_luaset_intent_str",     "")
@@ -1806,10 +1836,16 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
 end, { "string" })
 
 -- Tabla de letras válidas para el argumento único de \spAfig/\spPfig
--- (p.ej. "F_{1}", "P", "B_{2}"). Extensible: "C" queda reservada para
--- círculo/circunferencia, no forma parte de esta tabla.
+-- (p.ej. "F_{1}", "P", "B_{2}"). Cada letra lleva su palabra y el
+-- conector gramatical correcto: sustantivos usan "de-la"/"del" según
+-- género; adjetivos usan conector vacío (van pegados directamente
+-- tras "área"/"perímetro"). "C" queda reservada para círculo/
+-- circunferencia, no forma parte de esta tabla.
 local spintent_geo_fig_letras = {
-    F = "figura", P = "polígono", B = "basal", L = "lateral",
+    F = { palabra = "figura",   conector = "de-la" },
+    P = { palabra = "polígono", conector = "del"    },
+    B = { palabra = "basal",    conector = ""       },
+    L = { palabra = "lateral",  conector = ""       },
 }
 
 -- Letra de la tabla, con subíndice opcional (dígitos u otra letra).
@@ -1826,117 +1862,219 @@ local spintent_geo_fig_letra_sola = Ct(
 -- símbolo, si print-sym!=none).
 local spintent_geo_fig_sub_simple = (C(R"09"^1) + C(R"az")) * P(-1)
 
--- Devuelve: ok, visual, palabra, sub_spoken.
--- "visual" es lo que se tipografía tal cual (letra+subíndice, o el
--- número/letra suelto); "palabra" es el mapeo de la letra ("" si no
--- hay letra); "sub_spoken" es la forma hablada del subíndice ("" si
--- no hay subíndice). expl3 arma el intent final combinando estas
--- piezas con su propia llave read-sub, sin que Lua sepa nada de ella.
+-- Devuelve: ok, visual, palabra, conector, sub_spoken.
 local function spintent_geo_fig_parse_arg(csv)
     local con_letra = spintent_geo_fig_letra_sola:match(csv)
     if con_letra then
         local letra, sub, tipo = con_letra[1], con_letra[2], con_letra[3]
-        local palabra = spintent_geo_fig_letras[letra]
+        local info = spintent_geo_fig_letras[letra]
         if tipo == "sub" then
             local visual = letra .. "_{" .. sub .. "}"
             local sub_spoken = spintent_geo_num_a_texto[sub] or sub
-            return true, visual, palabra, sub_spoken
+            return true, visual, info.palabra, info.conector, sub_spoken
         else
-            return true, letra, palabra, ""
+            return true, letra, info.palabra, info.conector, ""
         end
     end
 
     local solo = spintent_geo_fig_sub_simple:match(csv)
     if solo then
         local sub_spoken = spintent_geo_num_a_texto[solo] or solo
-        return true, solo, "", sub_spoken
+        return true, solo, "", "", sub_spoken
     end
 
     return false
+end
+
+-- Arma y establece las variables de salida para el caso de vértices
+-- reales (lista de al menos 3 puntos), sin importar si vinieron
+-- separados por comas o concatenados sin separador. Siempre usa el
+-- nombre inferido por cardinalidad — "read-arg" ya no viaja a Lua;
+-- expl3 reconstruye el intent con l__spintent_geo_luaset_vertices_str
+-- (cuerpo puro, sin nombre de figura) cuando corresponde sobrescribir.
+local function spintent_geo_fig_set_vertices(op, puntos)
+    local info    = spintent_geo_poly_npts[#puntos]
+    local cmd_fig = info and info.cmd or "polígono"
+    local sym     = (info and info.sym) or ""
+    local concepto = op .. "-del-" .. cmd_fig
+
+    token_set_macro("l__spintent_geo_luaset_error_str",         "false")
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str",      sym)
+    token_set_macro("l__spintent_geo_luaset_concept_str",       concepto)
+    token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
+    token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
+    token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
+    token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
+
+    local cuerpo = spintent_geo_build_body(puntos)
+    token_set_macro("l__spintent_geo_luaset_intent_str", concepto .. "-" .. cuerpo)
+    token_set_macro("l__spintent_geo_luaset_vertices_str", cuerpo)
+    token_set_macro("l__spintent_geo_luaset_intent_pts_str",
+                    spintent_geo_build_intent(op, puntos))
+end
+
+local function spintent_geo_fig_set_error()
+    token_set_macro("l__spintent_geo_luaset_error_str",         "true")
+    token_set_macro("l__spintent_geo_luaset_intent_str",        "")
+    token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
+    token_set_macro("l__spintent_geo_luaset_vertices_str",      "")
+    token_set_macro("l__spintent_geo_luaset_concept_str",       "")
+    token_set_macro("l__spintent_geo_luaset_print_tl",          "")
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
+    token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
+    token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
+    token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
 end
 
 -- l__spintent_geo_luaset_concept_str lleva solo el nombre del
 -- concepto ("área-del-triángulo", sin vértices) — a diferencia del
 -- resto de la familia, aquí solo se conoce tras el parseo (por la
 -- cardinalidad), no antes.
-local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
+--
+-- Orden de intentos sin coma: gramática de argumento único (número/
+-- letra/tabla) primero; si falla, puntos concatenados como lista de
+-- vértices (nuevo, mínimo 3); si también falla, error.
+local function spintent_geo_fig_parse_and_set(op, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
-    read_arg = spintent_trim(read_arg)
 
     if csv == "" then
-        token_set_macro("l__spintent_geo_luaset_error_str",       "false")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",    "")
-        token_set_macro("l__spintent_geo_luaset_intent_str",      op)
-        token_set_macro("l__spintent_geo_luaset_concept_str",     op)
-        token_set_macro("l__spintent_geo_luaset_print_tl",        "")
-        token_set_macro("l__spintent_geo_luaset_letra_word_str",  "")
-        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",  "")
+        token_set_macro("l__spintent_geo_luaset_error_str",         "false")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
+        token_set_macro("l__spintent_geo_luaset_intent_str",        op)
+        token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
+        token_set_macro("l__spintent_geo_luaset_vertices_str",      "")
+        token_set_macro("l__spintent_geo_luaset_concept_str",       op)
+        token_set_macro("l__spintent_geo_luaset_print_tl",          "")
+        token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
+        token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
+        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
         return
     end
 
     local tiene_coma = s_match(csv, ",")
 
-    if not tiene_coma then
-        local ok, visual, palabra, sub_spoken = spintent_geo_fig_parse_arg(csv)
-        if not ok then
-            token_set_macro("l__spintent_geo_luaset_error_str",   "true")
-            token_set_macro("l__spintent_geo_luaset_intent_str",  "")
-            token_set_macro("l__spintent_geo_luaset_concept_str", "")
-            token_set_macro("l__spintent_geo_luaset_print_tl",    "")
-            token_set_macro("l__spintent_geo_luaset_poly_sym_str","")
-            token_set_macro("l__spintent_geo_luaset_letra_word_str", "")
-            token_set_macro("l__spintent_geo_luaset_sub_spoken_str", "")
+    if tiene_coma then
+        local puntos = spintent_geo_poly_grammar:match(csv)
+        if not puntos or #puntos < 3 then
+            spintent_geo_fig_set_error()
             return
         end
-        token_set_macro("l__spintent_geo_luaset_error_str",      "false")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
-        token_set_macro("l__spintent_geo_luaset_concept_str",    op)
-        token_set_macro("l__spintent_geo_luaset_print_tl",       visual)
-        token_set_macro("l__spintent_geo_luaset_letra_word_str", palabra)
-        token_set_macro("l__spintent_geo_luaset_sub_spoken_str", sub_spoken)
-        -- intent_str se deja vacío: expl3 arma el intent final con
-        -- op + palabra + sub_spoken + su propia llave read-sub.
-        token_set_macro("l__spintent_geo_luaset_intent_str", "")
+        spintent_geo_fig_set_vertices(op, puntos)
         return
     end
 
-    local puntos = spintent_geo_poly_grammar:match(csv)
-    if not puntos or #puntos < 3 then
-        token_set_macro("l__spintent_geo_luaset_error_str",    "true")
-        token_set_macro("l__spintent_geo_luaset_intent_str",   "")
-        token_set_macro("l__spintent_geo_luaset_concept_str",  "")
-        token_set_macro("l__spintent_geo_luaset_print_tl",     "")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str", "")
-        token_set_macro("l__spintent_geo_luaset_letra_word_str", "")
-        token_set_macro("l__spintent_geo_luaset_sub_spoken_str", "")
+    local ok, visual, palabra, conector, sub_spoken = spintent_geo_fig_parse_arg(csv)
+    if ok then
+        token_set_macro("l__spintent_geo_luaset_error_str",         "false")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
+        token_set_macro("l__spintent_geo_luaset_concept_str",       op)
+        token_set_macro("l__spintent_geo_luaset_print_tl",          visual)
+        token_set_macro("l__spintent_geo_luaset_letra_word_str",    palabra)
+        token_set_macro("l__spintent_geo_luaset_letra_conector_str",conector)
+        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    sub_spoken)
+        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
+        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
+        token_set_macro("l__spintent_geo_luaset_vertices_str",   "")
         return
     end
 
-    local info    = spintent_geo_poly_npts[#puntos]
-    local cmd_fig = (read_arg ~= "" and read_arg)
-                    or (info and info.cmd)
-                    or "polígono"
-    local sym     = (info and info.sym) or ""
-    local concepto = op .. "-del-" .. cmd_fig
+    local puntos = spintent_geo_puntos_concat:match(csv)
+    if puntos and #puntos >= 3 then
+        spintent_geo_fig_set_vertices(op, puntos)
+        return
+    end
 
-    token_set_macro("l__spintent_geo_luaset_error_str",    "false")
-    token_set_macro("l__spintent_geo_luaset_poly_sym_str", sym)
-    token_set_macro("l__spintent_geo_luaset_concept_str",  concepto)
-    token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
-    token_set_macro("l__spintent_geo_luaset_letra_word_str", "")
-    token_set_macro("l__spintent_geo_luaset_sub_spoken_str", "")
-
-    local cuerpo = spintent_geo_build_intent("", puntos):match("^_(.-)-$")
-    token_set_macro("l__spintent_geo_luaset_intent_str", concepto .. "-" .. cuerpo)
+    spintent_geo_fig_set_error()
 end
 
 register_tex_cmd("luafun_geo_afig_parse_and_set",
-    function(csv, read_arg)
-    spintent_geo_fig_parse_and_set("área", csv, read_arg)
-end, { "string", "string" })
+    function(csv)
+    spintent_geo_fig_parse_and_set("área", csv)
+end, { "string" })
 
 register_tex_cmd("luafun_geo_pfig_parse_and_set",
-    function(csv, read_arg)
-    spintent_geo_fig_parse_and_set("perímetro", csv, read_arg)
-end, { "string", "string" })
+    function(csv)
+    spintent_geo_fig_parse_and_set("perímetro", csv)
+end, { "string" })
+
+-- ------------------------------------------------------------
+-- §12.5  CÍRCULO/CIRCUNFERENCIA — \spCirc
+--
+-- El radio se clasifica por forma (nunca por llave): número puro,
+-- medida (número+unidad, delegada a spnum/spunit desde expl3), letra
+-- suelta, o segmento de dos letras (side/mside según radio-sty,
+-- decidido en expl3). Lua solo clasifica y extrae; no arma intent de
+-- medida (eso es trabajo ya existente de \spnum/\spunit en expl3).
+-- ------------------------------------------------------------
+local spintent_geo_single_point = spintent_geo_punto * P(-1)
+
+local spintent_geo_radio_number  = C(R"09"^1) * P(-1)
+local spintent_geo_radio_label   = C(R"az" + R"AZ") * P(-1)
+local spintent_geo_radio_segment = Ct( spintent_geo_punto * spintent_geo_punto ) * P(-1)
+
+-- "measure": empieza con dígitos y tiene algo más después (unidad),
+-- ya sea con espacio o pegado. No se valida la unidad aquí — eso
+-- queda para spunit en expl3.
+local spintent_geo_radio_measure = C(R"09"^1) * S" "^0 * (1 - P(-1))^1 * P(-1)
+
+register_tex_cmd("luafun_geo_circ_parse_and_set",
+    function(csv)
+    csv = spintent_trim(csv)
+    csv = spintent_geo_normalize_primes(csv)
+
+    local coma_pos = s_match(csv, "()%,")
+    local centro_str = coma_pos and csv:sub(1, coma_pos - 1) or csv
+    local radio_str  = coma_pos and spintent_trim(csv:sub(coma_pos + 1)) or ""
+
+    local centro = spintent_geo_single_point:match(spintent_trim(centro_str))
+    if not centro then
+        token_set_macro("l__spintent_geo_luaset_error_str",      "true")
+        token_set_macro("l__spintent_geo_luaset_print_tl",       "")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
+        return
+    end
+
+    token_set_macro("l__spintent_geo_luaset_error_str", "false")
+    token_set_macro("l__spintent_geo_luaset_print_tl",
+                    spintent_geo_build_visual_nombre(centro))
+
+    if radio_str == "" then
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
+        return
+    end
+
+    if spintent_geo_radio_segment:match(radio_str) then
+        local puntos = spintent_geo_radio_segment:match(radio_str)
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "segment")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",
+                        spintent_geo_build_visual(puntos))
+        return
+    end
+
+    if spintent_geo_radio_number:match(radio_str) then
+        local n = spintent_geo_radio_number:match(radio_str)
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "number")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  n)
+        return
+    end
+
+    if spintent_geo_radio_label:match(radio_str) then
+        local l = spintent_geo_radio_label:match(radio_str)
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "label")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  l)
+        return
+    end
+
+    if spintent_geo_radio_measure:match(radio_str) then
+        token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "measure")
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  radio_str)
+        return
+    end
+
+    token_set_macro("l__spintent_geo_luaset_error_str",           "true")
+    token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
+    token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
+end, { "string" })

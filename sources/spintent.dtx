@@ -149,7 +149,7 @@
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.98}
-\def\filedate{2026-08-24}
+\def\filedate{2026-08-26}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4082,7 +4082,7 @@
 %    \end{macrocode}
 % Now declare the \mypkg*[no-index]{spintent} package.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-08-24} {0.98} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-26} {0.98} {Spanish parse intents}
 %    \end{macrocode}
 %
 % We check if the requirements for running the \mypkg*[no-index]{spintent} package
@@ -8876,60 +8876,65 @@
 % \subsubsection{Internal functions for \cs[no-index]{spPoint}}
 %
 % \begin{macro}[int]{\@@_spPoint_print:n}
-%   The function \myhlc|\@@_spPoint_print:n| stores the fixed concept
-%   name |punto| in the shared scratch variable
-%   \cs{l_@@_geo_side_cmd_tl}, then resolves the concept name — that
-%   variable, or an empty group — before calling the Lua module,
-%   choosing between them according to \cs{l_@@_spPoint_mode_str} and
-%   \cs{l_@@_spPoint_silent_cmd_bool}. In |mathcat| mode, it appends
-%   |:silent| to \cs{l_@@_geo_luaset_intent_str} afterward when
-%   \mykey[spPoint]{silent-cmd} is active.
+%   The internal function \myhlc|\@@_spPoint_print:n| calls
+%   \myhlc|\@@_luafun_geo_point_parse_and_set:n|, which no longer
+%   receives the concept name: it always returns the bare body
+%   (e.g.\ |A| or |A-sub-uno|) in \myhlc|l_@@_geo_luaset_intent_str|.
+%   Only \emph{after} the call does expl3 assemble the final literal
+%   intent — prepending |punto-|, or wrapping the body in |_...-|
+%   when \mykey[spPoint]{silent-cmd} is active — since neither depends
+%   on anything Lua computes.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_print:n
   {
-    \tl_set:Nn \l_@@_geo_side_cmd_tl { punto }
-    \@@_luafun_geo_point_parse_and_set:nn
-      {
-        \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
-          { \bool_if:NTF \l_@@_spPoint_silent_cmd_bool { } { \l_@@_geo_side_cmd_tl } }
-          { \l_@@_geo_side_cmd_tl }
-      }
-      { \exp_not:n {#1} }
+    \@@_luafun_geo_point_parse_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
-        \msg_error:nne { spintent } { spPoint-invalid-point }
-          { \exp_not:n {#1} }
+        \msg_error:nne { spintent } { spPoint-invalid-point } { \exp_not:n {#1} }
       }
-    \str_if_eq:VnT \l_@@_spPoint_mode_str { mathcat }
+    \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str
-          { _ \l_@@_geo_side_cmd_tl :prefix($pt) }
-        \bool_if:NT \l_@@_spPoint_silent_cmd_bool
-          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
+        \bool_if:NTF \l_@@_spPoint_silent_cmd_bool
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+          }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str { punto- \l_@@_geo_luaset_intent_str }
+          }
       }
+      {
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _ punto :prefix($pt) }
+        \bool_if:NT \l_@@_spPoint_silent_cmd_bool
+          {
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+          }
+      }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
     \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
       {
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spPoint_prefix_tl
-              { \tl_use:N \l_@@_spPoint_prefix_tl - }
+              {
+                \tl_use:N \l_@@_spPoint_prefix_tl -
+              }
             \l_@@_geo_luaset_intent_str
           }
           { \c_@@_invisible_sep_tl \l_@@_geo_luaset_print_tl }
-        \@@_invisible_sep:
       }
       {
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spPoint_prefix_tl
-              { \tl_use:N \l_@@_spPoint_prefix_tl - }
+              {
+                \tl_use:N \l_@@_spPoint_prefix_tl -
+              }
             \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \MathMLarg { pt } { \l_@@_geo_luaset_print_tl }
           }
-        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -9064,26 +9069,29 @@
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_print:n
   {
-    \tl_set:Nn \l_@@_geo_side_cmd_tl { recta }
-    \@@_luafun_geo_parse_and_set:nn
-      {
-        \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
-          { \bool_if:NTF \l_@@_sprecta_silent_cmd_bool { } { \l_@@_geo_side_cmd_tl } }
-          { \l_@@_geo_side_cmd_tl }
-      }
-      { \exp_not:n {#1} }
+    \@@_luafun_geo_parse_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
-        \msg_error:nne { spintent } { sprecta-invalid-points }
-          { \exp_not:n {#1} }
+        \msg_error:nne { spintent } { sprecta-invalid-points } { \exp_not:n {#1} }
       }
-    \str_if_eq:VnT \l_@@_sprecta_mode_str { mathcat }
+    \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str
-          { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
-        \bool_if:NT \l_@@_sprecta_silent_cmd_bool
-          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
+        \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+          }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str { recta- \l_@@_geo_luaset_intent_str }
+          }
       }
+      {
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _ recta :prefix($pts) }
+        \bool_if:NT \l_@@_sprecta_silent_cmd_bool
+          {
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+          }
+      }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
     \str_if_eq:VnTF \l_@@_geo_luaset_is_name_str { true }
       {
         \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
@@ -9091,24 +9099,26 @@
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                  { \tl_use:N \l_@@_sprecta_prefix_tl - }
+                  {
+                    \tl_use:N \l_@@_sprecta_prefix_tl -
+                  }
                 \l_@@_geo_luaset_intent_str
               }
               { \c_@@_invisible_sep_tl \l_@@_geo_luaset_print_tl }
-            \@@_invisible_sep:
           }
           {
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                  { \tl_use:N \l_@@_sprecta_prefix_tl - }
+                  {
+                    \tl_use:N \l_@@_sprecta_prefix_tl -
+                  }
                 \l_@@_geo_luaset_intent_str
               }
               {
                 \c_@@_invisible_sep_tl
                 \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
               }
-            \@@_invisible_sep:
           }
       }
       {
@@ -9117,28 +9127,32 @@
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                  { \tl_use:N \l_@@_sprecta_prefix_tl - }
+                  {
+                    \tl_use:N \l_@@_sprecta_prefix_tl -
+                  }
                 \l_@@_geo_luaset_intent_str
               }
               {
                 \c_@@_invisible_sep_tl
                 \overleftrightarrow { \l_@@_geo_luaset_print_tl }
               }
-            \@@_invisible_sep:
           }
           {
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                  { \tl_use:N \l_@@_sprecta_prefix_tl - }
+                  {
+                    \tl_use:N \l_@@_sprecta_prefix_tl -
+                  }
                 \l_@@_geo_luaset_intent_str
               }
               {
                 \c_@@_invisible_sep_tl
                 \overleftrightarrow
-                  { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
+                  {
+                    \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
+                  }
               }
-            \@@_invisible_sep:
           }
       }
   }
@@ -9280,55 +9294,63 @@
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprayo_print:n
   {
-    \@@_luafun_geo_parse_and_set:nn
-      {
-        \str_if_eq:VnTF \l_@@_sprayo_mode_str { school }
-          {
-            \bool_if:NTF \l_@@_sprayo_silent_cmd_bool
-              { } { \l_@@_sprayo_read_sty_str }
-          }
-          { \l_@@_sprayo_read_sty_str }
-      }
-      { \exp_not:n {#1} }
+    \@@_luafun_geo_parse_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
-        \msg_error:nne { spintent } { sprayo-invalid-points }
-          { \exp_not:n {#1} }
+        \msg_error:nne { spintent } { sprayo-invalid-points } { \exp_not:n {#1} }
       }
-    \str_if_eq:VnT \l_@@_sprayo_mode_str { mathcat }
+    \str_if_eq:VnTF \l_@@_sprayo_mode_str { school }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str
-          { _ \l_@@_sprayo_read_sty_str :prefix($pts) }
-        \bool_if:NT \l_@@_sprayo_silent_cmd_bool
-          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
+        \bool_if:NTF \l_@@_sprayo_silent_cmd_bool
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+          }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str
+              {
+                \l_@@_sprayo_read_sty_str - \l_@@_geo_luaset_intent_str
+              }
+          }
       }
+      {
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_sprayo_read_sty_str :prefix($pts) }
+        \bool_if:NT \l_@@_sprayo_silent_cmd_bool
+          {
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+          }
+      }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
     \str_if_eq:VnTF \l_@@_sprayo_mode_str { school }
       {
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_sprayo_prefix_tl
-              { \tl_use:N \l_@@_sprayo_prefix_tl - }
+              {
+                \tl_use:N \l_@@_sprayo_prefix_tl -
+              }
             \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \overrightarrow { \l_@@_geo_luaset_print_tl }
           }
-        \@@_invisible_sep:
       }
       {
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_sprayo_prefix_tl
-              { \tl_use:N \l_@@_sprayo_prefix_tl - }
+              {
+                \tl_use:N \l_@@_sprayo_prefix_tl -
+              }
             \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \overrightarrow
-              { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
+              {
+                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
+              }
           }
-        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -9515,11 +9537,10 @@
 %
 %   \smallskip
 %
-%   In |mathcat| mode, |:silent| is appended to
-%   \cs{l_@@_geo_luaset_intent_str} afterward when needed. When |#1| is
-%   |mside| and \mykey{print-m} is |true|, |\operatorname{m}| is
-%   typeset wrapped in \cs{MathMLintent}\marg{:silent} before
-%   \cs{overline}, following the same pause-avoiding pattern already
+%   In |mathcat| mode, |:silent| is appended to \myhlc|\l_@@_geo_luaset_intent_str|
+%   afterward when needed. When |#1| is |mside| and \mykey{print-m} is |true|,
+%   |\operatorname{m}| is typeset wrapped in |\MathMLintent|\marg{:silent} before
+%   |\overline|, following the same pause-avoiding pattern already
 %   used for |\spmarc| (\S\ref{cmd:sparc}).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_process:nn
@@ -9531,35 +9552,44 @@
           { \tl_use:c { l_@@_sp #1 _read_arg_str } }
       }
     \str_if_eq:eeT {#1} { mside }
-      { \tl_put_left:Nn \l_@@_geo_side_cmd_tl { medida-del- } }
-    \@@_luafun_geo_parse_and_set:nn
       {
-        \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
-          {
-            \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
-              { } { \l_@@_geo_side_cmd_tl }
-          }
-          { \l_@@_geo_side_cmd_tl }
+        \tl_put_left:Nn \l_@@_geo_side_cmd_tl { medida-del- }
       }
-      { \exp_not:n {#2} }
+    \@@_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \str_if_eq:eeT { \tl_use:c { l_@@_sp #1 _mode_str } } { mathcat }
+    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
-        \str_set:Nx \l_@@_geo_luaset_intent_str
-          { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
-        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
-          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
+        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+          }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str
+              {
+                \l_@@_geo_side_cmd_tl - \l_@@_geo_luaset_intent_str
+              }
+          }
       }
-    \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
+      {
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
+        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
+          {
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+          }
+      }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
         \MathMLintent
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+              {
+                \tl_use:c { l_@@_sp #1 _prefix_tl } -
+              }
             \l_@@_geo_luaset_intent_str
           }
           {
@@ -9568,17 +9598,20 @@
               { \overline { \l_@@_geo_luaset_print_tl } }
               {
                 \bool_if:cT { l_@@_sp #1 _print_m_bool }
-                  { \MathMLintent { :silent } { \operatorname { m } } }
+                  {
+                    \MathMLintent { :silent } { \operatorname { m } }
+                  }
                 \l_@@_geo_luaset_print_tl
               }
           }
-        \@@_invisible_sep:
       }
       {
         \MathMLintent
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+              {
+                \tl_use:c { l_@@_sp #1 _prefix_tl } -
+              }
             \l_@@_geo_luaset_intent_str
           }
           {
@@ -9587,11 +9620,12 @@
               { \overline { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } } }
               {
                 \bool_if:cT { l_@@_sp #1 _print_m_bool }
-                  { \MathMLintent { :silent } { \operatorname { m } } }
+                  {
+                    \MathMLintent { :silent } { \operatorname { m } }
+                  }
                 \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
               }
           }
-        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -9789,65 +9823,78 @@
       { \tl_set:Nn \l_@@_geo_side_cmd_tl { medida-del-ángulo } }
       { \tl_set:Nn \l_@@_geo_side_cmd_tl { ángulo } }
     \bool_if:cT { l_@@_sp #1 _recto_bool }
-      { \tl_put_right:Nn \l_@@_geo_side_cmd_tl { -recto } }
-    \@@_luafun_geo_angulo_parse_and_set:nn
       {
-        \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
-          {
-            \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
-              { } { \l_@@_geo_side_cmd_tl }
-          }
-          { \l_@@_geo_side_cmd_tl }
+        \tl_put_right:Nn \l_@@_geo_side_cmd_tl { -recto }
       }
-      { \exp_not:n {#2} }
+    \@@_luafun_geo_angulo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \str_if_eq:eeT { \tl_use:c { l_@@_sp #1 _mode_str } } { mathcat }
+    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
-        \str_set:Nx \l_@@_geo_luaset_intent_str
-          { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
-        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
-          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
+        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+          }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str
+              {
+                \l_@@_geo_side_cmd_tl - \l_@@_geo_luaset_intent_str
+              }
+          }
       }
-    \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
+      {
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
+        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
+          {
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+          }
+      }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
         \MathMLintent
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+              {
+                \tl_use:c { l_@@_sp #1 _prefix_tl } -
+              }
             \l_@@_geo_luaset_intent_str
           }
           {
             \str_if_eq:eeT {#1} { mangle }
               {
                 \bool_if:cT { l_@@_sp #1 _print_m_bool }
-                  { \MathMLintent { :silent } { \operatorname { m } } }
+                  {
+                    \MathMLintent { :silent } { \operatorname { m } }
+                  }
               }
             \@@_spangle_sym:n {#1}
             \l_@@_geo_luaset_print_tl
           }
-        \@@_invisible_sep:
       }
       {
         \MathMLintent
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+              {
+                \tl_use:c { l_@@_sp #1 _prefix_tl } -
+              }
             \l_@@_geo_luaset_intent_str
           }
           {
             \str_if_eq:eeT {#1} { mangle }
               {
                 \bool_if:cT { l_@@_sp #1 _print_m_bool }
-                  { \MathMLintent { :silent } { \operatorname { m } } }
+                  {
+                    \MathMLintent { :silent } { \operatorname { m } }
+                  }
               }
             \@@_spangle_sym:n {#1}
             \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
           }
-        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -10022,51 +10069,58 @@
 %   \myhlc|\@@_spside_process:nn| (\S\ref{cmd:spside}), with the base
 %   names |arco|/|medida-del-arco|. When |#1| is |marc|,
 %   |\operatorname{m}| is always typeset, wrapped in
-%   \cs{MathMLintent}\marg{:silent}, before
-%   \myhlc|\@@_sparc_print_arc:n|.
+%   |\MathMLintent|\marg{:silent}, before \myhlc|\@@_sparc_print_arc:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sparc_process:nn
   {
     \str_if_eq:eeTF {#1} { marc }
       { \tl_set:Nn \l_@@_geo_side_cmd_tl { medida-del-arco } }
       { \tl_set:Nn \l_@@_geo_side_cmd_tl { arco } }
-    \@@_luafun_geo_parse_and_set:nn
-      {
-        \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
-          {
-            \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
-              { } { \l_@@_geo_side_cmd_tl }
-          }
-          { \l_@@_geo_side_cmd_tl }
-      }
-      { \exp_not:n {#2} }
+    \@@_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \str_if_eq:eeT { \tl_use:c { l_@@_sp #1 _mode_str } } { mathcat }
+    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
-        \str_set:Nx \l_@@_geo_luaset_intent_str
-          { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
-        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
-          { \tl_put_right:Nn \l_@@_geo_luaset_intent_str { :silent } }
+        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+          }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str
+              {
+                \l_@@_geo_side_cmd_tl - \l_@@_geo_luaset_intent_str
+              }
+          }
       }
-    \str_if_eq:eeTF { \tl_use:c { l_@@_sp #1 _mode_str } } { school }
+      {
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
+        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
+          {
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+          }
+      }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
         \MathMLintent
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+              {
+                \tl_use:c { l_@@_sp #1 _prefix_tl } -
+              }
             \l_@@_geo_luaset_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \str_if_eq:eeT {#1} { marc }
-              { \MathMLintent { :silent } { \operatorname { m } } }
+              {
+                \MathMLintent { :silent } { \operatorname { m } }
+              }
             \@@_sparc_print_arc:n { \l_@@_geo_luaset_print_tl }
           }
-        \@@_invisible_sep:
       }
       {
         \MathMLintent
@@ -10078,11 +10132,14 @@
           {
             \c_@@_invisible_sep_tl
             \str_if_eq:eeT {#1} { marc }
-              { \MathMLintent { :silent } { \operatorname { m } } }
+              {
+                \MathMLintent { :silent } { \operatorname { m } }
+              }
             \@@_sparc_print_arc:n
-              { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
+              {
+                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
+              }
           }
-        \@@_invisible_sep:
       }
   }
 %    \end{macrocode}
@@ -10246,6 +10303,7 @@
         \str_set:Nx \l_@@_geo_luaset_intent_str
           { _ \l_@@_geo_luaset_concept_str :prefix($pts) }
       }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
     \bool_if:NTF \l_@@_spPoly_print_sym_bool
       {
         \str_if_eq:VnTF \l_@@_spPoly_mode_str { school }
@@ -10259,25 +10317,29 @@
               {
                 \c_@@_invisible_sep_tl
                 \str_if_empty:NF \l_@@_geo_luaset_poly_sym_str
-                  { \MathMLintent { :silent } { \@@_spPoly_sym: } }
+                  {
+                    \MathMLintent { :silent } { \@@_spPoly_sym: }
+                  }
                 \l_@@_geo_luaset_print_tl
               }
-            \@@_invisible_sep:
           }
           {
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_spPoly_prefix_tl
-                  { \tl_use:N \l_@@_spPoly_prefix_tl - }
+                  {
+                    \tl_use:N \l_@@_spPoly_prefix_tl -
+                  }
                 \l_@@_geo_luaset_intent_str
               }
               {
                 \c_@@_invisible_sep_tl
                 \str_if_empty:NF \l_@@_geo_luaset_poly_sym_str
-                  { \MathMLintent { :silent } { \@@_spPoly_sym: } }
+                  {
+                    \MathMLintent { :silent } { \@@_spPoly_sym: }
+                  }
                 \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
               }
-            \@@_invisible_sep:
           }
       }
       {
@@ -10290,7 +10352,6 @@
                 \l_@@_geo_luaset_intent_pts_str
               }
               { \c_@@_invisible_sep_tl \l_@@_geo_luaset_print_tl }
-            \@@_invisible_sep:
           }
           {
             \MathMLintent
@@ -10303,7 +10364,6 @@
                 \c_@@_invisible_sep_tl
                 \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
               }
-            \@@_invisible_sep:
           }
       }
   }
@@ -10524,24 +10584,28 @@
     \str_if_eq:eeTF {#1} { Afig }
       { \tl_set:Nn \l_@@_geo_fig_op_tl { área } }
       { \tl_set:Nn \l_@@_geo_fig_op_tl { perímetro } }
-
     \str_set:Ne \l_@@_geo_print_sym_str { \str_use:c { l_@@_sp #1 _print_sym_str } }
-
     \str_if_eq:eeTF {#1} { Afig }
-      {
-        \@@_luafun_geo_afig_parse_and_set:nn { \exp_not:n {#2} }
-          { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
-      }
-      {
-        \@@_luafun_geo_pfig_parse_and_set:nn { \exp_not:n {#2} }
-          { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
-      }
+      { \@@_luafun_geo_afig_parse_and_set:n { \exp_not:n {#2} } }
+      { \@@_luafun_geo_pfig_parse_and_set:n { \exp_not:n {#2} } }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
 
+    \tl_if_empty:cF { l_@@_sp #1 _read_arg_tl }
+      {
+        \str_if_empty:VF \l_@@_geo_luaset_vertices_str
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str
+              {
+                \l_@@_geo_fig_op_tl -del-
+                \tl_use:c { l_@@_sp #1 _read_arg_tl } -
+                \l_@@_geo_luaset_vertices_str
+              }
+          }
+      }
     \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
       { \tl_set:Nn \l_@@_geo_sym_word_tl { triángulo } }
       {
@@ -10554,42 +10618,31 @@
         \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
           { \triangle } { \mdlgwhtsquare }
       }
-
     \tl_if_empty:nTF {#2}
       {
-        % ---------- CASO A: argumento vacío ----------
-        \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
+        \str_if_eq:VnTF \l_@@_geo_print_sym_str { none }
+          {
+            \tl_clear:N \l_@@_geo_final_print_tl
+            \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_fig_op_tl }
+            \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_fig_op_tl }
+          }
           {
             \tl_set:Nn \l_@@_geo_final_print_tl { \@@_spfig_sym_choice: }
             \str_set:Ne \l_@@_geo_final_intent_str
-              { \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl }
-            \str_set:Ne \l_@@_geo_mathcat_concept_str
-              { \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl }
-          }
-          {
-            \str_if_eq:VnTF \l_@@_geo_print_sym_str { square }
               {
-                \tl_set:Nn \l_@@_geo_final_print_tl { \@@_spfig_sym_choice: }
-                \str_set:Ne \l_@@_geo_final_intent_str
-                  { \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl }
-                \str_set:Ne \l_@@_geo_mathcat_concept_str
-                  { \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl }
+                \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl
               }
+            \str_set:Ne \l_@@_geo_mathcat_concept_str
               {
-                % cubre "none" Y "auto" (sin cardinalidad que inferir aquí)
-                \tl_clear:N \l_@@_geo_final_print_tl
-                \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_fig_op_tl }
-                \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_fig_op_tl }
+                \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl
               }
           }
       }
       {
         \str_if_eq:VnTF \l_@@_geo_luaset_intent_str { }
           {
-            % ---------- argumento único (número/letra/tabla) ----------
-            \tl_if_empty:VTF \l_@@_geo_luaset_letra_word_str
+            \str_if_empty:VTF \l_@@_geo_luaset_letra_word_str
               {
-                % CASO B1: número/letra suelta
                 \str_if_eq:VnTF \l_@@_geo_print_sym_str { none }
                   {
                     \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
@@ -10601,40 +10654,24 @@
                       }
                   }
                   {
-                    \str_if_eq:VnTF \l_@@_geo_print_sym_str { auto }
+                    \tl_set:Nn \l_@@_geo_final_print_tl
                       {
-                        \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
-                        \str_set:Ne \l_@@_geo_final_intent_str
-                          {
-                            \l_@@_geo_fig_op_tl -
-                            \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
-                            \l_@@_geo_luaset_sub_spoken_str
-                          }
+                        \@@_spfig_sym_choice:
+                        \c_math_subscript_token { \l_@@_geo_luaset_print_tl }
                       }
+                    \str_set:Ne \l_@@_geo_final_intent_str
                       {
-                        \tl_set:Nn \l_@@_geo_final_print_tl
-                          {
-                            \@@_spfig_sym_choice:
-                            \c_math_subscript_token { \l_@@_geo_luaset_print_tl }
-                          }
-                        \str_set:Ne \l_@@_geo_final_intent_str
-                          {
-                            \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl -
-                            \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
-                            \l_@@_geo_luaset_sub_spoken_str
-                          }
+                        \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl -
+                        \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
+                        \l_@@_geo_luaset_sub_spoken_str
                       }
                   }
               }
               {
-                % CASO B2: letra de tabla (F, P, B, L)
                 \str_if_eq:VnF \l_@@_geo_print_sym_str { none }
                   {
-                    \str_if_eq:VnF \l_@@_geo_print_sym_str { auto }
-                      {
-                        \msg_error:nne { spintent } { sp #1 -sym-letra-conflict }
-                          { \c_backslash_str sp #1 }
-                      }
+                    \msg_error:nne { spintent } { sp #1 -sym-letra-conflict }
+                      { \c_backslash_str sp #1 }
                   }
                 \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
                 \str_set:Ne \l_@@_geo_final_intent_str
@@ -10654,78 +10691,78 @@
             \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_fig_op_tl }
           }
           {
-            % ---------- CASO C: vértices reales (con coma) ----------
-            \str_if_eq:VnTF \l_@@_geo_print_sym_str { none }
+            \str_case:VnTF \l_@@_geo_print_sym_str
               {
-                \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
-                \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_pts_str }
+                { auto }
+                  {
+                    \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
+                    \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_str }
+                  }
+                { none }
+                  {
+                    \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
+                    \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_pts_str }
+                  }
               }
               {
-                \str_if_eq:VnTF \l_@@_geo_print_sym_str { auto }
+                \str_if_eq:VVTF \l_@@_geo_print_sym_str \l_@@_geo_luaset_poly_sym_str
                   {
                     \tl_set:Nn \l_@@_geo_final_print_tl
                       {
-                        \@@_spfig_sym:
+                        \@@_spfig_sym_choice:
                         \l_@@_geo_luaset_print_tl
                       }
                     \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_str }
                   }
                   {
-                    \str_if_eq:VVTF \l_@@_geo_print_sym_str \l_@@_geo_luaset_poly_sym_str
-                      {
-                        \tl_set:Nn \l_@@_geo_final_print_tl
-                          {
-                            \@@_spfig_sym:
-                            \l_@@_geo_luaset_print_tl
-                          }
-                        \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_str }
-                      }
-                      {
-                        \msg_error:nne { spintent } { sp #1 -sym-cardinality-conflict }
-                          { \c_backslash_str sp #1 }
-                      }
+                    \msg_error:nne { spintent } { sp #1 -sym-cardinality-conflict }
+                      { \c_backslash_str sp #1 }
                   }
               }
             \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_luaset_concept_str }
           }
       }
-
     \str_if_eq:eeT { \str_use:c { l_@@_sp #1 _mode_str } } { mathcat }
       {
-        \str_set:Ne \l_@@_geo_final_intent_str
-          { _ \l_@@_geo_mathcat_concept_str :prefix($pts) }
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_mathcat_concept_str :prefix($pts) }
       }
-
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
         \MathMLintent
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            _-
-          }
-          {
-            \c_@@_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { Afig } { \mathcal { A } } { \mathcal { P } }
-            \tl_if_empty:NF \l_@@_geo_final_print_tl
-              { \c_math_subscript_token { \l_@@_geo_final_print_tl } }
-          }
-        \@@_invisible_sep:
-      }
-      {
-        \MathMLintent
-          {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+              {
+                \tl_use:c { l_@@_sp #1 _prefix_tl } -
+              }
             \l_@@_geo_final_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \str_if_eq:eeTF {#1} { Afig } { \mathcal { A } } { \mathcal { P } }
             \tl_if_empty:NF \l_@@_geo_final_print_tl
-              { \c_math_subscript_token { \l_@@_geo_final_print_tl } }
+              {
+                \c_math_subscript_token { \l_@@_geo_final_print_tl }
+              }
           }
-        \@@_invisible_sep:
+      }
+      {
+        \MathMLintent
+          {
+            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+              {
+                \tl_use:c { l_@@_sp #1 _prefix_tl } -
+              }
+            \l_@@_geo_luaset_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \str_if_eq:eeTF {#1} { Afig } { \mathcal { A } } { \mathcal { P } }
+            \tl_if_empty:NF \l_@@_geo_final_print_tl
+              {
+                \c_math_subscript_token { \l_@@_geo_final_print_tl }
+              }
+          }
       }
   }
 %    \end{macrocode}
@@ -10956,7 +10993,13 @@
 %   \mykey[spCirc]{print-sym}.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spCirc_sym:
-  { \str_if_eq:VnTF \l_@@_spCirc_print_sym_str { odot } { \odot } { C } }
+  {
+    \str_if_eq:VnTF \l_@@_spCirc_print_sym_str { odot }
+      {
+        \odot
+      }
+      { C }
+  }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -11045,57 +11088,66 @@
     \@@_luafun_geo_circ_parse_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
-        \msg_error:nne { spintent } { spCirc-invalid-arg }
-          { \exp_not:n {#1} }
+        \msg_error:nne { spintent } { spCirc-invalid-arg } { \exp_not:n {#1} }
       }
     \@@_spCirc_word_and_article:
-
-    \str_set:Nx \l_@@_geo_circ_intent_str { \l_@@_geo_circ_word_tl }
-    \tl_if_empty:NF \l_@@_spCirc_sub_index_str
+    \str_set:Ne \l_@@_geo_circ_intent_str { \l_@@_geo_circ_word_tl }
+    \str_if_empty:NF \l_@@_spCirc_sub_index_str
       {
-        \tl_put_right:Nn \l_@@_geo_circ_intent_str
+        \str_put_right:Nn \l_@@_geo_circ_intent_str
           {
             -
             \bool_if:NT \l_@@_spCirc_read_sub_bool { sub - }
             \l_@@_spCirc_sub_index_str
           }
       }
-    \tl_put_right:Nn \l_@@_geo_circ_intent_str
-      { -de-centro-en-\l_@@_geo_luaset_print_tl }
-    \tl_if_empty:VF \l_@@_geo_luaset_circ_radio_type_str
-      { \tl_put_right:Nn \l_@@_geo_circ_intent_str { -y-radio } }
-
-    \tl_if_empty:VTF \l_@@_geo_luaset_circ_radio_type_str
+    \str_put_right:Nn \l_@@_geo_circ_intent_str
+      {
+        -de-centro-en-\l_@@_geo_luaset_print_tl
+      }
+    \str_if_empty:VF \l_@@_geo_luaset_circ_radio_type_str
+      {
+        \str_put_right:Nn \l_@@_geo_circ_intent_str { -y-radio }
+      }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \str_if_empty:VTF \l_@@_geo_luaset_circ_radio_type_str
       {
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spCirc_prefix_tl
-              { \tl_use:N \l_@@_spCirc_prefix_tl - }
+              {
+                \tl_use:N \l_@@_spCirc_prefix_tl -
+              }
             \l_@@_geo_circ_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \@@_spCirc_sym:
-            \tl_if_empty:NF \l_@@_spCirc_sub_index_str
-              { \c_math_subscript_token { \l_@@_spCirc_sub_index_str } }
+            \str_if_empty:NF \l_@@_spCirc_sub_index_str
+              {
+                \c_math_subscript_token { \l_@@_spCirc_sub_index_str }
+              }
             ( \l_@@_geo_luaset_print_tl )
           }
-        \@@_invisible_sep:
       }
       {
         \MathMLintent
           {
             \tl_if_empty:NF \l_@@_spCirc_prefix_tl
-              { \tl_use:N \l_@@_spCirc_prefix_tl - }
+              {
+                \tl_use:N \l_@@_spCirc_prefix_tl -
+              }
             \l_@@_geo_circ_intent_str
           }
           {
             \c_@@_invisible_sep_tl
             \@@_spCirc_sym:
-            \tl_if_empty:NF \l_@@_spCirc_sub_index_str
-              { \c_math_subscript_token { \l_@@_spCirc_sub_index_str } }
+            \str_if_empty:NF \l_@@_spCirc_sub_index_str
+              {
+                \c_math_subscript_token { \l_@@_spCirc_sub_index_str }
+              }
             ( \l_@@_geo_luaset_print_tl ,
-          }
+           }
         \@@_invisible_sep:
         \@@_spCirc_radio_print:
         \MathMLintent { :silent } { ) }
@@ -11148,7 +11200,7 @@
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.98 [2026-08-24]
+     Lua module spintent.lua for spintent package - v0.98 [2026-08-26]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -11844,120 +11896,120 @@ end, { "string" })
 -- 4. ABREVIATURAS Y ORDINALES (\spshort)
 
 local spintent_spshort_dict = {
-  ["dr.a"]   = { actualtext = "doctora",   layout_type = "superscript", base = "Dr.", suffix = "a" },
-  ["dr.as"]  = { actualtext = "doctoras",  layout_type = "superscript", base = "Dr.", suffix = "as" },
-  ["prof.a"] = { actualtext = "profesora", layout_type = "superscript", base = "Prof.", suffix = "a" },
-  ["d.a"]    = { actualtext = "doña",      layout_type = "superscript", base = "D.", suffix = "a" },
-  ["m.a"]    = { actualtext = "maría",     layout_type = "superscript", base = "M.", suffix = "a" },
-  ["n.o"]    = { actualtext = "número",    layout_type = "superscript", base = "N.", suffix = "o" },
-  ["n.os"]   = { actualtext = "números",   layout_type = "superscript", base = "N.", suffix = "os" },
-  ["c.ia"]   = { actualtext = "compañía",  layout_type = "superscript", base = "C.", suffix = "ia" },
+  ["dr.a"]   = { expandtxt = "doctora",   layout_type = "superscript", base = "Dr.", suffix = "a" },
+  ["dr.as"]  = { expandtxt = "doctoras",  layout_type = "superscript", base = "Dr.", suffix = "as" },
+  ["prof.a"] = { expandtxt = "profesora", layout_type = "superscript", base = "Prof.", suffix = "a" },
+  ["d.a"]    = { expandtxt = "doña",      layout_type = "superscript", base = "D.", suffix = "a" },
+  ["m.a"]    = { expandtxt = "maría",     layout_type = "superscript", base = "M.", suffix = "a" },
+  ["n.o"]    = { expandtxt = "número",    layout_type = "superscript", base = "N.", suffix = "o" },
+  ["n.os"]   = { expandtxt = "números",   layout_type = "superscript", base = "N.", suffix = "os" },
+  ["c.ia"]   = { expandtxt = "compañía",  layout_type = "superscript", base = "C.", suffix = "ia" },
 
-  ["dr.ª"] = { actualtext = "doctora", layout_type = "superscript", base = "Dr.", suffix = "a" },
-  ["d.ª"]  = { actualtext = "doña",    layout_type = "superscript", base = "D.", suffix = "a" },
-  ["n.º"]  = { actualtext = "número",  layout_type = "superscript", base = "N.", suffix = "o" },
+  ["dr.ª"] = { expandtxt = "doctora", layout_type = "superscript", base = "Dr.", suffix = "a" },
+  ["d.ª"]  = { expandtxt = "doña",    layout_type = "superscript", base = "D.", suffix = "a" },
+  ["n.º"]  = { expandtxt = "número",  layout_type = "superscript", base = "N.", suffix = "o" },
 
-  ["pág."] = { actualtext = "página",   layout_type = "linear_regular", output = "pág." },
-  ["pag."] = { actualtext = "página",   layout_type = "linear_regular", output = "pág." },
-  ["vol."] = { actualtext = "volumen",  layout_type = "linear_regular", output = "vol." },
-  ["etc."] = { actualtext = "etcétera", layout_type = "linear_regular", output = "etc." },
+  ["pág."] = { expandtxt = "página",   layout_type = "linear_regular", output = "pág." },
+  ["pag."] = { expandtxt = "página",   layout_type = "linear_regular", output = "pág." },
+  ["vol."] = { expandtxt = "volumen",  layout_type = "linear_regular", output = "vol." },
+  ["etc."] = { expandtxt = "etcétera", layout_type = "linear_regular", output = "etc." },
 
-  ["et al."]    = { actualtext = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
-  ["et. al."]   = { actualtext = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
-  ["ibíd."]     = { actualtext = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
-  ["ibid."]     = { actualtext = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
-  ["op. cit."]  = { actualtext = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
-  ["op.cit."]   = { actualtext = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
-  ["loc. cit."] = { actualtext = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
-  ["loc.cit."]  = { actualtext = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
-  ["v. gr."]    = { actualtext = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
-  ["v.gr."]     = { actualtext = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
-  ["i. e."]     = { actualtext = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
-  ["i.e."]      = { actualtext = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
-  ["e. g."]     = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
-  ["e.g."]      = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
-  ["p. ej."]    = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
-  ["p.ej."]     = { actualtext = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
+  ["et al."]    = { expandtxt = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
+  ["et. al."]   = { expandtxt = "y otros",      layout_type = "linear_regular", output = "et\u{00A0}al." },
+  ["ibíd."]     = { expandtxt = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
+  ["ibid."]     = { expandtxt = "ibídem",       layout_type = "linear_regular", output = "ibíd." },
+  ["op. cit."]  = { expandtxt = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
+  ["op.cit."]   = { expandtxt = "obra citada",  layout_type = "linear_regular", output = "op.\u{00A0}cit." },
+  ["loc. cit."] = { expandtxt = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
+  ["loc.cit."]  = { expandtxt = "lugar citado", layout_type = "linear_regular", output = "loc.\u{00A0}cit." },
+  ["v. gr."]    = { expandtxt = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
+  ["v.gr."]     = { expandtxt = "verbigracia",  layout_type = "linear_regular", output = "v.\u{00A0}gr." },
+  ["i. e."]     = { expandtxt = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
+  ["i.e."]      = { expandtxt = "esto es",      layout_type = "linear_regular", output = "i.\u{00A0}e." },
+  ["e. g."]     = { expandtxt = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
+  ["e.g."]      = { expandtxt = "por ejemplo",  layout_type = "linear_regular", output = "e.\u{00A0}g." },
+  ["p. ej."]    = { expandtxt = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
+  ["p.ej."]     = { expandtxt = "por ejemplo",  layout_type = "linear_regular", output = "p.\u{00A0}ej." },
 
-  ["sr."]    = { actualtext = "señor",       layout_type = "linear_regular", output = "Sr." },
-  ["sra."]   = { actualtext = "señora",      layout_type = "linear_regular", output = "Sra." },
-  ["srta."]  = { actualtext = "señorita",    layout_type = "linear_regular", output = "Srta." },
-  ["dr."]    = { actualtext = "doctor",      layout_type = "linear_regular", output = "Dr." },
-  ["dra."]   = { actualtext = "doctora",     layout_type = "linear_regular", output = "Dra." },
-  ["dres."]  = { actualtext = "doctores",    layout_type = "linear_regular", output = "Dres." },
-  ["dras."]  = { actualtext = "doctoras",    layout_type = "linear_regular", output = "Dras." },
-  ["prof."]  = { actualtext = "profesor",    layout_type = "linear_regular", output = "Prof." },
-  ["profa."] = { actualtext = "profesora",   layout_type = "linear_regular", output = "Profa." },
-  ["profs."] = { actualtext = "profesores",  layout_type = "linear_regular", output = "Profs." },
-  ["ing."]   = { actualtext = "ingeniero",   layout_type = "linear_regular", output = "Ing." },
-  ["ings."]  = { actualtext = "ingenieros",  layout_type = "linear_regular", output = "Ings." },
-  ["lic."]   = { actualtext = "licenciado",  layout_type = "linear_regular", output = "Lic." },
-  ["v. b."]  = { actualtext = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
-  ["v.b."]   = { actualtext = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
+  ["sr."]    = { expandtxt = "señor",       layout_type = "linear_regular", output = "Sr." },
+  ["sra."]   = { expandtxt = "señora",      layout_type = "linear_regular", output = "Sra." },
+  ["srta."]  = { expandtxt = "señorita",    layout_type = "linear_regular", output = "Srta." },
+  ["dr."]    = { expandtxt = "doctor",      layout_type = "linear_regular", output = "Dr." },
+  ["dra."]   = { expandtxt = "doctora",     layout_type = "linear_regular", output = "Dra." },
+  ["dres."]  = { expandtxt = "doctores",    layout_type = "linear_regular", output = "Dres." },
+  ["dras."]  = { expandtxt = "doctoras",    layout_type = "linear_regular", output = "Dras." },
+  ["prof."]  = { expandtxt = "profesor",    layout_type = "linear_regular", output = "Prof." },
+  ["profa."] = { expandtxt = "profesora",   layout_type = "linear_regular", output = "Profa." },
+  ["profs."] = { expandtxt = "profesores",  layout_type = "linear_regular", output = "Profs." },
+  ["ing."]   = { expandtxt = "ingeniero",   layout_type = "linear_regular", output = "Ing." },
+  ["ings."]  = { expandtxt = "ingenieros",  layout_type = "linear_regular", output = "Ings." },
+  ["lic."]   = { expandtxt = "licenciado",  layout_type = "linear_regular", output = "Lic." },
+  ["v. b."]  = { expandtxt = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
+  ["v.b."]   = { expandtxt = "visto bueno", layout_type = "linear_regular", output = "V.\u{00A0}B." },
 
-  ["s. a."]    = { actualtext = "sociedad anónima",         layout_type = "linear_caps",    output = "S.\u{00A0}A." },
-  ["s.a."]     = { actualtext = "sociedad anónima",         layout_type = "linear_caps",    output = "S.\u{00A0}A." },
-  ["ee. uu."]  = { actualtext = "estados unidos",          layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
-  ["ee.uu."]   = { actualtext = "estados unidos",           layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
-  ["dd. hh."]  = { actualtext = "derechos humanos",        layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
-  ["dd.hh."]   = { actualtext = "derechos humanos",        layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
-  ["jj. oo."]  = { actualtext = "juegos olímpicos",        layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
-  ["jj.oo."]   = { actualtext = "juegos olímpicos",        layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
-  ["ff. aa."]  = { actualtext = "fuerzas armadas",         layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
-  ["ff.aa."]   = { actualtext = "fuerzas armadas",         layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
-  ["rr. ee."]  = { actualtext = "relaciones exteriores",   layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
-  ["rr.ee."]   = { actualtext = "relaciones exteriores",   layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
-  ["cc. aa."]  = { actualtext = "comunidades autónomas",   layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
-  ["cc.aa."]   = { actualtext = "comunidades autónomas",   layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
-  ["p. d."]    = { actualtext = "posdata",                 layout_type = "linear_caps",    output = "P.\u{00A0}D." },
-  ["p.d."]     = { actualtext = "posdata",                 layout_type = "linear_caps",    output = "P.\u{00A0}D." },
+  ["s. a."]    = { expandtxt = "sociedad anónima",      layout_type = "linear_caps",    output = "S.\u{00A0}A." },
+  ["s.a."]     = { expandtxt = "sociedad anónima",      layout_type = "linear_caps",    output = "S.\u{00A0}A." },
+  ["ee. uu."]  = { expandtxt = "estados unidos",        layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
+  ["ee.uu."]   = { expandtxt = "estados unidos",        layout_type = "linear_caps",    output = "EE.\u{00A0}UU." },
+  ["dd. hh."]  = { expandtxt = "derechos humanos",      layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
+  ["dd.hh."]   = { expandtxt = "derechos humanos",      layout_type = "linear_caps",    output = "DD.\u{00A0}HH." },
+  ["jj. oo."]  = { expandtxt = "juegos olímpicos",      layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
+  ["jj.oo."]   = { expandtxt = "juegos olímpicos",      layout_type = "linear_caps",    output = "JJ.\u{00A0}OO." },
+  ["ff. aa."]  = { expandtxt = "fuerzas armadas",       layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
+  ["ff.aa."]   = { expandtxt = "fuerzas armadas",       layout_type = "linear_caps",    output = "FF.\u{00A0}AA." },
+  ["rr. ee."]  = { expandtxt = "relaciones exteriores", layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
+  ["rr.ee."]   = { expandtxt = "relaciones exteriores", layout_type = "linear_caps",    output = "RR.\u{00A0}EE." },
+  ["cc. aa."]  = { expandtxt = "comunidades autónomas", layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
+  ["cc.aa."]   = { expandtxt = "comunidades autónomas", layout_type = "linear_caps",    output = "CC.\u{00A0}AA." },
+  ["p. d."]    = { expandtxt = "posdata",               layout_type = "linear_caps",    output = "P.\u{00A0}D." },
+  ["p.d."]     = { expandtxt = "posdata",               layout_type = "linear_caps",    output = "P.\u{00A0}D." },
 
 -- Solo por compatibilidad (no deben llevar punto acorde a la RAE)
-  ["d. n. i."] = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
-  ["d.n.i."]   = { actualtext = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
-  ["r. u. t."] = { actualtext = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
-  ["r.u.t."]   = { actualtext = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
-  ["r. u. n."] = { actualtext = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
-  ["r.u.n."]   = { actualtext = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
+  ["d. n. i."] = { expandtxt = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
+  ["d.n.i."]   = { expandtxt = "documento nacional de identidad", layout_type = "linear_caps", output = "D.\u{00A0}N.\u{00A0}I." },
+  ["r. u. t."] = { expandtxt = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
+  ["r.u.t."]   = { expandtxt = "rol único tributario", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}T." },
+  ["r. u. n."] = { expandtxt = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
+  ["r.u.n."]   = { expandtxt = "rol único nacional", layout_type = "linear_caps", output = "R.\u{00A0}U.\u{00A0}N." },
 
-  ["a. c."]    = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
-  ["a.c."]     = { actualtext = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
-  ["d. c."]    = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
-  ["d.c."]     = { actualtext = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
+  ["a. c."]    = { expandtxt = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
+  ["a.c."]     = { expandtxt = "antes de Cristo",          layout_type = "linear_mixed",   output = "a.\u{00A0}C." },
+  ["d. c."]    = { expandtxt = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
+  ["d.c."]     = { expandtxt = "después de Cristo",        layout_type = "linear_mixed",   output = "d.\u{00A0}C." },
 
-  ["dni"]      = { actualtext = "documento nacional de identidad",     layout_type = "small_caps_pure", output = "DNI" },
-  ["run"]      = { actualtext = "rol único nacional",                  layout_type = "small_caps_pure", output = "RUN" },
-  ["rut"]      = { actualtext = "rol único tributario",                layout_type = "small_caps_pure", output = "RUT" },
-  ["onu"]      = { actualtext = "organización de las naciones unidas", layout_type = "small_caps_pure", output = "ONU" },
-  ["rae"]      = { actualtext = "real academia española",             layout_type = "small_caps_pure", output = "RAE" },
-  ["ong"]      = { actualtext = "organización no gubernamental",      layout_type = "small_caps_pure", output = "ONG" },
-  ["ongs"]     = { actualtext = "organizaciones no gubernamentales",  layout_type = "small_caps_pure", output = "ONGs" },
-  ["urss"]     = { actualtext = "unión de repúblicas socialistas soviéticas", layout_type = "small_caps_pure", output = "URSS" },
-  ["oea"]      = { actualtext = "organización de los estados americanos", layout_type = "small_caps_pure", output = "OEA" },
-  ["oms"]      = { actualtext = "organización mundial de la salud",    layout_type = "small_caps_pure", output = "OMS" },
-  ["fmi"]      = { actualtext = "fondo monetario internacional",      layout_type = "small_caps_pure", output = "FMI" },
-  ["bid"]      = { actualtext = "banco interamericano de desarrollo", layout_type = "small_caps_pure", output = "BID" },
-  ["otan"]     = { actualtext = "organización del tratado del atlántico norte", layout_type = "small_caps_pure", output = "OTAN" },
-  ["unam"]     = { actualtext = "universidad nacional autónoma de méxico", layout_type = "small_caps_pure", output = "UNAM" },
-  ["pib"]      = { actualtext = "producto interno bruto",             layout_type = "small_caps_pure", output = "PIB" },
-  ["ue"]       = { actualtext = "unión europea",                       layout_type = "small_caps_pure", output = "UE" },
-  ["eau"]      = { actualtext = "emiratos árabes unidos",              layout_type = "small_caps_pure", output = "EAU" },
-  ["ru"]       = { actualtext = "reino unido",                         layout_type = "small_caps_pure", output = "RU" },
-  ["rca"]      = { actualtext = "república centroafricana",            layout_type = "small_caps_pure", output = "RCA" },
-  ["rdc"]      = { actualtext = "república democrática del congo",     layout_type = "small_caps_pure", output = "RDC" },
-  ["rfa"]      = { actualtext = "república federal alemana",           layout_type = "small_caps_pure", output = "RFA" },
-  ["rda"]      = { actualtext = "república democrática alemana",       layout_type = "small_caps_pure", output = "RDA" },
+  ["dni"]      = { expandtxt = "documento nacional de identidad",     layout_type = "small_caps_pure", output = "DNI" },
+  ["run"]      = { expandtxt = "rol único nacional",                  layout_type = "small_caps_pure", output = "RUN" },
+  ["rut"]      = { expandtxt = "rol único tributario",                layout_type = "small_caps_pure", output = "RUT" },
+  ["onu"]      = { expandtxt = "organización de las naciones unidas", layout_type = "small_caps_pure", output = "ONU" },
+  ["rae"]      = { expandtxt = "real academia española",             layout_type = "small_caps_pure", output = "RAE" },
+  ["ong"]      = { expandtxt = "organización no gubernamental",      layout_type = "small_caps_pure", output = "ONG" },
+  ["ongs"]     = { expandtxt = "organizaciones no gubernamentales",  layout_type = "small_caps_pure", output = "ONGs" },
+  ["urss"]     = { expandtxt = "unión de repúblicas socialistas soviéticas", layout_type = "small_caps_pure", output = "URSS" },
+  ["oea"]      = { expandtxt = "organización de los estados americanos", layout_type = "small_caps_pure", output = "OEA" },
+  ["oms"]      = { expandtxt = "organización mundial de la salud",    layout_type = "small_caps_pure", output = "OMS" },
+  ["fmi"]      = { expandtxt = "fondo monetario internacional",      layout_type = "small_caps_pure", output = "FMI" },
+  ["bid"]      = { expandtxt = "banco interamericano de desarrollo", layout_type = "small_caps_pure", output = "BID" },
+  ["otan"]     = { expandtxt = "organización del tratado del atlántico norte", layout_type = "small_caps_pure", output = "OTAN" },
+  ["unam"]     = { expandtxt = "universidad nacional autónoma de méxico", layout_type = "small_caps_pure", output = "UNAM" },
+  ["pib"]      = { expandtxt = "producto interno bruto",             layout_type = "small_caps_pure", output = "PIB" },
+  ["ue"]       = { expandtxt = "unión europea",                       layout_type = "small_caps_pure", output = "UE" },
+  ["eau"]      = { expandtxt = "emiratos árabes unidos",              layout_type = "small_caps_pure", output = "EAU" },
+  ["ru"]       = { expandtxt = "reino unido",                         layout_type = "small_caps_pure", output = "RU" },
+  ["rca"]      = { expandtxt = "república centroafricana",            layout_type = "small_caps_pure", output = "RCA" },
+  ["rdc"]      = { expandtxt = "república democrática del congo",     layout_type = "small_caps_pure", output = "RDC" },
+  ["rfa"]      = { expandtxt = "república federal alemana",           layout_type = "small_caps_pure", output = "RFA" },
+  ["rda"]      = { expandtxt = "república democrática alemana",       layout_type = "small_caps_pure", output = "RDA" },
 
-  ["unicef"]   = { actualtext = "fondo de las naciones unidas para la infancia", layout_type = "acronym_long",   output = "Unicef" },
-  ["unesco"]   = { actualtext = "organización de las naciones unidas para la educación, la ciencia y la cultura", layout_type = "acronym_long",   output = "Unesco" },
-  ["mercosur"] = { actualtext = "mercado común del sur",               layout_type = "acronym_long",   output = "Mercosur" },
-  ["cepal"]    = { actualtext = "comisión económica para américa latina", layout_type = "acronym_long",  output = "Cepal" },
-  ["celac"]    = { actualtext = "comunidad de estados latinoamericanos", layout_type = "acronym_long",  output = "Celac" },
-  ["unasur"]   = { actualtext = "unión de naciones suramericanas",     layout_type = "acronym_long",   output = "Unasur" },
-  ["acnur"]    = { actualtext = "alto comisionado de las naciones unidas", layout_type = "acronym_long",  output = "Acnur" },
-  ["mineduc"]  = { actualtext = "ministerio de educación",            layout_type = "acronym_long",   output = "Mineduc" },
-  ["senadis"]  = { actualtext = "servicio nacional de la discapacidad", layout_type = "acronym_long",  output = "Senadis" },
-  ["conicet"]  = { actualtext = "consejo nacional de investigaciones", layout_type = "acronym_long",   output = "Conicet" }
+  ["unicef"]   = { expandtxt = "fondo de las naciones unidas para la infancia", layout_type = "acronym_long",   output = "Unicef" },
+  ["unesco"]   = { expandtxt = "organización de las naciones unidas para la educación, la ciencia y la cultura", layout_type = "acronym_long",   output = "Unesco" },
+  ["mercosur"] = { expandtxt = "mercado común del sur",               layout_type = "acronym_long",   output = "Mercosur" },
+  ["cepal"]    = { expandtxt = "comisión económica para américa latina", layout_type = "acronym_long",  output = "Cepal" },
+  ["celac"]    = { expandtxt = "comunidad de estados latinoamericanos", layout_type = "acronym_long",  output = "Celac" },
+  ["unasur"]   = { expandtxt = "unión de naciones suramericanas",     layout_type = "acronym_long",   output = "Unasur" },
+  ["acnur"]    = { expandtxt = "alto comisionado de las naciones unidas", layout_type = "acronym_long",  output = "Acnur" },
+  ["mineduc"]  = { expandtxt = "ministerio de educación",            layout_type = "acronym_long",   output = "Mineduc" },
+  ["senadis"]  = { expandtxt = "servicio nacional de la discapacidad", layout_type = "acronym_long",  output = "Senadis" },
+  ["conicet"]  = { expandtxt = "consejo nacional de investigaciones", layout_type = "acronym_long",   output = "Conicet" }
 }
 
 local spintent_spshort_ord_suffixes = {
@@ -12048,7 +12100,7 @@ local function spintent_spshort_execute_analysis(raw_input)
   if dict_match then
     token_set_macro("l__spintent_spshort_luaset_status_str", "success")
     token_set_macro("l__spintent_spshort_luaset_layout_str", dict_match.layout_type)
-    token_set_macro("l__spintent_spshort_luaset_expanded_str", dict_match.actualtext)
+    token_set_macro("l__spintent_spshort_luaset_expanded_str", dict_match.expandtxt)
 
     if dict_match.layout_type == "superscript" then
       token_set_macro("l__spintent_spshort_luaset_base_str", dict_match.base)
@@ -12755,6 +12807,18 @@ local function spintent_geo_build_intent_nombre(cmd, nombre)
     return spintent_geo_build_intent(cmd, { nombre })
 end
 
+-- Constructores "puros": solo el cuerpo (puntos convertidos a texto),
+-- sin concepto ni envoltorio "_...-" — usados por las funciones que ya
+-- no reciben "cmd"/"read_arg" desde expl3 (se antepone/envuelve del
+-- lado expl3, después de la llamada).
+local function spintent_geo_build_body(puntos)
+    return spintent_geo_build_intent("", puntos):match("^_(.-)-$")
+end
+
+local function spintent_geo_build_body_nombre(nombre)
+    return spintent_geo_build_body({ nombre })
+end
+
 local function spintent_geo_build_visual(puntos)
     local partes = {}
     for _, pt in ipairs(puntos) do
@@ -12791,7 +12855,7 @@ end
 local spintent_geo_single_point_grammar = spintent_geo_punto * P(-1)
 
 register_tex_cmd("luafun_geo_point_parse_and_set",
-    function(cmd, csv)
+    function(csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
@@ -12805,10 +12869,10 @@ register_tex_cmd("luafun_geo_point_parse_and_set",
 
     token_set_macro("l__spintent_geo_luaset_error_str", "false")
     token_set_macro("l__spintent_geo_luaset_intent_str",
-                    spintent_geo_build_intent_nombre(cmd, punto))
+                    spintent_geo_build_body_nombre(punto))
     token_set_macro("l__spintent_geo_luaset_print_tl",
                     spintent_geo_build_visual_nombre(punto))
-end, { "string", "string" })
+end, { "string" })
 
 -- ------------------------------------------------------------
 -- §12.2  RECTA, RAYO, SEGMENTO Y ARCO
@@ -12818,7 +12882,7 @@ end, { "string", "string" })
 -- (preserva la semántica de \sprecta con una sola letra), luego
 -- puntos concatenados sin separador (nuevo), luego error.
 -- ------------------------------------------------------------
-register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
+register_tex_cmd("luafun_geo_parse_and_set", function(csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
@@ -12836,7 +12900,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
         token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
         token_set_macro("l__spintent_geo_luaset_intent_str",
-                        spintent_geo_build_intent(cmd, puntos))
+                        spintent_geo_build_body(puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
         return
@@ -12847,7 +12911,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
         token_set_macro("l__spintent_geo_luaset_is_name_str",  "true")
         token_set_macro("l__spintent_geo_luaset_intent_str",
-                        spintent_geo_build_intent_nombre(cmd, nombre))
+                        spintent_geo_build_body_nombre(nombre))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
         return
@@ -12858,7 +12922,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
         token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
         token_set_macro("l__spintent_geo_luaset_intent_str",
-                        spintent_geo_build_intent(cmd, puntos))
+                        spintent_geo_build_body(puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
         return
@@ -12868,14 +12932,14 @@ register_tex_cmd("luafun_geo_parse_and_set", function(cmd, csv)
     token_set_macro("l__spintent_geo_luaset_intent_str",   "")
     token_set_macro("l__spintent_geo_luaset_print_tl",     "")
     token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
-end, { "string", "string" })
+end, { "string" })
 
 -- ------------------------------------------------------------
 -- §12.3  ÁNGULO — \spangle, \spmangle
 -- ------------------------------------------------------------
 local spintent_geo_angulo_un_punto = spintent_geo_punto * P(-1)
 
-local function spintent_geo_build_intent_angulo(cmd, csv)
+local function spintent_geo_build_body_angulo(csv)
     local tiene_coma = s_match(csv, ",")
 
     if tiene_coma then
@@ -12883,44 +12947,31 @@ local function spintent_geo_build_intent_angulo(cmd, csv)
         if not puntos or #puntos == 0 then
             return nil, nil, nil
         end
-        local intent = spintent_geo_build_intent(cmd, puntos)
+        local cuerpo = spintent_geo_build_body(puntos)
         local visual = spintent_geo_build_visual(puntos)
-        return intent, visual, "tres-puntos"
+        return cuerpo, visual, "tres-puntos"
     else
         local un_punto = spintent_geo_angulo_un_punto:match(csv)
         if un_punto then
-            local intent_base = spintent_geo_build_intent_nombre("", un_punto)
-            local nucleo = intent_base:match("^_(.-)-$") or intent_base
-            local sufijo = "en-" .. nucleo
-            local intent
-            if cmd == "" then
-                intent = "_" .. sufijo .. "-"
-            else
-                intent = cmd .. "-" .. sufijo
-            end
+            local base = spintent_geo_build_body_nombre(un_punto)
+            local cuerpo = "en-" .. base
             local visual = spintent_geo_build_visual_nombre(un_punto)
-            return intent, visual, "un-punto"
+            return cuerpo, visual, "un-punto"
         else
             local nombre = spintent_trim(csv)
             if nombre == "" then return nil, nil, nil end
-            local nombre_intent = spintent_sanitize_for_screen_reader(nombre)
-            local intent
-            if cmd == "" then
-                intent = "_" .. nombre_intent .. "-"
-            else
-                intent = cmd .. "-" .. nombre_intent
-            end
-            return intent, nombre, "nombre"
+            local cuerpo = spintent_sanitize_for_screen_reader(nombre)
+            return cuerpo, nombre, "nombre"
         end
     end
 end
 
 register_tex_cmd("luafun_geo_angulo_parse_and_set",
-    function(cmd, csv)
+    function(csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
 
-    local intent, visual, caso = spintent_geo_build_intent_angulo(cmd, csv)
+    local cuerpo, visual, caso = spintent_geo_build_body_angulo(csv)
     if not visual then
         token_set_macro("l__spintent_geo_luaset_error_str",       "true")
         token_set_macro("l__spintent_geo_luaset_intent_str",      "")
@@ -12931,9 +12982,9 @@ register_tex_cmd("luafun_geo_angulo_parse_and_set",
 
     token_set_macro("l__spintent_geo_luaset_error_str", "false")
     token_set_macro("l__spintent_geo_luaset_angulo_case_str", caso)
-    token_set_macro("l__spintent_geo_luaset_intent_str", intent)
+    token_set_macro("l__spintent_geo_luaset_intent_str", cuerpo)
     token_set_macro("l__spintent_geo_luaset_print_tl", visual)
-end, { "string", "string" })
+end, { "string" })
 
 -- ------------------------------------------------------------
 -- §12.4  POLÍGONO — \spPoly, \spAfig, \spPfig
@@ -13038,12 +13089,13 @@ end
 
 -- Arma y establece las variables de salida para el caso de vértices
 -- reales (lista de al menos 3 puntos), sin importar si vinieron
--- separados por comas o concatenados sin separador.
-local function spintent_geo_fig_set_vertices(op, puntos, read_arg)
+-- separados por comas o concatenados sin separador. Siempre usa el
+-- nombre inferido por cardinalidad — "read-arg" ya no viaja a Lua;
+-- expl3 reconstruye el intent con l__spintent_geo_luaset_vertices_str
+-- (cuerpo puro, sin nombre de figura) cuando corresponde sobrescribir.
+local function spintent_geo_fig_set_vertices(op, puntos)
     local info    = spintent_geo_poly_npts[#puntos]
-    local cmd_fig = (read_arg ~= "" and read_arg)
-                    or (info and info.cmd)
-                    or "polígono"
+    local cmd_fig = info and info.cmd or "polígono"
     local sym     = (info and info.sym) or ""
     local concepto = op .. "-del-" .. cmd_fig
 
@@ -13055,8 +13107,9 @@ local function spintent_geo_fig_set_vertices(op, puntos, read_arg)
     token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
     token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
 
-    local cuerpo = spintent_geo_build_intent("", puntos):match("^_(.-)-$")
+    local cuerpo = spintent_geo_build_body(puntos)
     token_set_macro("l__spintent_geo_luaset_intent_str", concepto .. "-" .. cuerpo)
+    token_set_macro("l__spintent_geo_luaset_vertices_str", cuerpo)
     token_set_macro("l__spintent_geo_luaset_intent_pts_str",
                     spintent_geo_build_intent(op, puntos))
 end
@@ -13065,6 +13118,7 @@ local function spintent_geo_fig_set_error()
     token_set_macro("l__spintent_geo_luaset_error_str",         "true")
     token_set_macro("l__spintent_geo_luaset_intent_str",        "")
     token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
+    token_set_macro("l__spintent_geo_luaset_vertices_str",      "")
     token_set_macro("l__spintent_geo_luaset_concept_str",       "")
     token_set_macro("l__spintent_geo_luaset_print_tl",          "")
     token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
@@ -13081,16 +13135,16 @@ end
 -- Orden de intentos sin coma: gramática de argumento único (número/
 -- letra/tabla) primero; si falla, puntos concatenados como lista de
 -- vértices (nuevo, mínimo 3); si también falla, error.
-local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
+local function spintent_geo_fig_parse_and_set(op, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
-    read_arg = spintent_trim(read_arg)
 
     if csv == "" then
         token_set_macro("l__spintent_geo_luaset_error_str",         "false")
         token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
         token_set_macro("l__spintent_geo_luaset_intent_str",        op)
         token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
+        token_set_macro("l__spintent_geo_luaset_vertices_str",      "")
         token_set_macro("l__spintent_geo_luaset_concept_str",       op)
         token_set_macro("l__spintent_geo_luaset_print_tl",          "")
         token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
@@ -13107,7 +13161,7 @@ local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
             spintent_geo_fig_set_error()
             return
         end
-        spintent_geo_fig_set_vertices(op, puntos, read_arg)
+        spintent_geo_fig_set_vertices(op, puntos)
         return
     end
 
@@ -13120,18 +13174,15 @@ local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
         token_set_macro("l__spintent_geo_luaset_letra_word_str",    palabra)
         token_set_macro("l__spintent_geo_luaset_letra_conector_str",conector)
         token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    sub_spoken)
-        -- intent_str vacío: expl3 arma el intent final. También es el
-        -- DISCRIMINADOR que expl3 usa para distinguir "argumento
-        -- único" de "vértices" (poly_sym_str por sí solo no sirve:
-        -- también queda vacío para 5+ puntos).
         token_set_macro("l__spintent_geo_luaset_intent_str",     "")
         token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
+        token_set_macro("l__spintent_geo_luaset_vertices_str",   "")
         return
     end
 
     local puntos = spintent_geo_puntos_concat:match(csv)
     if puntos and #puntos >= 3 then
-        spintent_geo_fig_set_vertices(op, puntos, read_arg)
+        spintent_geo_fig_set_vertices(op, puntos)
         return
     end
 
@@ -13139,14 +13190,14 @@ local function spintent_geo_fig_parse_and_set(op, csv, read_arg)
 end
 
 register_tex_cmd("luafun_geo_afig_parse_and_set",
-    function(csv, read_arg)
-    spintent_geo_fig_parse_and_set("área", csv, read_arg)
-end, { "string", "string" })
+    function(csv)
+    spintent_geo_fig_parse_and_set("área", csv)
+end, { "string" })
 
 register_tex_cmd("luafun_geo_pfig_parse_and_set",
-    function(csv, read_arg)
-    spintent_geo_fig_parse_and_set("perímetro", csv, read_arg)
-end, { "string", "string" })
+    function(csv)
+    spintent_geo_fig_parse_and_set("perímetro", csv)
+end, { "string" })
 
 -- ------------------------------------------------------------
 -- §12.5  CÍRCULO/CIRCUNFERENCIA — \spCirc
