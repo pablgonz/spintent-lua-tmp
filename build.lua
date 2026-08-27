@@ -21,8 +21,8 @@
 
 -- General package identification
 module     = "spintent"
-pkgversion = "0.98"
-pkgdate    = "2026-08-26"
+pkgversion = "0.99"
+pkgdate    = "2026-08-27"
 ltxrelease = "2026-11-01"
 
 -- Configuration of files for build and installation

@@ -148,8 +148,8 @@
 \definecolor{mathcatgreen}{rgb}{0.165, 0.478, 0.157} % Verde MathCAT (#2A7A28)
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
-\def\fileversion{v0.98}
-\def\filedate{2026-08-26}
+\def\fileversion{v0.99}
+\def\filedate{2026-08-27}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4082,7 +4082,7 @@
 %    \end{macrocode}
 % Now declare the \mypkg*[no-index]{spintent} package.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-08-26} {0.98} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-27} {0.99} {Spanish parse intents}
 %    \end{macrocode}
 %
 % We check if the requirements for running the \mypkg*[no-index]{spintent} package
@@ -11200,7 +11200,7 @@
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.98 [2026-08-26]
+     Lua module spintent.lua for spintent package - v0.99 [2026-08-27]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -12528,10 +12528,6 @@ local spintent_mathstyle_names = {
     [6] = "scriptscript", [7] = "scriptscript",
 }
 
-local function spintent_is_digit(n)
-    return n.char >= 48 and n.char <= 57
-end
-
 local function spintent_get_scaled_font(id, factor)
     local key = tostring(id) .. ":" .. tostring(factor)
     if spintent_font_cache[key] then return spintent_font_cache[key] end
@@ -12546,25 +12542,6 @@ local function spintent_get_scaled_font(id, factor)
     fonts.hashes.identifiers[new_id] = data
     spintent_font_cache[key] = new_id
     return new_id
-end
-
-local function spintent_scale_glyphs(head, factor)
-    for n in node.traverse_glyph(head) do
-        if spintent_is_digit(n) then
-            local new_id = spintent_get_scaled_font(n.font, factor)
-            n.font = new_id
-            local f = font.getfont(new_id)
-            if f and f.characters then
-                local c = f.characters[n.char]
-                if c then
-                    n.width  = c.width
-                    n.height = c.height
-                    n.depth  = c.depth
-                end
-            end
-        end
-    end
-    return head
 end
 
 local function spintent_build_char_noads(str)
@@ -12631,19 +12608,33 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     -- 3. Factor
     local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
 
-    -- 4. Escalar la misma hlist ya medida
-    spintent_scale_glyphs(h_esc.list, factor)
-
-    -- 5. Ancho y Glyph nodes físicos (Bucle fusionado y acelerado por C)
+    -- 4-5. Escalado + ancho + glyphs físicos en una sola pasada node.direct
+    -- (antes: una pasada con node.traverse_glyph para escalar, luego una
+    -- segunda pasada separada con d_traverse para medir/recolectar --
+    -- dos recorridos completos de la misma lista más conversión userdata
+    -- de por medio en ambos). El chequeo de dígito vía d_getfield evita
+    -- convertir a userdata los glyphs que no son dígitos.
     local ancho = 0
     local glyph_nodes = {}
 
     for n in d_traverse(d_todirect(h_esc.list)) do
-        ancho = ancho + d_getfield(n, "width")
-        -- Reconvertimos a userdata temporalmente porque spintent_is_digit lo espera así
-        local n_user = d_tonode(n)
-        if spintent_is_digit(n_user) then
-            glyph_nodes[#glyph_nodes + 1] = n_user
+        local ch = d_getfield(n, "char")
+        if ch >= 48 and ch <= 57 then
+            local new_id = spintent_get_scaled_font(d_getfield(n, "font"), factor)
+            d_setfield(n, "font", new_id)
+            local f = font.getfont(new_id)
+            if f and f.characters then
+                local c = f.characters[ch]
+                if c then
+                    d_setfield(n, "width",  c.width)
+                    d_setfield(n, "height", c.height)
+                    d_setfield(n, "depth",  c.depth)
+                end
+            end
+            ancho = ancho + d_getfield(n, "width")
+            glyph_nodes[#glyph_nodes + 1] = d_tonode(n)
+        else
+            ancho = ancho + d_getfield(n, "width")
         end
     end
 
@@ -12880,7 +12871,7 @@ end, { "string" })
 --
 -- Orden de intentos en la rama sin coma: nombre de recta primero
 -- (preserva la semántica de \sprecta con una sola letra), luego
--- puntos concatenados sin separador (nuevo), luego error.
+-- puntos concatenados sin separador, luego error.
 -- ------------------------------------------------------------
 register_tex_cmd("luafun_geo_parse_and_set", function(csv)
     csv = spintent_trim(csv)
@@ -13090,9 +13081,9 @@ end
 -- Arma y establece las variables de salida para el caso de vértices
 -- reales (lista de al menos 3 puntos), sin importar si vinieron
 -- separados por comas o concatenados sin separador. Siempre usa el
--- nombre inferido por cardinalidad — "read-arg" ya no viaja a Lua;
--- expl3 reconstruye el intent con l__spintent_geo_luaset_vertices_str
--- (cuerpo puro, sin nombre de figura) cuando corresponde sobrescribir.
+-- nombre inferido por cardinalidad; expl3 reconstruye el intent con
+-- l__spintent_geo_luaset_vertices_str (cuerpo puro, sin nombre de
+-- figura) cuando corresponde sobrescribir.
 local function spintent_geo_fig_set_vertices(op, puntos)
     local info    = spintent_geo_poly_npts[#puntos]
     local cmd_fig = info and info.cmd or "polígono"
@@ -13134,7 +13125,7 @@ end
 --
 -- Orden de intentos sin coma: gramática de argumento único (número/
 -- letra/tabla) primero; si falla, puntos concatenados como lista de
--- vértices (nuevo, mínimo 3); si también falla, error.
+-- vértices (mínimo 3); si también falla, error.
 local function spintent_geo_fig_parse_and_set(op, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
@@ -13288,7 +13279,7 @@ end, { "string" })
 %<*mylhmcsty>
 % \fi
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2025-08-19}{2.0}
+\ProvidesExplPackage{mylhmc}{2025-08-27}{2.0}
   {Line-by-line macrocode reader for l3doc in Lua}
 \sys_if_engine_luatex:F
   {
@@ -13495,9 +13486,6 @@ end, { "string" })
   }
 \cs_set_eq:cN { xmacro@code* } \xmacro@code
 
-% ============================================================
-% Interfaz de usuario: \setmylhmc { key = val }
-% ============================================================
 
 \msg_new:nnnn { mylhmc } { invalid-hex-color }
   { Invalid~color~value~'#2'~for~key~'#1':~expected~6~hex~digits~(e.g.~FF0000). }
@@ -13514,12 +13502,19 @@ end, { "string" })
     provide .code:n =
       { \clist_map_function:nN {#1} \__mylhmc_register_module_cmd:n } ,
     provide .value_required:n = true ,
+    % Fija \g__codedoc_module_name_tl (de l3doc.cls) manualmente -- útil
+    % para que \myhlc reconozca privados propios/ajenos correctamente
+    % ANTES de que la primera guarda %<@@=modulo> real aparezca en el
+    % .dtx. Debe usarse DESPUÉS de que \DocInput ya empezó a leer el
+    % archivo (l3doc borra esta variable justo antes de \input{...}) --
+    % en la práctica, como una línea temprana dentro del propio .dtx.
+    % Cuando la guarda real %<@@=modulo> aparezca más adelante, tanto
+    % l3doc como mylhmc la sobrescriben normalmente, sin conflicto.
+    module .code:n =
+      { \tl_gset:Nn \g__codedoc_module_name_tl {#1} } ,
+    module .value_required:n = true ,
   }
 
-% Genera automáticamente una clave por cada color ya registrado (mismo
-% path que su nombre, p.ej. \setmylhmc{guard/star=FF0000}). Debe ir
-% DESPUÉS de todas las llamadas a \__mylhmc_define_color:nnn de arriba,
-% ya que recorre \g__mylhmc_colors_export_seq tal como quedó poblada.
 \cs_new_protected:Npn \__mylhmc_define_color_key:nnn #1#2#3
   {
     \keys_define:nn { mylhmc }
@@ -13547,7 +13542,7 @@ end, { "string" })
 % \iffalse
 %<*mylhmclua>
 % \fi
--- mylhmc.lua v2.0 2025-08-19 (node.direct + Loop/Memory Micro-Optimized)
+-- mylhmc.lua v2.0 2025-08-27 (node.direct + Loop/Memory Micro-Optimized)
 -- LuaLaTeX syntax highlighter for l3doc macrocode environments
 
 local require      = require
@@ -13932,7 +13927,7 @@ local code_rules = {
   {9,  P'%' * (P(1) - S'\r\n') ^ 0 * (S'\r\n' + -1)},
 }
 
-local function build_combined()
+local function mylhmc_build_combined()
   local alts = nil
   for _, rule in ipairs(code_rules) do
     local p = Cp() * rule[2] * Cp() * Cc(rule[1])
@@ -13941,14 +13936,14 @@ local function build_combined()
   return P{ alts + P(1) * V(1) }
 end
 
-local combined_pattern = build_combined()
+local combined_pattern = mylhmc_build_combined()
 local LM_LANGLE = 0x2329
 local LM_RANGLE = 0x232A
 local bold_cache, lm_cache, italic_cache = {}, {}, {}
 
 local LM_ITALIC_PATH, LM_REGULAR_PATH, LM_BOLD_PATH = nil, nil, nil
 
-local function ensure_lm_paths()
+local function mylhmc_ensure_lm_paths()
   if not LM_REGULAR_PATH then
     LM_REGULAR_PATH = kpse_find('lmroman10-regular.otf', 'opentype fonts')
     LM_ITALIC_PATH  = kpse_find('lmmono10-italic.otf',   'opentype fonts')
@@ -13956,7 +13951,7 @@ local function ensure_lm_paths()
   end
 end
 
-local function load_font_at_size(filepath, target_size)
+local function mylhmc_load_font_at_size(filepath, target_size)
   if not filepath then return nil end
   local font_spec = '[' .. filepath .. ']'
   local ok, data, new_id = pcall(f_read, font_spec, target_size)
@@ -13965,7 +13960,7 @@ local function load_font_at_size(filepath, target_size)
   return new_id
 end
 
-local function get_bold_fid(fid)
+local function mylhmc_get_med_bold_fid(fid)
   if bold_cache[fid] then return bold_cache[fid] end
   local f = f_getfont(fid)
   if not f or not f.name or not f.size then
@@ -14003,27 +13998,27 @@ local function get_bold_fid(fid)
   end
   if best_path and best_id then
     local clean_path = s_match(best_path, '^%[?(.-)%]?$') or best_path
-    local new_id = load_font_at_size(clean_path, target_size)
+    local new_id = mylhmc_load_font_at_size(clean_path, target_size)
     if new_id then bold_cache[fid] = new_id; return new_id end
     bold_cache[fid] = best_id; return best_id
   end
-  ensure_lm_paths()
-  local fallback_id = load_font_at_size(LM_BOLD_PATH, target_size)
+  mylhmc_ensure_lm_paths()
+  local fallback_id = mylhmc_load_font_at_size(LM_BOLD_PATH, target_size)
   if fallback_id then bold_cache[fid] = fallback_id; return fallback_id end
   bold_cache[fid] = fid; return fid
 end
 
-local function get_italic_fid(fid)
+local function mylhmc_get_italic_fid(fid)
   if italic_cache[fid] then return italic_cache[fid] end
   local f = f_getfont(fid)
   if not f or not f.size then italic_cache[fid] = fid; return fid end
-  ensure_lm_paths()
-  local fallback_id = load_font_at_size(LM_ITALIC_PATH, f.size)
+  mylhmc_ensure_lm_paths()
+  local fallback_id = mylhmc_load_font_at_size(LM_ITALIC_PATH, f.size)
   if fallback_id then italic_cache[fid] = fallback_id; return fallback_id end
   italic_cache[fid] = fid; return fid
 end
 
-local function get_lm_fid(fid)
+local function mylhmc_get_lm_fid(fid)
   fid = fid or f_current()
   if lm_cache[fid] then return lm_cache[fid] end
   local cf = f_getfont(fid)
@@ -14039,8 +14034,8 @@ local function get_lm_fid(fid)
       lm_cache[fid] = i; return i
     end
   end
-  ensure_lm_paths()
-  local new_id = load_font_at_size(LM_REGULAR_PATH, cf.size)
+  mylhmc_ensure_lm_paths()
+  local new_id = mylhmc_load_font_at_size(LM_REGULAR_PATH, cf.size)
   if new_id then lm_cache[fid] = new_id; return new_id end
   lm_cache[fid] = fid; return fid
 end
@@ -14069,7 +14064,7 @@ register_tex_cmd('set_color', function(name, spec)
   end
 end, {'string', 'string'})
 
-local function colorstack_push(color_name)
+local function mylhmc_colorstack_push(color_name)
   local tpl = push_templates[color_name]
   if not tpl then
     tpl = d_new('whatsit', 'pdf_colorstack')
@@ -14086,9 +14081,9 @@ d_setfield(pop_template, 'stack', 0)
 d_setfield(pop_template, 'command', 2)
 d_setfield(pop_template, 'data', '')
 
-local function colorstack_pop() return d_copy(pop_template) end
+local function mylhmc_colorstack_pop() return d_copy(pop_template) end
 
-local function append(rh, rt, h, t)
+local function mylhmc_append(rh, rt, h, t)
   if not h then return rh, rt end
   if not t then
     t = h; while d_getnext(t) do t = d_getnext(t) end
@@ -14101,7 +14096,7 @@ end
 local raw_glyph_cache = {}
 local CACHE_MAX_LEN = 16
 
-local function str_to_nodes(str, fid, fallback_fn)
+local function mylhmc_str_to_nodes(str, fid, fallback_fn)
   if not str or str == '' then return nil, nil end
   fid = fid or f_current()
 
@@ -14119,14 +14114,14 @@ local function str_to_nodes(str, fid, fallback_fn)
     end
   end
 
-  fallback_fn = fallback_fn or get_lm_fid
+  fallback_fn = fallback_fn or mylhmc_get_lm_fid
   local head, tail, lm_fid, fallback_fid = nil, nil, nil, nil
   local chars = f_getfont(fid) and f_getfont(fid).characters
 
   for _, cp in u_codes(str) do
     local current_fid = fid
     if cp == LM_LANGLE or cp == LM_RANGLE then
-      if not lm_fid then lm_fid = get_lm_fid(fid) end
+      if not lm_fid then lm_fid = mylhmc_get_lm_fid(fid) end
       current_fid = lm_fid
     elseif chars and not chars[cp] then
       if not fallback_fid then fallback_fid = fallback_fn(fid) end
@@ -14147,33 +14142,17 @@ end
 
 -- Envuelve texto en un Span con ActualText = mismo texto: los glyphs se
 -- muestran igual visualmente, pero el PDF garantiza que al copiar/pegar
--- se extraigan exactamente esos caracteres, sin depender de cómo el
--- backend termine serializando corridas de glyphs (que a veces colapsan
--- espacios repetidos en puro kerning sin carácter extraíble, o incluso
--- provocan que el lector de PDF inserte un salto de línea espurio ante
--- un hueco horizontal ancho sin texto extraíble de por medio). Uso
--- previsto: SOLO indentación/espacios de alineación (siempre ASCII de
--- un byte) -- por eso convertir byte a byte a UTF-16BE es seguro aquí.
--- Si esta función se reutiliza alguna vez para texto arbitrario con
--- caracteres UTF-8 multibyte, este bucle byte-a-byte NO sería
--- suficiente (habría que decodificar codepoints Unicode reales, no
--- bytes crudos) -- habría que revisarlo antes de reutilizar.
---
--- EXPERIMENTO 2 (el 1, sustituir U+0020 por U+00A0, no funcionó en
--- Acrobat -- la heurística de recorte no distingue el TIPO de espacio):
--- se antepone un centinela U+200B (ZERO WIDTH SPACE) ANTES de los
--- espacios reales dentro del valor de ActualText. A diferencia de
--- U+00A0, Unicode NO clasifica U+200B como espacio en blanco (categoría
--- Zs) sino como carácter de formato (Cf) -- si la heurística de Acrobat
--- recorta basándose en "¿el primer carácter extraído de la fila es
--- espacio?", este centinela invisible rompe esa condición sin alterar
--- el glifo visible (que sigue siendo el espacio normal).
-local function actual_text_wrap(text, fid)
+-- se extraigan exactamente esos caracteres. Uso previsto: SOLO
+-- indentación/espacios de alineación (siempre ASCII de un byte) -- si
+-- se reutiliza para texto arbitrario UTF-8 multibyte, este bucle
+-- byte-a-byte no sería suficiente (haría falta decodificar codepoints
+-- reales, no bytes crudos).
+local function mylhmc_actual_text_wrap(text, fid)
   local begin_n = d_new('whatsit', 'pdf_literal')
   d_setfield(begin_n, 'mode', 2)
-  -- Notación hex nativa del PDF (<...>): BOM UTF-16BE (FEFF) + centinela
-  -- ZWSP (200B) + cada carácter real como 4 dígitos hex.
-  local hex_content = 'FEFF200B'
+  -- Notación hex nativa del PDF (<...>): BOM UTF-16BE (FEFF) + cada
+  -- carácter real como 4 dígitos hex.
+  local hex_content = 'FEFF'
   for i = 1, #text do
     hex_content = hex_content .. s_format('%04X', s_byte(text, i))
   end
@@ -14181,42 +14160,42 @@ local function actual_text_wrap(text, fid)
   local end_n = d_new('whatsit', 'pdf_literal')
   d_setfield(end_n, 'mode', 2)
   d_setfield(end_n, 'data', 'EMC')
-  local h, t = str_to_nodes(text, fid)
-  local rh, rt = append(nil, nil, begin_n, begin_n)
-  rh, rt = append(rh, rt, h, t)
-  rh, rt = append(rh, rt, end_n, end_n)
+  local h, t = mylhmc_str_to_nodes(text, fid)
+  local rh, rt = mylhmc_append(nil, nil, begin_n, begin_n)
+  rh, rt = mylhmc_append(rh, rt, h, t)
+  rh, rt = mylhmc_append(rh, rt, end_n, end_n)
   return rh, rt
 end
 
--- Como str_to_nodes, pero envuelve en ActualText cualquier corrida de
+-- Como mylhmc_str_to_nodes, pero envuelve en ActualText cualquier corrida de
 -- 2+ espacios consecutivos (típicas de alineación de columnas en
 -- código expl3/TeX bien formateado). Texto normal (sin corridas
--- largas) no paga overhead extra -- pasa directo por str_to_nodes.
-local function str_to_nodes_ws_safe(str, fid)
+-- largas) no paga overhead extra -- pasa directo por mylhmc_str_to_nodes.
+local function mylhmc_str_to_nodes_ws_safe(str, fid)
   local rh, rt, i, len = nil, nil, 1, #str
   while i <= len do
     local ws_start, ws_end = s_find(str, '  +', i)
     if not ws_start then
-      local h, t = str_to_nodes(s_sub(str, i), fid)
-      rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_str_to_nodes(s_sub(str, i), fid)
+      rh, rt = mylhmc_append(rh, rt, h, t)
       break
     end
     if ws_start > i then
-      local h, t = str_to_nodes(s_sub(str, i, ws_start - 1), fid)
-      rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_str_to_nodes(s_sub(str, i, ws_start - 1), fid)
+      rh, rt = mylhmc_append(rh, rt, h, t)
     end
-    local h, t = actual_text_wrap(s_sub(str, ws_start, ws_end), fid)
-    rh, rt = append(rh, rt, h, t)
+    local h, t = mylhmc_actual_text_wrap(s_sub(str, ws_start, ws_end), fid)
+    rh, rt = mylhmc_append(rh, rt, h, t)
     i = ws_end + 1
   end
   return rh, rt
 end
 
-local function colored_str(str, color_name, fid)
-  local h, t = str_to_nodes(str, fid)
+local function mylhmc_colored_str(str, color_name, fid)
+  local h, t = mylhmc_str_to_nodes(str, fid)
   if not h then return nil, nil end
   if color_data[color_name] then
-    local push, pop = colorstack_push(color_name), colorstack_pop()
+    local push, pop = mylhmc_colorstack_push(color_name), mylhmc_colorstack_pop()
     d_setlink(push, h)
     d_setlink(t, pop)
     return push, pop
@@ -14224,16 +14203,16 @@ local function colored_str(str, color_name, fid)
   return h, t
 end
 
-local function colored_str_bold(str, color_name, fid)
-  return colored_str(str, color_name, get_bold_fid(fid))
+local function mylhmc_colored_str_bold(str, color_name, fid)
+  return mylhmc_colored_str(str, color_name, mylhmc_get_med_bold_fid(fid))
 end
 
-local function colored_str_italic(str, color_name, fid)
-  local italic_fid = get_italic_fid(fid)
-  local h, t = str_to_nodes(str, italic_fid, get_italic_fid)
+local function mylhmc_colored_str_italic(str, color_name, fid)
+  local italic_fid = mylhmc_get_italic_fid(fid)
+  local h, t = mylhmc_str_to_nodes(str, italic_fid, mylhmc_get_italic_fid)
   if not h then return nil, nil end
   if color_data[color_name] then
-    local push, pop = colorstack_push(color_name), colorstack_pop()
+    local push, pop = mylhmc_colorstack_push(color_name), mylhmc_colorstack_pop()
     d_setlink(push, h)
     d_setlink(t, pop)
     return push, pop
@@ -14271,8 +14250,8 @@ local in_keys_context, keys_body_opened, keys_depth = false, false, 0
 local keys_in_choices = false
 
 -- .meta:nn (2 args: ruta módulo/clave + lista de claves) y .meta:n
--- (1 arg: lista de claves). Reutiliza colorize_keys_path para la ruta
--- y colorize_trimmed_keyname para la lista, igual que el resto de keys.
+-- (1 arg: lista de claves). Reutiliza mylhmc_colorize_keys_path para la ruta
+-- y mylhmc_colorize_trimmed_keyname para la lista, igual que el resto de keys.
 local keys_meta_pending      = false
 local keys_meta_arity        = 0  -- 1 = .meta:n, 2 = .meta:nn
 local keys_meta_argnum       = 0  -- argumento actual (1 o 2)
@@ -14289,9 +14268,9 @@ local msg_simple_done  = false
 
 -- Resto de la familia \keys_...:n... (set_known, set_groups,
 -- set_exclude_groups, precompile, if_exist, if_choice_exist, show, log):
--- arg1 (primer 'n' de la firma) = ruta módulo/path -> colorize_keys_path;
+-- arg1 (primer 'n' de la firma) = ruta módulo/path -> mylhmc_colorize_keys_path;
 -- args 2..N (resto de las 'n' minúsculas de la firma) = nombre de
--- clave/grupo/opción -> colorize_trimmed_keyname; lo que venga después
+-- clave/grupo/opción -> mylhmc_colorize_trimmed_keyname; lo que venga después
 -- (ramas T/F de un sufijo TF, argumentos N sin llaves, etc.) no se toca.
 local in_keys_module_arg     = false
 local keys_module_arg_depth  = 0
@@ -14327,7 +14306,7 @@ local pkgcls_bracket_depth   = 0
 
 -- Nombre de archivo: \file_..., \lua_load_module:n, \IfFileExists
 -- (activado desde el handler de tipo 37), \input/\include/
--- \InputIfFileExists. Solo el primer argumento -> colorize_filename.
+-- \InputIfFileExists. Solo el primer argumento -> mylhmc_colorize_filename.
 -- \includeonly recibe una LISTA separada por comas -> file_arg_is_list.
 local in_file_arg     = false
 local file_arg_depth  = 0
@@ -14349,7 +14328,7 @@ local hook_label_positions = nil
 -- \unimathsetup{...}/\addfontfeature{...}/\defaultfontfeatures{...}:
 -- único argumento tratado como lista de claves, mismo tratamiento
 -- visual que el cuerpo de \keys_define:nn/\keys_set:nn
--- (colorize_trimmed_keyname).
+-- (mylhmc_colorize_trimmed_keyname).
 local in_single_keyval    = false
 local single_keyval_depth = 0
 
@@ -14368,14 +14347,14 @@ local font_bracket_pending = false
 local font_bracket_active  = false
 local font_bracket_depth   = 0
 
-local colorize_code
+local mylhmc_colorize_code
 
-local function reset_csname_state()
+local function mylhmc_reset_csname_state()
   for k in pairs(csname_positions) do csname_positions[k] = nil end
   arg_counter, in_csname, csname_base_color, csname_depth = 0, false, nil, 0
 end
 
-local function module_aware_color(chunk, base_color)
+local function mylhmc_module_aware_color(chunk, base_color)
   local name = s_sub(chunk, 1, 1) == '\\' and s_sub(chunk, 2) or chunk
   local colon = s_find(name, ':', 1, true)
   local bare = colon and s_sub(name, 1, colon - 1) or name
@@ -14392,7 +14371,7 @@ end
 -- Detecta \l__foo, \g__foo, \c__foo, \__foo cuyo segmento de módulo NO
 -- coincide con current_module_name: acceso explícito a privados de OTRO
 -- módulo (hackeo de internos ajenos) -> color de advertencia 'other_np'.
-local function private_owner_color(chunk, fallback_color)
+local function mylhmc_private_owner_color(chunk, fallback_color)
   local name = s_sub(chunk, 1, 1) == '\\' and s_sub(chunk, 2) or chunk
   local c3 = s_sub(name, 1, 3)
   local rest
@@ -14409,14 +14388,14 @@ local function private_owner_color(chunk, fallback_color)
   return 'other_np'
 end
 
-local function emit_with_signature(chunk, base_color, fid)
+local function mylhmc_emit_with_signature(chunk, base_color, fid)
   local colon = s_find(chunk, ':', 2, true)
   if not colon then
-    reset_csname_state()
-    return colored_str(chunk, base_color, fid)
+    mylhmc_reset_csname_state()
+    return mylhmc_colored_str(chunk, base_color, fid)
   end
   local name, sig = s_sub(chunk, 1, colon - 1), s_sub(chunk, colon + 1)
-  reset_csname_state()
+  mylhmc_reset_csname_state()
   local pos = 0
   for ch in s_gmatch(sig, '.') do
     if s_match(ch, '[NnVvoxefpTFwDcq]') then
@@ -14425,25 +14404,25 @@ local function emit_with_signature(chunk, base_color, fid)
     end
   end
   local rh, rt = nil, nil
-  local h, t = colored_str(name, base_color, fid); rh, rt = append(rh, rt, h, t)
-  h, t = colored_str(':', 'signature', fid); rh, rt = append(rh, rt, h, t)
+  local h, t = mylhmc_colored_str(name, base_color, fid); rh, rt = mylhmc_append(rh, rt, h, t)
+  h, t = mylhmc_colored_str(':', 'signature', fid); rh, rt = mylhmc_append(rh, rt, h, t)
   if sig ~= '' then
-    h, t = colored_str(sig, 'sigargs', fid); rh, rt = append(rh, rt, h, t)
+    h, t = mylhmc_colored_str(sig, 'sigargs', fid); rh, rt = mylhmc_append(rh, rt, h, t)
   end
   return rh, rt
 end
 
-local function colorize_ltcmd_args(text, fid, rh, rt)
+local function mylhmc_colorize_ltcmd_args(text, fid, rh, rt)
   local i, depth, text_len = 1, 0, #text
   while i <= text_len do
     local b = s_byte(text, i)
     if b == 123 then
       depth = depth + 1
-      local h, t = colored_str('{', 'brace', fid); rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_colored_str('{', 'brace', fid); rh, rt = mylhmc_append(rh, rt, h, t)
       i = i + 1
     elseif b == 125 then
       depth = depth - 1
-      local h, t = colored_str('}', 'brace', fid); rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_colored_str('}', 'brace', fid); rh, rt = mylhmc_append(rh, rt, h, t)
       i = i + 1
     elseif depth > 0 then
       local j, d = i, depth
@@ -14455,21 +14434,21 @@ local function colorize_ltcmd_args(text, fid, rh, rt)
       end
       local content = s_sub(text, i, j - 1)
       if content ~= '' then
-        local ch, ct = colorize_code(content, fid); rh, rt = append(rh, rt, ch, ct)
+        local ch, ct = mylhmc_colorize_code(content, fid); rh, rt = mylhmc_append(rh, rt, ch, ct)
       end
       i = j
     elseif b == 32 then
-      local h, t = str_to_nodes(' ', fid); rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_str_to_nodes(' ', fid); rh, rt = mylhmc_append(rh, rt, h, t)
       i = i + 1
     else
-      local h, t = colored_str(s_sub(text, i, i), 'ltcmd_arg', fid)
-      rh, rt = append(rh, rt, h, t); i = i + 1
+      local h, t = mylhmc_colored_str(s_sub(text, i, i), 'ltcmd_arg', fid)
+      rh, rt = mylhmc_append(rh, rt, h, t); i = i + 1
     end
   end
   return rh, rt
 end
 
-local function csname_color_from_prefix(text)
+local function mylhmc_csname_color_from_prefix(text)
   text = s_match(text, '^%s*(.-)%s*$') or text
   local p2, p3 = s_sub(text, 1, 2), s_sub(text, 1, 3)
   local base, rest
@@ -14486,7 +14465,7 @@ local function csname_color_from_prefix(text)
   return 'other_np'
 end
 
-local function emit_csname_text(text, base_color, fid, rh, rt)
+local function mylhmc_emit_csname_text(text, base_color, fid, rh, rt)
   local has_special, len = false, #text
   for i = 1, len do
     local b = s_byte(text, i)
@@ -14495,40 +14474,40 @@ local function emit_csname_text(text, base_color, fid, rh, rt)
     end
   end
   if not has_special then
-    local h, t = colored_str(text, base_color, fid); return append(rh, rt, h, t)
+    local h, t = mylhmc_colored_str(text, base_color, fid); return mylhmc_append(rh, rt, h, t)
   end
   local cur = 1
   for i = 1, len do
     local b = s_byte(text, i)
     if b == 64 or b == 33 or b == 38 or b == 94 or b == 42 then
       if i > cur then
-        local h, t = colored_str(s_sub(text, cur, i-1), base_color, fid)
-        rh, rt = append(rh, rt, h, t)
+        local h, t = mylhmc_colored_str(s_sub(text, cur, i-1), base_color, fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
       local color_name = (b == 64 and 'arroba') or (b == 42 and 'star') or 'escape'
-      local h, t = colored_str(s_sub(text, i, i), color_name, fid)
-      rh, rt = append(rh, rt, h, t); cur = i + 1
+      local h, t = mylhmc_colored_str(s_sub(text, i, i), color_name, fid)
+      rh, rt = mylhmc_append(rh, rt, h, t); cur = i + 1
     elseif b == 58 then
       if i > cur then
-        local h, t = colored_str(s_sub(text, cur, i-1), base_color, fid)
-        rh, rt = append(rh, rt, h, t)
+        local h, t = mylhmc_colored_str(s_sub(text, cur, i-1), base_color, fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
-      local h, t = colored_str(':', 'signature', fid)
-      rh, rt = append(rh, rt, h, t); local rest = s_sub(text, i+1)
+      local h, t = mylhmc_colored_str(':', 'signature', fid)
+      rh, rt = mylhmc_append(rh, rt, h, t); local rest = s_sub(text, i+1)
       if rest ~= '' then
-        h, t = colored_str(rest, 'sigargs', fid); rh, rt = append(rh, rt, h, t)
+        h, t = mylhmc_colored_str(rest, 'sigargs', fid); rh, rt = mylhmc_append(rh, rt, h, t)
       end
       cur = len + 1; break
     end
   end
   if cur <= len then
-    local h, t = colored_str(s_sub(text, cur), base_color, fid)
-    rh, rt = append(rh, rt, h, t)
+    local h, t = mylhmc_colored_str(s_sub(text, cur), base_color, fid)
+    rh, rt = mylhmc_append(rh, rt, h, t)
   end
   return rh, rt
 end
 
-local function colorize_mathml_intent(text, fid, rh, rt)
+local function mylhmc_colorize_mathml_intent(text, fid, rh, rt)
   local i, len = 1, #text
   while i <= len do
     local c, b = s_sub(text, i, i), s_byte(text, i)
@@ -14543,19 +14522,19 @@ local function colorize_mathml_intent(text, fid, rh, rt)
            (cb >= 48 and cb <= 57) or cb == 95 or cb == 45 then j = j + 1
         else break end
       end
-      local h, t = colored_str(':', 'signature', fid)
-      rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_colored_str(':', 'signature', fid)
+      rh, rt = mylhmc_append(rh, rt, h, t)
       if word_start > i + 1 then
-        h, t = str_to_nodes(s_sub(text, i+1, word_start-1), fid)
-        rh, rt = append(rh, rt, h, t)
+        h, t = mylhmc_str_to_nodes(s_sub(text, i+1, word_start-1), fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
       if j > word_start then
-        h, t = colored_str(s_sub(text, word_start, j-1), 'ltcmd_arg', fid)
-        rh, rt = append(rh, rt, h, t)
+        h, t = mylhmc_colored_str(s_sub(text, word_start, j-1), 'ltcmd_arg', fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
       i = j
     elseif c == '$' then
-      local h, t = colored_str('$', 'math', fid); rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_colored_str('$', 'math', fid); rh, rt = mylhmc_append(rh, rt, h, t)
       local j = i + 1
       while j <= len do
         local cb = s_byte(text, j)
@@ -14564,15 +14543,15 @@ local function colorize_mathml_intent(text, fid, rh, rt)
         else break end
       end
       if j > i + 1 then
-        h, t = colored_str(s_sub(text, i+1, j-1), 'mathml_var', fid)
-        rh, rt = append(rh, rt, h, t)
+        h, t = mylhmc_colored_str(s_sub(text, i+1, j-1), 'mathml_var', fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
       i = j
     elseif c == '(' or c == ')' or c == ',' then
-      local h, t = colored_str(c, 'brace', fid); rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_colored_str(c, 'brace', fid); rh, rt = mylhmc_append(rh, rt, h, t)
       i = i + 1
     elseif c == ' ' then
-      local h, t = str_to_nodes(c, fid); rh, rt = append(rh, rt, h, t); i = i + 1
+      local h, t = mylhmc_str_to_nodes(c, fid); rh, rt = mylhmc_append(rh, rt, h, t); i = i + 1
     else
       local j = i + 1
       while j <= len do
@@ -14584,9 +14563,9 @@ local function colorize_mathml_intent(text, fid, rh, rt)
       local chunk = s_sub(text, i, j-1)
       local saved_intent, saved_arg = in_mathml_intent, in_mathml_arg
       in_mathml_intent, in_mathml_arg = false, false
-      local ch, ct = colorize_code(chunk, fid)
+      local ch, ct = mylhmc_colorize_code(chunk, fid)
       in_mathml_intent, in_mathml_arg = saved_intent, saved_arg
-      rh, rt = append(rh, rt, ch, ct); i = j
+      rh, rt = mylhmc_append(rh, rt, ch, ct); i = j
     end
   end
   return rh, rt
@@ -14594,53 +14573,53 @@ end
 
 -- Nombre de archivo: divide en '.' (color 'signature', ya existente)
 -- y el resto del texto (color 'filename', independiente y editable).
-local function colorize_filename(text, fid, rh, rt)
+local function mylhmc_colorize_filename(text, fid, rh, rt)
   local i, len, start = 1, #text, 1
   while i <= len do
     if s_sub(text, i, i) == '.' then
       if i > start then
-        local h, t = colored_str(s_sub(text, start, i - 1), 'filename', fid)
-        rh, rt = append(rh, rt, h, t)
+        local h, t = mylhmc_colored_str(s_sub(text, start, i - 1), 'filename', fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
-      local h, t = colored_str('.', 'signature', fid)
-      rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_colored_str('.', 'signature', fid)
+      rh, rt = mylhmc_append(rh, rt, h, t)
       start = i + 1
     end
     i = i + 1
   end
   if start <= len then
-    local h, t = colored_str(s_sub(text, start), 'filename', fid)
-    rh, rt = append(rh, rt, h, t)
+    local h, t = mylhmc_colored_str(s_sub(text, start), 'filename', fid)
+    rh, rt = mylhmc_append(rh, rt, h, t)
   end
   return rh, rt
 end
 
 -- Lista de archivos separados por comas (\includeonly{cap1,cap2,cap3}):
--- mismo tratamiento de '.' que colorize_filename, y además separa por
+-- mismo tratamiento de '.' que mylhmc_colorize_filename, y además separa por
 -- ',' (color 'brace', igual que el resto de comas separadoras del archivo).
-local function colorize_filename_list(text, fid, rh, rt)
+local function mylhmc_colorize_filename_list(text, fid, rh, rt)
   local i, len, start = 1, #text, 1
   while i <= len do
     local c = s_sub(text, i, i)
     if c == '.' or c == ',' then
       if i > start then
-        local h, t = colored_str(s_sub(text, start, i - 1), 'filename', fid)
-        rh, rt = append(rh, rt, h, t)
+        local h, t = mylhmc_colored_str(s_sub(text, start, i - 1), 'filename', fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
-      local h, t = colored_str(c, c == '.' and 'signature' or 'brace', fid)
-      rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_colored_str(c, c == '.' and 'signature' or 'brace', fid)
+      rh, rt = mylhmc_append(rh, rt, h, t)
       start = i + 1
     end
     i = i + 1
   end
   if start <= len then
-    local h, t = colored_str(s_sub(text, start), 'filename', fid)
-    rh, rt = append(rh, rt, h, t)
+    local h, t = mylhmc_colored_str(s_sub(text, start), 'filename', fid)
+    rh, rt = mylhmc_append(rh, rt, h, t)
   end
   return rh, rt
 end
 
-local function colorize_keys_path(text, fid, rh, rt)
+local function mylhmc_colorize_keys_path(text, fid, rh, rt)
   local i, len = 1, #text
   while i <= len do
     local b = s_byte(text, i)
@@ -14654,43 +14633,43 @@ local function colorize_keys_path(text, fid, rh, rt)
       local word = s_sub(text, i, j - 1)
       if module_user_cmds[word] or
          (current_module_name ~= '' and word == current_module_name) then
-        local h, t = colored_str(word, 'module_name', fid)
-        rh, rt = append(rh, rt, h, t)
+        local h, t = mylhmc_colored_str(word, 'module_name', fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       else
-        local h, t = str_to_nodes(word, fid)
-        rh, rt = append(rh, rt, h, t)
+        local h, t = mylhmc_str_to_nodes(word, fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
       i = j
     else
-      local h, t = str_to_nodes(s_sub(text, i, i), fid)
-      rh, rt = append(rh, rt, h, t)
+      local h, t = mylhmc_str_to_nodes(s_sub(text, i, i), fid)
+      rh, rt = mylhmc_append(rh, rt, h, t)
       i = i + 1
     end
   end
   return rh, rt
 end
 
-local function colorize_trimmed_keyname(text, fid, rh, rt)
+local function mylhmc_colorize_trimmed_keyname(text, fid, rh, rt)
   local lead = s_match(text, '^(%s*)')
   local core = s_sub(text, #lead + 1)
   local trimmed = s_match(core, '^(.-)%s*$')
   local trail = s_sub(core, #trimmed + 1)
   if lead ~= '' then
-    local h2, t2 = str_to_nodes_ws_safe(lead, fid)
-    rh, rt = append(rh, rt, h2, t2)
+    local h2, t2 = mylhmc_str_to_nodes_ws_safe(lead, fid)
+    rh, rt = mylhmc_append(rh, rt, h2, t2)
   end
   if trimmed ~= '' then
-    local h, t = colored_str(trimmed, 'keyname', fid)
-    rh, rt = append(rh, rt, h, t)
+    local h, t = mylhmc_colored_str(trimmed, 'keyname', fid)
+    rh, rt = mylhmc_append(rh, rt, h, t)
   end
   if trail ~= '' then
-    local h, t = str_to_nodes_ws_safe(trail, fid)
-    rh, rt = append(rh, rt, h, t)
+    local h, t = mylhmc_str_to_nodes_ws_safe(trail, fid)
+    rh, rt = mylhmc_append(rh, rt, h, t)
   end
   return rh, rt
 end
 
-local function ltcmd_name_color(text)
+local function mylhmc_ltcmd_name_color(text)
   text = s_match(text, '^%s*(.-)%s*$') or text
   local name = s_sub(text, 1, 1) == '\\' and s_sub(text, 2) or text
   local colon = s_find(name, ':', 1, true)
@@ -14702,111 +14681,111 @@ local function ltcmd_name_color(text)
   return 'latex_cmd'
 end
 
-local function colorize_plain_text(text, fid, rh, rt)
+local function mylhmc_colorize_plain_text(text, fid, rh, rt)
   local h, tl
-  if in_variant_group then h, tl = colored_str(text, 'sigargs', fid)
+  if in_variant_group then h, tl = mylhmc_colored_str(text, 'sigargs', fid)
   elseif in_csname then
-    csname_base_color = csname_base_color or csname_color_from_prefix(text)
-    rh, rt = emit_csname_text(text, csname_base_color, fid, rh, rt)
+    csname_base_color = csname_base_color or mylhmc_csname_color_from_prefix(text)
+    rh, rt = mylhmc_emit_csname_text(text, csname_base_color, fid, rh, rt)
     h, tl = nil, nil
   elseif in_mathml_intent then
     if mathml_after_dollar then
       mathml_after_dollar = false
       local ident = s_match(text, '^%s*([%a%d_]+)')
       if ident then
-        h, tl = colored_str(ident, 'mathml_var', fid)
-        rh, rt = append(rh, rt, h, tl)
+        h, tl = mylhmc_colored_str(ident, 'mathml_var', fid)
+        rh, rt = mylhmc_append(rh, rt, h, tl)
         local fnd = s_find(text, ident, 1, true) or 1
         local rest = s_sub(text, fnd + #ident)
-        if rest ~= '' then rh, rt = colorize_mathml_intent(rest, fid, rh, rt) end
+        if rest ~= '' then rh, rt = mylhmc_colorize_mathml_intent(rest, fid, rh, rt) end
         h, tl = nil, nil
       else
-        rh, rt = colorize_mathml_intent(text, fid, rh, rt); h, tl = nil, nil
+        rh, rt = mylhmc_colorize_mathml_intent(text, fid, rh, rt); h, tl = nil, nil
       end
     else
-      rh, rt = colorize_mathml_intent(text, fid, rh, rt); h, tl = nil, nil
+      rh, rt = mylhmc_colorize_mathml_intent(text, fid, rh, rt); h, tl = nil, nil
     end
-  elseif in_mathml_arg then h, tl = colored_str(text, 'mathml_var', fid)
+  elseif in_mathml_arg then h, tl = mylhmc_colored_str(text, 'mathml_var', fid)
   elseif keys_meta_pending and keys_meta_brace_count == 1
          and keys_meta_argnum == 1 and keys_meta_arity == 2 then
     -- .meta:nn primer argumento: ruta módulo/clave (spintent/spnum)
-    rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
   elseif keys_meta_pending and keys_meta_brace_count == 1 then
     -- .meta:n único argumento, o .meta:nn segundo argumento: lista de claves
-    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   elseif in_keys_context and keys_body_opened and keys_depth == 1 then
-    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   elseif in_keys_context and keys_body_opened and keys_in_choices and keys_depth == 2 then
-    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   elseif in_msgerror and msgerror_depth == 1 and msgerror_argnum == 1 then
-    h, tl = colored_str(text, 'module_name', fid)
+    h, tl = mylhmc_colored_str(text, 'module_name', fid)
   elseif in_msgerror and msgerror_depth == 1 and msgerror_argnum == 2 then
     local trimmed = s_match(text, '^%s*(.-)%s*$')
     msgerror_is_unknown = (trimmed == 'unknown-choice')
-    h, tl = str_to_nodes(text, fid)
+    h, tl = mylhmc_str_to_nodes(text, fid)
   elseif in_msgerror and msgerror_depth == 1 and msgerror_is_unknown
          and (msgerror_argnum == 3 or msgerror_argnum == 4) then
-    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   elseif ltcmd_in_args then
-    if ltcmd_brace_count > 1 then h, tl = str_to_nodes(text, fid)
-    else rh, rt = colorize_ltcmd_args(text, fid, rh, rt); h, tl = nil, nil end
+    if ltcmd_brace_count > 1 then h, tl = mylhmc_str_to_nodes(text, fid)
+    else rh, rt = mylhmc_colorize_ltcmd_args(text, fid, rh, rt); h, tl = nil, nil end
   elseif ltcmd_name_pending and ltcmd_brace_count == 1 then
-    rh, rt = emit_csname_text(text, ltcmd_name_color(text), fid, rh, rt)
+    rh, rt = mylhmc_emit_csname_text(text, mylhmc_ltcmd_name_color(text), fid, rh, rt)
     h, tl = nil, nil
   elseif in_keys_context and not keys_body_opened then
-    rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
   elseif in_msg_simple and not msg_simple_done and msg_simple_depth == 1 then
-    rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
   elseif in_keys_module_arg and not keys_module_arg_done
          and keys_module_arg_depth == 1 then
     if keys_module_arg_argnum == 1 then
-      rh, rt = colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
+      rh, rt = mylhmc_colorize_keys_path(text, fid, rh, rt); h, tl = nil, nil
     else
-      rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+      rh, rt = mylhmc_colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
     end
   elseif provides_pkg_pending and provides_pkg_brace_count == 1 then
-    h, tl = colored_str_bold(text, 'module_name', fid)
+    h, tl = mylhmc_colored_str_bold(text, 'module_name', fid)
   elseif pkgcls_pending and pkgcls_brace_depth == 1
          and pkgcls_argnum == pkgcls_target_arg then
-    h, tl = colored_str_bold(text, pkgcls_color, fid)
+    h, tl = mylhmc_colored_str_bold(text, pkgcls_color, fid)
   elseif pkgcls_pending and pkgcls_brace_depth == 1
          and pkgcls_target_arg == 2 and pkgcls_argnum == 1 then
     -- \PassOptionsToPackage/\PassOptionsToClass: primer argumento =
     -- lista de opciones (key=value, ...), mismo tratamiento que keyname.
-    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   elseif pkgcls_bracket_active and pkgcls_bracket_depth == 1 then
     -- \RequirePackage/\LoadClass [opciones]: mismo tratamiento keyname.
-    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   elseif in_file_arg and not file_arg_done and file_arg_depth == 1 then
     if file_arg_is_list then
-      rh, rt = colorize_filename_list(text, fid, rh, rt)
+      rh, rt = mylhmc_colorize_filename_list(text, fid, rh, rt)
     else
-      rh, rt = colorize_filename(text, fid, rh, rt)
+      rh, rt = mylhmc_colorize_filename(text, fid, rh, rt)
     end
     h, tl = nil, nil
   elseif in_hook_label and hook_label_depth == 1
          and hook_label_positions[hook_label_argnum] then
-    h, tl = colored_str(text, 'module_name', fid)
+    h, tl = mylhmc_colored_str(text, 'module_name', fid)
   elseif in_single_keyval and single_keyval_depth == 1 then
-    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+    rh, rt = mylhmc_colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
   elseif font_bracket_active and font_bracket_depth == 1 then
-    rh, rt = colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
-  else h, tl = str_to_nodes_ws_safe(text, fid) end
-  return append(rh, rt, h, tl)
+    rh, rt = mylhmc_colorize_trimmed_keyname(text, fid, rh, rt); h, tl = nil, nil
+  else h, tl = mylhmc_str_to_nodes_ws_safe(text, fid) end
+  return mylhmc_append(rh, rt, h, tl)
 end
 
-colorize_code = function(line, fid)
+mylhmc_colorize_code = function(line, fid)
   local rh, rt, pos, line_len = nil, nil, 1, #line
   while pos <= line_len do
     local b, e, t = lpeg_match(combined_pattern, line, pos)
     if not b then
       local remainder = s_sub(line, pos)
-      rh, rt = colorize_plain_text(remainder, fid, rh, rt)
+      rh, rt = mylhmc_colorize_plain_text(remainder, fid, rh, rt)
       break
     end
     if b > pos then
       local prefix = s_sub(line, pos, b - 1)
-      rh, rt = colorize_plain_text(prefix, fid, rh, rt)
+      rh, rt = mylhmc_colorize_plain_text(prefix, fid, rh, rt)
     end
     local chunk = s_sub(line, b, e - 1)
     local h, tl
@@ -14989,7 +14968,7 @@ colorize_code = function(line, fid)
           end
         end
       end
-      h, tl = colored_str(chunk, 'brace', fid)
+      h, tl = mylhmc_colored_str(chunk, 'brace', fid)
     elseif t == 3 then
       if chunk == '[' then
         if pkgcls_bracket_pending then
@@ -15018,28 +14997,28 @@ colorize_code = function(line, fid)
           end
         end
       end
-      h, tl = colored_str(chunk, 'bracket', fid)
+      h, tl = mylhmc_colored_str(chunk, 'bracket', fid)
     elseif t == 24 then
       local hashes = s_match(chunk, '^#+')
       local num    = s_sub(chunk, #hashes + 1)
-      h, tl = colored_str(hashes, 'argument', fid); rh, rt = append(rh, rt, h, tl)
-      h, tl = colored_str(num, 'argnum', fid)
+      h, tl = mylhmc_colored_str(hashes, 'argument', fid); rh, rt = mylhmc_append(rh, rt, h, tl)
+      h, tl = mylhmc_colored_str(num, 'argnum', fid)
     elseif t == 26 then
       arg_counter, variant_depth, in_variant_group = 0, 0, false
       if s_find(chunk, 'prg_generate_conditional_variant', 1, true) then
         variant_braces_remaining = 2
       else variant_braces_remaining = 1 end
-      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'publicfun', fid)
     elseif t == 30 then
       in_csname, csname_base_color, csname_depth = true, nil, 0
-      h, tl = colored_str(chunk, 'publicfun', fid)
+      h, tl = mylhmc_colored_str(chunk, 'publicfun', fid)
     elseif t == 31 then
-      in_csname = false; h, tl = colored_str(chunk, 'publicfun', fid)
+      in_csname = false; h, tl = mylhmc_colored_str(chunk, 'publicfun', fid)
     elseif t == 16 then
       local dot  = s_sub(chunk, 1, 1)
       local rest = s_sub(chunk, 2)
       local colon = s_find(rest, ':', 1, true)
-      h, tl = colored_str(dot, 'signature', fid); rh, rt = append(rh, rt, h, tl)
+      h, tl = mylhmc_colored_str(dot, 'signature', fid); rh, rt = mylhmc_append(rh, rt, h, tl)
       if colon then
         local kname, kargs = s_sub(rest, 1, colon - 1), s_sub(rest, colon + 1)
         if in_keys_context and keys_body_opened and keys_depth == 1 then
@@ -15056,7 +15035,7 @@ colorize_code = function(line, fid)
         else
           keys_meta_pending = false
         end
-        reset_csname_state(); local cpos = 0
+        mylhmc_reset_csname_state(); local cpos = 0
         for i = 1, #kargs do
           local ch = s_sub(kargs, i, i)
           if s_match(ch, '[NnVvoxefpTFwDcq]') then
@@ -15064,28 +15043,28 @@ colorize_code = function(line, fid)
             if ch == 'c' or ch == 'v' then csname_positions[cpos] = true end
           end
         end
-        h, tl = colored_str(kname, 'keyfun', fid); rh, rt = append(rh, rt, h, tl)
-        h, tl = colored_str(':', 'signature', fid); rh, rt = append(rh, rt, h, tl)
-        h, tl = colored_str(kargs, 'sigargs', fid)
-      else h, tl = colored_str(rest, 'keyfun', fid) end
+        h, tl = mylhmc_colored_str(kname, 'keyfun', fid); rh, rt = mylhmc_append(rh, rt, h, tl)
+        h, tl = mylhmc_colored_str(':', 'signature', fid); rh, rt = mylhmc_append(rh, rt, h, tl)
+        h, tl = mylhmc_colored_str(kargs, 'sigargs', fid)
+      else h, tl = mylhmc_colored_str(rest, 'keyfun', fid) end
     elseif t == 9 then
-      h, tl = colored_str(s_sub(chunk, 1, 1), 'guard_angle', fid)
-      rh, rt = append(rh, rt, h, tl)
-      h, tl = colored_str_italic(s_sub(chunk, 2), 'comment', fid)
+      h, tl = mylhmc_colored_str(s_sub(chunk, 1, 1), 'guard_angle', fid)
+      rh, rt = mylhmc_append(rh, rt, h, tl)
+      h, tl = mylhmc_colored_str_italic(s_sub(chunk, 2), 'comment', fid)
     elseif t == 14 then
       arg_counter, ltcmd_brace_count, ltcmd_name_pending, ltcmd_in_args = 0, 0, true, false
-      h, tl = emit_with_signature(chunk, 'ltcmd', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'ltcmd', fid)
     elseif t == 39 then
       in_keys_context, keys_body_opened, keys_depth = true, false, 0
       keys_in_choices = false
-      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'publicfun', fid)
     elseif t == 40 then
       in_msgerror, msgerror_argnum, msgerror_depth, msgerror_is_unknown =
         true, 0, 0, false
-      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'publicfun', fid)
     elseif t == 41 then
       in_msg_simple, msg_simple_depth, msg_simple_done = true, 0, false
-      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'publicfun', fid)
     elseif t == 44 then
       in_keys_module_arg, keys_module_arg_depth, keys_module_arg_done =
         true, 0, false
@@ -15097,7 +15076,7 @@ colorize_code = function(line, fid)
         if ch == 'n' then n_count = n_count + 1 end
       end
       keys_module_arg_total_n = n_count
-      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'publicfun', fid)
     elseif t == 46 then
       in_file_arg, file_arg_depth, file_arg_done = true, 0, false
       -- Coincidencia de PREFIJO exacto justo tras el '\' (no substring en
@@ -15115,9 +15094,9 @@ colorize_code = function(line, fid)
          or starts_with('input') then
         base = 'pkgstruct'
       else
-        base = module_aware_color(chunk, 'publicfun')
+        base = mylhmc_module_aware_color(chunk, 'publicfun')
       end
-      h, tl = emit_with_signature(chunk, base, fid)
+      h, tl = mylhmc_emit_with_signature(chunk, base, fid)
     elseif t == 47 then
       in_hook_label, hook_label_depth, hook_label_argnum = true, 0, 0
       local colon = s_find(chunk, ':', 1, true)
@@ -15132,34 +15111,34 @@ colorize_code = function(line, fid)
       else
         hook_label_positions = { [2] = true }
       end
-      h, tl = emit_with_signature(chunk, module_aware_color(chunk, 'publicfun'), fid)
+      h, tl = mylhmc_emit_with_signature(chunk, mylhmc_module_aware_color(chunk, 'publicfun'), fid)
     elseif t == 48 then
       -- package/NOMBRE/before|after (también class/... y file/...):
       -- colorea solo el NOMBRE de en medio.
       local slash1 = s_find(chunk, '/', 1, true)
       local slash2 = s_find(chunk, '/', slash1 + 1, true)
-      h, tl = str_to_nodes(s_sub(chunk, 1, slash1), fid); rh, rt = append(rh, rt, h, tl)
-      h, tl = colored_str(s_sub(chunk, slash1 + 1, slash2 - 1), 'module_name', fid)
-      rh, rt = append(rh, rt, h, tl)
-      h, tl = str_to_nodes(s_sub(chunk, slash2), fid)
+      h, tl = mylhmc_str_to_nodes(s_sub(chunk, 1, slash1), fid); rh, rt = mylhmc_append(rh, rt, h, tl)
+      h, tl = mylhmc_colored_str(s_sub(chunk, slash1 + 1, slash2 - 1), 'module_name', fid)
+      rh, rt = mylhmc_append(rh, rt, h, tl)
+      h, tl = mylhmc_str_to_nodes(s_sub(chunk, slash2), fid)
     elseif t == 34 then
-      h, tl = emit_with_signature(chunk, 'publicfun', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'publicfun', fid)
       csname_positions[1] = true
-    elseif t == 33 then h, tl = emit_with_signature(chunk, 'ltcmd_arg', fid)
+    elseif t == 33 then h, tl = mylhmc_emit_with_signature(chunk, 'ltcmd_arg', fid)
     elseif ltcmd_name_pending and ltcmd_brace_count == 1 then
-      rh, rt = emit_csname_text(chunk, ltcmd_name_color(chunk), fid, rh, rt)
+      rh, rt = mylhmc_emit_csname_text(chunk, mylhmc_ltcmd_name_color(chunk), fid, rh, rt)
       h, tl = nil, nil
     elseif ltcmd_name_pending and ltcmd_brace_count == 0 and s_sub(chunk, 1, 1) == '\\' then
-      h, tl = colored_str(chunk, ltcmd_name_color(chunk), fid)
+      h, tl = mylhmc_colored_str(chunk, mylhmc_ltcmd_name_color(chunk), fid)
       ltcmd_name_pending, ltcmd_in_args = false, true
     elseif ltcmd_in_args then
-      if ltcmd_brace_count > 1 then h, tl = colored_str(chunk, type_colors[t], fid)
-      else rh, rt = colorize_ltcmd_args(chunk, fid, rh, rt); h, tl = nil, nil end
+      if ltcmd_brace_count > 1 then h, tl = mylhmc_colored_str(chunk, type_colors[t], fid)
+      else rh, rt = mylhmc_colorize_ltcmd_args(chunk, fid, rh, rt); h, tl = nil, nil end
     elseif in_csname then
-      csname_base_color = csname_base_color or csname_color_from_prefix(chunk)
+      csname_base_color = csname_base_color or mylhmc_csname_color_from_prefix(chunk)
       if s_sub(chunk, 1, 1) == '\\' then
-        h, tl = colored_str(chunk, type_colors[t], fid)
-      else rh, rt = emit_csname_text(chunk, csname_base_color, fid, rh, rt); h, tl = nil, nil end
+        h, tl = mylhmc_colored_str(chunk, type_colors[t], fid)
+      else rh, rt = mylhmc_emit_csname_text(chunk, csname_base_color, fid, rh, rt); h, tl = nil, nil end
     elseif t == 5 or t == 6 then
       arg_counter = 0
       if ltcmd_in_args or ltcmd_name_pending then
@@ -15167,17 +15146,17 @@ colorize_code = function(line, fid)
       end
       local eff
       if t == 6 then
-        eff = module_aware_color(chunk, 'publicfun')
+        eff = mylhmc_module_aware_color(chunk, 'publicfun')
       else
-        eff = private_owner_color(chunk, 'privatefun')
+        eff = mylhmc_private_owner_color(chunk, 'privatefun')
       end
-      h, tl = emit_with_signature(chunk, eff, fid)
+      h, tl = mylhmc_emit_with_signature(chunk, eff, fid)
     elseif t == 25 then
       arg_counter = 0
       if s_find(chunk, 'ProvidesExplPackage', 1, true) then
         provides_pkg_pending, provides_pkg_brace_count = true, 0
       end
-      h, tl = colored_str_bold(chunk, 'structure', fid)
+      h, tl = mylhmc_colored_str_bold(chunk, 'structure', fid)
     elseif t == 37 then
       arg_counter = 0
       pkgcls_bracket_pending = false
@@ -15208,7 +15187,7 @@ colorize_code = function(line, fid)
       if s_find(chunk, 'IfFileExists', 1, true) then
         in_file_arg, file_arg_depth, file_arg_done = true, 0, false
       end
-      h, tl = emit_with_signature(chunk, 'pkgstruct', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'pkgstruct', fid)
     elseif t == 49 then
       if s_find(chunk, 'hypersetup', 1, true)
          or s_find(chunk, 'unimathsetup', 1, true)
@@ -15226,7 +15205,7 @@ colorize_code = function(line, fid)
          or s_find(chunk, 'fontspec', 1, true) then
         font_brace_pending, font_brace_depth = true, 0
       end
-      h, tl = emit_with_signature(chunk, 'support', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'support', fid)
     elseif t == 38 then
       mathml_brace_count, mathml_after_dollar = 0, false
       if s_find(chunk, 'MathMLintent', 1, true) then
@@ -15243,44 +15222,44 @@ colorize_code = function(line, fid)
          or s_find(chunk, 'tag_mc_begin:n', 1, true) then
         in_single_keyval, single_keyval_depth = true, 0
       end
-      h, tl = emit_with_signature(chunk, 'mathtag', fid)
+      h, tl = mylhmc_emit_with_signature(chunk, 'mathtag', fid)
     elseif in_mathml_intent and t ~= 8 then
-      if t == 21 then mathml_after_dollar = true; h, tl = colored_str(s_sub(chunk, 1, 1), 'math', fid)
+      if t == 21 then mathml_after_dollar = true; h, tl = mylhmc_colored_str(s_sub(chunk, 1, 1), 'math', fid)
       elseif mathml_after_dollar then
         mathml_after_dollar = false
-        rh, rt = colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil
-      else rh, rt = colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil end
-    elseif in_mathml_arg and t ~= 8 then h, tl = colored_str(chunk, 'mathml_var', fid)
+        rh, rt = mylhmc_colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil
+      else rh, rt = mylhmc_colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil end
+    elseif in_mathml_arg and t ~= 8 then h, tl = mylhmc_colored_str(chunk, 'mathml_var', fid)
     elseif t == 42 then
-      h, tl = colored_str(':', 'signature', fid); rh, rt = append(rh, rt, h, tl)
+      h, tl = mylhmc_colored_str(':', 'signature', fid); rh, rt = mylhmc_append(rh, rt, h, tl)
       local rest = s_sub(chunk, 2)
       local ws = s_match(rest, '^([ \t]*)')
       local after_ws = s_sub(rest, #ws + 1)
       if ws ~= '' then
-        h, tl = str_to_nodes(ws, fid); rh, rt = append(rh, rt, h, tl)
+        h, tl = mylhmc_str_to_nodes(ws, fid); rh, rt = mylhmc_append(rh, rt, h, tl)
       end
       local paren_start = s_find(after_ws, '(', 1, true)
       local word = paren_start and s_sub(after_ws, 1, paren_start - 1) or after_ws
-      h, tl = colored_str(word, 'intent', fid); rh, rt = append(rh, rt, h, tl)
+      h, tl = mylhmc_colored_str(word, 'intent', fid); rh, rt = mylhmc_append(rh, rt, h, tl)
       if paren_start then
         local paren_content = s_sub(after_ws, paren_start)
-        rh, rt = colorize_mathml_intent(paren_content, fid, rh, rt)
+        rh, rt = mylhmc_colorize_mathml_intent(paren_content, fid, rh, rt)
       end
       h, tl = nil, nil
     elseif t == 35 then
       local split = s_find(chunk, '%a')
       if split then
-        h, tl = colored_str(s_sub(chunk, 1, split-1), 'number', fid)
-        rh, rt = append(rh, rt, h, tl)
-        h, tl = colored_str(s_sub(chunk, split), 'unit', fid)
-      else h, tl = colored_str(chunk, 'number', fid) end
+        h, tl = mylhmc_colored_str(s_sub(chunk, 1, split-1), 'number', fid)
+        rh, rt = mylhmc_append(rh, rt, h, tl)
+        h, tl = mylhmc_colored_str(s_sub(chunk, split), 'unit', fid)
+      else h, tl = mylhmc_colored_str(chunk, 'number', fid) end
     elseif t == 18 then
       local four_caret = '\x5e\x5e\x5e\x5e'
       if s_sub(chunk, 1, 4) == four_caret then
-        h, tl = colored_str(four_caret, 'escape', fid); rh, rt = append(rh, rt, h, tl)
-        h, tl = colored_str(s_sub(chunk, 5), 'number', fid)
-      else h, tl = colored_str(chunk, 'escape', fid) end
-    elseif t == 13 then h, tl = emit_with_signature(chunk, 'danger', fid)
+        h, tl = mylhmc_colored_str(four_caret, 'escape', fid); rh, rt = mylhmc_append(rh, rt, h, tl)
+        h, tl = mylhmc_colored_str(s_sub(chunk, 5), 'number', fid)
+      else h, tl = mylhmc_colored_str(chunk, 'escape', fid) end
+    elseif t == 13 then h, tl = mylhmc_emit_with_signature(chunk, 'danger', fid)
     elseif t == 15 then
       local cur, len = 2, #chunk
       for i = 2, len do
@@ -15288,43 +15267,43 @@ colorize_code = function(line, fid)
         if b == 64 or b == 33 or b == 38 or b == 94 or b == 42 then
           local part = (cur == 2 and '\\' or '') .. s_sub(chunk, cur, i - 1)
           if #part > 0 then
-            local pcolor = module_aware_color(part, 'latex_cmd')
+            local pcolor = mylhmc_module_aware_color(part, 'latex_cmd')
             if s_find(part, 'nuevo', 1, true) then
               texio.write_nl('[[CALL-DEBUG]] part=[' .. part .. '] pcolor=[' .. pcolor .. '] color_data_module_name=' .. tostring(color_data['module_name'] ~= nil))
             end
-            h, tl = colored_str(part, pcolor, fid)
-            rh, rt = append(rh, rt, h, tl)
+            h, tl = mylhmc_colored_str(part, pcolor, fid)
+            rh, rt = mylhmc_append(rh, rt, h, tl)
           end
           local color_name = (b == 64 and 'arroba') or (b == 42 and 'star') or 'escape'
-          h, tl = colored_str(s_sub(chunk, i, i), color_name, fid)
-          rh, rt = append(rh, rt, h, tl); cur = i + 1
+          h, tl = mylhmc_colored_str(s_sub(chunk, i, i), color_name, fid)
+          rh, rt = mylhmc_append(rh, rt, h, tl); cur = i + 1
         end
       end
       if cur <= len then
         local trailing = (cur == 2 and '\\' or '') .. s_sub(chunk, cur)
-        h, tl = colored_str(trailing, module_aware_color(trailing, 'latex_cmd'), fid)
+        h, tl = mylhmc_colored_str(trailing, mylhmc_module_aware_color(trailing, 'latex_cmd'), fid)
       else h, tl = nil, nil end
     elseif t == 4 then
-      h, tl = colored_str(chunk, module_aware_color(chunk, 'publicvar'), fid)
+      h, tl = mylhmc_colored_str(chunk, mylhmc_module_aware_color(chunk, 'publicvar'), fid)
     elseif t == 2 then
-      h, tl = colored_str(chunk, private_owner_color(chunk, 'privatevar'), fid)
+      h, tl = mylhmc_colored_str(chunk, mylhmc_private_owner_color(chunk, 'privatevar'), fid)
     elseif t == 19 then
-      h, tl = colored_str(chunk, private_owner_color(chunk, 'constant'), fid)
+      h, tl = mylhmc_colored_str(chunk, mylhmc_private_owner_color(chunk, 'constant'), fid)
     else
       local effective = type_colors[t]
       if effective then
         local bare = s_sub(chunk, 1, 1) == '\\' and s_sub(chunk, 2) or chunk
         if module_user_cmds[bare] or module_user_cmds[chunk] then effective = 'module_name' end
       end
-      h, tl = colored_str(chunk, effective, fid)
+      h, tl = mylhmc_colored_str(chunk, effective, fid)
     end
-    rh, rt = append(rh, rt, h, tl); pos = e
+    rh, rt = mylhmc_append(rh, rt, h, tl); pos = e
   end
   return rh, rt
 end
 
-local function make_angle_nodes(content_head, content_tail, angle_color, fid)
-  local lm_fid = get_lm_fid(fid)
+local function mylhmc_make_angle_nodes(content_head, content_tail, angle_color, fid)
+  local lm_fid = mylhmc_get_lm_fid(fid)
   local cname = (color_data[angle_color] and angle_color) or 'guard_angle'
   local lg, rg = d_new('glyph'), d_new('glyph')
   d_setfield(lg, 'font', lm_fid)
@@ -15332,19 +15311,18 @@ local function make_angle_nodes(content_head, content_tail, angle_color, fid)
   d_setfield(rg, 'font', lm_fid)
   d_setfield(rg, 'char', LM_RANGLE)
   local rh, rt = nil, nil
-  if color_data[cname] then rh, rt = append(rh, rt, colorstack_push(cname)) end
-  rh, rt = append(rh, rt, lg)
-  if color_data[cname] then rh, rt = append(rh, rt, colorstack_pop()) end
-  if content_head then rh, rt = append(rh, rt, content_head, content_tail) end
-  if color_data[cname] then rh, rt = append(rh, rt, colorstack_push(cname)) end
-  rh, rt = append(rh, rt, rg)
-  if color_data[cname] then rh, rt = append(rh, rt, colorstack_pop()) end
+  if color_data[cname] then rh, rt = mylhmc_append(rh, rt, mylhmc_colorstack_push(cname)) end
+  rh, rt = mylhmc_append(rh, rt, lg)
+  if color_data[cname] then rh, rt = mylhmc_append(rh, rt, mylhmc_colorstack_pop()) end
+  if content_head then rh, rt = mylhmc_append(rh, rt, content_head, content_tail) end
+  if color_data[cname] then rh, rt = mylhmc_append(rh, rt, mylhmc_colorstack_push(cname)) end
+  rh, rt = mylhmc_append(rh, rt, rg)
+  if color_data[cname] then rh, rt = mylhmc_append(rh, rt, mylhmc_colorstack_pop()) end
   return rh, rt
 end
 
--- Mapea cada símbolo de guarda a su propio color independiente
--- (antes todos compartían 'operator'; ahora cada uno es editable aparte).
-local function guard_symbol_color(b)
+-- Mapea cada símbolo de guarda a su propio color independiente y editable.
+local function mylhmc_guard_symbol_color(b)
   if b == 42 then return 'guard_star'    -- *
   elseif b == 47 then return 'guard_slash'  -- /
   elseif b == 40 or b == 41 then return 'guard_paren' -- ( )
@@ -15353,40 +15331,40 @@ local function guard_symbol_color(b)
   elseif b == 33 then return 'guard_bang'   -- !
   end
   return 'guard_star' -- fallback (inalcanzable: los 6 casos cubren todos
-                       -- los bytes que colorize_guard_expr le pasa a esta función)
+                       -- los bytes que mylhmc_colorize_guard_expr le pasa a esta función)
 end
 
-local function colorize_guard_expr(expr, fid)
+local function mylhmc_colorize_guard_expr(expr, fid)
   local rh, rt, name_start, len = nil, nil, 1, #expr
   for i = 1, len do
     local b = s_byte(expr, i)
     if b == 33 or b == 32 or b == 38 or b == 40 or b == 41 or b == 42 or
        b == 47 or b == 124 then
       if name_start <= i - 1 then
-        local h, t = colored_str(s_sub(expr, name_start, i - 1), 'guard_name', fid)
-        rh, rt = append(rh, rt, h, t)
+        local h, t = mylhmc_colored_str(s_sub(expr, name_start, i - 1), 'guard_name', fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
       name_start = i + 1
       if b ~= 32 then
-        local h, t = colored_str(s_sub(expr, i, i), guard_symbol_color(b), fid)
-        rh, rt = append(rh, rt, h, t)
+        local h, t = mylhmc_colored_str(s_sub(expr, i, i), mylhmc_guard_symbol_color(b), fid)
+        rh, rt = mylhmc_append(rh, rt, h, t)
       end
     end
   end
   if name_start <= len then
-    local h, t = colored_str(s_sub(expr, name_start, len), 'guard_name', fid)
-    rh, rt = append(rh, rt, h, t)
+    local h, t = mylhmc_colored_str(s_sub(expr, name_start, len), 'guard_name', fid)
+    rh, rt = mylhmc_append(rh, rt, h, t)
   end
   return rh, rt
 end
 
-local function render_guard(line, fid)
+local function mylhmc_render_guard(line, fid)
   local rest = s_gsub(line, '^%s*', '')
   local close = s_find(rest, '>', 2)
   if not close then
-    local h, t = colored_str('%', 'guard_angle', fid)
+    local h, t = mylhmc_colored_str('%', 'guard_angle', fid)
     if h then n_write(d_tonode(h)) end
-    h, t = colored_str_italic(line, 'comment', fid)
+    h, t = mylhmc_colored_str_italic(line, 'comment', fid)
     if h then n_write(d_tonode(h)) end
     return
   end
@@ -15399,29 +15377,29 @@ local function render_guard(line, fid)
     t_set_macro('g__codedoc_module_name_tl', modname, 'global')
     current_module_name = modname
     current_module_prefix = '__' .. modname
-    h, t = colored_str('@@', 'module_at', fid); ch, ct = append(ch, ct, h, t)
-    h, t = colored_str('=', 'module_eq', fid); ch, ct = append(ch, ct, h, t)
-    h, t = colored_str_bold(modname, 'module_name', fid); ch, ct = append(ch, ct, h, t)
+    h, t = mylhmc_colored_str('@@', 'module_at', fid); ch, ct = mylhmc_append(ch, ct, h, t)
+    h, t = mylhmc_colored_str('=', 'module_eq', fid); ch, ct = mylhmc_append(ch, ct, h, t)
+    h, t = mylhmc_colored_str_bold(modname, 'module_name', fid); ch, ct = mylhmc_append(ch, ct, h, t)
   else
     local sigil, expr, first = '', inner, s_sub(inner, 1, 1)
     if first == '*' or first == '/' then sigil = first; expr = s_sub(inner, 2) end
     if sigil ~= '' then
-      h, t = colored_str(sigil, guard_symbol_color(s_byte(sigil)), fid)
-      ch, ct = append(ch, ct, h, t)
+      h, t = mylhmc_colored_str(sigil, mylhmc_guard_symbol_color(s_byte(sigil)), fid)
+      ch, ct = mylhmc_append(ch, ct, h, t)
     end
     if expr ~= '' then
-      h, t = colorize_guard_expr(expr, fid); ch, ct = append(ch, ct, h, t)
+      h, t = mylhmc_colorize_guard_expr(expr, fid); ch, ct = mylhmc_append(ch, ct, h, t)
     end
   end
 
-  local rh, rt = make_angle_nodes(ch, ct, 'guard_angle', fid)
+  local rh, rt = mylhmc_make_angle_nodes(ch, ct, 'guard_angle', fid)
   if rh then n_write(d_tonode(rh)) end
   if after and after ~= '' then
-    local ah, at = colorize_code(after, fid); if ah then n_write(d_tonode(ah)) end
+    local ah, at = mylhmc_colorize_code(after, fid); if ah then n_write(d_tonode(ah)) end
   end
 end
 
-local function apply_at_at(line)
+local function mylhmc_apply_at_at(line)
   if not s_find(line, '@@', 1, true) then return line end
   if current_module_name ~= '' then
     line = s_gsub(line, '@@@@', '\0')
@@ -15439,7 +15417,7 @@ end
 -- el mecanismo nativo de l3doc.cls (y con cualquier otro código externo
 -- que también fije esa variable), sin que una lectura vacía intermedia
 -- borre el estado que Lua ya tiene cacheado desde un %<@@=modulo> anterior.
-local function init_line_state()
+local function mylhmc_init_line_state()
   local m = t_get_macro('g__codedoc_module_name_tl')
   if m and m ~= '' then
     current_module_name = m
@@ -15453,20 +15431,10 @@ end
 -- mode=2 ('direct'): el literal se inserta exactamente en el punto del
 -- content stream, sin reordenamiento -- necesario para que BDC/EMC
 -- queden bien balanceados alrededor del contenido que envuelven.
---
--- HISTORIAL de intentos descartados (ver conversación para detalle):
--- - <FEFF200B> (BOM + centinela de ancho cero U+200B): pensado para
---   evitar un caso límite teórico de ActualText vacío -- nunca
---   confirmado como problema real, y en cambio introdujo un espacio
---   extra visible al inicio de cada línea copiada (el U+200B se
---   extrae como carácter real y algunos visores lo renderizan con
---   ancho). Descartado.
--- - /Artifact BMC/EMC: probado durante la investigación del recorte de
---   indentación en Adobe Acrobat -- no resolvió ese problema (quedó
---   documentado como limitación conocida) y además dejó de ocultar el
---   número de línea correctamente. Descartado.
--- Versión actual: ActualText vacío simple, la única confirmada sin
--- efectos secundarios.
+-- NOTA: no agregar caracteres "centinela" (p.ej. U+200B) dentro del
+-- ActualText -- se extraen como contenido real y aparecen como espacio
+-- extra al copiar. Tampoco usar /Artifact aquí -- deja de ocultar el
+-- número de línea. ActualText vacío es la única versión confirmada.
 register_tex_cmd('actual_text_begin', function()
   local n = d_new('whatsit', 'pdf_literal')
   d_setfield(n, 'mode', 2)
@@ -15478,18 +15446,18 @@ register_tex_cmd('actual_text_end', function()
   local n = d_new('whatsit', 'pdf_literal')
   d_setfield(n, 'mode', 2)
   d_setfield(n, 'data', 'EMC')
+
   n_write(d_tonode(n))
 end, {})
-
 
 register_tex_cmd('inline', function()
   local text = t_get_macro('l__mylhmc_verbatim_line_tl')
   if not text or text == '' then return end
   text = s_gsub(text, '[\r\n]+$', '')
-  init_line_state()
-  text = apply_at_at(text)
+  mylhmc_init_line_state()
+  text = mylhmc_apply_at_at(text)
   local fid = f_current()
-  local rh, rt = colorize_code(text, fid)
+  local rh, rt = mylhmc_colorize_code(text, fid)
   if rh then n_write(d_tonode(rh)) end
   font_bracket_pending = false
 end, {})
@@ -15499,17 +15467,17 @@ register_tex_cmd('process_line', function()
   if not line or line == '' then return end
   line = s_gsub(line, '[\r\n]+$', '')
   if line == '' then return end
-  init_line_state()
-  line = apply_at_at(line)
+  mylhmc_init_line_state()
+  line = mylhmc_apply_at_at(line)
   local fid = f_current()
   if s_sub(line, 1, 1) == '%' then
     local rest = s_sub(line, 2)
     local trimmed = s_match(rest, '^%s*(.*)')
-    if s_sub(trimmed, 1, 1) == '<' then render_guard(rest, fid)
+    if s_sub(trimmed, 1, 1) == '<' then mylhmc_render_guard(rest, fid)
     else
-      local h, t = colored_str(s_sub(line, 1, 1), 'guard_angle', fid)
+      local h, t = mylhmc_colored_str(s_sub(line, 1, 1), 'guard_angle', fid)
       if h then n_write(d_tonode(h)) end
-      h, t = colored_str_italic(s_sub(line, 2), 'comment', fid)
+      h, t = mylhmc_colored_str_italic(s_sub(line, 2), 'comment', fid)
       if h then n_write(d_tonode(h)) end
     end
   else
@@ -15518,10 +15486,10 @@ register_tex_cmd('process_line', function()
     local rh, rt
     if indent and indent ~= '' then
       rest = s_sub(line, #indent + 1)
-      rh, rt = actual_text_wrap(indent, fid)
+      rh, rt = mylhmc_actual_text_wrap(indent, fid)
     end
-    local ch, ct = colorize_code(rest, fid)
-    rh, rt = append(rh, rt, ch, ct)
+    local ch, ct = mylhmc_colorize_code(rest, fid)
+    rh, rt = mylhmc_append(rh, rt, ch, ct)
     if rh then n_write(d_tonode(rh)) end
   end
   font_bracket_pending = false

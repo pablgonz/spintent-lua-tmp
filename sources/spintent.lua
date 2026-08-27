@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.98 [2026-08-26]
+     Lua module spintent.lua for spintent package - v0.99 [2026-08-27]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -1327,10 +1327,6 @@ local spintent_mathstyle_names = {
     [6] = "scriptscript", [7] = "scriptscript",
 }
 
-local function spintent_is_digit(n)
-    return n.char >= 48 and n.char <= 57
-end
-
 local function spintent_get_scaled_font(id, factor)
     local key = tostring(id) .. ":" .. tostring(factor)
     if spintent_font_cache[key] then return spintent_font_cache[key] end
@@ -1345,25 +1341,6 @@ local function spintent_get_scaled_font(id, factor)
     fonts.hashes.identifiers[new_id] = data
     spintent_font_cache[key] = new_id
     return new_id
-end
-
-local function spintent_scale_glyphs(head, factor)
-    for n in node.traverse_glyph(head) do
-        if spintent_is_digit(n) then
-            local new_id = spintent_get_scaled_font(n.font, factor)
-            n.font = new_id
-            local f = font.getfont(new_id)
-            if f and f.characters then
-                local c = f.characters[n.char]
-                if c then
-                    n.width  = c.width
-                    n.height = c.height
-                    n.depth  = c.depth
-                end
-            end
-        end
-    end
-    return head
 end
 
 local function spintent_build_char_noads(str)
@@ -1430,19 +1407,33 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     -- 3. Factor
     local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
 
-    -- 4. Escalar la misma hlist ya medida
-    spintent_scale_glyphs(h_esc.list, factor)
-
-    -- 5. Ancho y Glyph nodes físicos (Bucle fusionado y acelerado por C)
+    -- 4-5. Escalado + ancho + glyphs físicos en una sola pasada node.direct
+    -- (antes: una pasada con node.traverse_glyph para escalar, luego una
+    -- segunda pasada separada con d_traverse para medir/recolectar --
+    -- dos recorridos completos de la misma lista más conversión userdata
+    -- de por medio en ambos). El chequeo de dígito vía d_getfield evita
+    -- convertir a userdata los glyphs que no son dígitos.
     local ancho = 0
     local glyph_nodes = {}
 
     for n in d_traverse(d_todirect(h_esc.list)) do
-        ancho = ancho + d_getfield(n, "width")
-        -- Reconvertimos a userdata temporalmente porque spintent_is_digit lo espera así
-        local n_user = d_tonode(n)
-        if spintent_is_digit(n_user) then
-            glyph_nodes[#glyph_nodes + 1] = n_user
+        local ch = d_getfield(n, "char")
+        if ch >= 48 and ch <= 57 then
+            local new_id = spintent_get_scaled_font(d_getfield(n, "font"), factor)
+            d_setfield(n, "font", new_id)
+            local f = font.getfont(new_id)
+            if f and f.characters then
+                local c = f.characters[ch]
+                if c then
+                    d_setfield(n, "width",  c.width)
+                    d_setfield(n, "height", c.height)
+                    d_setfield(n, "depth",  c.depth)
+                end
+            end
+            ancho = ancho + d_getfield(n, "width")
+            glyph_nodes[#glyph_nodes + 1] = d_tonode(n)
+        else
+            ancho = ancho + d_getfield(n, "width")
         end
     end
 
@@ -1679,7 +1670,7 @@ end, { "string" })
 --
 -- Orden de intentos en la rama sin coma: nombre de recta primero
 -- (preserva la semántica de \sprecta con una sola letra), luego
--- puntos concatenados sin separador (nuevo), luego error.
+-- puntos concatenados sin separador, luego error.
 -- ------------------------------------------------------------
 register_tex_cmd("luafun_geo_parse_and_set", function(csv)
     csv = spintent_trim(csv)
@@ -1889,9 +1880,9 @@ end
 -- Arma y establece las variables de salida para el caso de vértices
 -- reales (lista de al menos 3 puntos), sin importar si vinieron
 -- separados por comas o concatenados sin separador. Siempre usa el
--- nombre inferido por cardinalidad — "read-arg" ya no viaja a Lua;
--- expl3 reconstruye el intent con l__spintent_geo_luaset_vertices_str
--- (cuerpo puro, sin nombre de figura) cuando corresponde sobrescribir.
+-- nombre inferido por cardinalidad; expl3 reconstruye el intent con
+-- l__spintent_geo_luaset_vertices_str (cuerpo puro, sin nombre de
+-- figura) cuando corresponde sobrescribir.
 local function spintent_geo_fig_set_vertices(op, puntos)
     local info    = spintent_geo_poly_npts[#puntos]
     local cmd_fig = info and info.cmd or "polígono"
@@ -1933,7 +1924,7 @@ end
 --
 -- Orden de intentos sin coma: gramática de argumento único (número/
 -- letra/tabla) primero; si falla, puntos concatenados como lista de
--- vértices (nuevo, mínimo 3); si también falla, error.
+-- vértices (mínimo 3); si también falla, error.
 local function spintent_geo_fig_parse_and_set(op, csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
