@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-08-27} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-28} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -3720,7 +3720,7 @@
       }
     \tl_if_empty:cF { l__spintent_sp #1 _read_arg_tl }
       {
-        \str_if_empty:VF \l__spintent_geo_luaset_vertices_str
+        \str_if_empty:NF \l__spintent_geo_luaset_vertices_str
           {
             \str_set:Ne \l__spintent_geo_luaset_intent_str
               {
@@ -4066,16 +4066,16 @@
             \l__spintent_spcirc_sub_index_str
           }
       }
-    \str_put_right:Nn \l__spintent_geo_circ_intent_str
+    \str_put_right:Ne \l__spintent_geo_circ_intent_str
       {
         -de-centro-en-\l__spintent_geo_luaset_print_tl
       }
-    \str_if_empty:VF \l__spintent_geo_luaset_circ_radio_type_str
+    \str_if_empty:NF \l__spintent_geo_luaset_circ_radio_type_str
       {
         \str_put_right:Nn \l__spintent_geo_circ_intent_str { -y-radio }
       }
     \__spintent_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
-    \str_if_empty:VTF \l__spintent_geo_luaset_circ_radio_type_str
+    \str_if_empty:NTF \l__spintent_geo_luaset_circ_radio_type_str
       {
         \MathMLintent
           {

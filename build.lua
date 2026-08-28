@@ -22,7 +22,7 @@
 -- General package identification
 module     = "spintent"
 pkgversion = "0.99"
-pkgdate    = "2026-08-27"
+pkgdate    = "2026-08-28"
 ltxrelease = "2026-11-01"
 
 -- Configuration of files for build and installation

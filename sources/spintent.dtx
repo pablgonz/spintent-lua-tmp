@@ -69,11 +69,13 @@
 % \def\verbvisiblespace{\usefont{OT1}{cmtt}{m}{n}\asciispace}
 \def\verbvisiblespace{{\fontfamily{lmtt}\selectfont\char"2423}}
 % Math font
-\typeout{ \fileversion }
+% \typeout{ \fileversion }
 \global\let\danger\relax
-\usepackage[no-text,Scale = 0.95]{fourier-otf}
-\typeout{ \fileversion }
+% \usepackage[no-text,Scale = 0.95]{fourier-otf}
+\usepackage{unicode-math}
+\setmathfont{Erewhon-Math}[Scale = 0.95]
 \setmathfont{Erewhon-Math}[range={cal,bfcal},StylisticSet={1,4}]
+\providecommand*{\widearc}{\Umathaccent 7 \symoperators "023DC}
 \newfontfamily\fetamontotf{ffmw10.otf}[
    Scale             = 0.95,%
    RawFeature        = {+latn,+rand,+kern,+size},%
@@ -150,7 +152,7 @@
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-08-27}
+\def\filedate{2026-08-28}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4099,7 +4101,7 @@
 % Now declare the \mypkg*[no-index]{spintent} package and we will add the
 % only key \mykey{mathcal} that can be passed as a package option.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-08-27} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-08-28} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -10716,7 +10718,7 @@
       }
     \tl_if_empty:cF { l_@@_sp #1 _read_arg_tl }
       {
-        \str_if_empty:VF \l_@@_geo_luaset_vertices_str
+        \str_if_empty:NF \l_@@_geo_luaset_vertices_str
           {
             \str_set:Ne \l_@@_geo_luaset_intent_str
               {
@@ -11221,16 +11223,16 @@
             \l_@@_spcirc_sub_index_str
           }
       }
-    \str_put_right:Nn \l_@@_geo_circ_intent_str
+    \str_put_right:Ne \l_@@_geo_circ_intent_str
       {
         -de-centro-en-\l_@@_geo_luaset_print_tl
       }
-    \str_if_empty:VF \l_@@_geo_luaset_circ_radio_type_str
+    \str_if_empty:NF \l_@@_geo_luaset_circ_radio_type_str
       {
         \str_put_right:Nn \l_@@_geo_circ_intent_str { -y-radio }
       }
     \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
-    \str_if_empty:VTF \l_@@_geo_luaset_circ_radio_type_str
+    \str_if_empty:NTF \l_@@_geo_luaset_circ_radio_type_str
       {
         \MathMLintent
           {
@@ -11320,7 +11322,7 @@
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-08-27]
+     Lua module spintent.lua for spintent package - v0.99 [2026-08-28]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -13486,7 +13488,7 @@ end, { "string" })
 %<*mylhmcsty>
 % \fi
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2025-08-27}{2.0}
+\ProvidesExplPackage{mylhmc}{2025-08-28}{2.0}
   {Line-by-line macrocode reader for l3doc in Lua}
 \sys_if_engine_luatex:F
   {
@@ -13514,11 +13516,9 @@ end, { "string" })
 
 \cs_new_protected:Npn \__mylhmc_color_export_name:n #1
   {
-    % Clave Lua = path COMPLETO unido con '_' (no solo el último
-    % segmento): así el path sirve para organizar la UI de colores
-    % y a la vez garantiza claves únicas en color_data sin colisiones
-    % entre paths distintos que compartan el último segmento
-    % (p.ej. guard/name vs module/name).
+    % Clave Lua = path completo unido con '_' -- evita colisiones entre
+    % paths distintos que compartan el último segmento (guard/name vs
+    % module/name).
     \seq_set_split:Nnn \l__mylhmc_path_seq { / } { #1 }
     \seq_set_map:NNn \l__mylhmc_path_seq \l__mylhmc_path_seq { \tl_trim_spaces:n {##1} }
     \tl_set:Ne \l__mylhmc_export_name_tl { \seq_use:Nn \l__mylhmc_path_seq { _ } }
@@ -13538,7 +13538,7 @@ end, { "string" })
   {
     % Native expl3 color
     \color_set:nnn { mylhmc / #1 } { #2 } { #3 }
-    % Export to Lua using the last path component as the name
+    % Export to Lua using the full path joined with '_'
     \__mylhmc_color_export_name:n { #1 }
     \color_export:nnN { mylhmc / #1 } { space-sep-rgb } \l__mylhmc_color_export_tl
     \__mylhmc_set_color:VV \l__mylhmc_export_name_tl \l__mylhmc_color_export_tl
@@ -13571,6 +13571,7 @@ end, { "string" })
 \__mylhmc_define_color:nnn { quote      } { HTML } { E65100 } % Naranja Profundo  -> ' "
 \__mylhmc_define_color:nnn { math       } { HTML } { FF1818 } % Rojo Neón         -> $ $$ \( \) \[ \]
 \__mylhmc_define_color:nnn { compare    } { HTML } { 808080 } % Gris Medio        -> < > = <= >= !=
+\__mylhmc_define_color:nnn { operator   } { HTML } { F9A825 } % Ámbar Dorado      -> + && || !
 \__mylhmc_define_color:nnn { latex_cmd  } { HTML } { 3F3FFF } % Azul Brillante    -> \mathrm \textbf \,
 \__mylhmc_define_color:nnn { structure  } { HTML } { 004085 } % Azul Denim (bold) -> \NeedsTeXFormat \ProvidesExplPackage
 \__mylhmc_define_color:nnn { unit       } { HTML } { E67E22 } % Naranja Calabaza  -> pt em cm mu
@@ -13709,16 +13710,11 @@ end, { "string" })
     provide .code:n =
       { \clist_map_function:nN {#1} \__mylhmc_register_module_cmd:n } ,
     provide .value_required:n = true ,
-    % Fija \g__codedoc_module_name_tl (de l3doc.cls) manualmente -- útil
-    % para que \myhlc reconozca privados propios/ajenos correctamente
-    % ANTES de que la primera guarda %<@@=modulo> real aparezca en el
-    % .dtx. Debe usarse DESPUÉS de que \DocInput ya empezó a leer el
-    % archivo (l3doc borra esta variable justo antes de \input{...}) --
-    % en la práctica, como una línea temprana dentro del propio .dtx.
-    % Cuando la guarda real %<@@=modulo> aparezca más adelante, tanto
-    % l3doc como mylhmc la sobrescriben normalmente, sin conflicto.
+    % Respaldo de nombre de módulo para \myhlc antes de la primera
+    % guarda %<@@=modulo> real -- vive solo del lado de Lua, nunca toca
+    % \g__codedoc_module_name_tl (variable global de l3doc.cls).
     module .code:n =
-      { \tl_gset:Nn \g__codedoc_module_name_tl {#1} } ,
+      { \__mylhmc_set_module_backup:n {#1} } ,
     module .value_required:n = true ,
   }
 
@@ -13749,7 +13745,7 @@ end, { "string" })
 % \iffalse
 %<*mylhmclua>
 % \fi
--- mylhmc.lua v2.0 2025-08-27 (node.direct + Loop/Memory Micro-Optimized)
+-- mylhmc.lua v2.0 2025-08-28 (node.direct + Loop/Memory Micro-Optimized)
 -- LuaLaTeX syntax highlighter for l3doc macrocode environments
 
 local require      = require
@@ -13881,6 +13877,12 @@ local pkgstruct_names =
   P'IfPropertyExists'   * (P'TF' + P'T' + P'F') +
   P'IfLabelExists'      * (P'TF' + P'T' + P'F') +
   P'IfPropertyRecorded' * (P'TF' + P'T' + P'F')
+
+-- +, &&, ||, ! sueltos (aritmética/lógica de expl3, p.ej. dentro de
+-- \bool_if:nTF { ... }). '-' queda fuera: colisiona con nombres de
+-- clave kebab-case (read-sign). '*'/'('/')' quedan para una fase
+-- aparte (necesitan distinguir contexto).
+local mylhmc_arith_logic_op = P'&&' + P'||' + P'!' + P'+'
 
 -- Familia hyperref: comandos públicos, ninguno con prefijo real de otro
 -- (todos divergen justo tras "hyper" o son nombres completamente
@@ -14083,6 +14085,7 @@ local code_rules = {
   {18, P'~'},
   {22, P' ' * (P'<=' + P'>=' + P'!=' + P'<' + P'>' + P'=' + P'/') * P' '},
   {22, P' ' * P'=' * (P'\\' + -P(1))},
+  {50, mylhmc_arith_logic_op},
   {29, P','},
   {13, P'\\' * (alpha + S'_@') ^ 1 * P':D'},
   {10, P'\\' * P's__' * (alpha + S'_') ^ 1},
@@ -14443,6 +14446,7 @@ local type_colors = {
   [41]='publicfun',  [42]='intent',     [44]='publicfun',
   [46]='publicfun',
   [47]='publicfun',  [48]='module_name', [49]='support',
+  [50]='operator',
 }
 
 local csname_positions = {}
@@ -15618,17 +15622,29 @@ local function mylhmc_apply_at_at(line)
   return line
 end
 
--- El nombre de módulo activo (current_module_name/current_module_prefix) se
--- sincroniza desde \g__codedoc_module_name_tl al inicio de cada línea, pero
--- SOLO cuando el valor leído no está vacío: así se mantiene sincronía con
--- el mecanismo nativo de l3doc.cls (y con cualquier otro código externo
--- que también fije esa variable), sin que una lectura vacía intermedia
--- borre el estado que Lua ya tiene cacheado desde un %<@@=modulo> anterior.
+-- Respaldo de nombre de módulo fijado desde \setmylhmc{module=...} (ver
+-- .sty): nunca toca \g__codedoc_module_name_tl (variable global de
+-- l3doc.cls, compartida y arriesgada de sobrescribir/restaurar). Solo
+-- se usa como último recurso en mylhmc_init_line_state, cuando la
+-- variable de l3doc todavía está vacía.
+local module_name_backup = ''
+
+register_tex_cmd('set_module_backup', function(name)
+  module_name_backup = name or ''
+end, {'string'})
+
+-- Sincroniza current_module_name al inicio de cada línea: prioriza
+-- \g__codedoc_module_name_tl (real, de l3doc.cls); si está vacía, usa
+-- el respaldo de arriba; si ambos están vacíos, no toca nada (conserva
+-- lo que ya había).
 local function mylhmc_init_line_state()
   local m = t_get_macro('g__codedoc_module_name_tl')
   if m and m ~= '' then
     current_module_name = m
     current_module_prefix = '__' .. m
+  elseif module_name_backup ~= '' then
+    current_module_name = module_name_backup
+    current_module_prefix = '__' .. module_name_backup
   end
 end
 

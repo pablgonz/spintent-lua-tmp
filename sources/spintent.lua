@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-08-27]
+     Lua module spintent.lua for spintent package - v0.99 [2026-08-28]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
