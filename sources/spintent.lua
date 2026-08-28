@@ -1480,6 +1480,93 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
 
 end, {"string", "string"})
 
+-- Implementación interna para \mathcal clásico y \right_angle_sqr
+
+local function spintent_find_free_family()
+    for i = 15, 1, -1 do
+        local ok, id = pcall(tex.getfontoffamily, i)
+        if ok and (not id or id == 0) then return i end
+    end
+    return nil
+end
+
+local spintent_mathfb_font_cache = {}
+local function spintent_load_scaled(spec, size)
+    local key = spec .. ":" .. size
+    if spintent_mathfb_font_cache[key] then return spintent_mathfb_font_cache[key] end
+    local id = luaotfload.define_font(spec, size)
+    if not id or id == 0 or type(id) ~= "number" then
+        texio.write_nl("term and log", "[spintent] ERROR: id invalido para " .. spec .. " @ " .. size)
+        return nil
+    end
+    spintent_mathfb_font_cache[key] = id
+    return id
+end
+
+local function spintent_load_family(fontfile, features, fam)
+    local path = kpse.find_file(fontfile, "opentype fonts")
+    if not path or path == "" then
+        texio.write_nl("term and log", "[spintent] ERROR FATAL: kpse no encontro '" .. fontfile .. "'")
+        return false
+    end
+    local spec = "[" .. path .. "]:mode=base;script=math;language=dflt;" .. features
+    local cur_size = font.getfont(font.current()).size
+
+    local text_id = spintent_load_scaled(spec, cur_size)
+    if not text_id then return false end
+    local mc = font.getfont(text_id).MathConstants
+    local script_pct    = (mc and mc.ScriptPercentScaleDown or 70) / 100
+    local scriptscr_pct = (mc and mc.ScriptScriptPercentScaleDown or 50) / 100
+    local script_id       = spintent_load_scaled(spec, math.floor(cur_size * script_pct))
+    local scriptscript_id = spintent_load_scaled(spec, math.floor(cur_size * scriptscr_pct))
+    if not script_id or not scriptscript_id then return false end
+
+    tex.definefont(true, "MathFBtmpText",      text_id)
+    tex.definefont(true, "MathFBtmpScript",    script_id)
+    tex.definefont(true, "MathFBtmpScriptScr", scriptscript_id)
+
+    tex.runtoks(function()
+        tex.sprint(string.format(
+            "\\global\\textfont%d=\\MathFBtmpText"
+            .."\\global\\scriptfont%d=\\MathFBtmpScript"
+            .."\\global\\scriptscriptfont%d=\\MathFBtmpScriptScr",
+            fam, fam, fam))
+    end)
+    return true
+end
+
+local spintent_cal_slots = {
+  A=0x1D49C, B=0x212C,  C=0x1D49E, D=0x1D49F, E=0x2130,  F=0x2131,  G=0x1D4A2,
+  H=0x210B,  I=0x2110,  J=0x1D4A5, K=0x1D4A6, L=0x2112,  M=0x2133,  N=0x1D4A9,
+  O=0x1D4AA, P=0x1D4AB, Q=0x1D4AC, R=0x211B,  S=0x1D4AE, T=0x1D4AF, U=0x1D4B0,
+  V=0x1D4B1, W=0x1D4B2, X=0x1D4B3, Y=0x1D4B4, Z=0x1D4B5,
+}
+local spintent_cal_fam = spintent_find_free_family()
+local spintent_cal_fam_ok = spintent_cal_fam and spintent_load_family("NewCMMath-Regular.otf", "+ss02;", spintent_cal_fam)
+token_set_macro("l__spintent_luaset_cal_fam_ok_str", spintent_cal_fam_ok and "true" or "false")
+
+local function spintent_classic_mathcal(letters)
+    if not spintent_cal_fam_ok then tex.sprint(letters); return end
+    local parts = {}
+    for i = 1, #letters do
+        local ch = letters:sub(i,i)
+        local cp = spintent_cal_slots[ch]
+        parts[#parts+1] = cp and string.format("\\Umathchar 0 %d \"%X ", spintent_cal_fam, cp) or ch
+    end
+    tex.sprint(table.concat(parts))
+end
+register_tex_cmd("luafun_classic_mathcal", spintent_classic_mathcal, {"string"})
+
+local spintent_sym_fam = spintent_find_free_family()
+local spintent_sym_fam_ok = spintent_sym_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_sym_fam)
+token_set_macro("l__spintent_luaset_sym_fam_ok_str", spintent_sym_fam_ok and "true" or "false")
+
+local function spintent_right_angle_sqr()
+    if not spintent_sym_fam_ok then return end
+    tex.sprint(string.format("\\Umathchar 0 %d \"299C ", spintent_sym_fam))
+end
+register_tex_cmd("luafun_right_angle_sqr", spintent_right_angle_sqr, {})
+
 -- ============================================================
 -- §12  GEOMETRÍA PLANA
 --      Comandos cubiertos: \spPoint, \sprecta, \sprayo, \spside,

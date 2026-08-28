@@ -29,7 +29,23 @@
 %% for those people who are interested.
 %% 
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
+\IfFormatAtLeastF { 2026-11-01 }
+  {
+    \PackageError { spintent }
+      { LaTeX~kernel~too~old~need~2026-11-01~or~later }
+      {
+        spintent~requires~a~LaTeX2e~release~2026-11-01~or~
+        later.~Update~your~TeX~distribution.
+      }
+  }
 \ProvidesExplPackage {spintent} {2026-08-27} {0.99} {Spanish parse intents}
+\keys_define:nn { spintent }
+  {
+    mathcal .usage:n    = load,
+    mathcal .bool_set:N = \l__spintent_mathcal_bool,
+    mathcal .initial:n  = true,
+  }
+\ProcessKeyOptions [ spintent ]
 \IfDocumentMetadataTF
   {
     \sys_if_engine_luatex:TF
@@ -72,11 +88,49 @@
 \cs_generate_variant:Nn \str_lowercase:n { V }
 \cs_generate_variant:Nn \seq_set_from_clist:Nn { Ne }
 %% Load Lua module
+\str_new:N \l__spintent_luaset_cal_fam_ok_str
+\str_new:N \l__spintent_luaset_sym_fam_ok_str
 \lua_load_module:n { spintent.lua }
 \cs_generate_variant:Nn \__spintent_luafun_spunit_lookup_alias:n { V }
 \cs_generate_variant:Nn \__spintent_luafun_spmoney_lookup_data:n { V }
 \cs_generate_variant:Nn \__spintent_luafun_spmQ_scale_int:nn { VV, Vn }
 \cs_generate_variant:Nn \__spintent_luafun_clean_split_and_set:n { V }
+\msg_new:nnn { spintent } { mathcal-fallback }
+  {
+    Using~classic~\string\mathcal~as~fallback~(font~not~found~or~
+    no~free~math~family~available).~\msg_line_context:
+  }
+\msg_new:nnn { spintent } { right-angle-sqr-fallback }
+  {
+    Using~\string\rightangle~as~fallback~for~the~right-angle~
+    glyph.~\msg_line_context:
+  }
+\cs_new_protected:Nn \__spintent_mathcal:n
+  {
+    \bool_if:NTF \l__spintent_mathcal_bool
+      {
+        \str_if_eq:VnTF \l__spintent_luaset_cal_fam_ok_str { true }
+          { \__spintent_luafun_classic_mathcal:n {#1} }
+          {
+            \msg_warning:nn { spintent } { mathcal-fallback }
+            \mathcal {#1}
+          }
+      }
+      { \mathcal {#1} }
+  }
+\cs_new_protected:Nn \__spintent_right_angle_sqr:
+  {
+    \cs_if_exist:NTF \rightanglesqr
+      { \rightanglesqr }
+      {
+        \str_if_eq:VnTF \l__spintent_luaset_sym_fam_ok_str { true }
+          { \__spintent_luafun_right_angle_sqr: }
+          {
+            \msg_warning:nn { spintent } { right-angle-sqr-fallback }
+            \rightangle
+          }
+      }
+  }
 %% Internal copy of invisible separator U-2063 => <mo>...</mo>.
 \cs_new_protected:Nn \__spintent_invisible_sep:
   {
@@ -3135,7 +3189,7 @@
         \bool_if:cTF { l__spintent_sp #1 _print_m_bool }
           {
             \bool_if:cTF { l__spintent_sp #1 _recto_bool }
-              { \rightangle } { \angle }
+              { \__spintent_right_angle_sqr_sym: } { \angle }
           }
           {
             \bool_if:cTF { l__spintent_sp #1 _recto_bool }
@@ -3144,7 +3198,7 @@
       }
       {
         \bool_if:cTF { l__spintent_sp #1 _recto_bool }
-          { \rightangle } { \angle }
+          { \__spintent_right_angle_sqr_sym: } { \angle }
       }
   }
 \cs_new_protected:Nn \__spintent_spangle_process:nn
@@ -3663,7 +3717,6 @@
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-
     \tl_if_empty:cF { l__spintent_sp #1 _read_arg_tl }
       {
         \str_if_empty:VF \l__spintent_geo_luaset_vertices_str
@@ -3809,7 +3862,7 @@
           }
           {
             \c__spintent_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { Afig } { \mathcal { A } } { \mathcal { P } }
+            \str_if_eq:eeTF {#1} { Afig } { \__spintent_mathcal:n { A } } { \__spintent_mathcal:n { P } }
             \tl_if_empty:NF \l__spintent_geo_final_print_tl
               {
                 \c_math_subscript_token { \l__spintent_geo_final_print_tl }
@@ -3827,7 +3880,7 @@
           }
           {
             \c__spintent_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { Afig } { \mathcal { A } } { \mathcal { P } }
+            \str_if_eq:eeTF {#1} { Afig } { \__spintent_mathcal:n { A } } { \__spintent_mathcal:n { P } }
             \tl_if_empty:NF \l__spintent_geo_final_print_tl
               {
                 \c_math_subscript_token { \l__spintent_geo_final_print_tl }
