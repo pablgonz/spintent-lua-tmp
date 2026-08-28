@@ -138,7 +138,7 @@
         spshort, spsiglo, sptime, spdate, spread, spdsym, spmsym,
         spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, spang,
         spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle,
-        sparc, spmarc, spPoly, spAfig, spPfig, %
+        sparc, spmarc, spPoly, spAfig, spPfig, spcirc, spAcirc, spPcirc, %
       }
   }
 % Colors
@@ -597,7 +597,7 @@
     keywords      = [7]{setspintent, spnum, spunit, spnewunit, spunitalias, spmoney, spshort, spsiglo, sptime, %
                         spdate, spread, spdsym, spmsym, spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, %
                         spang, spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle, sparc, spmarc,%
-                        spPoly, spAfig, spPfig,},%
+                        spPoly, spAfig, spPfig, spcirc, spAcirc, spPcirc,},%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -10813,9 +10813,9 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsection{The command \cs{spCirc}}\label{cmd:spCirc}
+% \subsection{The command \cs{spcirc}}\label{cmd:spcirc}
 %
-% The user command |\spCirc| provides a semantic interface for a
+% The user command |\spcirc| provides a semantic interface for a
 % circle or a circumference, using the delimited-optional argument
 % syntax |d()| already established by |\spmcd|/|\spmcm| and
 % |\spAfig|/|\spPfig|. The argument holds a required center point and
@@ -10826,7 +10826,7 @@
 % |\spnum|, |\spunit|, and |\spside|/|\spmside| directly as
 % sub-commands, rather than reimplementing any of their parsing.
 %
-% \subsubsection{Definition of variables for \cs[no-index]{spCirc}}
+% \subsubsection{Definition of variables for \cs[no-index]{spcirc}}
 %
 % \begin{variable}[int]{
 %   \l_@@_geo_luaset_circ_radio_type_str,
@@ -10844,38 +10844,38 @@
 % \end{variable}
 %
 % \begin{variable}[int]{
-%   \l_@@_spCirc_mode_str, \l_@@_spCirc_prefix_tl,
-%   \l_@@_spCirc_print_sym_str, \l_@@_spCirc_read_sty_str,
-%   \l_@@_spCirc_radio_sty_str, \l_@@_spCirc_sub_index_str,
-%   \l_@@_spCirc_articulo_str}
-%   \cs{l_@@_spCirc_mode_str} and \cs{l_@@_spCirc_prefix_tl} follow
+%   \l_@@_spcirc_mode_str, \l_@@_spcirc_prefix_tl,
+%   \l_@@_spcirc_print_sym_str, \l_@@_spcirc_read_sty_str,
+%   \l_@@_spcirc_radio_sty_str, \l_@@_spcirc_sub_index_str,
+%   \l_@@_spcirc_articulo_str}
+%   \cs{l_@@_spcirc_mode_str} and \cs{l_@@_spcirc_prefix_tl} follow
 %   the same semantics as the corresponding variables of |\spPoint|
-%   (\S\ref{cmd:spPoint}). \cs{l_@@_spCirc_print_sym_str} stores the
-%   value of \mykey[spCirc]{print-sym} (|usual| or |odot|).
-%   \cs{l_@@_spCirc_read_sty_str} stores \mykey[spCirc]{read-sty}
-%   (|circun| or |circle|). \cs{l_@@_spCirc_radio_sty_str} stores
-%   \mykey[spCirc]{radio-sty}, only meaningful when the radius is a
-%   segment. \cs{l_@@_spCirc_sub_index_str} stores
-%   \mykey[spCirc]{sub-index}. \cs{l_@@_spCirc_articulo_str} is set
-%   internally by \myhlc|\@@_spCirc_word_and_article:| to |la| or
+%   (\S\ref{cmd:spPoint}). \cs{l_@@_spcirc_print_sym_str} stores the
+%   value of \mykey[spcirc]{print-sym} (|usual| or |odot|).
+%   \cs{l_@@_spcirc_read_sty_str} stores \mykey[spcirc]{read-sty}
+%   (|circun| or |circle|). \cs{l_@@_spcirc_radio_sty_str} stores
+%   \mykey[spcirc]{radio-sty}, only meaningful when the radius is a
+%   segment. \cs{l_@@_spcirc_sub_index_str} stores
+%   \mykey[spcirc]{sub-index}. \cs{l_@@_spcirc_articulo_str} is set
+%   internally by \myhlc|\@@_spcirc_word_and_article:| to |la| or
 %   |el|, matching the grammatical gender of the chosen word.
 %    \begin{macrocode}
-\str_new:N \l_@@_spCirc_mode_str
-\tl_new:N  \l_@@_spCirc_prefix_tl
-\str_new:N \l_@@_spCirc_print_sym_str
-\str_new:N \l_@@_spCirc_read_sty_str
-\str_new:N \l_@@_spCirc_radio_sty_str
-\str_new:N \l_@@_spCirc_sub_index_str
-\str_new:N \l_@@_spCirc_articulo_str
-\tl_new:N  \l_@@_spCirc_read_arg_tl
+\str_new:N \l_@@_spcirc_mode_str
+\tl_new:N  \l_@@_spcirc_prefix_tl
+\str_new:N \l_@@_spcirc_print_sym_str
+\str_new:N \l_@@_spcirc_read_sty_str
+\str_new:N \l_@@_spcirc_radio_sty_str
+\str_new:N \l_@@_spcirc_sub_index_str
+\str_new:N \l_@@_spcirc_articulo_str
+\tl_new:N  \l_@@_spcirc_read_arg_tl
 %    \end{macrocode}
 % \end{variable}
 %
 % \begin{variable}[int]{
 %   \l_@@_geo_circ_word_tl, \l_@@_geo_circ_intent_str}
-%   Scratch variables used by \myhlc|\@@_spCirc_print:n| to assemble
+%   Scratch variables used by \myhlc|\@@_spcirc_print:n| to assemble
 %   the chosen word (|circunferencia|/|círculo|, or the
-%   \mykey[spCirc]{read-arg} override) and the final literal |intent|
+%   \mykey[spcirc]{read-arg} override) and the final literal |intent|
 %   string.
 %    \begin{macrocode}
 \tl_new:N  \l_@@_geo_circ_word_tl
@@ -10883,14 +10883,14 @@
 %    \end{macrocode}
 % \end{variable}
 %
-% \subsubsection{Definition of error messages for \cs[no-index]{spCirc}}
+% \subsubsection{Definition of error messages for \cs[no-index]{spcirc}}
 %
-% \begin{macro}[int]{spCirc-invalid-arg}
+% \begin{macro}[int]{spcirc-invalid-arg}
 %   Raised when the argument does not match a single center point,
 %   optionally followed by a comma and a valid radius shape.
 %    \begin{macrocode}
-\msg_new:nnnn { spintent } { spCirc-invalid-arg }
-  { Invalid~argument~format~in~\token_to_str:N \spCirc:~'#1'. }
+\msg_new:nnnn { spintent } { spcirc-invalid-arg }
+  { Invalid~argument~format~in~\token_to_str:N \spcirc:~'#1'. }
   {
     The~argument~must~be~a~single~point~(the~center),~optionally~
     followed~by~a~comma~and~a~radius:~a~pure~number,~a~measure~
@@ -10900,45 +10900,45 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsubsection{Definition of keys for \cs[no-index]{spCirc}}
+% \subsubsection{Definition of keys for \cs[no-index]{spcirc}}
 %
 % \begin{macro}[int]{read-cmd, prefix, print-sym, read-sty, radio-sty,
 %                    sub-index, read-sub, read-arg, silent-cmd,
 %                    unknown}
-%   \mykey[spCirc]{print-sym} chooses the visual symbol: |usual| for
-%   a plain |C|, |odot| (default) for |\odot|. \mykey[spCirc]{read-sty}
+%   \mykey[spcirc]{print-sym} chooses the visual symbol: |usual| for
+%   a plain |C|, |odot| (default) for |\odot|. \mykey[spcirc]{read-sty}
 %   chooses the verbalized word and its article: |circun| (default)
 %   for \emph{«la circunferencia»}, |circle| for \emph{«el
-%   círculo»}. \mykey[spCirc]{radio-sty} chooses, only when the radius
+%   círculo»}. \mykey[spcirc]{radio-sty} chooses, only when the radius
 %   is a two-letter segment, whether it is rendered as the
 %   \emph{object} (|side|, via |\spside|) or its \emph{measure}
-%   (|mside|, default, via |\spmside|). \mykey[spCirc]{sub-index} sets
-%   a subscript on the symbol; \mykey[spCirc]{read-sub} controls
+%   (|mside|, default, via |\spmside|). \mykey[spcirc]{sub-index} sets
+%   a subscript on the symbol; \mykey[spcirc]{read-sub} controls
 %   whether it is read with the word «sub» or as a plain number,
 %   matching the same convention as |\spAfig| (\S\ref{cmd:spAfig}).
 %    \begin{macrocode}
-\keys_define:nn { spintent / spCirc }
+\keys_define:nn { spintent / spcirc }
   {
     read-cmd     .choices:nn = { school , mathcat }
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l_@@_spCirc_mode_str { school  } }
-            {2} { \str_set:Nn \l_@@_spCirc_mode_str { mathcat } }
+            {1} { \str_set:Nn \l_@@_spcirc_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spcirc_mode_str { mathcat } }
           }
       },
     read-cmd     .initial:n = school,
     read-cmd     .value_required:n = true,
     prefix       .code:n =
-      { \@@_sanitize_affix:Nn \l_@@_spCirc_prefix_tl {#1} },
+      { \@@_sanitize_affix:Nn \l_@@_spcirc_prefix_tl {#1} },
     prefix       .initial:n = ,
     prefix       .value_required:n = true,
     print-sym    .choices:nn = { usual , odot }
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l_@@_spCirc_print_sym_str { usual } }
-            {2} { \str_set:Nn \l_@@_spCirc_print_sym_str { odot  } }
+            {1} { \str_set:Nn \l_@@_spcirc_print_sym_str { usual } }
+            {2} { \str_set:Nn \l_@@_spcirc_print_sym_str { odot  } }
           }
       },
     print-sym    .initial:n = odot,
@@ -10947,8 +10947,8 @@
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l_@@_spCirc_read_sty_str { circun } }
-            {2} { \str_set:Nn \l_@@_spCirc_read_sty_str { circle } }
+            {1} { \str_set:Nn \l_@@_spcirc_read_sty_str { circun } }
+            {2} { \str_set:Nn \l_@@_spcirc_read_sty_str { circle } }
           }
       },
     read-sty     .initial:n = circun,
@@ -10957,44 +10957,44 @@
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l_@@_spCirc_radio_sty_str { side  } }
-            {2} { \str_set:Nn \l_@@_spCirc_radio_sty_str { mside } }
+            {1} { \str_set:Nn \l_@@_spcirc_radio_sty_str { side  } }
+            {2} { \str_set:Nn \l_@@_spcirc_radio_sty_str { mside } }
           }
       },
     radio-sty    .initial:n = mside,
     radio-sty    .value_required:n = true,
     sub-index    .code:n =
-      { \str_set:Nn \l_@@_spCirc_sub_index_str {#1} },
+      { \str_set:Nn \l_@@_spcirc_sub_index_str {#1} },
     sub-index    .initial:n = ,
     sub-index    .value_required:n = true,
-    read-sub     .bool_set:N = \l_@@_spCirc_read_sub_bool,
+    read-sub     .bool_set:N = \l_@@_spcirc_read_sub_bool,
     read-sub     .initial:n = false,
     read-sub     .value_required:n = true,
     read-arg     .code:n =
-      { \@@_sanitize_affix:Nn \l_@@_spCirc_read_arg_tl {#1} },
+      { \@@_sanitize_affix:Nn \l_@@_spcirc_read_arg_tl {#1} },
     read-arg     .initial:n = ,
     read-arg     .value_required:n = true,
-    silent-cmd   .bool_set:N = \l_@@_spCirc_silent_cmd_bool,
+    silent-cmd   .bool_set:N = \l_@@_spcirc_silent_cmd_bool,
     silent-cmd   .initial:n = false,
     silent-cmd   .value_required:n = true,
     unknown      .code:n =
       {
-        \str_set:Nn \l_@@_command_name_str { spCirc }
+        \str_set:Nn \l_@@_command_name_str { spcirc }
         \@@_unknown_keys_cmd:n {#1}
       },
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsubsection{Internal functions for \cs[no-index]{spCirc}}
+% \subsubsection{Internal functions for \cs[no-index]{spcirc}}
 %
-% \begin{macro}[int]{\@@_spCirc_sym:}
+% \begin{macro}[int]{\@@_spcirc_sym:}
 %   Typesets \cs{odot} or the plain letter |C|, according to
-%   \mykey[spCirc]{print-sym}.
+%   \mykey[spcirc]{print-sym}.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spCirc_sym:
+\cs_new_protected:Nn \@@_spcirc_sym:
   {
-    \str_if_eq:VnTF \l_@@_spCirc_print_sym_str { odot }
+    \str_if_eq:VnTF \l_@@_spcirc_print_sym_str { odot }
       {
         \odot
       }
@@ -11003,44 +11003,44 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spCirc_word_and_article:}
+% \begin{macro}[int]{\@@_spcirc_word_and_article:}
 %   Sets \cs{l_@@_geo_circ_word_tl} to the chosen word — either
-%   \mykey[spCirc]{read-arg}, or |circunferencia|/|círculo| per
-%   \mykey[spCirc]{read-sty} — and \cs{l_@@_spCirc_articulo_str} to
+%   \mykey[spcirc]{read-arg}, or |circunferencia|/|círculo| per
+%   \mykey[spcirc]{read-sty} — and \cs{l_@@_spcirc_articulo_str} to
 %   the matching article (|la|/|el|). The article always follows
-%   \mykey[spCirc]{read-sty}, even when \mykey[spCirc]{read-arg}
+%   \mykey[spcirc]{read-sty}, even when \mykey[spcirc]{read-arg}
 %   overrides the word itself.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spCirc_word_and_article:
+\cs_new_protected:Nn \@@_spcirc_word_and_article:
   {
-    \tl_if_empty:NTF \l_@@_spCirc_read_arg_tl
+    \tl_if_empty:NTF \l_@@_spcirc_read_arg_tl
       {
-        \str_if_eq:VnTF \l_@@_spCirc_read_sty_str { circun }
+        \str_if_eq:VnTF \l_@@_spcirc_read_sty_str { circun }
           {
             \tl_set:Nn \l_@@_geo_circ_word_tl { circunferencia }
-            \str_set:Nn \l_@@_spCirc_articulo_str { la }
+            \str_set:Nn \l_@@_spcirc_articulo_str { la }
           }
           {
             \tl_set:Nn \l_@@_geo_circ_word_tl { círculo }
-            \str_set:Nn \l_@@_spCirc_articulo_str { el }
+            \str_set:Nn \l_@@_spcirc_articulo_str { el }
           }
       }
       {
-        \tl_set:Nn \l_@@_geo_circ_word_tl { \l_@@_spCirc_read_arg_tl }
-        \str_if_eq:VnTF \l_@@_spCirc_read_sty_str { circun }
-          { \str_set:Nn \l_@@_spCirc_articulo_str { la } }
-          { \str_set:Nn \l_@@_spCirc_articulo_str { el } }
+        \tl_set:Nn \l_@@_geo_circ_word_tl { \l_@@_spcirc_read_arg_tl }
+        \str_if_eq:VnTF \l_@@_spcirc_read_sty_str { circun }
+          { \str_set:Nn \l_@@_spcirc_articulo_str { la } }
+          { \str_set:Nn \l_@@_spcirc_articulo_str { el } }
       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spCirc_radio_print:}
+% \begin{macro}[int]{\@@_spcirc_radio_print:}
 %   Dispatches on \cs{l_@@_geo_luaset_circ_radio_type_str}, reusing
 %   the actual public sub-commands rather than reimplementing any
 %   parsing: |number| and |measure| delegate to |\spnum|/|\spunit|;
 %   |segment| delegates to |\spside|/|\spmside| according to
-%   \mykey[spCirc]{radio-sty} — both already accept the concatenated
+%   \mykey[spcirc]{radio-sty} — both already accept the concatenated
 %   two-letter form (\S\ref{cmd:spside}) that Lua hands over here.
 %   |label| is typeset as a bare letter, with no special intent
 %   wrapping. In every case, \cs{exp_args:No} is required to expand
@@ -11048,7 +11048,7 @@
 %   argument, since a plain brace group does not expand a \texttt{str}
 %   variable on its own.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spCirc_radio_print:
+\cs_new_protected:Nn \@@_spcirc_radio_print:
   {
     \str_case:Vn \l_@@_geo_luaset_circ_radio_type_str
       {
@@ -11057,7 +11057,7 @@
         { label   } { \l_@@_geo_luaset_circ_radio_raw_str }
         { segment }
           {
-            \str_if_eq:VnTF \l_@@_spCirc_radio_sty_str { side }
+            \str_if_eq:VnTF \l_@@_spcirc_radio_sty_str { side }
               { \exp_args:No \spside  { \l_@@_geo_luaset_circ_radio_raw_str } }
               { \exp_args:No \spmside { \l_@@_geo_luaset_circ_radio_raw_str } }
           }
@@ -11066,14 +11066,14 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spCirc_print:n}
+% \begin{macro}[int]{\@@_spcirc_print:n}
 %   Calls \myhlc|\@@_luafun_geo_circ_parse_and_set:n| to resolve the
 %   center and classify the radius, then assembles
 %   \cs{l_@@_geo_circ_intent_str} — the word, an optional
-%   \mykey[spCirc]{sub-index} suffix, |de-centro-en-|, the center, and
+%   \mykey[spcirc]{sub-index} suffix, |de-centro-en-|, the center, and
 %   |-y-radio| when a radius is present. Critically, when a radius is
 %   present, the visual is split across \emph{two} separate
-%   \cs{MathMLintent} calls with \myhlc|\@@_spCirc_radio_print:| —
+%   \cs{MathMLintent} calls with \myhlc|\@@_spcirc_radio_print:| —
 %   which typesets a sub-command carrying its own independent
 %   |intent| — sitting as a \emph{sibling} in between, rather than
 %   nested inside either one. Embedding a full sub-command's own
@@ -11083,22 +11083,22 @@
 %   \emph{siblings}, both are read in sequence as one continuous
 %   phrase.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spCirc_print:n
+\cs_new_protected:Nn \@@_spcirc_print:n
   {
     \@@_luafun_geo_circ_parse_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
-        \msg_error:nne { spintent } { spCirc-invalid-arg } { \exp_not:n {#1} }
+        \msg_error:nne { spintent } { spcirc-invalid-arg } { \exp_not:n {#1} }
       }
-    \@@_spCirc_word_and_article:
+    \@@_spcirc_word_and_article:
     \str_set:Ne \l_@@_geo_circ_intent_str { \l_@@_geo_circ_word_tl }
-    \str_if_empty:NF \l_@@_spCirc_sub_index_str
+    \str_if_empty:NF \l_@@_spcirc_sub_index_str
       {
         \str_put_right:Nn \l_@@_geo_circ_intent_str
           {
             -
-            \bool_if:NT \l_@@_spCirc_read_sub_bool { sub - }
-            \l_@@_spCirc_sub_index_str
+            \bool_if:NT \l_@@_spcirc_read_sub_bool { sub - }
+            \l_@@_spcirc_sub_index_str
           }
       }
     \str_put_right:Nn \l_@@_geo_circ_intent_str
@@ -11114,18 +11114,18 @@
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l_@@_spCirc_prefix_tl
+            \tl_if_empty:NF \l_@@_spcirc_prefix_tl
               {
-                \tl_use:N \l_@@_spCirc_prefix_tl -
+                \tl_use:N \l_@@_spcirc_prefix_tl -
               }
             \l_@@_geo_circ_intent_str
           }
           {
             \c_@@_invisible_sep_tl
-            \@@_spCirc_sym:
-            \str_if_empty:NF \l_@@_spCirc_sub_index_str
+            \@@_spcirc_sym:
+            \str_if_empty:NF \l_@@_spcirc_sub_index_str
               {
-                \c_math_subscript_token { \l_@@_spCirc_sub_index_str }
+                \c_math_subscript_token { \l_@@_spcirc_sub_index_str }
               }
             ( \l_@@_geo_luaset_print_tl )
           }
@@ -11133,55 +11133,55 @@
       {
         \MathMLintent
           {
-            \tl_if_empty:NF \l_@@_spCirc_prefix_tl
+            \tl_if_empty:NF \l_@@_spcirc_prefix_tl
               {
-                \tl_use:N \l_@@_spCirc_prefix_tl -
+                \tl_use:N \l_@@_spcirc_prefix_tl -
               }
             \l_@@_geo_circ_intent_str
           }
           {
             \c_@@_invisible_sep_tl
-            \@@_spCirc_sym:
-            \str_if_empty:NF \l_@@_spCirc_sub_index_str
+            \@@_spcirc_sym:
+            \str_if_empty:NF \l_@@_spcirc_sub_index_str
               {
-                \c_math_subscript_token { \l_@@_spCirc_sub_index_str }
+                \c_math_subscript_token { \l_@@_spcirc_sub_index_str }
               }
             ( \l_@@_geo_luaset_print_tl ,
            }
         \@@_invisible_sep:
-        \@@_spCirc_radio_print:
+        \@@_spcirc_radio_print:
         \MathMLintent { :silent } { ) }
       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spCirc_exec:nn}
+% \begin{macro}[int]{\@@_spcirc_exec:nn}
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spCirc_exec:nn
+\cs_new_protected:Nn \@@_spcirc_exec:nn
   {
-    \keys_set:nn { spintent / spCirc } { #1 }
-    \@@_spCirc_print:n { #2 }
+    \keys_set:nn { spintent / spcirc } { #1 }
+    \@@_spcirc_print:n { #2 }
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\spCirc}
+% \begin{macro}{\spcirc}
 %   Follows the same |d()|-argument pattern as |\spmcd|/|\spmcm| and
 %   |\spAfig|/|\spPfig|; an omitted radius forwards an explicit empty
 %   group rather than the |-NoValue-| marker.
 %    \begin{macrocode}
-\NewDocumentCommand \spCirc { O{} d() }
+\NewDocumentCommand \spcirc { O{} d() }
   {
     \mode_if_math:TF
       {
         \group_begin:
           \tl_if_novalue:nTF {#2}
-            { \@@_spCirc_exec:nn { #1 } { } }
-            { \@@_spCirc_exec:nn { #1 } { #2 } }
+            { \@@_spcirc_exec:nn { #1 } { } }
+            { \@@_spcirc_exec:nn { #1 } { #2 } }
         \group_end:
       }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spCirc } }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spcirc } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -13191,7 +13191,7 @@ register_tex_cmd("luafun_geo_pfig_parse_and_set",
 end, { "string" })
 
 -- ------------------------------------------------------------
--- §12.5  CÍRCULO/CIRCUNFERENCIA — \spCirc
+-- §12.5  CÍRCULO/CIRCUNFERENCIA — \spcirc
 --
 -- El radio se clasifica por forma (nunca por llave): número puro,
 -- medida (número+unidad, delegada a spnum/spunit desde expl3), letra

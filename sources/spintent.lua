@@ -1990,7 +1990,7 @@ register_tex_cmd("luafun_geo_pfig_parse_and_set",
 end, { "string" })
 
 -- ------------------------------------------------------------
--- §12.5  CÍRCULO/CIRCUNFERENCIA — \spCirc
+-- §12.5  CÍRCULO/CIRCUNFERENCIA — \spcirc
 --
 -- El radio se clasifica por forma (nunca por llave): número puro,
 -- medida (número+unidad, delegada a spnum/spunit desde expl3), letra
