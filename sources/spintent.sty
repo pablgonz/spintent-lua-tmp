@@ -44,6 +44,7 @@
     mathcal .usage:n    = load,
     mathcal .bool_set:N = \l__spintent_mathcal_bool,
     mathcal .initial:n  = true,
+    mathcal .value_required:n = true,
   }
 \ProcessKeyOptions [ spintent ]
 \IfDocumentMetadataTF
@@ -87,9 +88,9 @@
 \cs_generate_variant:Nn \str_uppercase:n { V }
 \cs_generate_variant:Nn \str_lowercase:n { V }
 \cs_generate_variant:Nn \seq_set_from_clist:Nn { Ne }
-%% Load Lua module
 \str_new:N \l__spintent_luaset_cal_fam_ok_str
 \str_new:N \l__spintent_luaset_sym_fam_ok_str
+%% Load Lua module
 \lua_load_module:n { spintent.lua }
 \cs_generate_variant:Nn \__spintent_luafun_spunit_lookup_alias:n { V }
 \cs_generate_variant:Nn \__spintent_luafun_spmoney_lookup_data:n { V }
@@ -97,12 +98,12 @@
 \cs_generate_variant:Nn \__spintent_luafun_clean_split_and_set:n { V }
 \msg_new:nnn { spintent } { mathcal-fallback }
   {
-    Using~classic~\string\mathcal~as~fallback~(font~not~found~or~
+    Using~classic~\token_to_str:N \mathcal \c_space_tl as~fallback~(font~not~found~or~
     no~free~math~family~available).~\msg_line_context:
   }
 \msg_new:nnn { spintent } { right-angle-sqr-fallback }
   {
-    Using~\string\rightangle~as~fallback~for~the~right-angle~
+    Using~\token_to_str:N \rightangle \c_space_tl as~fallback~for~the~right-angle~
     glyph.~\msg_line_context:
   }
 \cs_new_protected:Nn \__spintent_mathcal:n

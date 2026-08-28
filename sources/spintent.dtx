@@ -133,6 +133,7 @@
 \usepackage{mylhmc}
 \setmylhmc
   {
+    module  = spintent,
     provide =
       { setspintent, spnum, spunit, spnewunit, spunitalias, spmoney,
         spshort, spsiglo, sptime, spdate, spread, spdsym, spmsym,
@@ -4041,11 +4042,6 @@
 %
 % \smallskip
 %
-% All variables and functions defined in this package are \enquote{private}
-% and are NOT intended to work or be used by another package or module.
-%
-% \smallskip
-%
 % \begin{important}*
 % The documentation presented here is far from professional, it contains
 % a lot of obvious information that to the eye of a \hologo{TeX}pert are
@@ -4060,23 +4056,34 @@
 %<*package>
 %    \end{macrocode}
 % Identify the internal prefix (\LaTeX3 \pkg{DocStrip} convention) for
-% \mypkg{l3doc} class.
+% \myclass{l3doc} class.
 %    \begin{macrocode}
 %<@@=spintent>
 %    \end{macrocode}
 %
+% \subsection{General conventions}
+%
+% Functions of the form \myhlc|\@@_luafun_some:n| or \myhlc|\@@_luafun_some:nn|
+% are defined (created) in the Lua module \myluamod{} and only their variants
+% are declared in \mypkg[no-index]{expl3}.
+%
+% \smallskip
+%
+% Similarly, variables of the form \myhlc|\l_@@_luaset_some_tl| or
+% \myhlc|\l_@@_luaset_some_str| are defined in the Lua module
+% \myluamod{} and only declared in \mypkg[no-index]{expl3}.
+%
 % \smallskip
 %
 % \begin{important}*
-% Functions of the form \myhlc|\@@_luafun_some:nn| or variables of the
-% form \myhlc|\l_@@_luaset_some_tl| or \myhlc|\l_@@_luaset_some_str| are
-% defined in the Lua module \myluamod{} and only declared in \mypkg{expl3}.
+%  All variables and functions defined in this package are private and
+%  are NOT intended to work or be used by another package or module.
 % \end{important}
 %
 % \subsection{Declaration of the package}
 %
-% First we will make sure we have a minimum (super updated) version of
-% \hologo{LaTeX} to work correctly.
+% First we will make sure we have a minimum (super updated) release version
+% of \hologo{LaTeX} to work correctly, otherwise, we will return an \enquote{error}.
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
 \IfFormatAtLeastF { 2026-11-01 }
@@ -4089,7 +4096,8 @@
       }
   }
 %    \end{macrocode}
-% Now declare the \mypkg*[no-index]{spintent} package.
+% Now declare the \mypkg*[no-index]{spintent} package and we will add the
+% only key \mykey{mathcal} that can be passed as a package option.
 %    \begin{macrocode}
 \ProvidesExplPackage {spintent} {2026-08-27} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
@@ -4097,6 +4105,7 @@
     mathcal .usage:n    = load,
     mathcal .bool_set:N = \l_@@_mathcal_bool,
     mathcal .initial:n  = true,
+    mathcal .value_required:n = true,
   }
 \ProcessKeyOptions [ spintent ]
 %    \end{macrocode}
@@ -4160,8 +4169,27 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsection{Loading the Lua module and functions}
+% \subsection{Variables for the key \texttt{mathcal} and \cs[no-index]{rightanglesqr}}
 %
+% \begin{macro}[int]
+%  {
+%    \l_@@_luaset_cal_fam_ok_str,
+%    \l_@@_luaset_sym_fam_ok_str
+%  }
+%  First, we declare the variables \myhlc|\l_@@_luaset_cal_fam_ok_str| and
+%  \myhlc|\l_@@_luaset_sym_fam_ok_str| before loading the module
+%  \myluamod{}. This is necessary because of the implementation of the
+%  functions \myhlc|\@@_luafun_classic_mathcal:nn| and
+%  \myhlc|\@@_luafun_right_angle_sqr:| within the Lua module; otherwise,
+%  \mypkg[no-index]{expl3} will complain about duplicate variable
+%  declarations.
+%    \begin{macrocode}
+\str_new:N \l_@@_luaset_cal_fam_ok_str
+\str_new:N \l_@@_luaset_sym_fam_ok_str
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Loading the Lua module and functions}
 % \begin{macro}[int]
 %  {
 %    \@@_luafun_spunit_lookup_alias:V,
@@ -4179,25 +4207,48 @@
 %% Load Lua module
 % \fi
 %    \begin{macrocode}
-\str_new:N \l_@@_luaset_cal_fam_ok_str
-\str_new:N \l_@@_luaset_sym_fam_ok_str
 \lua_load_module:n { spintent.lua }
 \cs_generate_variant:Nn \@@_luafun_spunit_lookup_alias:n { V }
 \cs_generate_variant:Nn \@@_luafun_spmoney_lookup_data:n { V }
 \cs_generate_variant:Nn \@@_luafun_spmQ_scale_int:nn { VV, Vn }
 \cs_generate_variant:Nn \@@_luafun_clean_split_and_set:n { V }
 %    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Internal implementation for \cs[no-index]{mathcal} and \cs[no-index]{rightanglesqr}}
+%
+% To simplify user configuration and obtain the expected output style
+% \hologo{pdfTeX} for |\mathcal|, we will provide a fallback to the font
+% \texttt{NewCMMath-Regular.otf}, which contains the glyphs for these
+% characters. Using this same font, we will obtain the symbol
+% \myhlc|\rightanglesqr| for the key \mykey{recto}.
+%
+% \begin{macro}[int]{mathcal-fallback, right-angle-sqr-fallback}
+%   First, we'll define two error messages in case our fallback fails.
 %    \begin{macrocode}
 \msg_new:nnn { spintent } { mathcal-fallback }
   {
-    Using~classic~\string\mathcal~as~fallback~(font~not~found~or~
+    Using~classic~\token_to_str:N \mathcal \c_space_tl as~fallback~(font~not~found~or~
     no~free~math~family~available).~\msg_line_context:
   }
 \msg_new:nnn { spintent } { right-angle-sqr-fallback }
   {
-    Using~\string\rightangle~as~fallback~for~the~right-angle~
+    Using~\token_to_str:N \rightangle \c_space_tl as~fallback~for~the~right-angle~
     glyph.~\msg_line_context:
   }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_mathcal:n}
+%   Now we define the internal function \myhlc|\@@_mathcal:n| for
+%   |\mathcal| which checks the state of the variable \myhlc|\l_@@_mathcal_bool|
+%   set by the package key \mykey{mathcal}; if its state is true, we check
+%   the string variable \myhlc|\l_@@_luaset_cal_fam_ok_str| and if the latter has the value
+%   true, we call the function \myhlc|\@@_luafun_classic_mathcal:n| and
+%   otherwise (we cannot find the source in the system) we return a warning
+%   message and directly use \myhlc|\mathcal|. Otherwise, that is,
+%   \mykey{mathcal}|=false| we simply use \myhlc|\mathcal|.
+%    \begin{macrocode}
 \cs_new_protected:Nn \@@_mathcal:n
   {
     \bool_if:NTF \l_@@_mathcal_bool
@@ -4211,6 +4262,20 @@
       }
       { \mathcal {#1} }
   }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_right_angle_sqr:}
+%   The internal function \myhlc|\@@_right_angle_sqr:| establishes the
+%   internal copy of the command \myhlc|\rightanglesqr|. First, we check if
+%   the command \myhlc|\rightanglesqr| is defined using
+%   \myhlc|\cs_if_exist:NTF|; if it is true (the user has a font loaded
+%   that provides the command) we do not load our fallback; if it is false,
+%   we check the string variable \myhlc|\l_@@_luaset_sym_fam_ok_str|. If it
+%   is true, we call the function \myhlc|\@@__luafun_right_angle_sqr:|;
+%   otherwise (we do not find the font in the system), we return a warning
+%   message and use \myhlc|\rightangle| instead.
+%    \begin{macrocode}
 \cs_new_protected:Nn \@@_right_angle_sqr:
   {
     \cs_if_exist:NTF \rightanglesqr
