@@ -8909,7 +8909,7 @@
 %    \l_@@_geo_luaset_poly_sym_str,
 %    \l_@@_geo_luaset_intent_pts_str,
 %    \l_@@_geo_luaset_angulo_case_str,
-%    \l_@@_geo_side_cmd_tl,
+%    \l_@@_geo_intent_tl,
 %    \l_@@_geo_fig_op_tl,
 %    \l_@@_geo_luaset_concept_str,
 %    \l_@@_geo_luaset_letra_word_str,
@@ -8925,7 +8925,7 @@
 \str_new:N \l_@@_geo_luaset_poly_sym_str
 \str_new:N \l_@@_geo_luaset_intent_pts_str
 \str_new:N \l_@@_geo_luaset_angulo_case_str
-\tl_new:N  \l_@@_geo_side_cmd_tl
+\tl_new:N  \l_@@_geo_intent_tl
 \tl_new:N  \l_@@_geo_fig_op_tl
 \str_new:N \l_@@_geo_luaset_concept_str
 \str_new:N \l_@@_geo_luaset_letra_word_str
@@ -9235,10 +9235,10 @@
 %
 % \begin{macro}[int]{\@@_sprecta_print:n}
 %   The internal function \myhlc|\@@_sprecta_print:n| first sets
-%   \cs{l_@@_geo_side_cmd_tl} to |recta| — a fixed literal, since
+%   \cs{l_@@_geo_intent_tl} to |recta| — a fixed literal, since
 %   |\sprecta| has no term-selecting key. Only then does it decide,
 %   according to mode and \mykey[sprecta]{silent-cmd}, whether to send
-%   \cs{l_@@_geo_side_cmd_tl} or an empty group to
+%   \cs{l_@@_geo_intent_tl} or an empty group to
 %   \myhlc|\@@_luafun_geo_parse_and_set:nnn|.
 %
 %   \smallskip
@@ -9722,27 +9722,27 @@
 %   \cs[no-index]{spmside}}
 %
 % \begin{macro}[int]{\@@_spside_process:nn}
-%   The internal function \myhlc|\@@_spside_process:nn| takes the
-%   short identifier |side|/|mside| in `|#1|' and the point list in
-%   `|#2|'. It first resolves the term into
-%   \cs{l_@@_geo_side_cmd_tl}: \myhlc|l_@@_sp#1_read_arg_str| when
-%   non-empty, otherwise \myhlc|l_@@_sp#1_read_sty_str|. When |#1| is
-%   |mside|, |medida-del-| is prepended. Only then does it decide,
-%   according to mode and \mykey{silent-cmd}, whether to send that
-%   resolved term or an empty group to
-%   \myhlc|\@@_luafun_geo_parse_and_set:nnn|.
+%   The internal function \myhlc|\@@_spside_process:nn| passes the short
+%   name of the command |side| or |mside| passed in `|#1|' and the points
+%   passed as \mymarg{argument} in `|#2|'. First, we will store the
+%   value set by the key \mykey{read-sty} or the key \mykey{read-arg}, if
+%   present, in the variable \myhlc|\l_@@_geo_intent_tl|. If |\spmside|
+%   is running, we will place \enquote{medida-del} to the left of the
+%   variable and call the function \myhlc|\@@_luafun_geo_parse_and_set:n|
+%   to process the \mymarg{argument} passed in `|#2|', returning an
+%   \enquote{error} if the input is invalid.
+%
+%^^A   Only then does it decide,
+%^^A   according to mode and \mykey{silent-cmd}, whether to send that
+%^^A   resolved term or an empty group to
+%^^A   \myhlc|\@@_luafun_geo_parse_and_set:nnn|.
 %
 %   \smallskip
 %
-%   In |mathcat| mode, |:silent| is appended to \myhlc|\l_@@_geo_luaset_intent_str|
-%   afterward when needed. When `|#1|' is \mykey{mside} and \mykey{print-m} is |true|,
-%   \myhlc|\operatorname{m}| is typeset wrapped in \myhlc|\MathMLintent|\marg{:silent} before
-%   \myhlc|\overline|, following the same pause-avoiding pattern already
-%   used for |\spmarc| (\S\ref{cmd:sparc}).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_process:nn
   {
-    \tl_set:Nn \l_@@_geo_side_cmd_tl
+    \tl_set:Nn \l_@@_geo_intent_tl
       {
         \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
           { \str_use:c { l_@@_sp #1 _read_sty_str } }
@@ -9750,7 +9750,7 @@
       }
     \str_if_eq:eeT {#1} { mside }
       {
-        \tl_put_left:Nn \l_@@_geo_side_cmd_tl { medida-del- }
+        \tl_put_left:Nn \l_@@_geo_intent_tl { medida-del- }
       }
     \@@_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
@@ -9758,27 +9758,59 @@
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
+%    \end{macrocode}
+%   If the key \mykey{read-cmd} is set to |school| and the key
+%   \mykey{silent-cmd} is |true|, we will set the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str| with the `|_-|' trick, since
+%   |:silent| doesn't work here.
+%    \begin{macrocode}
     \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
         \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _\l_@@_geo_luaset_intent_str- }
+            \str_set:Ne \l_@@_geo_luaset_intent_str
+              {
+                _ \l_@@_geo_luaset_intent_str -
+              }
           }
           {
             \str_set:Ne \l_@@_geo_luaset_intent_str
               {
-                \l_@@_geo_side_cmd_tl - \l_@@_geo_luaset_intent_str
+                \l_@@_geo_intent_tl - \l_@@_geo_luaset_intent_str
               }
           }
       }
+%    \end{macrocode}
+%   If the key \mykey{read-cmd} is set to |mathcat| and the key \mykey{silent-cmd}
+%   is |false| we will set the variable \myhlc|\l_@@_geo_luaset_intent_str|
+%   with \myhlc|:prefix($pts)| and if the key \mykey{silent-cmd} is |true|
+%   we will add |:silent|.
+%^^A   In |mathcat| mode, |:silent| is appended to \myhlc|\l_@@_geo_luaset_intent_str|
+%^^A   afterward when needed.
+%    \begin{macrocode}
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _\l_@@_geo_side_cmd_tl :prefix($pts) }
+        \str_set:Ne \l_@@_geo_luaset_intent_str
+          {
+            _ \l_@@_geo_intent_tl :prefix($pts)
+          }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
           {
             \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
           }
       }
-    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+   \@@_spside_mathml:n { #1 }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spside_mathml:n}
+%   When `|#1|' is \mykey{mside} and \mykey{print-m} is |true|,
+%   \myhlc|\operatorname{m}| is typeset wrapped in \myhlc|\MathMLintent|\marg{:silent} before
+%   \myhlc|\overline|, following the same pause-avoiding pattern already
+%   used for |\spmarc| (\S\ref{cmd:sparc}).
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spside_mathml:n
+  {
+    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
         \MathMLintent
@@ -10010,7 +10042,7 @@
 %
 % \begin{macro}[int]{\@@_spangle_process:nn}
 %   Resolves the base name — |ángulo| or |medida-del-ángulo| — into
-%   \cs{l_@@_geo_side_cmd_tl}, appends |-recto| when
+%   \cs{l_@@_geo_intent_tl}, appends |-recto| when
 %   \myhlc|l_@@_sp#1_recto_bool| is |true|, then applies the same
 %   silent-cmd resolution as \myhlc|\@@_spside_process:nn|
 %   (\S\ref{cmd:spside}) before calling
@@ -10019,11 +10051,11 @@
 \cs_new_protected:Nn \@@_spangle_process:nn
   {
     \str_if_eq:eeTF {#1} { mangle }
-      { \tl_set:Nn \l_@@_geo_side_cmd_tl { medida-del-ángulo } }
-      { \tl_set:Nn \l_@@_geo_side_cmd_tl { ángulo } }
+      { \tl_set:Nn \l_@@_geo_intent_tl { medida-del-ángulo } }
+      { \tl_set:Nn \l_@@_geo_intent_tl { ángulo } }
     \bool_if:cT { l_@@_sp #1 _recto_bool }
       {
-        \tl_put_right:Nn \l_@@_geo_side_cmd_tl { -recto }
+        \tl_put_right:Nn \l_@@_geo_intent_tl { -recto }
       }
     \@@_luafun_geo_angulo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
@@ -10040,12 +10072,12 @@
           {
             \str_set:Ne \l_@@_geo_luaset_intent_str
               {
-                \l_@@_geo_side_cmd_tl - \l_@@_geo_luaset_intent_str
+                \l_@@_geo_intent_tl - \l_@@_geo_luaset_intent_str
               }
           }
       }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_intent_tl :prefix($pts) }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
           {
             \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
@@ -10273,8 +10305,8 @@
 \cs_new_protected:Nn \@@_sparc_process:nn
   {
     \str_if_eq:eeTF {#1} { marc }
-      { \tl_set:Nn \l_@@_geo_side_cmd_tl { medida-del-arco } }
-      { \tl_set:Nn \l_@@_geo_side_cmd_tl { arco } }
+      { \tl_set:Nn \l_@@_geo_intent_tl { medida-del-arco } }
+      { \tl_set:Nn \l_@@_geo_intent_tl { arco } }
     \@@_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
@@ -10290,12 +10322,12 @@
           {
             \str_set:Ne \l_@@_geo_luaset_intent_str
               {
-                \l_@@_geo_side_cmd_tl - \l_@@_geo_luaset_intent_str
+                \l_@@_geo_intent_tl - \l_@@_geo_luaset_intent_str
               }
           }
       }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_intent_tl :prefix($pts) }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
           {
             \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
