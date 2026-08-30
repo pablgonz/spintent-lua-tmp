@@ -8900,11 +8900,21 @@
 %
 % \subsubsection{Definition of shared variables}
 %
-% \begin{variable}[int]{
-%   \l_@@_geo_luaset_error_str, \l_@@_geo_luaset_intent_str, \l_@@_geo_luaset_print_tl,
-%   \l_@@_geo_luaset_is_name_str, \l_@@_geo_luaset_poly_sym_str,
-%   \l_@@_geo_luaset_intent_pts_str, \l_@@_geo_luaset_angulo_case_str,
-%   \l_@@_geo_side_cmd_tl, \l_@@_geo_fig_op_tl}
+% \begin{variable}[int]
+%  {
+%    \l_@@_geo_luaset_error_str,
+%    \l_@@_geo_luaset_intent_str,
+%    \l_@@_geo_luaset_print_tl,
+%    \l_@@_geo_luaset_is_name_str,
+%    \l_@@_geo_luaset_poly_sym_str,
+%    \l_@@_geo_luaset_intent_pts_str,
+%    \l_@@_geo_luaset_angulo_case_str,
+%    \l_@@_geo_side_cmd_tl,
+%    \l_@@_geo_fig_op_tl,
+%    \l_@@_geo_luaset_concept_str,
+%    \l_@@_geo_luaset_letra_word_str,
+%    \l_@@_geo_luaset_sub_spoken_str,
+%  }
 %   Internal variables shared across all commands of the family to
 %   avoid repeated calls into Lua.
 %    \begin{macrocode}
@@ -9008,7 +9018,7 @@
 %   when \mykey[spPoint]{silent-cmd} is active — since neither depends
 %   on anything Lua computes.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spPoint_print:n
+\cs_new_protected:Nn \@@_spPoint_print_old:n
   {
     \@@_luafun_geo_point_parse_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
@@ -9059,6 +9069,55 @@
             \MathMLarg { pt } { \l_@@_geo_luaset_print_tl }
           }
       }
+  }
+%% Variable auxiliar (junto a las demás \str_new:N de \spPoint):
+\str_new:N \l_@@_spPoint_concept_intent_str
+\str_new:N \l_@@_spPoint_literal_intent_str
+
+%% register_tex_cmd genera \@@_luafun_spPoint_wrap_intent:nnn
+%% (3 argumentos string -> 3 "n"). Necesitamos la variante :eee
+%% para expandir los \str antes de pasarlos a Lua, igual que se
+%% hace en el resto del archivo con \exp_args:Ne / variantes e.
+\cs_generate_variant:Nn \@@_luafun_spPoint_wrap_intent:nnn { eee }
+
+%% \@@_spPoint_print:n -- reemplazo completo, mismo cálculo de
+%% intent que ya tenías (solo se le da forma final distinta),
+%% cero \c_@@_invisible_sep_tl.
+%% ============================================================
+\cs_new_protected:Nn \@@_spPoint_print:n
+  {
+    \@@_luafun_geo_point_parse_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+      {
+        \msg_error:nne { spintent } { spPoint-invalid-point } { \exp_not:n {#1} }
+      }
+    % Concept-intent del <mrow>: igual en ambos modos.
+    \str_set:Nn \l_@@_spPoint_concept_intent_str { _ punto :prefix($pt) }
+    \bool_if:NT \l_@@_spPoint_silent_cmd_bool
+      {
+        \str_put_right:Nn \l_@@_spPoint_concept_intent_str { :silent }
+      }
+    \str_put_left:Ne \l_@@_spPoint_concept_intent_str
+      {
+        \tl_if_empty:NF \l_@@_spPoint_prefix_tl
+          { \tl_use:N \l_@@_spPoint_prefix_tl - }
+      }
+    % Intent literal del hijo: solo en modo school.
+    \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
+      {
+        \str_set:Ne \l_@@_spPoint_literal_intent_str
+          { _ \l_@@_geo_luaset_intent_str - }
+      }
+      {
+        \str_clear:N \l_@@_spPoint_literal_intent_str
+      }
+
+    \@@_invisible_sep: % exterior, sin cambios -- ya tiene :silent
+    \@@_luafun_spPoint_wrap_intent:eee
+      { \l_@@_spPoint_concept_intent_str }
+      { \l_@@_spPoint_literal_intent_str }
+      { pt }
+    { \l_@@_geo_luaset_print_tl }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -9661,9 +9720,9 @@
 %   \smallskip
 %
 %   In |mathcat| mode, |:silent| is appended to \myhlc|\l_@@_geo_luaset_intent_str|
-%   afterward when needed. When |#1| is |mside| and \mykey{print-m} is |true|,
-%   |\operatorname{m}| is typeset wrapped in |\MathMLintent|\marg{:silent} before
-%   |\overline|, following the same pause-avoiding pattern already
+%   afterward when needed. When `|#1|' is \mykey{mside} and \mykey{print-m} is |true|,
+%   \myhlc|\operatorname{m}| is typeset wrapped in \myhlc|\MathMLintent|\marg{:silent} before
+%   \myhlc|\overline|, following the same pause-avoiding pattern already
 %   used for |\spmarc| (\S\ref{cmd:sparc}).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_process:nn
@@ -9688,7 +9747,7 @@
       {
         \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _\l_@@_geo_luaset_intent_str- }
           }
           {
             \str_set:Ne \l_@@_geo_luaset_intent_str
@@ -9698,7 +9757,7 @@
           }
       }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_side_cmd_tl :prefix($pts) }
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _\l_@@_geo_side_cmd_tl :prefix($pts) }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
           {
             \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
@@ -9718,7 +9777,9 @@
           {
             \c_@@_invisible_sep_tl
             \str_if_eq:eeTF {#1} { side }
-              { \overline { \l_@@_geo_luaset_print_tl } }
+              {
+                \overline { \l_@@_geo_luaset_print_tl }
+              }
               {
                 \bool_if:cT { l_@@_sp #1 _print_m_bool }
                   {
@@ -11307,6 +11368,361 @@
   }
 %    \end{macrocode}
 % \end{macro}
+%
+% \subsection{The commands \cs{spAcirc} and \cs{spPcirc}}\label{cmd:spAcirc}
+%
+%    \begin{macrocode}
+\clist_map_inline:nn { Acirc , Pcirc }
+  {
+    \str_new:c { l_@@_sp #1 _mode_str      }
+    \str_new:c { l_@@_sp #1 _print_sym_str }
+    \str_new:c { l_@@_sp #1 _read_sty_str  }
+    \str_new:c { l_@@_sp #1 _radio_sty_str }
+    \str_new:c { l_@@_sp #1 _sub_index_str }
+    \tl_new:c  { l_@@_sp #1 _prefix_tl     }
+    \tl_new:c  { l_@@_sp #1 _read_arg_tl   }
+  }
+\str_new:N \l_@@_geo_circfig_mode_str
+\clist_map_inline:nn { Acirc , Pcirc }
+  {
+    \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
+      { Invalid~argument~format~in~##1:~'##2'. }
+      {
+        The~argument~must~be~empty,~a~center~point~optionally~
+        followed~by~a~comma~and~a~radius,~or~a~bare~number~or~letter~
+        (e.g.\ '1',~'n').
+      }
+    \keys_define:nn { spintent / sp #1 }
+      {
+        read-cmd            .choices:nn = { school , mathcat }
+          {
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l_@@_sp #1 _mode_str } { school  } }
+                {2} { \str_set:cn { l_@@_sp #1 _mode_str } { mathcat } }
+              }
+          },
+        read-cmd            .initial:n  = school,
+        read-cmd            .value_required:n = true,
+        read-cmd / unknown  .code:n =
+          \msg_error:nneee { spintent } { unknown-choice }
+            { read-cmd } { school,~mathcat } { \exp_not:n {##1} },
+        prefix              .code:n =
+          { \@@_sanitize_affix:cn { l_@@_sp #1 _prefix_tl } {##1} },
+        prefix              .initial:n  = ,
+        prefix              .value_required:n = true,
+        print-sym           .choices:nn = { usual , odot }
+          {
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l_@@_sp #1 _print_sym_str } { usual } }
+                {2} { \str_set:cn { l_@@_sp #1 _print_sym_str } { odot  } }
+              }
+          },
+        print-sym           .initial:n  = odot,
+        print-sym           .value_required:n = true,
+        print-sym / unknown .code:n =
+          \msg_error:nneee { spintent } { unknown-choice }
+            { print-sym } { usual,~odot } { \exp_not:n {##1} },
+        read-sty            .choices:nn = { circun , circle }
+          {
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l_@@_sp #1 _read_sty_str } { circun } }
+                {2} { \str_set:cn { l_@@_sp #1 _read_sty_str } { circle } }
+              }
+          },
+        read-sty            .initial:n  = circun,
+        read-sty            .value_required:n = true,
+        radio-sty           .choices:nn = { side , mside }
+          {
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l_@@_sp #1 _radio_sty_str } { side  } }
+                {2} { \str_set:cn { l_@@_sp #1 _radio_sty_str } { mside } }
+              }
+          },
+        radio-sty           .initial:n  = mside,
+        radio-sty           .value_required:n = true,
+        sub-index           .code:n =
+          { \str_set:cn { l_@@_sp #1 _sub_index_str } {##1} },
+        sub-index           .initial:n  = ,
+        sub-index           .value_required:n = true,
+        read-sub            .bool_set:c = { l_@@_sp #1 _read_sub_bool },
+        read-sub            .initial:n  = false,
+        read-sub            .value_required:n = true,
+        read-arg            .code:n =
+          { \@@_sanitize_affix:cn { l_@@_sp #1 _read_arg_tl } {##1} },
+        read-arg            .initial:n  = ,
+        read-arg            .value_required:n = true,
+        silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
+        silent-cmd          .initial:n  = false,
+        silent-cmd          .value_required:n = true,
+        unknown             .code:n =
+          {
+            \str_set:Nn \l_@@_command_name_str { sp #1 }
+            \@@_unknown_keys_cmd:n {##1}
+          },
+      }
+  }
+\cs_new_protected:Nn \@@_spcircfig_sym:n
+  {
+    \str_if_eq:vnTF { l_@@_sp #1 _print_sym_str } { odot }
+      { \odot }
+      { C }
+  }
+\cs_new_protected:Nn \@@_spcircfig_radio_print:n
+  {
+    \str_case:Vn \l_@@_geo_luaset_circ_radio_type_str
+      {
+        { number  } { \exp_args:No \spnum  { \l_@@_geo_luaset_circ_radio_raw_str } }
+        { measure } { \exp_args:No \spunit { \l_@@_geo_luaset_circ_radio_raw_str } }
+        { label   } { \l_@@_geo_luaset_circ_radio_raw_str }
+        { segment }
+          {
+            \str_if_eq:vnTF { l_@@_sp #1 _radio_sty_str } { side }
+              { \exp_args:No \spside  { \l_@@_geo_luaset_circ_radio_raw_str } }
+              { \exp_args:No \spmside { \l_@@_geo_luaset_circ_radio_raw_str } }
+          }
+      }
+  }
+\cs_new_protected:Nn \@@_spcircfig_word_and_article:n
+  {
+    \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
+      {
+        \str_if_eq:vnTF { l_@@_sp #1 _read_sty_str } { circun }
+          {
+            \tl_set:Nn \l_@@_geo_circ_word_tl { circunferencia }
+            \str_set:Nn \l_@@_spcirc_articulo_str { la }
+          }
+          {
+            \tl_set:Nn \l_@@_geo_circ_word_tl { círculo }
+            \str_set:Nn \l_@@_spcirc_articulo_str { el }
+          }
+      }
+      {
+        \tl_set:Ne \l_@@_geo_circ_word_tl { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
+        \str_if_eq:vnTF { l_@@_sp #1 _read_sty_str } { circun }
+          { \str_set:Nn \l_@@_spcirc_articulo_str { la } }
+          { \str_set:Nn \l_@@_spcirc_articulo_str { el } }
+      }
+  }
+\cs_new_protected:Nn \@@_spcircfig_process:nn
+  {
+    \str_if_eq:eeTF {#1} { Acirc }
+      { \tl_set:Nn \l_@@_geo_fig_op_tl { área } }
+      { \tl_set:Nn \l_@@_geo_fig_op_tl { perímetro } }
+    \str_set:Nn \l_@@_geo_circfig_mode_str { circle }
+    \tl_if_empty:nF {#2}
+      {
+        \@@_luafun_geo_circ_parse_and_set:n { \exp_not:n {#2} }
+        \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+          {
+            \tl_if_in:nnF {#2} { , }
+              {
+                \str_if_eq:eeTF {#1} { Acirc }
+                  { \@@_luafun_geo_afig_parse_and_set:n { \exp_not:n {#2} } }
+                  { \@@_luafun_geo_pfig_parse_and_set:n { \exp_not:n {#2} } }
+                \str_if_eq:VnF \l_@@_geo_luaset_error_str { true }
+                  {
+                    \str_if_empty:VTF \l_@@_geo_luaset_letra_word_str
+                      { \str_set:Nn \l_@@_geo_circfig_mode_str { bare } }
+                      { \str_set:Nn \l_@@_geo_luaset_error_str { true } }
+                  }
+              }
+          }
+        \str_if_eq:VnF \l_@@_geo_circfig_mode_str { bare }
+          {
+            \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+              {
+                \msg_error:nnee { spintent } { sp #1 -invalid-arg }
+                  { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+              }
+          }
+      }
+    \@@_spcircfig_word_and_article:n {#1}
+    \str_if_eq:VnTF \l_@@_geo_circfig_mode_str { bare }
+      {
+        \str_set:Ne \l_@@_geo_circ_intent_str
+          {
+            \l_@@_geo_fig_op_tl -
+            \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub- }
+            \l_@@_geo_luaset_sub_spoken_str
+          }
+        \str_if_eq:eeT { \str_use:c { l_@@_sp #1 _mode_str } } { mathcat }
+          {
+            \str_set:Ne \l_@@_geo_circ_intent_str
+              {
+                _ \l_@@_geo_fig_op_tl -
+                \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub- }
+                \l_@@_geo_luaset_sub_spoken_str :prefix($pts)
+              }
+          }
+        \@@_invisible_sep:
+        \MathMLintent
+          {
+            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+            \l_@@_geo_circ_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \str_if_eq:eeTF {#1} { Acirc }
+              { \@@_mathcal:n { A } }
+              { \@@_mathcal:n { P } }
+            \c_math_subscript_token
+              {
+                \@@_spcircfig_sym:n {#1}
+                \c_math_subscript_token { \l_@@_geo_luaset_print_tl }
+              }
+          }
+      }
+      {
+        \tl_if_empty:nTF {#2}
+          {
+            \str_set:Ne \l_@@_geo_circ_intent_str
+              {
+                \l_@@_geo_fig_op_tl -de- \l_@@_spcirc_articulo_str -
+                \l_@@_geo_circ_word_tl
+              }
+            \str_if_eq:eeT { \str_use:c { l_@@_sp #1 _mode_str } } { mathcat }
+              {
+                \str_set:Ne \l_@@_geo_circ_intent_str
+                  {
+                    _ \l_@@_geo_fig_op_tl -de-
+                    \l_@@_spcirc_articulo_str -
+                    \l_@@_geo_circ_word_tl :prefix($pts)
+                  }
+              }
+            \@@_invisible_sep:
+            \MathMLintent
+              {
+                \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                  { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                \l_@@_geo_circ_intent_str
+              }
+              {
+                \c_@@_invisible_sep_tl
+                \str_if_eq:eeTF {#1} { Acirc }
+                  { \@@_mathcal:n { A } }
+                  { \@@_mathcal:n { P } }
+                \c_math_subscript_token { \@@_spcircfig_sym:n {#1} }
+              }
+          }
+          {
+            \str_set:Ne \l_@@_geo_circ_intent_str
+              {
+                \l_@@_geo_fig_op_tl -de- \l_@@_spcirc_articulo_str -
+                \l_@@_geo_circ_word_tl
+              }
+            \str_if_empty:cF { l_@@_sp #1 _sub_index_str }
+              {
+                \str_put_right:Ne \l_@@_geo_circ_intent_str
+                  {
+                    -
+                    \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub- }
+                    \str_use:c { l_@@_sp #1 _sub_index_str }
+                  }
+              }
+            \str_put_right:Ne \l_@@_geo_circ_intent_str
+              { -de-centro-en- \l_@@_geo_luaset_print_tl }
+            \str_if_empty:NF \l_@@_geo_luaset_circ_radio_type_str
+              { \str_put_right:Nn \l_@@_geo_circ_intent_str { -y-radio } }
+            \str_if_eq:eeT { \str_use:c { l_@@_sp #1 _mode_str } } { mathcat }
+              {
+                \str_set:Ne \l_@@_geo_circ_intent_str
+                  {
+                    _ \l_@@_geo_fig_op_tl -de-
+                    \l_@@_spcirc_articulo_str -
+                    \l_@@_geo_circ_word_tl :prefix($pts)
+                  }
+              }
+            \@@_invisible_sep:
+            \str_if_empty:NTF \l_@@_geo_luaset_circ_radio_type_str
+              {
+                \MathMLintent
+                  {
+                    \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                      { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                    \l_@@_geo_circ_intent_str
+                  }
+                  {
+                    \c_@@_invisible_sep_tl
+                    \str_if_eq:eeTF {#1} { Acirc }
+                      { \@@_mathcal:n { A } }
+                      { \@@_mathcal:n { P } }
+                    \c_math_subscript_token
+                      {
+                        \@@_spcircfig_sym:n {#1}
+                        \str_if_empty:cF { l_@@_sp #1 _sub_index_str }
+                          {
+                            \c_math_subscript_token
+                              { \str_use:c { l_@@_sp #1 _sub_index_str } }
+                          }
+                        ( \l_@@_geo_luaset_print_tl )
+                      }
+                  }
+              }
+              {
+                \MathMLintent
+                  {
+                    \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                      { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                    \l_@@_geo_circ_intent_str
+                  }
+                  {
+                    \c_@@_invisible_sep_tl
+                    \str_if_eq:eeTF {#1} { Acirc }
+                      { \@@_mathcal:n { A } }
+                      { \@@_mathcal:n { P } }
+                    \c_math_subscript_token
+                      {
+                        \@@_spcircfig_sym:n {#1}
+                        \str_if_empty:cF { l_@@_sp #1 _sub_index_str }
+                          {
+                            \c_math_subscript_token
+                              { \str_use:c { l_@@_sp #1 _sub_index_str } }
+                          }
+                        ( \l_@@_geo_luaset_print_tl ,
+                      }
+                  }
+                \@@_invisible_sep:
+                \@@_spcircfig_radio_print:n {#1}
+                \MathMLintent { :silent } { ) }
+              }
+          }
+      }
+  }
+\cs_new_protected:Nn \@@_spcircfig_exec:nnn
+  {
+    \keys_set:nn { spintent / sp #1 } { #2 }
+    \@@_spcircfig_process:nn { #1 } { #3 }
+  }
+\NewDocumentCommand \spAcirc { O{} d() }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \tl_if_novalue:nTF {#2}
+            { \@@_spcircfig_exec:nnn { Acirc } { #1 } { } }
+            { \@@_spcircfig_exec:nnn { Acirc } { #1 } { #2 } }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spAcirc } }
+  }
+\NewDocumentCommand \spPcirc { O{} d() }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \tl_if_novalue:nTF {#2}
+            { \@@_spcircfig_exec:nnn { Pcirc } { #1 } { } }
+            { \@@_spcircfig_exec:nnn { Pcirc } { #1 } { #2 } }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spPcirc } }
+  }
+%    \end{macrocode}
 %
 % \subsection{Finish package}
 %
@@ -13479,6 +13895,80 @@ register_tex_cmd("luafun_geo_circ_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
     token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
 end, { "string" })
+
+-- 11. GEOMETRÍA: ANOTACIÓN DE PUNTO (\spPoint), code for
+--     wrap_intent -- ver https://github.com/latex3/luamml/issues/26
+--
+-- A diferencia de \spmQ (sección 10), aquí el contenido
+-- (\l__spintent_geo_luaset_print_tl) puede traer sintaxis TeX real
+-- (p.ej. "A_{1}"), que TeX debe parsear para producir un noad de
+-- subíndice semánticamente correcto (<msub> real). Construirlo a
+-- mano en Lua (como spintent_build_char_noads) perdería esa
+-- estructura; pasarlo por \setbox+\hbox (como spintent_medir_frac)
+-- también la perdería, porque TeX ya lo convertiría a glyphs físicos
+-- antes de que lo veamos.
+--
+-- Por eso el noad lo sigue creando TeX (vía expansión de macro
+-- normal), y lo interceptamos con un callback ANTES de que luamml
+-- lo procese, para decorarlo con mathml_filter una vez que ya
+-- existe como objeto. Es la primera vez que este archivo usa
+-- luatexbase.add_to_callback -- todo lo demás sigue el mismo patrón
+-- de siempre (register_tex_cmd, node.get_properties_table).
+
+local spintent_sub_mlist_t = node.id("sub_mlist")
+local spintent_noad_t      = node.id("noad")
+
+-- Estado pendiente entre el registro (llamado desde TeX antes del
+-- grupo con el contenido) y el callback (que lo consume la próxima
+-- vez que vea una mlist con ≥1 noad de tipo sub_mlist).
+local spintent_pending_point_wrap = nil
+
+register_tex_cmd("luafun_spPoint_wrap_intent", function(concept_intent, literal_intent, arg_name)
+    spintent_pending_point_wrap = {
+        concept_intent = concept_intent,
+        literal_intent = (literal_intent ~= "") and literal_intent or nil,
+        arg_name       = (arg_name ~= "") and arg_name or nil,
+    }
+end, { "string", "string", "string" })
+
+luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
+    if not spintent_pending_point_wrap then return true end
+
+    -- El grupo objetivo es el primer noad de tipo sub_mlist que
+    -- aparece en la mlist (el \@@_invisible_sep: exterior no es
+    -- sub_mlist, así que no interfiere con esta búsqueda).
+    local target
+    for n, id in node.traverse(mlist) do
+        if id == spintent_noad_t and n.nucleus and n.nucleus.id == spintent_sub_mlist_t then
+            target = n
+            break
+        end
+    end
+    if not target then return true end
+
+    local fix = spintent_pending_point_wrap
+    spintent_pending_point_wrap = nil
+
+    local properties = node.get_properties_table()
+    local p = properties[target] or {}
+    p.mathml_filter = function(result, core)
+        -- result = lo que luamml convirtió de forma natural
+        -- (p.ej. <mi>A</mi> o <msub><mi>A</mi><mn>1</mn></msub>).
+        if fix.arg_name then
+            result.arg = fix.arg_name
+        end
+        if fix.literal_intent then
+            result.intent = fix.literal_intent
+        end
+        return { [0] = "mrow", intent = fix.concept_intent, result }, nil
+    end
+    properties[target] = p
+
+    return true
+end, "spintent.point_wrap_intent")
+
+luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
+    "spintent.point_wrap_intent", "before", "luamml.to_mathml")
 % \iffalse
 %</spintentlua>
 % \fi
@@ -13488,7 +13978,7 @@ end, { "string" })
 %<*mylhmcsty>
 % \fi
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2025-08-28}{2.0}
+\ProvidesExplPackage{mylhmc}{2025-08-29}{2.0}
   {Line-by-line macrocode reader for l3doc in Lua}
 \sys_if_engine_luatex:F
   {
@@ -13745,7 +14235,7 @@ end, { "string" })
 % \iffalse
 %<*mylhmclua>
 % \fi
--- mylhmc.lua v2.0 2025-08-28 (node.direct + Loop/Memory Micro-Optimized)
+-- mylhmc.lua v2.0 2025-08-29 (node.direct + Loop/Memory Micro-Optimized)
 -- LuaLaTeX syntax highlighter for l3doc macrocode environments
 
 local require      = require
@@ -13800,6 +14290,11 @@ local lua_get_funcs  = lua.get_functions_table
 local current_module_name   = ''
 local current_module_prefix = ''
 
+-- Respaldo de nombre de módulo para \myhlc/macrocode (fijado desde
+-- \setmylhmc{module=...} en el .sty) -- nunca toca
+-- \g__codedoc_module_name_tl (variable global de l3doc.cls).
+local module_name_backup = ''
+
 local lpeg_base  = lpeg or require('lpeg')
 local P, S, V    = lpeg_base.P, lpeg_base.S, lpeg_base.V
 local Cp, Cc     = lpeg_base.Cp, lpeg_base.Cc
@@ -13843,6 +14338,10 @@ local function register_tex_cmd(name, func, args)
   lua_get_funcs()[index] = scanning_func
   token_set_lua(name, index, 'global', 'protected')
 end
+
+register_tex_cmd('set_module_backup', function(name)
+  module_name_backup = name or ''
+end, {'string'})
 
 local sig_chars  = S'NnVvoxefpTFwDcq'
 local hex_chars  = S'0123456789abcdefABCDEF'
@@ -14352,11 +14851,7 @@ end
 
 -- Envuelve texto en un Span con ActualText = mismo texto: los glyphs se
 -- muestran igual visualmente, pero el PDF garantiza que al copiar/pegar
--- se extraigan exactamente esos caracteres. Uso previsto: SOLO
--- indentación/espacios de alineación (siempre ASCII de un byte) -- si
--- se reutiliza para texto arbitrario UTF-8 multibyte, este bucle
--- byte-a-byte no sería suficiente (haría falta decodificar codepoints
--- reales, no bytes crudos).
+-- se extraigan exactamente esos caracteres.
 local function mylhmc_actual_text_wrap(text, fid)
   local begin_n = d_new('whatsit', 'pdf_literal')
   d_setfield(begin_n, 'mode', 2)
@@ -15569,6 +16064,18 @@ local function mylhmc_colorize_guard_expr(expr, fid)
   return rh, rt
 end
 
+local function mylhmc_apply_at_at(line)
+  if not s_find(line, '@@', 1, true) then return line end
+  if current_module_name ~= '' then
+    line = s_gsub(line, '@@@@', '\0')
+    line = s_gsub(line, '__@@', current_module_prefix)
+    line = s_gsub(line, '_@@',  current_module_prefix)
+    line = s_gsub(line, '@@',   current_module_prefix)
+    line = s_gsub(line, '\0',   '@@')
+  end
+  return line
+end
+
 local function mylhmc_render_guard(line, fid)
   local rest = s_gsub(line, '^%s*', '')
   local close = s_find(rest, '>', 2)
@@ -15606,37 +16113,14 @@ local function mylhmc_render_guard(line, fid)
   local rh, rt = mylhmc_make_angle_nodes(ch, ct, 'guard_angle', fid)
   if rh then n_write(d_tonode(rh)) end
   if after and after ~= '' then
+    after = mylhmc_apply_at_at(after)
     local ah, at = mylhmc_colorize_code(after, fid); if ah then n_write(d_tonode(ah)) end
   end
 end
 
-local function mylhmc_apply_at_at(line)
-  if not s_find(line, '@@', 1, true) then return line end
-  if current_module_name ~= '' then
-    line = s_gsub(line, '@@@@', '\0')
-    line = s_gsub(line, '__@@', current_module_prefix)
-    line = s_gsub(line, '_@@',  current_module_prefix)
-    line = s_gsub(line, '@@',   current_module_prefix)
-    line = s_gsub(line, '\0',   '@@')
-  end
-  return line
-end
-
--- Respaldo de nombre de módulo fijado desde \setmylhmc{module=...} (ver
--- .sty): nunca toca \g__codedoc_module_name_tl (variable global de
--- l3doc.cls, compartida y arriesgada de sobrescribir/restaurar). Solo
--- se usa como último recurso en mylhmc_init_line_state, cuando la
--- variable de l3doc todavía está vacía.
-local module_name_backup = ''
-
-register_tex_cmd('set_module_backup', function(name)
-  module_name_backup = name or ''
-end, {'string'})
-
 -- Sincroniza current_module_name al inicio de cada línea: prioriza
 -- \g__codedoc_module_name_tl (real, de l3doc.cls); si está vacía, usa
--- el respaldo de arriba; si ambos están vacíos, no toca nada (conserva
--- lo que ya había).
+-- el respaldo; si ambos están vacíos, no toca nada.
 local function mylhmc_init_line_state()
   local m = t_get_macro('g__codedoc_module_name_tl')
   if m and m ~= '' then
@@ -15651,13 +16135,6 @@ end
 -- Reemplazo mínimo de \BeginAccSupp{ActualText={}}/\EndAccSupp{} (accsupp)
 -- vía whatsit pdf_literal directo: envuelve el número de línea en un
 -- Span PDF con ActualText vacío, para que no se copie al extraer texto.
--- mode=2 ('direct'): el literal se inserta exactamente en el punto del
--- content stream, sin reordenamiento -- necesario para que BDC/EMC
--- queden bien balanceados alrededor del contenido que envuelven.
--- NOTA: no agregar caracteres "centinela" (p.ej. U+200B) dentro del
--- ActualText -- se extraen como contenido real y aparecen como espacio
--- extra al copiar. Tampoco usar /Artifact aquí -- deja de ocultar el
--- número de línea. ActualText vacío es la única versión confirmada.
 register_tex_cmd('actual_text_begin', function()
   local n = d_new('whatsit', 'pdf_literal')
   d_setfield(n, 'mode', 2)
@@ -15691,19 +16168,32 @@ register_tex_cmd('process_line', function()
   line = s_gsub(line, '[\r\n]+$', '')
   if line == '' then return end
   mylhmc_init_line_state()
-  line = mylhmc_apply_at_at(line)
   local fid = f_current()
+  -- Detecta líneas de guarda (%<...>) ANTES de aplicar la sustitución
+  -- de @@: una guarda como %<@@=modulo> debe verse tal cual, o
+  -- apply_at_at se come el '@@=' (usando el current_module_name
+  -- vigente ANTES de esta declaración) y render_guard ya no la
+  -- reconoce como el caso especial -- cae al renderizado genérico de
+  -- guarda entre ángulos, mostrando algo como 〈__Spintent=spintent〉
+  -- en vez de procesar la declaración real.
   if s_sub(line, 1, 1) == '%' then
     local rest = s_sub(line, 2)
     local trimmed = s_match(rest, '^%s*(.*)')
-    if s_sub(trimmed, 1, 1) == '<' then mylhmc_render_guard(rest, fid)
+    if s_sub(trimmed, 1, 1) == '<' then
+      mylhmc_render_guard(rest, fid)
+      font_bracket_pending = false
+      return
     else
+      -- comentario normal (no guarda): el shorthand @@ en comentarios
+      -- explicativos sí debe sustituirse.
+      line = mylhmc_apply_at_at(line)
       local h, t = mylhmc_colored_str(s_sub(line, 1, 1), 'guard_angle', fid)
       if h then n_write(d_tonode(h)) end
       h, t = mylhmc_colored_str_italic(s_sub(line, 2), 'comment', fid)
       if h then n_write(d_tonode(h)) end
     end
   else
+    line = mylhmc_apply_at_at(line)
     local indent = s_match(line, '^(%s+)')
     local rest = line
     local rh, rt

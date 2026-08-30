@@ -2156,3 +2156,77 @@ register_tex_cmd("luafun_geo_circ_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
     token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
 end, { "string" })
+
+-- 11. GEOMETRÍA: ANOTACIÓN DE PUNTO (\spPoint), code for
+--     wrap_intent -- ver https://github.com/latex3/luamml/issues/26
+--
+-- A diferencia de \spmQ (sección 10), aquí el contenido
+-- (\l__spintent_geo_luaset_print_tl) puede traer sintaxis TeX real
+-- (p.ej. "A_{1}"), que TeX debe parsear para producir un noad de
+-- subíndice semánticamente correcto (<msub> real). Construirlo a
+-- mano en Lua (como spintent_build_char_noads) perdería esa
+-- estructura; pasarlo por \setbox+\hbox (como spintent_medir_frac)
+-- también la perdería, porque TeX ya lo convertiría a glyphs físicos
+-- antes de que lo veamos.
+--
+-- Por eso el noad lo sigue creando TeX (vía expansión de macro
+-- normal), y lo interceptamos con un callback ANTES de que luamml
+-- lo procese, para decorarlo con mathml_filter una vez que ya
+-- existe como objeto. Es la primera vez que este archivo usa
+-- luatexbase.add_to_callback -- todo lo demás sigue el mismo patrón
+-- de siempre (register_tex_cmd, node.get_properties_table).
+
+local spintent_sub_mlist_t = node.id("sub_mlist")
+local spintent_noad_t      = node.id("noad")
+
+-- Estado pendiente entre el registro (llamado desde TeX antes del
+-- grupo con el contenido) y el callback (que lo consume la próxima
+-- vez que vea una mlist con ≥1 noad de tipo sub_mlist).
+local spintent_pending_point_wrap = nil
+
+register_tex_cmd("luafun_spPoint_wrap_intent", function(concept_intent, literal_intent, arg_name)
+    spintent_pending_point_wrap = {
+        concept_intent = concept_intent,
+        literal_intent = (literal_intent ~= "") and literal_intent or nil,
+        arg_name       = (arg_name ~= "") and arg_name or nil,
+    }
+end, { "string", "string", "string" })
+
+luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
+    if not spintent_pending_point_wrap then return true end
+
+    -- El grupo objetivo es el primer noad de tipo sub_mlist que
+    -- aparece en la mlist (el \__spintent_invisible_sep: exterior no es
+    -- sub_mlist, así que no interfiere con esta búsqueda).
+    local target
+    for n, id in node.traverse(mlist) do
+        if id == spintent_noad_t and n.nucleus and n.nucleus.id == spintent_sub_mlist_t then
+            target = n
+            break
+        end
+    end
+    if not target then return true end
+
+    local fix = spintent_pending_point_wrap
+    spintent_pending_point_wrap = nil
+
+    local properties = node.get_properties_table()
+    local p = properties[target] or {}
+    p.mathml_filter = function(result, core)
+        -- result = lo que luamml convirtió de forma natural
+        -- (p.ej. <mi>A</mi> o <msub><mi>A</mi><mn>1</mn></msub>).
+        if fix.arg_name then
+            result.arg = fix.arg_name
+        end
+        if fix.literal_intent then
+            result.intent = fix.literal_intent
+        end
+        return { [0] = "mrow", intent = fix.concept_intent, result }, nil
+    end
+    properties[target] = p
+
+    return true
+end, "spintent.point_wrap_intent")
+
+luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
+    "spintent.point_wrap_intent", "before", "luamml.to_mathml")
