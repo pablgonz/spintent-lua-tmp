@@ -2624,14 +2624,14 @@
       {
         \bool_if:NTF \l__spintent_spPoint_silent_cmd_bool
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str { _ \l__spintent_geo_luaset_intent_str - }
+            \str_set:Ne \l__spintent_geo_luaset_intent_str { _- }
           }
           {
             \str_set:Ne \l__spintent_geo_luaset_intent_str { punto- \l__spintent_geo_luaset_intent_str }
           }
       }
       {
-        \str_set:Ne \l__spintent_geo_luaset_intent_str { _ punto :prefix($pt) }
+        \str_set:Ne \l__spintent_geo_luaset_intent_str { _punto:prefix($pt) }
         \bool_if:NT \l__spintent_spPoint_silent_cmd_bool
           {
             \str_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent }
@@ -2648,7 +2648,10 @@
               }
             \l__spintent_geo_luaset_intent_str
           }
-          { \c__spintent_invisible_sep_tl \l__spintent_geo_luaset_print_tl }
+          {
+            \c__spintent_invisible_sep_tl
+            \l__spintent_geo_luaset_print_tl
+          }
       }
       {
         \MathMLintent
@@ -2777,20 +2780,24 @@
       {
         \bool_if:NTF \l__spintent_sprecta_silent_cmd_bool
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str { _ \l__spintent_geo_luaset_intent_str - }
+            \str_set:Ne \l__spintent_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str { recta- \l__spintent_geo_luaset_intent_str }
+            \str_put_left:Ne \l__spintent_geo_luaset_intent_str { recta - }
           }
       }
       {
-        \str_set:Ne \l__spintent_geo_luaset_intent_str { _ recta :prefix($pts) }
+        \str_set:Ne \l__spintent_geo_luaset_intent_str { _recta:prefix($pts) }
         \bool_if:NT \l__spintent_sprecta_silent_cmd_bool
           {
             \str_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent }
           }
       }
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \__spintent_sprecta_mathml:
+  }
+\cs_new_protected:Nn \__spintent_sprecta_mathml:
+  {
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \str_if_eq:VnTF \l__spintent_geo_luaset_is_name_str { true }
       {
         \str_if_eq:VnTF \l__spintent_sprecta_mode_str { school }
@@ -2803,7 +2810,10 @@
                   }
                 \l__spintent_geo_luaset_intent_str
               }
-              { \c__spintent_invisible_sep_tl \l__spintent_geo_luaset_print_tl }
+              {
+                \c__spintent_invisible_sep_tl
+                \l__spintent_geo_luaset_print_tl
+              }
           }
           {
             \MathMLintent
@@ -2933,23 +2943,30 @@
       {
         \bool_if:NTF \l__spintent_sprayo_silent_cmd_bool
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str { _ \l__spintent_geo_luaset_intent_str - }
+            \str_set:Ne \l__spintent_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str
+            \str_put_left:Ne \l__spintent_geo_luaset_intent_str
               {
-                \l__spintent_sprayo_read_sty_str - \l__spintent_geo_luaset_intent_str
+                \l__spintent_sprayo_read_sty_str -
               }
           }
       }
       {
-        \str_set:Ne \l__spintent_geo_luaset_intent_str { _ \l__spintent_sprayo_read_sty_str :prefix($pts) }
+        \str_set:Ne \l__spintent_geo_luaset_intent_str
+          {
+            _ \l__spintent_sprayo_read_sty_str :prefix($pts)
+          }
         \bool_if:NT \l__spintent_sprayo_silent_cmd_bool
           {
             \str_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent }
           }
       }
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \__spintent_sprayo_mathml:
+  }
+\cs_new_protected:Nn \__spintent_sprayo_mathml:n
+  {
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \str_if_eq:VnTF \l__spintent_sprayo_mode_str { school }
       {
         \MathMLintent
@@ -3003,7 +3020,7 @@
     \str_new:c { l__spintent_sp #1 _mode_str     }
     \tl_new:c  { l__spintent_sp #1 _prefix_tl    }
     \str_new:c { l__spintent_sp #1 _read_sty_str }
-    \str_new:c { l__spintent_sp #1 _read_arg_tl  }
+    \tl_new:c  { l__spintent_sp #1 _read_arg_tl  }
   }
 \clist_map_inline:nn { side , mside }
   {
@@ -3072,7 +3089,13 @@
   }
 \cs_new_protected:Nn \__spintent_spside_process:nn
   {
-    \tl_set:Nn \l__spintent_geo_intent_tl
+    \__spintent_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
+      {
+        \msg_error:nnee { spintent } { sp #1 -invalid-points }
+          { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \tl_set:Ne \l__spintent_geo_intent_tl
       {
         \tl_if_empty:cTF { l__spintent_sp #1 _read_arg_tl }
           { \str_use:c { l__spintent_sp #1 _read_sty_str } }
@@ -3082,25 +3105,16 @@
       {
         \tl_put_left:Nn \l__spintent_geo_intent_tl { medida-del- }
       }
-    \__spintent_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
-    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
-      {
-        \msg_error:nnee { spintent } { sp #1 -invalid-points }
-          { \c_backslash_str sp #1 } { \exp_not:n {#2} }
-      }
     \str_if_eq:eeTF { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
         \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str
-              {
-                _ \l__spintent_geo_luaset_intent_str -
-              }
+            \str_set:Ne \l__spintent_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str
+            \str_put_left:Ne \l__spintent_geo_luaset_intent_str
               {
-                \l__spintent_geo_intent_tl - \l__spintent_geo_luaset_intent_str
+                \l__spintent_geo_intent_tl -
               }
           }
       }
@@ -3114,7 +3128,8 @@
             \str_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent }
           }
       }
-   \__spintent_spside_mathml:n { #1 }
+    \__spintent_spside_mathml:n { #1 }
+  }
 \cs_new_protected:Nn \__spintent_spside_mathml:n
   {
     \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
@@ -3135,11 +3150,14 @@
                 \overline { \l__spintent_geo_luaset_print_tl }
               }
               {
-                \bool_if:cT { l__spintent_sp #1 _print_m_bool }
+                \bool_if:cTF { l__spintent_sp #1 _print_m_bool }
                   {
                     \MathMLintent { :silent } { \operatorname { m } }
+                    \overline { \l__spintent_geo_luaset_print_tl }
                   }
-                \l__spintent_geo_luaset_print_tl
+                  {
+                    \l__spintent_geo_luaset_print_tl
+                  }
               }
           }
       }
@@ -3155,13 +3173,18 @@
           {
             \c__spintent_invisible_sep_tl
             \str_if_eq:eeTF {#1} { side }
-              { \overline { \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl } } }
               {
-                \bool_if:cT { l__spintent_sp #1 _print_m_bool }
+                \overline { \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl } }
+              }
+              {
+                \bool_if:cTF { l__spintent_sp #1 _print_m_bool }
                   {
                     \MathMLintent { :silent } { \operatorname { m } }
+                    \overline { \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl } }
                   }
-                \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
+                  {
+                    \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
+                  }
               }
           }
       }

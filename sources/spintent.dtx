@@ -610,7 +610,7 @@
                     osf, nomath, mono, ScaleSF, ScaleRM, spanish, shorthands, no-text, semibold, colorlinks, pdftitle, pdfdisplaydoctitle, %
                     pdfstartview, FitH, pdfinfo, Title, Subject, range, StylisticSet, small-caps, read-arg, píxeles, px, caudal,%
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
-                    lado, trazo, mathcat,school, rayo, semirecta, print-m, print-sym, recto, en-US, math, mathml-SE, es-CL, on, off, %
+                    lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent-cmd, en-US, math, mathml-SE, es-CL, on, off, %
                     setup, tagging, tagging-setup, lang, pdfversion, pdfstandard,},%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
@@ -3006,7 +3006,7 @@
 %   \end{syntax}
 %   El comando \ics*{sprayo} trabaja en \emph{modo matemático} y
 %   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}.
-%   Representa un \emph{rayo} o \emph{semirecta} con origen en el primer
+%   Representa un \emph{rayo} o \emph{semirrecta} con origen en el primer
 %   punto y dirección hacia el segundo, aplicando |\overrightarrow| en la impresión.
 %
 %   \smallskip
@@ -3163,7 +3163,7 @@
 %   Representa la \emph{medida} del \emph{lado}, \emph{segmento} o \emph{trazo}
 %   determinado por dos puntos. La distinción entre |\spside| y |\spmside| es
 %   semántica: |\spside| representa el \emph{objeto geométrico}
-%   `$\overline{AB}$`; |\spmside| representa su \emph{medida} (un
+%   `$\overline{AB}$'; |\spmside| representa su \emph{medida} (un
 %   número real positivo).
 %
 %   \smallskip
@@ -3343,7 +3343,7 @@
 %   o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
 %   aplicando |\measuredangle| o |\measuredrightangle| en la impresión.
 %   La distinción entre |\spangle| y |\spmangle| es semántica: |\spangle|
-%   representa el \emph{objeto geométrico} `$\angle A O B$`; |\spmangle|
+%   representa el \emph{objeto geométrico} `$\angle A O B$'; |\spmangle|
 %   representa su \emph{medida} (un valor en grados).
 %
 % \smallskip
@@ -4051,18 +4051,6 @@
 % only way to remember what does what.
 % \end{important}
 %
-% \subsection{Initial set up}
-%
-% Start the \pkg{DocStrip} guards.
-%    \begin{macrocode}
-%<*package>
-%    \end{macrocode}
-% Identify the internal prefix (\LaTeX3 \pkg{DocStrip} convention) for
-% \myclass{l3doc} class.
-%    \begin{macrocode}
-%<@@=spintent>
-%    \end{macrocode}
-%
 % \subsection{General conventions}
 %
 % Functions of the form \myhlc|\@@_luafun_some:n| or \myhlc|\@@_luafun_some:nn|
@@ -4081,6 +4069,18 @@
 %  All variables and functions defined in this package are private and
 %  are NOT intended to work or be used by another package or module.
 % \end{important}
+%
+% \subsection{Initial set up}
+%
+% Start the \pkg{DocStrip} guards.
+%    \begin{macrocode}
+%<*package>
+%    \end{macrocode}
+% Identify the internal prefix (\LaTeX3 \pkg{DocStrip} convention) for
+% \myclass{l3doc} class.
+%    \begin{macrocode}
+%<@@=spintent>
+%    \end{macrocode}
 %
 % \subsection{Declaration of the package}
 %
@@ -9029,14 +9029,14 @@
       {
         \bool_if:NTF \l_@@_spPoint_silent_cmd_bool
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
             \str_set:Ne \l_@@_geo_luaset_intent_str { punto- \l_@@_geo_luaset_intent_str }
           }
       }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _ punto :prefix($pt) }
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _punto:prefix($pt) }
         \bool_if:NT \l_@@_spPoint_silent_cmd_bool
           {
             \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
@@ -9053,7 +9053,10 @@
               }
             \l_@@_geo_luaset_intent_str
           }
-          { \c_@@_invisible_sep_tl \l_@@_geo_luaset_print_tl }
+          {
+            \c_@@_invisible_sep_tl
+            \l_@@_geo_luaset_print_tl
+          }
       }
       {
         \MathMLintent
@@ -9157,7 +9160,7 @@
 % \subsection{The command \cs{sprecta}}\label{cmd:sprecta}
 %
 % The user command |\sprecta| supports two notations, detected
-% automatically by the Lua parser: when the argument contains a comma,
+% automatically by the Lua module: when the argument contains a comma,
 % it is interpreted as two points and rendered with
 % \cs{overleftrightarrow}; when it contains no comma, it is interpreted
 % as a proper name and typeset without any visual decorator. The
@@ -9196,9 +9199,8 @@
 % \subsubsection{Definition of keys for \cs[no-index]{sprecta}}
 %
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, unknown}
-%   We define the keys \mykey[sprecta]{read-cmd},
-%   \mykey[sprecta]{prefix} and \mykey[sprecta]{silent-cmd}, following
-%   the same pattern as |\spPoint| (\S\ref{cmd:spPoint}).
+%   We define the \mymeta{keys} \mykey[sprecta]{read-cmd}, \mykey[sprecta]{prefix}
+%   and \mykey[sprecta]{silent-cmd}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / sprecta }
   {
@@ -9260,20 +9262,29 @@
       {
         \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { recta- \l_@@_geo_luaset_intent_str }
+            \str_put_left:Ne \l_@@_geo_luaset_intent_str { recta - }
           }
       }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _ recta :prefix($pts) }
+        \str_set:Ne \l_@@_geo_luaset_intent_str { _recta:prefix($pts) }
         \bool_if:NT \l_@@_sprecta_silent_cmd_bool
           {
             \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
           }
       }
-    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \@@_sprecta_mathml:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_sprecta_mathml:}
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_sprecta_mathml:
+  {
+    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \str_if_eq:VnTF \l_@@_geo_luaset_is_name_str { true }
       {
         \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
@@ -9286,7 +9297,10 @@
                   }
                 \l_@@_geo_luaset_intent_str
               }
-              { \c_@@_invisible_sep_tl \l_@@_geo_luaset_print_tl }
+              {
+                \c_@@_invisible_sep_tl
+                \l_@@_geo_luaset_print_tl
+              }
           }
           {
             \MathMLintent
@@ -9375,20 +9389,28 @@
 %
 % The user command |\sprayo| provides a semantic interface for a ray.
 % The key \mykey[sprayo]{read-sty} selects the verbalized term,
-% |rayo| or |semirrecta|, both rendered identically with
-% |\overrightarrow|.
+% |rayo| or |semirrecta|, both rendered identically with |\overrightarrow|.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{sprayo}}
 %
-% \begin{variable}[int]{
-%   \l_@@_sprayo_mode_str, \l_@@_sprayo_prefix_tl,
-%   \l_@@_sprayo_read_sty_str}
-%   The first two follow the same semantics as
-%   \cs{l_@@_spPoint_mode_str} and \cs{l_@@_spPoint_prefix_tl}
-%   (\S\ref{cmd:spPoint}). The variable
-%   \myhlc|\l_@@_sprayo_read_sty_str| stores the term chosen by
-%   \mykey[sprayo]{read-sty}, and is passed directly to Lua as the
-%   concept name.
+% \begin{variable}[int]
+%   {
+%     \l_@@_sprayo_mode_str,
+%     \l_@@_sprayo_prefix_tl,
+%     \l_@@_sprayo_read_sty_str,
+%   }
+%   The variable \myhlc|\l_@@_sprayo_mode_str| store the values set by
+%   the key \mykey[sprayo]{read-cmd}; the variable \myhlc|\l_@@_sprayo_prefix_tl|
+%   store the value set by the key \mykey[sprayo]{prefix} and the variable
+%   \myhlc|\l_@@_sprayo_read_sty_str| stores the value set by the key
+%   \mykey[sprayo]{read-sty}.
+%
+%  \smallskip
+%
+%   \begin{important}*
+%    The variables defined here are assigned using \myhlc|.choices:nn|
+%    or \myhlc|.code:n| within \myhlc|\keys_define:nn|.
+%   \end{important}
 %    \begin{macrocode}
 \str_new:N \l_@@_sprayo_mode_str
 \tl_new:N  \l_@@_sprayo_prefix_tl
@@ -9418,9 +9440,7 @@
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, read-sty, unknown}
 %   We define the \mymeta{keys} \mykey[sprayo]{read-cmd},
 %   \mykey[sprayo]{prefix}, \mykey[sprayo]{silent-cmd} and
-%   \mykey[sprayo]{read-sty}. The key \mykey[sprayo]{read-sty}
-%   selects the verbalized term: it defaults to |rayo| and accepts
-%   |semirrecta| as the alternative term.
+%   \mykey[sprayo]{read-sty}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / sprayo }
   {
@@ -9469,10 +9489,17 @@
 % \subsubsection{Internal functions for \cs[no-index]{sprayo}}
 %
 % \begin{macro}[int]{\@@_sprayo_print:n}
-%   Resolves the concept name to \cs{l_@@_sprayo_read_sty_str} or an
-%   empty group before calling Lua, following the same pattern as
-%   |\sprecta| (\S\ref{cmd:sprecta}), and uses |\overrightarrow| as
-%   the visual decorator in both branches.
+%   The internal function \myhlc|\@@_sprayo_print:n| process the \mymarg{argument}
+%   passed in `|#1|'. First, call the function \myhlc|\@@_luafun_geo_parse_and_set:n|
+%   to process the \mymarg{argument}, returning an \enquote{error} if the
+%   input is invalid, then, it checks if the value of the variable
+%   \myhlc|\l_@@_sprayo_mode_str| handled by the key \mykey{read-cmd} is
+%   |school|. If so, it checks if the variable \myhlc|\l_@@_sprayo_silent_cmd_bool|
+%   handled by the key \mykey{silent-cmd} is |true| by setting the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str| with the `\textcolor{red}{\texttt{_-}}'
+%   trick for \emph{silent} |<mrow>| since |:silent| doesn't work here; if
+%   the state is |false| we place the variable \myhlc|\l_@@_sprayo_read_sty_str|
+%   and `\textcolor{red}{\texttt{-}}' to the left of \myhlc|\l_@@_geo_luaset_intent_str|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprayo_print:n
   {
@@ -9485,23 +9512,48 @@
       {
         \bool_if:NTF \l_@@_sprayo_silent_cmd_bool
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str
+            \str_put_left:Ne \l_@@_geo_luaset_intent_str
               {
-                \l_@@_sprayo_read_sty_str - \l_@@_geo_luaset_intent_str
+                \l_@@_sprayo_read_sty_str -
               }
           }
       }
+%    \end{macrocode}
+%   If the value of the variable \myhlc|\l_@@_sprayo_mode_str| is not
+%   |school|, that is, |read-cmd=mathcat|, we will set the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str| to the value of the variable
+%   \myhlc|\l_@@_sprayo_read_sty_str| using \myhlc|:prefix($pts)|; if
+%   |silent-cmd=true|, we simply add |:silent| to the right of the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str|. Finally, we call the function
+%   \myhlc|\@@_sprayo_mathml:|.
+%    \begin{macrocode}
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_sprayo_read_sty_str :prefix($pts) }
+        \str_set:Ne \l_@@_geo_luaset_intent_str
+          {
+            _ \l_@@_sprayo_read_sty_str :prefix($pts)
+          }
         \bool_if:NT \l_@@_sprayo_silent_cmd_bool
           {
             \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
           }
       }
-    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \@@_sprayo_mathml:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_sprayo_mathml:}
+%   The function \myhlc|\@@_sprayo_mathml:| generates the code \mynvmath{MathML}
+%   and prints the \mymarg{argument} passed to |\sprayo|. The keys
+%   |read-cmd| and \mykey{prefix} are executed, applying |\overrightarrow|
+%   to the output in both branches.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_sprayo_mathml:n
+  {
+    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \str_if_eq:VnTF \l_@@_sprayo_mode_str { school }
       {
         \MathMLintent
@@ -9539,8 +9591,9 @@
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_sprayo_exec:nn}
-%   Sets the keys via \myhlc|\keys_set:nn|, then delegates rendering to
-%   \myhlc|\@@_sprayo_print:n|.
+%   The function \myhlc|\@@_sprayo_exec:nn| receives the optional
+%   \mymeta{keys} passed in `|#1|' and the \mymarg{argument} passed in `|#2|'
+%   delegating the rendering of the latter to \myhlc|\@@_sprayo_print:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprayo_exec:nn
   {
@@ -9551,7 +9604,8 @@
 % \end{macro}
 %
 % \begin{macro}{\sprayo}
-%   Enforces math mode and delegates to \myhlc|\@@_sprayo_exec:nn|.
+%   The public command |\sprayo| enforces \emph{math mode}, opens a local
+%   group, and delegates execution to \myhlc|\@@_sprayo_exec:nn|.
 %    \begin{macrocode}
 \NewDocumentCommand \sprayo { O{} m }
   {
@@ -9576,7 +9630,7 @@
 % \mykey[spside]{read-arg} overrides that term entirely with a
 % free-form string. Additionally, the command |\spmside| provides
 % the key \mykey[spmside]{print-m}, controlling whether \myhlc|\operatorname{m}| is
-% typeset before the segment.
+% typeset before the argument.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spside} and
 %   \cs[no-index]{spmside}}
@@ -9619,7 +9673,7 @@
     \str_new:c { l_@@_sp #1 _mode_str     }
     \tl_new:c  { l_@@_sp #1 _prefix_tl    }
     \str_new:c { l_@@_sp #1 _read_sty_str }
-    \str_new:c { l_@@_sp #1 _read_arg_tl  }
+    \tl_new:c  { l_@@_sp #1 _read_arg_tl  }
   }
 %    \end{macrocode}
 % \end{variable}
@@ -9723,26 +9777,24 @@
 %
 % \begin{macro}[int]{\@@_spside_process:nn}
 %   The internal function \myhlc|\@@_spside_process:nn| passes the short
-%   name of the command |side| or |mside| passed in `|#1|' and the points
-%   passed as \mymarg{argument} in `|#2|'. First, we will store the
-%   value set by the key \mykey{read-sty} or the key \mykey{read-arg}, if
-%   present, in the variable \myhlc|\l_@@_geo_intent_tl|. If |\spmside|
-%   is running, we will place \enquote{medida-del} to the left of the
-%   variable and call the function \myhlc|\@@_luafun_geo_parse_and_set:n|
-%   to process the \mymarg{argument} passed in `|#2|', returning an
-%   \enquote{error} if the input is invalid.
-%
-%^^A   Only then does it decide,
-%^^A   according to mode and \mykey{silent-cmd}, whether to send that
-%^^A   resolved term or an empty group to
-%^^A   \myhlc|\@@_luafun_geo_parse_and_set:nnn|.
-%
-%   \smallskip
-%
+%   name of the command |side| or |mside| passed in `|#1|' and the
+%   \mymarg{argument} passed in `|#2|'. First, call the function
+%   \myhlc|\@@_luafun_geo_parse_and_set:n| to process the \mymarg{argument}
+%   passed in `|#2|', returning an \enquote{error} if the input is invalid,
+%   then stores the value set by the key \mykey{read-sty} or the key \mykey{read-arg},
+%   if present, in the variable \myhlc|\l_@@_geo_intent_tl|. If |\spmside|
+%   is running, we will place `|medida-del-|' to the left of the
+%   variable \myhlc|\l_@@_geo_intent_tl|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_process:nn
   {
-    \tl_set:Nn \l_@@_geo_intent_tl
+    \@@_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+      {
+        \msg_error:nnee { spintent } { sp #1 -invalid-points }
+          { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \tl_set:Ne \l_@@_geo_intent_tl
       {
         \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
           { \str_use:c { l_@@_sp #1 _read_sty_str } }
@@ -9752,41 +9804,33 @@
       {
         \tl_put_left:Nn \l_@@_geo_intent_tl { medida-del- }
       }
-    \@@_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
-    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
-      {
-        \msg_error:nnee { spintent } { sp #1 -invalid-points }
-          { \c_backslash_str sp #1 } { \exp_not:n {#2} }
-      }
 %    \end{macrocode}
-%   If the key \mykey{read-cmd} is set to |school| and the key
-%   \mykey{silent-cmd} is |true|, we will set the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str| with the `|_-|' trick, since
-%   |:silent| doesn't work here.
+%   If |read-cmd=school| and |silent-cmd=true|, we will set the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str| with the `\textcolor{red}{\texttt{_-}}'
+%   trick for \emph{silent} |<mrow>| since |:silent| doesn't work here; if
+%   |silent-cmd=false| we place the variable \myhlc|\l_@@_geo_intent_tl|
+%   and `\textcolor{red}{\texttt{-}}' to the left of \myhlc|\l_@@_geo_luaset_intent_str|.
 %    \begin{macrocode}
     \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
         \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str
-              {
-                _ \l_@@_geo_luaset_intent_str -
-              }
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str
+            \str_put_left:Ne \l_@@_geo_luaset_intent_str
               {
-                \l_@@_geo_intent_tl - \l_@@_geo_luaset_intent_str
+                \l_@@_geo_intent_tl -
               }
           }
       }
 %    \end{macrocode}
-%   If the key \mykey{read-cmd} is set to |mathcat| and the key \mykey{silent-cmd}
-%   is |false| we will set the variable \myhlc|\l_@@_geo_luaset_intent_str|
-%   with \myhlc|:prefix($pts)| and if the key \mykey{silent-cmd} is |true|
-%   we will add |:silent|.
-%^^A   In |mathcat| mode, |:silent| is appended to \myhlc|\l_@@_geo_luaset_intent_str|
-%^^A   afterward when needed.
+%   If we use |read-cmd=mathcat|, we will set the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str| to the value of the variable
+%   \myhlc|\l_@@_geo_intent_tl| using \myhlc|:prefix($pts)|; if
+%   |silent-cmd=true|, we simply add |:silent| to the right of the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str|. Finally, we call the function
+%   \myhlc|\@@_spside_mathml:n|.
 %    \begin{macrocode}
       {
         \str_set:Ne \l_@@_geo_luaset_intent_str
@@ -9798,15 +9842,18 @@
             \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
           }
       }
-   \@@_spside_mathml:n { #1 }
+    \@@_spside_mathml:n { #1 }
+  }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spside_mathml:n}
-%   When `|#1|' is \mykey{mside} and \mykey{print-m} is |true|,
-%   \myhlc|\operatorname{m}| is typeset wrapped in \myhlc|\MathMLintent|\marg{:silent} before
-%   \myhlc|\overline|, following the same pause-avoiding pattern already
-%   used for |\spmarc| (\S\ref{cmd:sparc}).
+%   The function \myhlc|\@@_spside_mathml:n| receives the short name of the
+%   command passed as an argument in `|#1|'; it generates the code
+%   \mynvmath{MathML} and prints the \mymarg{argument} passed to |\spside|
+%   and |\spmside|. The keys |read-cmd| and \mykey{prefix} are executed for
+%   both commands along with the |print-m| key which adds
+%   \myhlc|\operatorname{m}| to |\spmside|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_mathml:n
   {
@@ -9828,11 +9875,14 @@
                 \overline { \l_@@_geo_luaset_print_tl }
               }
               {
-                \bool_if:cT { l_@@_sp #1 _print_m_bool }
+                \bool_if:cTF { l_@@_sp #1 _print_m_bool }
                   {
                     \MathMLintent { :silent } { \operatorname { m } }
+                    \overline { \l_@@_geo_luaset_print_tl }
                   }
-                \l_@@_geo_luaset_print_tl
+                  {
+                    \l_@@_geo_luaset_print_tl
+                  }
               }
           }
       }
@@ -9848,13 +9898,18 @@
           {
             \c_@@_invisible_sep_tl
             \str_if_eq:eeTF {#1} { side }
-              { \overline { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } } }
               {
-                \bool_if:cT { l_@@_sp #1 _print_m_bool }
+                \overline { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
+              }
+              {
+                \bool_if:cTF { l_@@_sp #1 _print_m_bool }
                   {
                     \MathMLintent { :silent } { \operatorname { m } }
+                    \overline { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
                   }
-                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
+                  {
+                    \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
+                  }
               }
           }
       }
@@ -9863,11 +9918,10 @@
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spside_exec:nnn}
-%   Takes the short identifier in `|#1|', the optional \mymeta{keys}
-%   in `|#2|', and the point list in `|#3|'. Sets the keys in the
-%   correct keyspace via \cs{keys_set:nn} — the keyspace name is
-%   plain text substituted from `|#1|', not a csname, so no |:c|
-%   variant is required here.
+%   The function \myhlc|\@@_spside_exec:nnn| receives the \emph{short name}
+%   of the command passed in `|#1|', the optional \mymeta{keys} passed in `|#2|'
+%   and the \mymarg{argument} passed in `|#3|', delegating the rendering
+%   to \myhlc|\@@_spside_process:nn|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_exec:nnn
   {
@@ -9878,9 +9932,8 @@
 % \end{macro}
 %
 % \begin{macro}{\spside, \spmside}
-%   Both public commands are thin wrappers around
-%   \myhlc|\@@_spside_exec:nnn|, passing their own short identifier as
-%   the first argument.
+%   Both public commands |\spside| and |\spmside| enforces \emph{math mode},
+%   opens a local group, and delegates execution to \myhlc|\@@_spside_exec:nnn|.
 %    \begin{macrocode}
 \NewDocumentCommand \spside { O{} m }
   {
