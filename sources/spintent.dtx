@@ -581,14 +581,14 @@
 % Other words 3 MathML/tagpdf
     keywordstyle  = [3]{\color{mathtag}},%
     keywords      = [3]{MathMLintent,MathMLarg, invisibletimes, luamml_attribute, luamml_annotate, DocumentMetadata,},%,
-% Other words 4
+% Other words 4 (LaTeX2e)
     keywordstyle  = [4]{\color{latex_cmd}},%
     keywords      = [4]{frac, dfrac, section, input, listparindent, linewidth, emph, textbf, footnote,%
                     triangleright, diamond, circ, parleft, star, centering, ast, sptext, , href, label, ref, %
                     mathord, parallel, mathstyle,.choice, .code, .meta, text, textsuperscript, cs_to_str, c_zero_skip, keys_define, %
                     mode_leave_vertical, Umathchardef,mathrm, mathbf, textstyle, addfontfeatures, mdlgwhtsquare, %
                     left, right, Uleft, Uright, overleftrightarrow, overrightarrow, overline, triangle, rightangle,%
-                    angle, measuredangle, measuredrightangle,alpha, beta, mathcal,  },%
+                    rightanglesqr, angle, measuredangle, measuredrightangle,alpha, beta, mathcal,  },%
 % Other words 5
     keywordstyle  = [5]{\bfseries\color{pkgname}},%
     keywords      = [5]{babel,spintent,libertinus-otf,sourcecodepro,fourier-otf,Erewhon-Math,hyperref,},%,
@@ -8463,7 +8463,7 @@
 %   The variable \myhlc|\l_@@_spnQ_intent_read_sign_str| stores the
 %   |:intent| passed to |\MathMLintent| when the signs
 %   `$\mathcolor{red}{+}$' or `$\mathcolor{red}{-}$' are present in the
-%   integer part, used by the function \myhlc|\@@_spmQ_print_sacle_int:n|.
+%   integer part, used by the function \myhlc|\@@_spmQ_print_scale_int:n|.
 %
 %   \smallskip
 %
@@ -8717,8 +8717,8 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmQ_print_sacle_int:n}
-%   The function \myhlc|\@@_spmQ_print_sacle_int:n| takes the integer part
+% \begin{macro}[int]{\@@_spmQ_print_scale_int:n}
+%   The function \myhlc|\@@_spmQ_print_scale_int:n| takes the integer part
 %   of the \emph{\enquote{mixed number}} passed in `|#1|'. It first calls
 %   \myhlc|\@@_luafun_clean_split_and_set:n| on `|#1|' to parse and
 %   populate the shared Lua variables, then checks the status of
@@ -8744,7 +8744,7 @@
 %   If the status is |false|, the |spmQ-not-integer| \enquote{error} is
 %   raised immediately.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spmQ_print_sacle_int:n
+\cs_new_protected:Nn \@@_spmQ_print_scale_int:n
   {
     \@@_luafun_clean_split_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnTF \l_@@_luaset_has_integer_str { true }
@@ -8819,7 +8819,7 @@
 %   orchestrator for |\spmQ|. It takes three arguments: the integer part
 %   `|#1|', the numerator `|#2|', and the denominator `|#3|'. It opens
 %   the optional parentheses via \myhlc|\@@_spmQ_start_wrap_parens:|,
-%   then calls \myhlc|\@@_spmQ_print_sacle_int:n| to scale and render the
+%   then calls \myhlc|\@@_spmQ_print_scale_int:n| to scale and render the
 %   integer part. Next, it injects the grammatical connector between the
 %   integer and the fraction via \myhlc|\@@_spmQ_set_join_word:|. Then it
 %   calls \myhlc|\@@_spmQ_print_spnZ_dfrac:nn| to typeset the fraction
@@ -8830,7 +8830,7 @@
 \cs_new_protected:Nn \@@_spmQ_print:nnn
   {
     \@@_spmQ_start_wrap_parens:
-    \@@_spmQ_print_sacle_int:n { #1 }
+    \@@_spmQ_print_scale_int:n { #1 }
     \@@_spmQ_set_join_word:
     \@@_spmQ_print_spnZ_dfrac:nn { #2 } { #3 }
     \@@_spmQ_stop_wrap_parens:
@@ -9159,20 +9159,25 @@
 %
 % \subsection{The command \cs{sprecta}}\label{cmd:sprecta}
 %
-% The user command |\sprecta| supports two notations, detected
-% automatically by the Lua module: when the argument contains a comma,
-% it is interpreted as two points and rendered with
-% \cs{overleftrightarrow}; when it contains no comma, it is interpreted
-% as a proper name and typeset without any visual decorator. The
-% shared variable \cs{l_@@_geo_luaset_is_name_str} carries the detection
-% result from Lua to the rendering function.
+% The user command |\sprecta| supports two types of notation for the
+% input \mymarg{argument}: when the argument contains two points (separated by
+% an optional comma), |\overleftrightarrow| is applied; when the
+% argument is a single point (without comma) or a lowercase letter, it is
+% formatted without any visual decorator. Both notations are
+% automatically detected by the Lua module.
+%^^A The shared variable \cs{l_@@_geo_luaset_is_name_str} carries the detection
+%^^A result from Lua to the rendering function.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{sprecta}}
 %
-% \begin{variable}[int]{\l_@@_sprecta_mode_str, \l_@@_sprecta_prefix_tl}
-%   These variables follow the same semantics as
-%   \cs{l_@@_spPoint_mode_str} and \cs{l_@@_spPoint_prefix_tl}
-%   (\S\ref{cmd:spPoint}).
+% \begin{variable}[int]
+%   {
+%     \l_@@_sprecta_mode_str,
+%     \l_@@_sprecta_prefix_tl,
+%   }
+%   The variable \myhlc|\l_@@_sprecta_mode_str| store the values set by
+%   the key \mykey[sprecta]{read-cmd} and the variable \myhlc|\l_@@_sprayo_prefix_tl|
+%   store the value set by the key \mykey[sprecta]{prefix}.
 %    \begin{macrocode}
 \str_new:N \l_@@_sprecta_mode_str
 \tl_new:N  \l_@@_sprecta_prefix_tl
@@ -9356,9 +9361,9 @@
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_sprecta_exec:nn}
-%   Receives the optional \mymeta{keys} in `|#1|' and the argument in
-%   `|#2|'. Sets the keys via \cs{keys_set:nn}, then delegates
-%   rendering to \myhlc|\@@_sprecta_print:n|.
+%   The function \myhlc|\@@_sprecta_exec:nn| receives the optional
+%   \mymeta{keys} passed in `|#1|' and the \mymarg{argument} passed in `|#2|'
+%   delegating the rendering of the latter to \myhlc|\@@_sprecta_print:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_exec:nn
   {
@@ -9369,7 +9374,7 @@
 % \end{macro}
 %
 % \begin{macro}{\sprecta}
-%   The public command |\sprecta| enforces math mode, opens a local
+%   The public command |\sprecta| enforces \emph{math mode}, opens a local
 %   group, and delegates execution to \myhlc|\@@_sprecta_exec:nn|.
 %    \begin{macrocode}
 \NewDocumentCommand \sprecta { O{} m }
@@ -9960,24 +9965,38 @@
 %
 % \subsection{The commands \cs{spangle} and \cs{spmangle}}\label{cmd:spmangle}
 %
-% The user commands |\spangle| and |\spmangle| — renamed from the
-% earlier |\spangulo|/|\spmangulo| — provide a semantic interface for
-% angles, following the same generic pattern as |\spside|/|\spmside|.
+% The user commands |\spangle| and |\spmangle|, provide a semantic interface
+% for angles, following the same generic pattern as |\spside|/|\spmside|.
 % The key \mykey[spmangle]{print-m} chooses between the
-% |\angle|/|\rightangle| pair, typeset together with an explicit
-% |\operatorname{m}|, and the |\measuredangle|/|\measuredrightangle|
+% |\angle|/|\rightanglesqr| pair, typeset together with an explicit
+% \myhlc|\operatorname{m}|, and the |\measuredangle|/|\measuredrightangle|
 % pair, which already conveys the notion of measure on its own; the
-% key \mykey[spangle]{recto} independently chooses the right-angle
+% key \mykey[spangle,spmangle]{recto} independently chooses the right-angle
 % variant of whichever pair is active.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spangle} and
 %   \cs[no-index]{spmangle}}
 %
-% \begin{variable}[int]{\l_@@_sp\#1_mode_str, \l_@@_sp\#1_prefix_tl}
-%   Declared once for both |angle| and |mangle| via
-%   \cs{clist_map_inline:nn}. These follow the same semantics as
-%   \cs{l_@@_spPoint_mode_str} and \cs{l_@@_spPoint_prefix_tl}
-%   (\S\ref{cmd:spPoint}).
+% \begin{variable}[int]
+%   {
+%     \l_@@_spangle_mode_str,
+%     \l_@@_spmangle_mode_str,
+%     \l_@@_spangle_prefix_tl,
+%     \l_@@_spmangle_prefix_tl,
+%   }
+%   Each pair of variables is declared once for both |\spangle| and
+%   |\spmangle| via \myhlc|\clist_map_inline:nn|. The variables \myhlc|\l_@@_spangle_mode_str|
+%   and \myhlc|\l_@@_spmangle_mode_str| store the values set by the key
+%   \mykey[spangle,spmangle]{read-cmd}; the variables \myhlc|\l_@@_spangle_prefix_tl|
+%   and \myhlc|\l_@@_spmangle_prefix_tl| store the values set by the key
+%   \mykey[spangle,spmangle]{silent-cmd}
+%
+%   \smallskip
+%
+%   \begin{important}*
+%    The variables defined here are assigned using \myhlc|.choices:nn|
+%    or \myhlc|.code:n| within \myhlc|\keys_define:nn|.
+%   \end{important}
 %    \begin{macrocode}
 \clist_map_inline:nn { angle , mangle }
   {
@@ -9991,9 +10010,9 @@
 %   and \cs[no-index]{spmangle}}
 %
 % \begin{macro}[int]{spangle-invalid-arg, spmangle-invalid-arg}
-%   Both messages are generated by the same map, using the same
-%   |##1|/|##2| doubling convention as |\spside|/|\spmside|
-%   (\S\ref{cmd:spside}).
+%   We define an \enquote{error} message for the commands |\spangle| and
+%   |\spmangle|. The \enquote{error} is triggered if the user includes a
+%   invalid \mymarg{argument} passed in `|#1|' to the command.
 %    \begin{macrocode}
 \clist_map_inline:nn { angle , mangle }
   {
@@ -10013,12 +10032,18 @@
 % \subsubsection{Definition of keys for \cs[no-index]{spangle} and
 %   \cs[no-index]{spmangle}}
 %
-% \begin{macro}[int]{read-cmd, prefix, silent-cmd, recto, print-m,
-%                    unknown}
-%   The keys \mykey[spangle]{silent-cmd}, \mykey[spangle]{recto} and
-%   \mykey[spmangle]{print-m} all use the direct |.bool_set:c|
-%   property, auto-declared by \pkg{l3keys}; none needs a separate
-%   |\bool_new:c| call.
+% \begin{macro}[int]
+%   {
+%     read-cmd,
+%     prefix,
+%     silent-cmd,
+%     recto,
+%     print-m,
+%     unknown,
+%    }
+%   We define the shared \mymeta{keys} \mykey[spangle,spmangle]{read-cmd},
+%   \mykey[spangle,spmangle]{prefix}, \mykey[spangle,spmangle]{silent-cmd},
+%   \mykey[spangle,spmangle]{recto} and \mykey[spangle,spmangle]{print-m}.
 %    \begin{macrocode}
 \clist_map_inline:nn { angle , mangle }
   {
@@ -10066,8 +10091,8 @@
 % \begin{macro}[int]{\@@_spangle_sym:n}
 %   The internal function \myhlc|\@@_spangle_sym:n| dispatches on
 %   |#1|, \mykey{print-m} and \mykey{recto} to select one of four
-%   symbols: \cs{angle}/\cs{rightangle} when \mykey{print-m} is
-%   |true|; \cs{measuredangle}/\cs{measuredrightangle} otherwise. When
+%   symbols: |\angle|/|\rightanglesqr| when \mykey{print-m} is
+%   |true|; |\measuredangle|/|\measuredrightangle| otherwise. When
 %   |#1| is |angle|, only \mykey{recto} applies, choosing between
 %   \cs{angle} and \cs{rightangle}.
 %    \begin{macrocode}
@@ -10103,6 +10128,7 @@
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangle_process:nn
   {
+    \@@_luafun_geo_angulo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:eeTF {#1} { mangle }
       { \tl_set:Nn \l_@@_geo_intent_tl { medida-del-ángulo } }
       { \tl_set:Nn \l_@@_geo_intent_tl { ángulo } }
@@ -10110,7 +10136,6 @@
       {
         \tl_put_right:Nn \l_@@_geo_intent_tl { -recto }
       }
-    \@@_luafun_geo_angulo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
@@ -10120,22 +10145,35 @@
       {
         \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_luaset_intent_str - }
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str
+            \str_put_left:Ne \l_@@_geo_luaset_intent_str
               {
-                \l_@@_geo_intent_tl - \l_@@_geo_luaset_intent_str
+                \l_@@_geo_intent_tl -
               }
           }
       }
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_intent_tl :prefix($pts) }
+        \str_set:Ne \l_@@_geo_luaset_intent_str
+          {
+            _ \l_@@_geo_intent_tl :prefix($pts)
+          }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
           {
             \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
           }
       }
+    \@@_spangle_mathml:n {#1}
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spangle_mathml:n}
+%
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spangle_mathml:n
+  {
     \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
     \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
       {
@@ -10185,8 +10223,10 @@
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spangle_exec:nnn}
-%   Sets the keys in the correct keyspace via \cs{keys_set:nn}, then
-%   delegates rendering to \myhlc|\@@_spangle_process:nn|.
+%   The function \myhlc|\@@_spangle_exec:nnn| receives the \emph{short name}
+%   of the command passed in `|#1|', the optional \mymeta{keys} passed in `|#2|'
+%   and the \mymarg{argument} passed in `|#3|', delegating the rendering
+%   to \myhlc|\@@_spangle_process:nn|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangle_exec:nnn
   {
@@ -10197,9 +10237,8 @@
 % \end{macro}
 %
 % \begin{macro}{\spangle, \spmangle}
-%   Both public commands are thin wrappers around
-%   \myhlc|\@@_spangle_exec:nnn|, passing their own short identifier
-%   as the first argument.
+%   Both public commands |\spside| and |\spmside| enforces \emph{math mode},
+%   opens a local group, and delegates execution to \myhlc|\@@_spangle_exec:nnn|.
 %    \begin{macrocode}
 \NewDocumentCommand \spangle { O{} m }
   {
