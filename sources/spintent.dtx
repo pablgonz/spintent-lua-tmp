@@ -46,28 +46,52 @@
 \directlua{
   local SCALE = 0.85
   local fallback_cache = {}
+  texio.write_nl("term and log", "[TRACE] callback registrandose")
   luatexbase.add_to_callback("luaotfload.patch_font", function(fontdata, specification, id)
+    texio.write_nl("term and log", "[TRACE] patch_font invocado, id=" .. tostring(id) .. " type(fontdata)=" .. type(fontdata))
+    if type(fontdata) ~= "table" then
+      texio.write_nl("term and log", "[TRACE] fontdata no es tabla, salta")
+      return
+    end
     local meta = fontdata.shared and fontdata.shared.rawdata and fontdata.shared.rawdata.metadata
     local familyname = meta and meta.familyname
+    texio.write_nl("term and log", "[TRACE] familyname=" .. tostring(familyname))
     if type(familyname) == "string" and familyname:lower():find("libertinus serif", 1, true) then
+      texio.write_nl("term and log", "[TRACE] MATCH libertinus serif")
       local size = fontdata.size
       local key  = tostring(size)
+      texio.write_nl("term and log", "[TRACE] size=" .. tostring(size) .. " key=" .. key)
       local fb_id = fallback_cache[key]
+      texio.write_nl("term and log", "[TRACE] fb_id en cache=" .. tostring(fb_id))
       if not fb_id then
         local path = kpse.find_file("Carlito-Regular.ttf", "truetype fonts")
-        local scaled_size = math.floor(size * SCALE)
-        fb_id = luaotfload.define_font("[" .. path .. "]", scaled_size)
-        fallback_cache[key] = fb_id
+        texio.write_nl("term and log", "[TRACE] path encontrado=" .. tostring(path))
+        if path then
+          local scaled_size = math.floor(size * SCALE)
+          texio.write_nl("term and log", "[TRACE] scaled_size=" .. tostring(scaled_size))
+          local ok, result = pcall(luaotfload.define_font, "[" .. path .. "]", scaled_size)
+          texio.write_nl("term and log", "[TRACE] define_font ok=" .. tostring(ok) .. " result=" .. tostring(result))
+          if ok then
+            fb_id = result
+            fallback_cache[key] = fb_id
+          end
+        end
       end
       if fb_id then
         local fb_font = font.getfont(fb_id)
+        texio.write_nl("term and log", "[TRACE] fb_font existe=" .. tostring(fb_font ~= nil) .. " tiene characters=" .. tostring(fb_font and fb_font.characters ~= nil))
         local lookup = {}
+        local count = 0
         for uni, _ in next, fb_font.characters do
           if not fontdata.characters[uni] then
             lookup[uni] = fb_id
+            count = count + 1
           end
         end
         fontdata.fallback_lookup = lookup
+        texio.write_nl("term and log", "[TRACE] lookup construido, entries=" .. count .. " tiene20AA=" .. tostring(lookup[0x20AA]))
+      else
+        texio.write_nl("term and log", "[TRACE] fb_id sigue nil, NO se aplico fallback_lookup")
       end
     end
   end, "shekel_fallback_patch")
