@@ -43,8 +43,43 @@
 \newcommand{\araratext}[1]{{\small\normalfont\comfortaa\color{araracolor}\bfseries#1}}
 \newcommand*\arara{\araratext{ar\kern-.03emar\kern-.03ema}}
 % Fonts
+\directlua{
+  local SCALE = 0.85
+  local fallback_cache = {}
+  luatexbase.add_to_callback("luaotfload.patch_font", function(fontdata, specification, id)
+    local name = fontdata.specification and fontdata.specification.name
+    if type(name) == "string" and name:find("LibertinusSerif") then
+      local size = fontdata.size
+      local key  = tostring(size)
+      local fb_id = fallback_cache[key]
+      if not fb_id then
+        local path = kpse.find_file("Carlito-Regular.ttf", "truetype fonts")
+        local scaled_size = math.floor(size * SCALE)
+        fb_id = luaotfload.define_font("[" .. path .. "]", scaled_size)
+        fallback_cache[key] = fb_id
+      end
+      if fb_id then
+        local fb_font = font.getfont(fb_id)
+        local lookup = {}
+        for uni, _ in next, fb_font.characters do
+          if not fontdata.characters[uni] then
+            lookup[uni] = fb_id
+          end
+        end
+        fontdata.fallback_lookup = lookup
+      end
+    end
+  end, "shekel_fallback_patch")
+}
+
 \usepackage[osf,nomath,mono=false,ScaleSF=0.95,ScaleRM=0.95]{libertinus-otf}
-\usepackage{sourcecodepro}
+
+% 1. Definimos la fuente que sí tiene el símbolo
+% 1. Creamos la tabla de fallback usando Lua nativo
+\directlua{
+  local dejavu_path = kpse.find_file("DejaVuSansMono.ttf", "truetype fonts")
+  luaotfload.add_fallback("shekelfallback", { "[" .. dejavu_path .. "]" })
+}
 \defaultfontfeatures[\ttfamily]
   {
     Numbers   = OldStyle,
@@ -52,11 +87,12 @@
     Extension = .otf,
   }
 \setmonofont[
-    UprightFont    = *-Regular,
-    ItalicFont     = *-RegularIt,
-    BoldFont       = *-Medium,
-    BoldItalicFont = *-MediumIt,
-    RawFeature     = {+zero,+ss01}]{SourceCodePro}
+    UprightFont       = *-Regular,
+    ItalicFont        = *-RegularIt,
+    BoldFont          = *-Medium,
+    BoldItalicFont    = *-MediumIt,
+    RawFeature        = {+zero,+ss01,fallback=shekelfallback}]{SourceCodePro}
+
 \newfontfamily\mysourcecodeprolight{SourceCodePro-Regular.otf}[
     Scale = 0.80,FakeStretch =0.75,
     FontFace = {m}{it}{Font =SourceCodePro-RegularIt.otf,Color=FF0000}]
@@ -64,17 +100,20 @@
   {
     \mysourcecodeprolight\small
   }
+% Internal
+\newfontfamily\mylmrotf{lmroman10-regular.otf}[NFSSFamily=lmrotf,Scale = 0.95]
 % The character of visible space is now taken from Latin Modern Mono
 % to prevent fonts in T1. The original definition for xetex/luatex is
 % \def\verbvisiblespace{\usefont{OT1}{cmtt}{m}{n}\asciispace}
-\def\verbvisiblespace{{\fontfamily{lmtt}\selectfont\char"2423}}
+\def\verbvisiblespace{{\fontfamily{lmrotf}\selectfont\char"2423}}
 % Math font
 % \typeout{ \fileversion }
-\global\let\danger\relax
+% \global\let\danger\relax
 % \usepackage[no-text,Scale = 0.95]{fourier-otf}
 \usepackage{unicode-math}
 \setmathfont{Erewhon-Math}[Scale = 0.95]
 \setmathfont{Erewhon-Math}[range={cal,bfcal},StylisticSet={1,4}]
+\setmathfont{NewCMMath-Regular.otf}[Scale = 0.95, range={"299C}] % \rightanglesqr
 \providecommand*{\widearc}{\Umathaccent 7 \symoperators "023DC}
 \newfontfamily\fetamontotf{ffmw10.otf}[
    Scale             = 0.95,%
@@ -255,7 +294,8 @@
 \cs_new_protected:Npn \userdoc_meta_angle:n #1
   {
     \group_begin:
-      \fontfamily{lmr}\selectfont
+      %%\fontfamily{lmr}\selectfont
+      \fontfamily{lmrotf}\selectfont
       \textcolor{\l_userdoc_meta_anglecolor_tl}{#1}
     \group_end:
   }
@@ -3917,14 +3957,14 @@
 % \url{https://get.adobe.com/reader/}, 2026.
 %
 % \bibitem{pdf20} \textsc{ISO}. \enquote{\textsf{ISO 32000-2:2020} - Portable
-% Document Format (\texttt{PDF} 2.0)}. Available from \textsc{\texttt{PDF} association},
+% Document Format (\texttt{PDF} 2.0)}. Available from \texttt{PDF} \textsc{association},
 % \url{https://pdfa.org/resource/iso-32000-2/}, 2020.
 %
-% \bibitem{wtpdf} \textsc{\texttt{PDF} Association}. \enquote{\textsf{WTPDF} -
+% \bibitem{wtpdf} \texttt{PDF} \textsc{association}. \enquote{\textsf{WTPDF} -
 % Well-Tagged \texttt{PDF} specification}. Available from \textsc{pdfa},
 % \url{https://pdfa.org/wtpdf/}, 2024.
 %
-% \bibitem{pdf20-errata} \textsc{\texttt{PDF} Association}. \enquote{\textsf{\texttt{PDF} 2.0
+% \bibitem{pdf20-errata} \texttt{PDF} \textsc{association}. \enquote{\textsf{\texttt{PDF} 2.0
 % Errata Collection 3}}. Available from \textsc{pdfa},
 % \url{https://pdfa.org/PDF-2-0-errata-collection-3-now-available/}, 2026.
 %
