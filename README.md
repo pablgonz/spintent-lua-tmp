@@ -11,14 +11,14 @@ en español utilizando `LuaLaTeX`.
 
 ## Requerimientos
 
-El requisito mínimo es la realizaciónde `LaTeX` 2026-11-01. Se carga y depende de una versión actualizada de [unicode-math](https://ctan.org/pkg/unicode-math).
+El requisito mínimo es la realización de `LaTeX` 2026-11-01. Se carga y depende de una versión actualizada de [unicode-math](https://ctan.org/pkg/unicode-math).
 
 ## Instalación
 
 El paquete <code>&langle;spintent&rangle;</code> está disponible en [TeX Live](https://www.tug.org/texlive/) y [MiKTeX](https://miktex.org/), utilice el gestor
 de paquetes de su distribución para instalarlo.
 
-Para una instalación manual, descargue [spintent.zip](http://mirrors.ctan.org/macros/latex/contrib/spintent.zip) descomprímalo y luego 
+Para una instalación manual, descargue [spintent.zip](http://mirrors.ctan.org/macros/latex/contrib/spintent.zip) descomprímalo y luego
 ejecute:
 
 ```
@@ -51,11 +51,11 @@ y luego puede utilizar la excelente herramienta `arara` para compilarlos.
 
 ## Desarrollo
 
-Se garantiza que los números de versión y las fechas son correctos en el repositorio en el 
+Se garantiza que los números de versión y las fechas son correctos en el repositorio en el
 archivo de configuración de `l3build` llamado `build.lua`.
 
-El formato de la fecha es `AAAA-MM-DD`. Si para usted es importante que los archivos creados 
-tengan la versión y la fecha correctas, debe ejecutar `l3build tag` antes de cualquier otra 
+El formato de la fecha es `AAAA-MM-DD`. Si para usted es importante que los archivos creados
+tengan la versión y la fecha correctas, debe ejecutar `l3build tag` antes de cualquier otra
 tarea relacionada con la compilación.
 
 Puede ejecutar:

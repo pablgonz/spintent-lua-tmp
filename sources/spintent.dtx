@@ -47,8 +47,9 @@
   local SCALE = 0.85
   local fallback_cache = {}
   luatexbase.add_to_callback("luaotfload.patch_font", function(fontdata, specification, id)
-    local name = fontdata.specification and fontdata.specification.name
-    if type(name) == "string" and name:find("LibertinusSerif") then
+    local meta = fontdata.shared and fontdata.shared.rawdata and fontdata.shared.rawdata.metadata
+    local familyname = meta and meta.familyname
+    if type(familyname) == "string" and familyname:lower():find("libertinus serif", 1, true) then
       local size = fontdata.size
       local key  = tostring(size)
       local fb_id = fallback_cache[key]
