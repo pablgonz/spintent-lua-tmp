@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-08-28} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-01} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -2490,7 +2490,7 @@
       { \__spintent_luafun_spmQ_scale_int:Vn \l__spintent_luaset_part_int_tl { frac  } }
     \int_set_eq:cN { l__luamml_flag_int } \l__spintent_saved_luamml_flag_int
   }
-\cs_new_protected:Nn \__spintent_spmQ_print_sacle_int:n
+\cs_new_protected:Nn \__spintent_spmQ_print_scale_int:n
   {
     \__spintent_luafun_clean_split_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnTF \l__spintent_luaset_has_integer_str { true }
@@ -2536,7 +2536,7 @@
 \cs_new_protected:Nn \__spintent_spmQ_print:nnn
   {
     \__spintent_spmQ_start_wrap_parens:
-    \__spintent_spmQ_print_sacle_int:n { #1 }
+    \__spintent_spmQ_print_scale_int:n { #1 }
     \__spintent_spmQ_set_join_word:
     \__spintent_spmQ_print_spnZ_dfrac:nn { #2 } { #3 }
     \__spintent_spmQ_stop_wrap_parens:
@@ -2613,7 +2613,7 @@
         \__spintent_unknown_keys_cmd:n {#1}
       },
   }
-\cs_new_protected:Nn \__spintent_spPoint_print_old:n
+\cs_new_protected:Nn \__spintent_spPoint_print:n
   {
     \__spintent_luafun_geo_point_parse_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
@@ -2627,7 +2627,7 @@
             \str_set:Ne \l__spintent_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str { punto- \l__spintent_geo_luaset_intent_str }
+            \str_put_left:Ne \l__spintent_geo_luaset_intent_str { punto- }
           }
       }
       {
@@ -2637,7 +2637,11 @@
             \str_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent }
           }
       }
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \__spintent_spPoint_mathml:
+  }
+\cs_new_protected:Nn \__spintent_spPoint_mathml:
+  {
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
       {
         \MathMLintent
@@ -2668,55 +2672,6 @@
           }
       }
   }
-%% Variable auxiliar (junto a las demás \str_new:N de \spPoint):
-\str_new:N \l__spintent_spPoint_concept_intent_str
-\str_new:N \l__spintent_spPoint_literal_intent_str
-
-%% register_tex_cmd genera \@@_luafun_spPoint_wrap_intent:nnn
-%% (3 argumentos string -> 3 "n"). Necesitamos la variante :eee
-%% para expandir los \str antes de pasarlos a Lua, igual que se
-%% hace en el resto del archivo con \exp_args:Ne / variantes e.
-\cs_generate_variant:Nn \__spintent_luafun_spPoint_wrap_intent:nnn { eee }
-
-%% \@@_spPoint_print:n -- reemplazo completo, mismo cálculo de
-%% intent que ya tenías (solo se le da forma final distinta),
-%% cero \c_@@_invisible_sep_tl.
-%% ============================================================
-\cs_new_protected:Nn \__spintent_spPoint_print:n
-  {
-    \__spintent_luafun_geo_point_parse_and_set:n { \exp_not:n {#1} }
-    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
-      {
-        \msg_error:nne { spintent } { spPoint-invalid-point } { \exp_not:n {#1} }
-      }
-    % Concept-intent del <mrow>: igual en ambos modos.
-    \str_set:Nn \l__spintent_spPoint_concept_intent_str { _ punto :prefix($pt) }
-    \bool_if:NT \l__spintent_spPoint_silent_cmd_bool
-      {
-        \str_put_right:Nn \l__spintent_spPoint_concept_intent_str { :silent }
-      }
-    \str_put_left:Ne \l__spintent_spPoint_concept_intent_str
-      {
-        \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
-          { \tl_use:N \l__spintent_spPoint_prefix_tl - }
-      }
-    % Intent literal del hijo: solo en modo school.
-    \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
-      {
-        \str_set:Ne \l__spintent_spPoint_literal_intent_str
-          { _ \l__spintent_geo_luaset_intent_str - }
-      }
-      {
-        \str_clear:N \l__spintent_spPoint_literal_intent_str
-      }
-
-    \__spintent_invisible_sep: % exterior, sin cambios -- ya tiene :silent
-    \__spintent_luafun_spPoint_wrap_intent:eee
-      { \l__spintent_spPoint_concept_intent_str }
-      { \l__spintent_spPoint_literal_intent_str }
-      { pt }
-    { \l__spintent_geo_luaset_print_tl }
-  }
 \cs_new_protected:Nn \__spintent_spPoint_exec:nn
   {
     \keys_set:nn { spintent / spPoint } { #1 }
@@ -2735,7 +2690,9 @@
 \str_new:N \l__spintent_sprecta_mode_str
 \tl_new:N  \l__spintent_sprecta_prefix_tl
 \msg_new:nnnn { spintent } { sprecta-invalid-points }
-  { Invalid~format~in~\token_to_str:N \sprecta:~'#1'. }
+  {
+    Invalid~format~in~\token_to_str:N \sprecta:~'#1'.
+  }
   {
     The~argument~must~be~either~a~comma-separated~pair~of~uppercase~
     letters~(two-point~notation)~or~a~single~letter~(uppercase~or~
@@ -3289,6 +3246,7 @@
   }
 \cs_new_protected:Nn \__spintent_spangle_process:nn
   {
+    \__spintent_luafun_geo_angulo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:eeTF {#1} { mangle }
       { \tl_set:Nn \l__spintent_geo_intent_tl { medida-del-ángulo } }
       { \tl_set:Nn \l__spintent_geo_intent_tl { ángulo } }
@@ -3296,7 +3254,6 @@
       {
         \tl_put_right:Nn \l__spintent_geo_intent_tl { -recto }
       }
-    \__spintent_luafun_geo_angulo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
@@ -3306,23 +3263,30 @@
       {
         \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str { _ \l__spintent_geo_luaset_intent_str - }
+            \str_set:Ne \l__spintent_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str
+            \str_put_left:Ne \l__spintent_geo_luaset_intent_str
               {
-                \l__spintent_geo_intent_tl - \l__spintent_geo_luaset_intent_str
+                \l__spintent_geo_intent_tl -
               }
           }
       }
       {
-        \str_set:Ne \l__spintent_geo_luaset_intent_str { _ \l__spintent_geo_intent_tl :prefix($pts) }
+        \str_set:Ne \l__spintent_geo_luaset_intent_str
+          {
+            _ \l__spintent_geo_intent_tl :prefix($pts)
+          }
         \bool_if:cT { l__spintent_sp #1 _silent_cmd_bool }
           {
             \str_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent }
           }
       }
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \__spintent_spangle_mathml:n {#1}
+  }
+\cs_new_protected:Nn \__spintent_spangle_mathml:n
+  {
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \str_if_eq:eeTF { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
         \MathMLintent
@@ -3451,36 +3415,47 @@
   }
 \cs_new_protected:Nn \__spintent_sparc_process:nn
   {
-    \str_if_eq:eeTF {#1} { marc }
-      { \tl_set:Nn \l__spintent_geo_intent_tl { medida-del-arco } }
-      { \tl_set:Nn \l__spintent_geo_intent_tl { arco } }
     \__spintent_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
+    \str_if_eq:eeTF {#1} { marc }
+      {
+        \tl_set:Nn \l__spintent_geo_intent_tl { medida-del-arco }
+      }
+      {
+        \tl_set:Nn \l__spintent_geo_intent_tl { arco }
+      }
     \str_if_eq:eeTF { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
         \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str { _ \l__spintent_geo_luaset_intent_str - }
+            \str_set:Ne \l__spintent_geo_luaset_intent_str { _- }
           }
           {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str
+            \str_put_left:Ne \l__spintent_geo_luaset_intent_str
               {
-                \l__spintent_geo_intent_tl - \l__spintent_geo_luaset_intent_str
+                \l__spintent_geo_intent_tl -
               }
           }
       }
       {
-        \str_set:Ne \l__spintent_geo_luaset_intent_str { _ \l__spintent_geo_intent_tl :prefix($pts) }
+        \str_set:Ne \l__spintent_geo_luaset_intent_str
+          {
+            _ \l__spintent_geo_intent_tl :prefix($pts)
+          }
         \bool_if:cT { l__spintent_sp #1 _silent_cmd_bool }
           {
             \str_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent }
           }
       }
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \__spintent_sparc_mathml:n {#1}
+  }
+\cs_new_protected:Nn \__spintent_sparc_mathml:n
+  {
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \str_if_eq:eeTF { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
       {
         \MathMLintent
@@ -3603,9 +3578,11 @@
     \str_if_eq:VnT \l__spintent_spPoly_mode_str { mathcat }
       {
         \str_set:Ne \l__spintent_geo_luaset_intent_str
-          { _ \l__spintent_geo_luaset_concept_str :prefix($pts) }
+          {
+            _ \l__spintent_geo_luaset_concept_str :prefix($pts)
+          }
       }
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \bool_if:NTF \l__spintent_spPoly_print_sym_bool
       {
         \str_if_eq:VnTF \l__spintent_spPoly_mode_str { school }
@@ -3613,7 +3590,9 @@
             \MathMLintent
               {
                 \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
-                  { \tl_use:N \l__spintent_spPoly_prefix_tl - }
+                  {
+                    \tl_use:N \l__spintent_spPoly_prefix_tl -
+                  }
                 \l__spintent_geo_luaset_intent_str
               }
               {
@@ -3650,16 +3629,23 @@
             \MathMLintent
               {
                 \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
-                  { \tl_use:N \l__spintent_spPoly_prefix_tl - }
+                  {
+                    \tl_use:N \l__spintent_spPoly_prefix_tl -
+                  }
                 \l__spintent_geo_luaset_intent_pts_str
               }
-              { \c__spintent_invisible_sep_tl \l__spintent_geo_luaset_print_tl }
+              {
+                \c__spintent_invisible_sep_tl
+                \l__spintent_geo_luaset_print_tl
+              }
           }
           {
             \MathMLintent
               {
                 \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
-                  { \tl_use:N \l__spintent_spPoly_prefix_tl - }
+                  {
+                    \tl_use:N \l__spintent_spPoly_prefix_tl -
+                  }
                 \l__spintent_geo_luaset_intent_pts_str
               }
               {
@@ -3783,7 +3769,7 @@
   }
 \cs_new_protected:Nn \__spintent_spfig_sym:
   {
-    \str_case:Vn \l__spintent_geo_luaset_poly_sym_str
+    \str_case:Vn \l__spintent_geo_print_sym_str
       {
         { triangle } { \triangle      }
         { square   } { \mdlgwhtsquare }
@@ -3792,10 +3778,6 @@
 \cs_new_protected:Nn \__spintent_spfig_process:nn
   {
     \str_if_eq:eeTF {#1} { Afig }
-      { \tl_set:Nn \l__spintent_geo_fig_op_tl { área } }
-      { \tl_set:Nn \l__spintent_geo_fig_op_tl { perímetro } }
-    \str_set:Ne \l__spintent_geo_print_sym_str { \str_use:c { l__spintent_sp #1 _print_sym_str } }
-    \str_if_eq:eeTF {#1} { Afig }
       { \__spintent_luafun_geo_afig_parse_and_set:n { \exp_not:n {#2} } }
       { \__spintent_luafun_geo_pfig_parse_and_set:n { \exp_not:n {#2} } }
     \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
@@ -3803,6 +3785,10 @@
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
+    \str_if_eq:eeTF {#1} { Afig }
+      { \tl_set:Nn \l__spintent_geo_fig_op_tl { área } }
+      { \tl_set:Nn \l__spintent_geo_fig_op_tl { perímetro } }
+    \str_set:Ne \l__spintent_geo_print_sym_str { \str_use:c { l__spintent_sp #1 _print_sym_str } }
     \tl_if_empty:cF { l__spintent_sp #1 _read_arg_tl }
       {
         \str_if_empty:NF \l__spintent_geo_luaset_vertices_str
@@ -3822,11 +3808,6 @@
           { \tl_set:Nn \l__spintent_geo_sym_word_tl { cuadrado } }
           { \tl_clear:N \l__spintent_geo_sym_word_tl }
       }
-    \cs_set_protected:Npn \__spintent_spfig_sym_choice:
-      {
-        \str_if_eq:VnTF \l__spintent_geo_print_sym_str { triangle }
-          { \triangle } { \mdlgwhtsquare }
-      }
     \tl_if_empty:nTF {#2}
       {
         \str_if_eq:VnTF \l__spintent_geo_print_sym_str { none }
@@ -3836,7 +3817,7 @@
             \str_set:Ne \l__spintent_geo_mathcat_concept_str { \l__spintent_geo_fig_op_tl }
           }
           {
-            \tl_set:Nn \l__spintent_geo_final_print_tl { \__spintent_spfig_sym_choice: }
+            \tl_set:Nn \l__spintent_geo_final_print_tl { \__spintent_spfig_sym: }
             \str_set:Ne \l__spintent_geo_final_intent_str
               {
                 \l__spintent_geo_fig_op_tl - del - \l__spintent_geo_sym_word_tl
@@ -3850,7 +3831,7 @@
       {
         \str_if_eq:VnTF \l__spintent_geo_luaset_intent_str { }
           {
-            \str_if_empty:VTF \l__spintent_geo_luaset_letra_word_str
+            \str_if_empty:NTF \l__spintent_geo_luaset_letra_word_str
               {
                 \str_if_eq:VnTF \l__spintent_geo_print_sym_str { none }
                   {
@@ -3865,7 +3846,7 @@
                   {
                     \tl_set:Nn \l__spintent_geo_final_print_tl
                       {
-                        \__spintent_spfig_sym_choice:
+                        \__spintent_spfig_sym:
                         \c_math_subscript_token { \l__spintent_geo_luaset_print_tl }
                       }
                     \str_set:Ne \l__spintent_geo_final_intent_str
@@ -3918,7 +3899,7 @@
                   {
                     \tl_set:Nn \l__spintent_geo_final_print_tl
                       {
-                        \__spintent_spfig_sym_choice:
+                        \__spintent_spfig_sym:
                         \l__spintent_geo_luaset_print_tl
                       }
                     \str_set:Ne \l__spintent_geo_final_intent_str { \l__spintent_geo_luaset_intent_str }
@@ -4373,7 +4354,7 @@
                   { \__spintent_luafun_geo_pfig_parse_and_set:n { \exp_not:n {#2} } }
                 \str_if_eq:VnF \l__spintent_geo_luaset_error_str { true }
                   {
-                    \str_if_empty:VTF \l__spintent_geo_luaset_letra_word_str
+                    \str_if_empty:NTF \l__spintent_geo_luaset_letra_word_str
                       { \str_set:Nn \l__spintent_geo_circfig_mode_str { bare } }
                       { \str_set:Nn \l__spintent_geo_luaset_error_str { true } }
                   }
