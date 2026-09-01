@@ -2691,12 +2691,10 @@
 \tl_new:N  \l__spintent_sprecta_prefix_tl
 \msg_new:nnnn { spintent } { sprecta-invalid-points }
   {
-    Invalid~format~in~\token_to_str:N \sprecta:~'#1'.
+    Invalid~format~in~\token_to_str:N \sprecta:~'#1'~\msg_line_context:.
   }
   {
-    The~argument~must~be~either~a~comma-separated~pair~of~uppercase~
-    letters~(two-point~notation)~or~a~single~letter~(uppercase~or~
-    lowercase)~with~optional~subscript~or~prime~(name~notation).\\
+    See~the~documentation~of~\token_to_str:N \sprecta~for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / sprecta }
   {
@@ -2842,11 +2840,10 @@
 \str_new:N \l__spintent_sprayo_read_sty_str
 \msg_new:nnnn { spintent } { sprayo-invalid-points }
   {
-    Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'.
+    Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'~\msg_line_context:.
   }
   {
-    The~argument~must~be~a~comma-separated~list~of~exactly~two~
-    uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
+    See~the~documentation~of~\token_to_str:N \sprayo~for~the~accepted~point~formats.
   }
 \keys_define:nn { spintent / sprayo }
   {
@@ -2983,11 +2980,10 @@
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
       {
-        Invalid~point~format~in~##1:~'##2'.
+        Invalid~point~format~in~##1:~'##2'~\msg_line_context:.
       }
       {
-        The~argument~must~be~a~comma-separated~list~of~uppercase~
-        letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
+        See~the~documentation~of~##1~for~the~accepted~point~formats.
       }
   }
 \clist_map_inline:nn { side , mside }
@@ -3179,13 +3175,11 @@
 \clist_map_inline:nn { angle , mangle }
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
-      { Invalid~format~in~##1:~'##2'. }
       {
-        The~argument~must~be~one~of:\\
-        - three~uppercase~points~separated~by~commas~(e.g.\ 'A,~O,~B');\\
-        - a~single~uppercase~point~with~optional~subscript~or~prime~
-          (e.g.\ 'A',~'A_\{1\}');\\
-        - an~angle~name~(e.g.\ '\string\alpha',~'1',~'ABC').
+        Invalid~format~in~##1:~'##2'~\msg_line_context:.
+      }
+      {
+        See~the~documentation~of~##1~for~the~accepted~argument~forms.
       }
   }
 \clist_map_inline:nn { angle , mangle }
@@ -3365,11 +3359,10 @@
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
       {
-        Invalid~point~format~in~##1:~'##2'.
+        Invalid~point~format~in~##1:~'##2'~\msg_line_context:.
       }
       {
-        The~argument~must~be~a~comma-separated~list~of~uppercase~
-        letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
+        See~the~documentation~of~##1~for~the~accepted~point~formats.
       }
   }
 \clist_map_inline:nn { arc , marc }
@@ -3685,33 +3678,31 @@
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
       {
-        Invalid~point~format~in~##1:~'##2'.
+        Invalid~point~format~in~##1:~'##2'~\msg_line_context:.
       }
       {
-        The~argument~must~be~empty,~or~a~comma-separated~list~of~at~
-        least~three~uppercase~letters~with~optional~subscripts~
-        (\_{...})~or~primes~(').\\
+        See~the~documentation~of~##1~for~the~accepted~point~formats.
       }
     \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
-      { Invalid~argument~format~in~##1:~'##2'. }
       {
-        The~argument~must~be~either~empty,~a~comma-separated~list~of~
-        vertices,~a~bare~number~or~letter~(e.g.\ '1',~'n'),~or~a~
-        table~letter~with~an~optional~subscript~(e.g.\ 'F',~'F_\{1\}').
+        Invalid~argument~format~in~##1:~'##2'~\msg_line_context:.
+      }
+      {
+        See~the~documentation~of~##1~for~the~accepted~argument~forms.
       }
     \msg_new:nnnn { spintent } { sp #1 -sym-letra-conflict }
-      { print-sym~cannot~be~combined~with~a~lettered~argument~in~##1. }
       {
-        When~print-sym~is~not~'none',~the~argument~(if~given)~must~
-        be~a~bare~number~or~letter~(e.g.~'1',~'n')~—~table~letters~
-        like~'F'~or~'P'~are~not~allowed~in~combination~with~print-sym.
+        print-sym~cannot~be~combined~with~a~lettered~argument~in~'##1'~\msg_line_context:.
+      }
+      {
+        See~the~documentation~of~##1~for~details~on~print-sym.
       }
     \msg_new:nnnn { spintent } { sp #1 -sym-cardinality-conflict }
-      { print-sym~does~not~match~the~vertex~count~in~##1. }
       {
-        The~forced~symbol~(triangle/square)~must~match~the~number~of~
-        vertices~given~—~use~'auto'~to~infer~it~automatically,~or~'none'~
-        to~omit~it.
+        print-sym~does~not~match~the~vertex~count~in~'##1'~\msg_line_context:.
+      }
+      {
+        See~the~documentation~of~##1~for~details~on~print-sym.
       }
   }
 \clist_map_inline:nn { Afig , Pfig }
@@ -3810,11 +3801,20 @@
       }
     \tl_if_empty:nTF {#2}
       {
-        \str_if_eq:VnTF \l__spintent_geo_print_sym_str { none }
+        \str_case:VnF \l__spintent_geo_print_sym_str
           {
-            \tl_clear:N \l__spintent_geo_final_print_tl
-            \str_set:Ne \l__spintent_geo_final_intent_str { \l__spintent_geo_fig_op_tl }
-            \str_set:Ne \l__spintent_geo_mathcat_concept_str { \l__spintent_geo_fig_op_tl }
+            { auto }
+              {
+                \tl_clear:N \l__spintent_geo_final_print_tl
+                \str_set:Ne \l__spintent_geo_final_intent_str { \l__spintent_geo_fig_op_tl }
+                \str_set:Ne \l__spintent_geo_mathcat_concept_str { \l__spintent_geo_fig_op_tl }
+              }
+            { none }
+              {
+                \tl_clear:N \l__spintent_geo_final_print_tl
+                \str_set:Ne \l__spintent_geo_final_intent_str { \l__spintent_geo_fig_op_tl }
+                \str_set:Ne \l__spintent_geo_mathcat_concept_str { \l__spintent_geo_fig_op_tl }
+              }
           }
           {
             \tl_set:Nn \l__spintent_geo_final_print_tl { \__spintent_spfig_sym: }
@@ -3833,14 +3833,27 @@
           {
             \str_if_empty:NTF \l__spintent_geo_luaset_letra_word_str
               {
-                \str_if_eq:VnTF \l__spintent_geo_print_sym_str { none }
+                \str_case:VnF \l__spintent_geo_print_sym_str
                   {
-                    \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl }
-                    \str_set:Ne \l__spintent_geo_final_intent_str
+                    { auto }
                       {
-                        \l__spintent_geo_fig_op_tl -
-                        \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
-                        \l__spintent_geo_luaset_sub_spoken_str
+                        \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl }
+                        \str_set:Ne \l__spintent_geo_final_intent_str
+                          {
+                            \l__spintent_geo_fig_op_tl -
+                            \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
+                            \l__spintent_geo_luaset_sub_spoken_str
+                          }
+                      }
+                    { none }
+                      {
+                        \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl }
+                        \str_set:Ne \l__spintent_geo_final_intent_str
+                          {
+                            \l__spintent_geo_fig_op_tl -
+                            \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
+                            \l__spintent_geo_luaset_sub_spoken_str
+                          }
                       }
                   }
                   {
@@ -3858,7 +3871,11 @@
                   }
               }
               {
-                \str_if_eq:VnF \l__spintent_geo_print_sym_str { none }
+                \str_case:VnF \l__spintent_geo_print_sym_str
+                  {
+                    { auto } { }
+                    { none } { }
+                  }
                   {
                     \msg_error:nne { spintent } { sp #1 -sym-letra-conflict }
                       { \c_backslash_str sp #1 }
@@ -3881,7 +3898,7 @@
             \str_set:Ne \l__spintent_geo_mathcat_concept_str { \l__spintent_geo_fig_op_tl }
           }
           {
-            \str_case:VnTF \l__spintent_geo_print_sym_str
+            \str_case:VnF \l__spintent_geo_print_sym_str
               {
                 { auto }
                   {
@@ -3997,12 +4014,11 @@
 \tl_new:N  \l__spintent_geo_circ_word_tl
 \str_new:N \l__spintent_geo_circ_intent_str
 \msg_new:nnnn { spintent } { spcirc-invalid-arg }
-  { Invalid~argument~format~in~\token_to_str:N \spcirc:~'#1'. }
   {
-    The~argument~must~be~a~single~point~(the~center),~optionally~
-    followed~by~a~comma~and~a~radius:~a~pure~number,~a~measure~
-    (number~+~unit),~a~single~letter,~or~two~concatenated~letters~
-    (a~segment).
+    Invalid~argument~format~in~\token_to_str:N \spcirc:~'#1'~\msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\token_to_str:N \spcirc~for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / spcirc }
   {
@@ -4125,7 +4141,7 @@
     \str_set:Ne \l__spintent_geo_circ_intent_str { \l__spintent_geo_circ_word_tl }
     \str_if_empty:NF \l__spintent_spcirc_sub_index_str
       {
-        \str_put_right:Nn \l__spintent_geo_circ_intent_str
+        \str_put_right:Ne \l__spintent_geo_circ_intent_str
           {
             -
             \bool_if:NT \l__spintent_spcirc_read_sub_bool { sub - }
@@ -4215,11 +4231,11 @@
 \clist_map_inline:nn { Acirc , Pcirc }
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
-      { Invalid~argument~format~in~##1:~'##2'. }
       {
-        The~argument~must~be~empty,~a~center~point~optionally~
-        followed~by~a~comma~and~a~radius,~or~a~bare~number~or~letter~
-        (e.g.\ '1',~'n').
+        Invalid~argument~in~##1:~'##2'~\msg_line_context:.
+      }
+      {
+        See~the~documentation~of~##1~for~the~accepted~argument~forms.
       }
     \keys_define:nn { spintent / sp #1 }
       {
@@ -4504,7 +4520,11 @@
                     \str_if_eq:eeTF {#1} { Acirc }
                       { \__spintent_mathcal:n { A } }
                       { \__spintent_mathcal:n { P } }
-                    \c_math_subscript_token
+                  }
+                \c_math_subscript_token
+                  {
+                    \MathMLintent
+                      { :silent }
                       {
                         \__spintent_spcircfig_sym:n {#1}
                         \str_if_empty:cF { l__spintent_sp #1 _sub_index_str }
@@ -4512,12 +4532,12 @@
                             \c_math_subscript_token
                               { \str_use:c { l__spintent_sp #1 _sub_index_str } }
                           }
-                        ( \l__spintent_geo_luaset_print_tl ,
+                        ( \l__spintent_geo_luaset_print_tl , \,
                       }
+                    \__spintent_invisible_sep:
+                    \__spintent_spcircfig_radio_print:n {#1}
+                    \MathMLintent { :silent } { ) }
                   }
-                \__spintent_invisible_sep:
-                \__spintent_spcircfig_radio_print:n {#1}
-                \MathMLintent { :silent } { ) }
               }
           }
       }
