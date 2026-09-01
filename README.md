@@ -11,21 +11,21 @@ en español utilizando `LuaLaTeX`.
 
 ## Requerimientos
 
-The minimum requirement is `LaTeX` release 2026-11-01. Loads and depend on updated version of [unicode-math](https://ctan.org/pkg/unicode-math).
+El requisito mínimo es la realizaciónde `LaTeX` 2026-11-01. Se carga y depende de una versión actualizada de [unicode-math](https://ctan.org/pkg/unicode-math).
 
-## Installation
+## Instalación
 
-The <code>&langle;spintent&rangle;</code> package is present in [TeX Live](https://www.tug.org/texlive/) and [MiKTeX](https://miktex.org/), use the
-package manager to install.
+El paquete <code>&langle;spintent&rangle;</code> está disponible en [TeX Live](https://www.tug.org/texlive/) y [MiKTeX](https://miktex.org/), utilice el gestor
+de paquetes de su distribución para instalarlo.
 
-For manual installation, download [spintent.zip](http://mirrors.ctan.org/macros/latex/contrib/spintent.zip) and unzip it,
-then run:
+Para una instalación manual, descargue [spintent.zip](http://mirrors.ctan.org/macros/latex/contrib/spintent.zip) descomprímalo y luego 
+ejecute:
 
 ```
 $ luatex spintent.ins
 ```
 
-and move all files to appropriate locations:
+y mueva todos los archivos a las ubicaciones correspondientes:
 
 ```
   spintent.sty  ->  TDS:tex/lualatex/spintent/spintent.sty
@@ -36,43 +36,43 @@ and move all files to appropriate locations:
   spintent.ins  ->  TDS:source/lualatex/spintent/spintent.ins
 ```
 
-then run `mktexlsr`. To produce the documentation with source code run `arara spintent.dtx`.
+luego ejecute `mktexlsr`. Para generar la documentación con el código fuente, ejecute `arara spintent.dtx`.
 
-## Examples
+## Ejemplos
 
-The file <code>&langle;spintent.pdf&rangle;</code> contains attached examples, which can be extracted
-from the PDF viewer or from the command line by running:
+El archivo <code>&langle;spintent.pdf&rangle;</code> contiene ejemplos adjuntos, los cuales se pueden extraer
+desde el visor de PDF o desde la línea de comandos ejecutando:
 
 ```
 $ pdfdetach -saveall spintent.pdf
 ```
 
-and then you can use the excellent `arara` tool to compile them.
+y luego puede utilizar la excelente herramienta `arara` para compilarlos.
 
-## Development
+## Desarrollo
 
-The version numbers and dates are guaranteed to be correct in
-the repository is in the `l3build` configuration file `build.lua`.
+Se garantiza que los números de versión y las fechas son correctos en el repositorio en el 
+archivo de configuración de `l3build` llamado `build.lua`.
 
-The date format is `YYYY-MM-DD`. If it is important to you
-that the files created have the correct version and date, you should run
-`l3build tag` before any other build-related task.
+El formato de la fecha es `AAAA-MM-DD`. Si para usted es importante que los archivos creados 
+tengan la versión y la fecha correctas, debe ejecutar `l3build tag` antes de cualquier otra 
+tarea relacionada con la compilación.
 
-You can run:
+Puede ejecutar:
 
-- `l3build unpack` to extract the code files into the directory `build/unpacked/`.
-- `l3build doc` to build the documentation.
-- `l3build install` put all files  in your `TEXMFHOME`.
-- `l3build uninstall` will remove them.
-- `l3build testpkg` to test files.
-- `l3build examples` to compile example files.
+- `l3build unpack` para extraer los archivos de código en el directorio `build/unpacked/`.
+- `l3build doc` para generar la documentación.
+- `l3build install`  para colocar todos los archivos en su `TEXMFHOME`.
+- `l3build uninstall` desinstalará los archivos de `TEXMFHOME`.
+- `l3build testpkg` para ejecutar los archivos de prueba.
+- `l3build examples` para compilar los archivos de ejemplo.
 
-## License
+## Licencia
 
-The <code>&langle;spintent&rangle;</code> package may be modified and distributed under the terms and
-conditions of the [LaTeX Project Public License](https://www.latex-project.org/lppl/), version 1.3c or greater.
+El paquete <code>&langle;spintent&rangle;</code> se puede modificar y distribuir bajo los términos y condiciones de la
+[LaTeX Project Public License](https://www.latex-project.org/lppl/), versión 1.3c o superior.
 
-## Content of the repository
+## Contenido del Respositorio
 
 ```
 ├── README.md
@@ -96,4 +96,4 @@ conditions of the [LaTeX Project Public License](https://www.latex-project.org/l
 
 ## Copyright
 
-Copyright &#169; 2026 by Pablo González L <pablgonz@educarchile.cl>
+Copyright &#169; 2026 por Pablo González L <pablgonz@educarchile.cl>
