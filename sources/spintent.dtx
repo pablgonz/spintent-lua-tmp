@@ -9220,20 +9220,16 @@
 % \subsubsection{Internal functions for \cs[no-index]{sprecta}}
 %
 % \begin{macro}[int]{\@@_sprecta_print:n}
-%   The internal function \myhlc|\@@_sprecta_print:n| first sets
-%   \cs{l_@@_geo_intent_tl} to |recta| — a fixed literal, since
-%   |\sprecta| has no term-selecting key. Only then does it decide,
-%   according to mode and \mykey[sprecta]{silent-cmd}, whether to send
-%   \cs{l_@@_geo_intent_tl} or an empty group to
-%   \myhlc|\@@_luafun_geo_parse_and_set:nnn|.
-%
-%   \smallskip
-%
-%   In |mathcat| mode, |:silent| is appended to
-%   \cs{l_@@_geo_luaset_intent_str} afterward when needed. It then dispatches
-%   on \cs{l_@@_geo_luaset_is_name_str} to select the visual branch:
-%   \cs{overleftrightarrow} for the two-point notation, or the raw
-%   name with no decorator otherwise.
+%   The internal function \myhlc|\@@_sprecta_print:n| process the \mymarg{argument}
+%   passed in `|#1|'. First, call the function \myhlc|\@@_luafun_geo_parse_and_set:n|
+%   to process the \mymarg{argument}, returning an \enquote{error} if the
+%   input is invalid, then, it checks if the value of the variable
+%   \myhlc|\l_@@_sprecta_mode_str| handled by the key \mykey{read-cmd} is
+%   |school|. If so, it checks if the variable \myhlc|\l_@@_sprecta_silent_cmd_bool|
+%   handled by the key \mykey{silent-cmd} is |true| by setting the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str| with the `\textcolor{red}{\texttt{_-}}'
+%   trick for \emph{silent} |<mrow>| since |:silent| doesn't work here; if
+%   the state is |false| we place |recta-| to the left of \myhlc|\l_@@_geo_luaset_intent_str|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_print:n
   {
@@ -9252,6 +9248,14 @@
             \str_put_left:Ne \l_@@_geo_luaset_intent_str { recta - }
           }
       }
+%    \end{macrocode}
+%   If the value of the variable \myhlc|\l_@@_sprecta_mode_str| is not
+%   |school|, that is, |read-cmd=mathcat|, we will set the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str| to \myhlc|_recta:prefix($pts)|; if
+%   |silent-cmd=true|, we simply add |:silent| to the right of the variable
+%   \myhlc|\l_@@_geo_luaset_intent_str|. Finally, we call the function
+%   \myhlc|\@@_sprecta_mathml:|.
+%    \begin{macrocode}
       {
         \str_set:Ne \l_@@_geo_luaset_intent_str { _recta:prefix($pts) }
         \bool_if:NT \l_@@_sprecta_silent_cmd_bool
@@ -11321,7 +11325,7 @@
 %
 % \begin{macro}[int]{read-cmd, prefix, print-sym, read-sty, radio-sty,
 %                    sub-index, read-sub, read-arg, silent-cmd,
-%                    unknown}
+%                    spside, spmside, unknown}
 %   The key \mykey[spcirc]{print-sym} chooses the visual symbol:
 %   |usual| for a plain |C|, |odot| (default) for |\odot|. The key
 %   \mykey[spcirc]{read-sty} chooses the verbalized word and its
@@ -11395,6 +11399,10 @@
     silent-cmd   .bool_set:N = \l_@@_spcirc_silent_cmd_bool,
     silent-cmd   .initial:n = false,
     silent-cmd   .value_required:n = true,
+    spside       .meta:nn = { spintent / spside  } { #1 },
+    spside       .value_required:n = true,
+    spmside      .meta:nn = { spintent / spmside } { #1 },
+    spmside      .value_required:n = true,
     unknown      .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spcirc }
@@ -11666,7 +11674,7 @@
 %
 % \subsubsection{Definition of error messages for \cs[no-index]{spAcirc} and \cs[no-index]{spPcirc}}
 %
-% \begin{macro}[int]{sp #1-invalid-arg}
+% \begin{macro}[int]{spAcirc-invalid-arg, spPcirc-invalid-arg}
 %   The error message shown when the argument does not match any of
 %   the accepted forms: empty, a center point (optionally followed by
 %   a comma and a radius), or a bare number/letter.
@@ -11678,18 +11686,38 @@
         Invalid~argument~in~##1:~'##2'~\msg_line_context:.
       }
       {
-        See~the~documentation~of~##1~for~the~accepted~argument~forms.
+        See~the~documentation~of~##1~for~the~accepted~argument.
       }
 %    \end{macrocode}
 % \end{macro}
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spAcirc} and \cs[no-index]{spPcirc}}
 %
-% \begin{macro}[int]{read-cmd, prefix, print-sym, read-sty, radio-sty,
-%                    sub-index, read-sub, read-arg, silent-cmd, unknown}
-%   The \mymeta{keys} for \cs[no-index]{spAcirc} and \cs[no-index]{spPcirc}
-%   mirror those of \cs[no-index]{spcirc}, one family per command via the
-%   same |sp #1| naming used above.
+% \begin{macro}[int]
+%   {
+%     read-cmd,
+%     prefix,
+%     print-sym,
+%     read-sty,
+%     radio-sty,
+%     sub-index,
+%     read-sub,
+%     read-arg,
+%     silent-cmd,
+%     spside,
+%     spmside,
+%     unknown
+%   }
+%   We define the shared \mymeta{keys} \mykey[spAcirc,spPcirc]{read-cmd},
+%   \mykey[spAcirc,spPcirc]{prefix}, \mykey[spAcirc,spPcirc]{print-m},
+%   \mykey[spAcirc,spPcirc]{read-sty}, \mykey[spAcirc,spPcirc]{sub-index},
+%   \mykey[spAcirc,spPcirc]{read-sub}, \mykey[spAcirc,spPcirc]{read-arg},
+%   and \mykey[spAcirc,spPcirc]{silent-cmd}.
+%
+%   \smallskip
+%
+%   The keys \mykey[spAcirc,spPcirc]{spside} and \mykey[spAcirc,spPcirc]{spmside}
+%   are of the type \myhlc|.meta:nn| passed to the commands |\spside| and |\spmside|
 %    \begin{macrocode}
     \keys_define:nn { spintent / sp #1 }
       {
@@ -11757,6 +11785,10 @@
         silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
         silent-cmd          .initial:n  = false,
         silent-cmd          .value_required:n = true,
+        spside              .meta:nn = { spintent / spside  } { ##1 },
+        spside              .value_required:n = true,
+        spmside             .meta:nn = { spintent / spmside } { ##1 },
+        spmside             .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l_@@_command_name_str { sp #1 }
@@ -11863,13 +11895,13 @@
 %   value as its own subscript; an empty |#2| prints the symbol
 %   alone; and a real center (with an optional radius) prints the
 %   symbol, the optional |sub-index| subscript, and the center
-%   between parentheses. When a radius is present, \cs{mathcal}
+%   between parentheses. When a radius is present, |\mathcal|
 %   (\myhlc|\@@_mathcal:n|) gets its own \myhlc|\MathMLintent| holding
 %   the full spoken intent, and the circle's own visual pieces —
 %   symbol/center/comma, the radius (via
 %   \myhlc|\@@_spcircfig_radio_print:n|, kept audible), and the
 %   closing parenthesis — become three sibling \myhlc|\MathMLintent|
-%   calls sharing a single \cs{c_math_subscript_token} group, so the
+%   calls sharing a single \myhlc|\c_math_subscript_token| group, so the
 %   whole notation is typeset at subscript size.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcircfig_process:nn
