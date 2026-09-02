@@ -88,15 +88,9 @@ end, "shekel_fallback_patch")
 
 \usepackage[osf,nomath,mono=false,ScaleSF=0.95,ScaleRM=0.95]{libertinus-otf}
 
-% 1. Definimos la fuente que sí tiene el símbolo
-% 1. Creamos la tabla de fallback usando Lua nativo
 \begin{luacode*}
-local dejavu_path = kpse.find_file("DejaVuSansMono.ttf", "truetype fonts")
-if not dejavu_path then
-  texio.write_nl("term and log", "[fallback] AVISO: DejaVuSansMono.ttf no encontrada, se omite el fallback")
-else
+  local dejavu_path = kpse.find_file("DejaVuSansMono.ttf", "truetype fonts")
   luaotfload.add_fallback("shekelfallback", { "[" .. dejavu_path .. "]" })
-end
 \end{luacode*}
 \defaultfontfeatures[\ttfamily]
   {
