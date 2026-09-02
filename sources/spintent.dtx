@@ -90,10 +90,14 @@ end, "shekel_fallback_patch")
 
 % 1. Definimos la fuente que sí tiene el símbolo
 % 1. Creamos la tabla de fallback usando Lua nativo
-\directlua{
-  local dejavu_path = kpse.find_file("DejaVuSansMono.ttf", "truetype fonts")
+\begin{luacode*}
+local dejavu_path = kpse.find_file("DejaVuSansMono.ttf", "truetype fonts")
+if not dejavu_path then
+  texio.write_nl("term and log", "[fallback] AVISO: DejaVuSansMono.ttf no encontrada, se omite el fallback")
+else
   luaotfload.add_fallback("shekelfallback", { "[" .. dejavu_path .. "]" })
-}
+end
+\end{luacode*}
 \defaultfontfeatures[\ttfamily]
   {
     Numbers   = OldStyle,
