@@ -203,7 +203,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-01}
+\def\filedate{2026-09-02}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4153,7 +4153,7 @@ end, "shekel_fallback_patch")
 % Now declare the \mypkg*[no-index]{spintent} package and we will add the
 % only key \mykey{mathcal} that can be passed as a package option.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-01} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-02} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -10577,10 +10577,11 @@ end, "shekel_fallback_patch")
 % vertices. The figure type and its visual symbol are inferred from
 % the vertex count: three points produce a triangle, four a square,
 % five or more a generic polygon with no symbol. It never sends a
-% boolean to Lua: \cs{l_@@_geo_luaset_intent_str} (the full |intent|, with
-% the figure name) and \cs{l_@@_geo_luaset_intent_pts_str} (vertices only)
-% are both returned unconditionally, and expl3 picks between them
-% according to \mykey[spPoly]{print-sym}.
+% boolean to Lua: \myhlc|\l_@@_geo_luaset_intent_str| (the full
+% |intent|, with the figure name) and
+% \myhlc|\l_@@_geo_luaset_intent_pts_str| (vertices only) are both
+% returned unconditionally, and expl3 picks between them according to
+% \mykey[spPoly]{print-sym}.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spPoly}}
 %
@@ -10589,9 +10590,10 @@ end, "shekel_fallback_patch")
 %     \l_@@_spPoly_mode_str,
 %     \l_@@_spPoly_prefix_tl,
 %   }
-%   The variable \myhlc|\l_@@_spPoly_mode_str| store the values set by
-%   the key \mykey[spPoly]{read-cmd}; the variable \myhlc|\l_@@_spPoly_prefix_tl|
-%   store the value set by the key \mykey[spPoly]{prefix}.
+%   The variable \myhlc|\l_@@_spPoly_mode_str| stores the value set by
+%   the key \mykey[spPoly]{read-cmd}; the variable
+%   \myhlc|\l_@@_spPoly_prefix_tl| stores the value set by the key
+%   \mykey[spPoly]{prefix}.
 %    \begin{macrocode}
 \str_new:N \l_@@_spPoly_mode_str
 \tl_new:N  \l_@@_spPoly_prefix_tl
@@ -10601,17 +10603,15 @@ end, "shekel_fallback_patch")
 % \subsubsection{Definition of error messages for \cs[no-index]{spPoly}}
 %
 % \begin{macro}[int]{spPoly-invalid-points}
-%   The \enquote{error} |spPoly-invalid-points| is raised when the
-%   argument in `|#1|' is not a comma-separated list of at least
-%   three uppercase letters.
+%   Raised when the argument is not a comma-separated list of at
+%   least three uppercase letters.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spPoly-invalid-points }
   {
-    Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'.
+    Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'~\msg_line_context:.
   }
   {
-    The~argument~must~be~a~comma-separated~list~of~at~least~three~
-    uppercase~letters~with~optional~subscripts~(\_{...})~or~primes~(').\\
+    See~the~documentation~of~\token_to_str:N \spPoly~for~the~accepted~point~formats.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -10619,13 +10619,9 @@ end, "shekel_fallback_patch")
 % \subsubsection{Definition of keys for \cs[no-index]{spPoly}}
 %
 % \begin{macro}[int]{read-cmd, prefix, print-sym, silent-cmd, unknown}
-%   We define the \mymeta{keys} \mykey[spPoly]{read-cmd},
-%   \mykey[spPoly]{prefix}, \mykey[spPoly]{print-sym} and \mykey[spPoly]{silent-cmd}
-%
-%  \smallskip
-%
-%   The key \mykey[spPoly]{silent-cmd} is a \cs{keys} alias for
-%   \mykey[spPoly]{print-sym}|=false|.
+%   We define the \mymeta{keys} \mykey[spPoly]{read-cmd}, \mykey[spPoly]{prefix},
+%  \mykey[spPoly]{print-sym} and \mykey[spPoly]{silent-cmd}. The key \mykey[spPoly]{silent-cmd}
+%  is a \mymeta{key} alias for \mykey[spPoly]{print-sym}|=false|.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spPoly }
   {
@@ -10662,9 +10658,10 @@ end, "shekel_fallback_patch")
 % \subsubsection{Internal functions for \cs[no-index]{spPoly}}
 %
 % \begin{macro}[int]{\@@_spPoly_sym:}
-%   The function \myhlc|\@@_spPoly_sym:| reads \myhlc|\l_@@_geo_luaset_poly_sym_str|
-%   and typesets the corresponding symbol: |\triangle| for \mykey{triangle},
-%   |\mdlgwhtsquare| for \mykey{square}.
+%   The function \myhlc|\@@_spPoly_sym:| reads
+%   \myhlc|\l_@@_geo_luaset_poly_sym_str| and typesets the
+%   corresponding symbol: |\triangle| for the value |triangle|,
+%   |\mdlgwhtsquare| for the value |square|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_sym:
   {
@@ -10677,14 +10674,15 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spPoly_print:n}
-%   When \mykey{print-sym} is |true|, uses \cs{l_@@_geo_luaset_intent_str}
-%   and wraps \myhlc|\@@_spPoly_sym:| in
-%   |\MathMLintent|\marg{:silent} whenever a symbol is available;
-%   when |false|, uses \cs{l_@@_geo_luaset_intent_pts_str} and typesets no
-%   symbol at all.
+% \begin{macro}[int]{\@@_spPoly_process:n}
+%   The function \myhlc|\@@_spPoly_process:n| calls
+%   \myhlc|\@@_luafun_geo_poly_parse_and_set:n|, reports
+%   |spPoly-invalid-points| on failure, adjusts
+%   \myhlc|\l_@@_geo_luaset_intent_str| for
+%   \mykey[spPoly]{read-cmd}|=mathcat|, and delegates the actual
+%   rendering to \myhlc|\@@_spPoly_mathml:|.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spPoly_print:n
+\cs_new_protected:Nn \@@_spPoly_process:n
   {
     \@@_luafun_geo_poly_parse_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
@@ -10699,6 +10697,23 @@ end, "shekel_fallback_patch")
             _ \l_@@_geo_luaset_concept_str :prefix($pts)
           }
       }
+    \@@_spPoly_mathml:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spPoly_mathml:}
+%   The function \myhlc|\@@_spPoly_mathml:| reads the state already
+%   set by \myhlc|\@@_spPoly_process:n| and renders it: when
+%   \mykey[spPoly]{print-sym} is |true|, it uses
+%   \myhlc|\l_@@_geo_luaset_intent_str| and wraps
+%   \myhlc|\@@_spPoly_sym:| in |\MathMLintent|\marg{:silent} whenever
+%   a symbol is available; when |false|, it uses
+%   \myhlc|\l_@@_geo_luaset_intent_pts_str| and typesets no symbol at
+%   all.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPoly_mathml:
+  {
     \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \bool_if:NTF \l_@@_spPoly_print_sym_bool
       {
@@ -10776,14 +10791,14 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spPoly_exec:nn}
-%   The function \myhlc|\@@_spPoly_exec:nn| receives the optional
-%   \mymeta{keys} passed in `|#1|' and the \mymarg{argument} passed in `|#2|'
-%   delegating the rendering of the latter to \myhlc|\@@_spPoly_print:n|.
+%   The function \myhlc|\@@_spPoly_exec:nn| receives the optional keys
+%   in |#1| and the argument in |#2|, delegating the rendering to
+%   \myhlc|\@@_spPoly_process:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_exec:nn
   {
     \keys_set:nn { spintent / spPoly } { #1 }
-    \@@_spPoly_print:n { #2 }
+    \@@_spPoly_process:n { #2 }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -11008,26 +11023,15 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spfig_process:nn}
 %   The function \myhlc|\@@_spfig_process:nn| calls
 %   \myhlc|\@@_luafun_geo_afig_parse_and_set:n| or
-%   \myhlc|\@@_luafun_geo_pfig_parse_and_set:n| unconditionally, even
-%   with an empty |#2|, and reports |sp #1-invalid-arg| on failure.
-%   It sets \myhlc|\l_@@_geo_fig_op_tl| to |área| or |perímetro| —
-%   the word Lua needs to build the |intent| — distinct from the
-%   visual symbol $\mathcal{A}$/$\mathcal{P}$, which is chosen
-%   separately when typesetting. When the point list is non-empty,
-%   the subscript is built with |\c_math_subscript_token| rather than
-%   a literal |_|, since the latter is not guaranteed to act as a
-%   subscript operator inside the token stream built by
-%   |\MathMLintent|.
-%
-%   \smallskip
-%
-%   For the single-argument grammar, Lua returns
-%   \myhlc|\l_@@_geo_luaset_letra_word_str| and
-%   \myhlc|\l_@@_geo_luaset_letra_conector_str| separately: the
-%   connector (|de-la|, |del|, or empty) depends on the grammatical
-%   gender and part of speech of each table letter (|F|/|P| are nouns
-%   needing an article; |B|/|L| are adjectives, taking none), and is
-%   inserted before the word only when non-empty.
+%   \myhlc|\@@_luafun_geo_pfig_parse_and_set:n|, reports
+%   |sp #1-invalid-arg| on failure, sets \myhlc|\l_@@_geo_fig_op_tl| to
+%   |área| or |perímetro|, and builds \myhlc|\l_@@_geo_sym_word_tl|
+%   from \mykey[spAfig,spPfig]{print-sym}. It then branches on |#2|
+%   and on \myhlc|\l_@@_geo_luaset_letra_word_str| to set
+%   \myhlc|\l_@@_geo_final_print_tl|,
+%   \myhlc|\l_@@_geo_final_intent_str| and
+%   \myhlc|\l_@@_geo_mathcat_concept_str|, delegating the rendering to
+%   \myhlc|\@@_spfig_mathml:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_process:nn
   {
@@ -11165,7 +11169,13 @@ end, "shekel_fallback_patch")
               {
                 { auto }
                   {
-                    \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
+                    \str_case:Vn \l_@@_geo_luaset_poly_sym_str
+                      {
+                        { triangle } { \tl_set:Nn \l_@@_geo_final_print_tl { \triangle      \l_@@_geo_luaset_print_tl } }
+                        { square   } { \tl_set:Nn \l_@@_geo_final_print_tl { \mdlgwhtsquare \l_@@_geo_luaset_print_tl } }
+                      }
+                    \str_if_empty:NT \l_@@_geo_luaset_poly_sym_str
+                      { \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl } }
                     \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_str }
                   }
                 { none }
@@ -11192,6 +11202,17 @@ end, "shekel_fallback_patch")
             \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_luaset_concept_str }
           }
       }
+    \@@_spfig_mathml:n { #1 }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfig_mathml:n}
+%   The function \myhlc|\@@_spfig_mathml:n| reads the state already
+%   set by \myhlc|\@@_spfig_process:nn| and renders it.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfig_mathml:n
+  {
     \str_if_eq:eeT { \str_use:c { l_@@_sp #1 _mode_str } } { mathcat }
       {
         \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_mathcat_concept_str :prefix($pts) }
@@ -11345,9 +11366,12 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{variable}
 %
-% \begin{variable}[int]{
-%   \l_@@_geo_circ_word_tl, \l_@@_geo_circ_intent_str}
-%   Scratch variables used by \myhlc|\@@_spcirc_print:n| to assemble
+% \begin{variable}[int]
+%   {
+%     \l_@@_geo_circ_word_tl,
+%     \l_@@_geo_circ_intent_str,
+%   }
+%   Scratch variables used by \myhlc|\@@_spcirc_process:n| to assemble
 %   the chosen word (|circunferencia|/|círculo|, or the
 %   \mykey[spcirc]{read-arg} override) and the final literal |intent|
 %   string.
@@ -11548,24 +11572,16 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spcirc_print:n}
-%   The function \myhlc|\@@_spcirc_print:n| calls
+% \begin{macro}[int]{\@@_spcirc_process:n}
+%   The function \myhlc|\@@_spcirc_process:n| calls
 %   \myhlc|\@@_luafun_geo_circ_parse_and_set:n| to resolve the center
 %   and classify the radius, then assembles
 %   \myhlc|\l_@@_geo_circ_intent_str| — the word, an optional
 %   \mykey[spcirc]{sub-index} suffix, |de-centro-en-|, the center, and
-%   |-y-radio| when a radius is present. Critically, when a radius is
-%   present, the visual is split across \emph{two} separate
-%   |\MathMLintent| calls with \myhlc|\@@_spcirc_radio_print:| —
-%   which typesets a sub-command carrying its own independent
-%   |intent| — sitting as a \emph{sibling} in between, rather than
-%   nested inside either one. Embedding a full sub-command's own
-%   |\MathMLintent| inside another command's content argument makes
-%   MathCAT read only the outer literal string, the same problem
-%   already seen with |mover|/|msub| structures; as \emph{siblings},
-%   both are read in sequence as one continuous phrase.
+%   |-y-radio| when a radius is present — and delegates the rendering
+%   to \myhlc|\@@_spcirc_mathml:|.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spcirc_print:n
+\cs_new_protected:Nn \@@_spcirc_process:n
   {
     \@@_luafun_geo_circ_parse_and_set:n { \exp_not:n {#1} }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
@@ -11591,6 +11607,26 @@ end, "shekel_fallback_patch")
       {
         \str_put_right:Nn \l_@@_geo_circ_intent_str { -y-radio }
       }
+    \@@_spcirc_mathml:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcirc_mathml:}
+%   The function \myhlc|\@@_spcirc_mathml:| reads the state already
+%   set by \myhlc|\@@_spcirc_process:n| and renders it. When a radius
+%   is present, the visual is split across \emph{two} separate
+%   |\MathMLintent| calls with \myhlc|\@@_spcirc_radio_print:| —
+%   which typesets a sub-command carrying its own independent
+%   |intent| — sitting as a \emph{sibling} in between, rather than
+%   nested inside either one. Embedding a full sub-command's own
+%   |\MathMLintent| inside another command's content argument makes
+%   MathCAT read only the outer literal string, the same problem
+%   already seen with |mover|/|msub| structures; as \emph{siblings},
+%   both are read in sequence as one continuous phrase.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcirc_mathml:
+  {
     \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
     \str_if_empty:NTF \l_@@_geo_luaset_circ_radio_type_str
       {
@@ -11646,7 +11682,7 @@ end, "shekel_fallback_patch")
 \cs_new_protected:Nn \@@_spcirc_exec:nn
   {
     \keys_set:nn { spintent / spcirc } { #1 }
-    \@@_spcirc_print:n { #2 }
+    \@@_spcirc_process:n { #2 }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -11942,19 +11978,9 @@ end, "shekel_fallback_patch")
 %   \smallskip
 %
 %   \myhlc|\@@_spcircfig_word_and_article:n| sets the word/article
-%   used to build \myhlc|\l_@@_geo_circ_intent_str|. Three cases
-%   follow: the |bare| shortcut prints the symbol with the shortcut
-%   value as its own subscript; an empty |#2| prints the symbol
-%   alone; and a real center (with an optional radius) prints the
-%   symbol, the optional |sub-index| subscript, and the center
-%   between parentheses. When a radius is present, |\mathcal|
-%   (\myhlc|\@@_mathcal:n|) gets its own \myhlc|\MathMLintent| holding
-%   the full spoken intent, and the circle's own visual pieces —
-%   symbol/center/comma, the radius (via
-%   \myhlc|\@@_spcircfig_radio_print:n|, kept audible), and the
-%   closing parenthesis — become three sibling \myhlc|\MathMLintent|
-%   calls sharing a single \myhlc|\c_math_subscript_token| group, so the
-%   whole notation is typeset at subscript size.
+%   used to build \myhlc|\l_@@_geo_circ_intent_str| for the |bare|,
+%   empty, and real-center cases, delegating the rendering to
+%   \myhlc|\@@_spcircfig_mathml:nn|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcircfig_process:nn
   {
@@ -12007,24 +12033,6 @@ end, "shekel_fallback_patch")
                 \l_@@_geo_luaset_sub_spoken_str :prefix($pts)
               }
           }
-        \@@_invisible_sep:
-        \MathMLintent
-          {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_circ_intent_str
-          }
-          {
-            \c_@@_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { Acirc }
-              { \@@_mathcal:n { A } }
-              { \@@_mathcal:n { P } }
-            \c_math_subscript_token
-              {
-                \@@_spcircfig_sym:n {#1}
-                \c_math_subscript_token { \l_@@_geo_luaset_print_tl }
-              }
-          }
       }
       {
         \tl_if_empty:nTF {#2}
@@ -12042,20 +12050,6 @@ end, "shekel_fallback_patch")
                     \l_@@_spcirc_articulo_str -
                     \l_@@_geo_circ_word_tl :prefix($pts)
                   }
-              }
-            \@@_invisible_sep:
-            \MathMLintent
-              {
-                \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-                  { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-                \l_@@_geo_circ_intent_str
-              }
-              {
-                \c_@@_invisible_sep_tl
-                \str_if_eq:eeTF {#1} { Acirc }
-                  { \@@_mathcal:n { A } }
-                  { \@@_mathcal:n { P } }
-                \c_math_subscript_token { \@@_spcircfig_sym:n {#1} }
               }
           }
           {
@@ -12086,6 +12080,71 @@ end, "shekel_fallback_patch")
                     \l_@@_geo_circ_word_tl :prefix($pts)
                   }
               }
+          }
+      }
+    \@@_spcircfig_mathml:nn { #1 } { #2 }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcircfig_mathml:nn}
+%   The function \myhlc|\@@_spcircfig_mathml:nn| reads the state
+%   already set by \myhlc|\@@_spcircfig_process:nn| and renders it.
+%   Three cases follow: the |bare| shortcut prints the symbol with
+%   the shortcut value as its own subscript; an empty |#2| prints the
+%   symbol alone; and a real center (with an optional radius) prints
+%   the symbol, the optional |sub-index| subscript, and the center
+%   between parentheses. When a radius is present, |\mathcal|
+%   (\myhlc|\@@_mathcal:n|) gets its own \myhlc|\MathMLintent| holding
+%   the full spoken intent, and the circle's own visual pieces —
+%   symbol/center/comma, the radius (via
+%   \myhlc|\@@_spcircfig_radio_print:n|, kept audible), and the
+%   closing parenthesis — become three sibling \myhlc|\MathMLintent|
+%   calls sharing a single \myhlc|\c_math_subscript_token| group, so
+%   the whole notation is typeset at subscript size.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcircfig_mathml:nn
+  {
+    \str_if_eq:VnTF \l_@@_geo_circfig_mode_str { bare }
+      {
+        \@@_invisible_sep:
+        \MathMLintent
+          {
+            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+            \l_@@_geo_circ_intent_str
+          }
+          {
+            \c_@@_invisible_sep_tl
+            \str_if_eq:eeTF {#1} { Acirc }
+              { \@@_mathcal:n { A } }
+              { \@@_mathcal:n { P } }
+            \c_math_subscript_token
+              {
+                \@@_spcircfig_sym:n {#1}
+                \c_math_subscript_token { \l_@@_geo_luaset_print_tl }
+              }
+          }
+      }
+      {
+        \tl_if_empty:nTF {#2}
+          {
+            \@@_invisible_sep:
+            \MathMLintent
+              {
+                \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                  { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                \l_@@_geo_circ_intent_str
+              }
+              {
+                \c_@@_invisible_sep_tl
+                \str_if_eq:eeTF {#1} { Acirc }
+                  { \@@_mathcal:n { A } }
+                  { \@@_mathcal:n { P } }
+                \c_math_subscript_token { \@@_spcircfig_sym:n {#1} }
+              }
+          }
+          {
             \@@_invisible_sep:
             \str_if_empty:NTF \l_@@_geo_luaset_circ_radio_type_str
               {
@@ -12209,7 +12268,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-01]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-02]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -14134,6 +14193,7 @@ local spintent_geo_fig_letras = {
     P = { palabra = "polígono", conector = "del"    },
     B = { palabra = "basal",    conector = ""       },
     L = { palabra = "lateral",  conector = ""       },
+    T = { palabra = "total",    conector = ""       },
 }
 
 -- Letra de la tabla, con subíndice opcional (dígitos u otra letra).

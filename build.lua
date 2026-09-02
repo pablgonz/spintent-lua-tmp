@@ -146,7 +146,7 @@ typesetfiles  = {"spintent.dtx"}
 function typeset(file)
   print("** Running: arara "..file..".dtx")
   local file = jobname(sourcefiledir.."/spintent.dtx")
-  local errorlevel = runcmd("arara -v "..file..".dtx", typesetdir, {"TEXINPUTS","LUAINPUTS"})
+  local errorlevel = runcmd("arara "..file..".dtx", typesetdir, {"TEXINPUTS","LUAINPUTS"})
   if errorlevel ~= 0 then
     error("Error!!: Typesetting "..file..".dtx")
     return errorlevel
