@@ -1330,15 +1330,19 @@ local spintent_mathstyle_names = {
 local function spintent_get_scaled_font(id, factor)
     local key = tostring(id) .. ":" .. tostring(factor)
     if spintent_font_cache[key] then return spintent_font_cache[key] end
+
     local old_font = font.getfont(id)
-    if not old_font then return id end
-    local spec = {}
-    for k, v in pairs(old_font.specification) do spec[k] = v end
-    spec.size = math_floor(old_font.size * factor)
-    local ok, data = pcall(fonts.definers.loadfont, spec)
-    if not ok or not data then return id end
-    local new_id = font.define(data)
-    fonts.hashes.identifiers[new_id] = data
+    if not old_font or not old_font.specification then return id end
+
+    local spec_str = old_font.specification.specification
+    if not spec_str then return id end
+    local new_size = math_floor(old_font.size * factor)
+
+    local ok, new_id = pcall(luaotfload.define_font, spec_str, new_size)
+    if not ok or not new_id or new_id == 0 or type(new_id) ~= "number" then
+        return id
+    end
+
     spintent_font_cache[key] = new_id
     return new_id
 end
@@ -1510,7 +1514,7 @@ local function spintent_load_family(fontfile, features, fam)
         return false
     end
     local spec = "[" .. path .. "]:mode=base;script=math;language=dflt;" .. features
-    local cur_size = font.getfont(font.current()).size
+    local cur_size = font.getfont(tex.getfontoffamily(0)).size
 
     local text_id = spintent_load_scaled(spec, cur_size)
     if not text_id then return false end
@@ -1542,7 +1546,7 @@ local spintent_cal_slots = {
   V=0x1D4B1, W=0x1D4B2, X=0x1D4B3, Y=0x1D4B4, Z=0x1D4B5,
 }
 local spintent_cal_fam = spintent_find_free_family()
-local spintent_cal_fam_ok = spintent_cal_fam and spintent_load_family("NewCMMath-Regular.otf", "+ss02;", spintent_cal_fam)
+local spintent_cal_fam_ok = spintent_cal_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_cal_fam)
 token_set_macro("l__spintent_luaset_cal_fam_ok_str", spintent_cal_fam_ok and "true" or "false")
 
 local function spintent_classic_mathcal(letters)
@@ -1920,10 +1924,11 @@ end, { "string" })
 -- tras "área"/"perímetro"). "C" queda reservada para círculo/
 -- circunferencia, no forma parte de esta tabla.
 local spintent_geo_fig_letras = {
-    F = { palabra = "figura",   conector = "de-la" },
+    F = { palabra = "figura",   conector = "de-la"  },
     P = { palabra = "polígono", conector = "del"    },
     B = { palabra = "basal",    conector = ""       },
     L = { palabra = "lateral",  conector = ""       },
+    T = { palabra = "total",    conector = ""       },
 }
 
 -- Letra de la tabla, con subíndice opcional (dígitos u otra letra).

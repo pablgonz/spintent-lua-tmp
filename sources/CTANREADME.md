@@ -4,10 +4,8 @@ Release v0.99 \[2026-09-02\]
 
 ## Description
 
-This package provides enumerated list environments compatible with
-_tagging_ PDF for creating “simple exercise sheets” along with
-“multiple choice questions”, storing the “answers” to these in memory
-using <code>&langle;multicol&rangle;</code> package.
+The <code>&langle;spintent&rangle;</code> package provides a series of utilities for primary and secondary
+school teachers who need to create _accessible_ PDF documents \(_tagged_ PDF\) in Spanish using LuaLaTeX.
 
 ## Requirements
 
