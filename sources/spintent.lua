@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-02]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-03]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -85,6 +85,7 @@ local spintent_num_chunk_keep = Cs(
 )
 
 -- Registro de las funciones para expl3
+
 local function register_tex_cmd(name, func, args)
     name = "__spintent_" .. name .. ":" .. string.rep("n", #args)
     local scanners = {}
@@ -114,6 +115,130 @@ local function register_tex_cmd(name, func, args)
     lua.get_functions_table()[index] = scanning_func
     token.set_lua(name, index, "global", "protected")
 end
+
+-- ============================================================
+-- \__spintent_invisible_sep: (exterior, <mo>) -- ÚNICAMENTE esto.
+--
+-- Deduplicación: un flag en Lua que se pone en true al
+-- inyectar, y se resetea a false cuando termina de procesarse
+-- la fórmula actual (pre_mlist_to_hlist_filter, que se dispara
+-- una vez por fórmula completa).
+-- ============================================================
+
+local spintent_ghost_injected = false
+
+register_tex_cmd("luafun_invisible_sep", function()
+    if spintent_ghost_injected then return end
+    spintent_ghost_injected = true
+
+    local kernel = node.new("math_char")
+    kernel.char  = 0x2063
+    kernel.fam   = 0
+    local noad   = node.new("noad")
+    noad.subtype = 0
+    noad.nucleus = kernel
+
+    local properties = node.get_properties_table()
+    local p = properties[kernel] or {}
+    p.mathml_filter = function(result, core)
+        -- Reusar 'result' (ya trae [':nodes'] del glyph físico
+        -- calculado por la conversión natural) en vez de
+        -- descartarlo -- solo cambiamos su tag e intent.
+        result[0]     = "mo"
+        result.intent = ":silent"
+        return result, core
+    end
+    properties[kernel] = p
+
+    node.write(noad)
+end, {})
+
+luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
+    spintent_ghost_injected = false
+    return true
+end, "spintent.reset_ghost")
+
+-- ============================================================
+-- spintent -- reemplazo de \c__spintent_invisible_sep_tl (issue
+-- luamml #26). Construye <mrow intent="..."> directamente en
+-- Lua, sin token fantasma, sin depender de \MathMLarg (que falla
+-- silenciosamente poniendo 'arg' cuando el contenido es
+-- compuesto: A''', A_{1}, etc. -- por eso 'arg' lo ponemos acá
+-- nosotros mismos, directo sobre el resultado).
+--
+--   \__spintent_luafun_wrap_mrow_intent:n        {concept}           {contenido}
+--   \__spintent_luafun_wrap_mrow_intent_arg:nn   {concept}{arg}      {contenido}
+--   \__spintent_luafun_wrap_mrow_intent_arg_silent:nn {concept}{arg} {contenido}
+-- ============================================================
+
+local spintent_sub_mlist_t = node.id("sub_mlist")
+local spintent_noad_t      = node.id("noad")
+
+local spintent_pending_mrow_intent_queue = {}
+
+-- Solo concept-intent. Ej: \spPoint modo school, \spcirc, etc.
+register_tex_cmd("luafun_wrap_mrow_intent", function(concept_intent)
+    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = concept_intent
+end, { "string" })
+
+-- concept-intent + arg, sin tocar el intent del hijo.
+-- Ej: \spPoint modo mathcat, no silencioso.
+register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, arg_name)
+    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
+        concept_intent = concept_intent,
+        arg_name       = arg_name,
+    }
+end, { "string", "string" })
+
+-- concept-intent + arg + intent=":silent" fijo en el hijo.
+-- Ej: \spPoint modo mathcat, silencioso.
+register_tex_cmd("luafun_wrap_mrow_intent_arg_silent", function(concept_intent, arg_name)
+    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
+        concept_intent = concept_intent,
+        arg_name       = arg_name,
+        child_intent   = ":silent",
+    }
+end, { "string", "string" })
+
+-- ------------------------------------------------------------
+-- Callback compartido por las tres funciones. Consume la cola
+-- en orden, emparejando cada entrada con el próximo sub_mlist
+-- que aparezca en la fórmula.
+-- ------------------------------------------------------------
+luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
+    if #spintent_pending_mrow_intent_queue == 0 then return true end
+
+    local properties = node.get_properties_table()
+
+    for n, id in node.traverse(mlist) do
+        if #spintent_pending_mrow_intent_queue == 0 then break end
+        if id == spintent_noad_t and n.nucleus and n.nucleus.id == spintent_sub_mlist_t then
+            local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
+
+            local concept_intent, arg_name, child_intent
+            if type(entry) == "table" then
+                concept_intent = entry.concept_intent
+                arg_name       = entry.arg_name
+                child_intent   = entry.child_intent
+            else
+                concept_intent = entry
+            end
+
+            local p = properties[n.nucleus] or {}
+            p.mathml_filter = function(result, core)
+                if arg_name then result.arg = arg_name end
+                if child_intent then result.intent = child_intent end
+                return { [0] = "mrow", intent = concept_intent, result }, nil
+            end
+            properties[n.nucleus] = p
+        end
+    end
+
+    return true
+end, "spintent.wrap_mrow_intent")
+
+luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
+    "spintent.wrap_mrow_intent", "before", "luamml.to_mathml")
 
 -- 1. MOTOR CENTRAL Y NÚMEROS (\spnum y \spunit)
 
@@ -1514,7 +1639,15 @@ local function spintent_load_family(fontfile, features, fam)
         return false
     end
     local spec = "[" .. path .. "]:mode=base;script=math;language=dflt;" .. features
-    local cur_size = font.getfont(tex.getfontoffamily(0)).size
+    local main_id = tex.getfontoffamily(0)
+    local main_fd = main_id and font.getfont(main_id)
+    if not main_fd then
+        texio.write_nl("term and log",
+            "[spintent] ERROR: familia matematica 0 sin fuente -- llama a "
+            .. "\\setmathfont antes de \\begin{document}")
+        return false
+    end
+    local cur_size = main_fd.size
 
     local text_id = spintent_load_scaled(spec, cur_size)
     if not text_id then return false end
@@ -1545,9 +1678,12 @@ local spintent_cal_slots = {
   O=0x1D4AA, P=0x1D4AB, Q=0x1D4AC, R=0x211B,  S=0x1D4AE, T=0x1D4AF, U=0x1D4B0,
   V=0x1D4B1, W=0x1D4B2, X=0x1D4B3, Y=0x1D4B4, Z=0x1D4B5,
 }
-local spintent_cal_fam = spintent_find_free_family()
-local spintent_cal_fam_ok = spintent_cal_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_cal_fam)
-token_set_macro("l__spintent_luaset_cal_fam_ok_str", spintent_cal_fam_ok and "true" or "false")
+
+-- Antes estas dos lineas ejecutaban la carga YA, al cargar el modulo.
+-- Ahora solo se DECLARAN (nil), y se rellenan dentro de
+-- spintent_init_math_fallbacks, diferida a \AtBeginDocument.
+local spintent_cal_fam, spintent_cal_fam_ok
+local spintent_sym_fam, spintent_sym_fam_ok
 
 local function spintent_classic_mathcal(letters)
     if not spintent_cal_fam_ok then tex.sprint(letters); return end
@@ -1561,15 +1697,27 @@ local function spintent_classic_mathcal(letters)
 end
 register_tex_cmd("luafun_classic_mathcal", spintent_classic_mathcal, {"string"})
 
-local spintent_sym_fam = spintent_find_free_family()
-local spintent_sym_fam_ok = spintent_sym_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_sym_fam)
-token_set_macro("l__spintent_luaset_sym_fam_ok_str", spintent_sym_fam_ok and "true" or "false")
-
 local function spintent_right_angle_sqr()
     if not spintent_sym_fam_ok then return end
     tex.sprint(string.format("\\Umathchar 0 %d \"299C ", spintent_sym_fam))
 end
 register_tex_cmd("luafun_right_angle_sqr", spintent_right_angle_sqr, {})
+
+-- Funcion nueva: hace lo que antes hacian las lineas de inicializacion de
+-- arriba, pero ahora se llama desde \AtBeginDocument en spintent.sty, no
+-- al cargar el modulo -- asi el orden de \usepackage ya no importa, y si
+-- de verdad no hay fuente matematica cargada, degrada con un aviso en vez
+-- de un crash.
+local function spintent_init_math_fallbacks()
+    spintent_cal_fam = spintent_find_free_family()
+    spintent_cal_fam_ok = spintent_cal_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_cal_fam)
+    token_set_macro("l__spintent_luaset_cal_fam_ok_str", spintent_cal_fam_ok and "true" or "false")
+
+    spintent_sym_fam = spintent_find_free_family()
+    spintent_sym_fam_ok = spintent_sym_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_sym_fam)
+    token_set_macro("l__spintent_luaset_sym_fam_ok_str", spintent_sym_fam_ok and "true" or "false")
+end
+register_tex_cmd("luafun_init_math_fallbacks", spintent_init_math_fallbacks, {})
 
 -- ============================================================
 -- §12  GEOMETRÍA PLANA
@@ -1933,7 +2081,7 @@ local spintent_geo_fig_letras = {
 
 -- Letra de la tabla, con subíndice opcional (dígitos u otra letra).
 local spintent_geo_fig_letra_sola = Ct(
-    C(S"FPBL") *
+    C(S"FPBLT") *
     (
         P"_{" * spintent_geo_cont_sub * P"}" * Cc"sub"
         + Cc"" * Cc""

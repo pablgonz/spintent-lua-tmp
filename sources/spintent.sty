@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-02} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-03} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -96,6 +96,10 @@
 \cs_generate_variant:Nn \__spintent_luafun_spmoney_lookup_data:n { V }
 \cs_generate_variant:Nn \__spintent_luafun_spmQ_scale_int:nn { VV, Vn }
 \cs_generate_variant:Nn \__spintent_luafun_clean_split_and_set:n { V }
+\hook_gput_code:nnn { begindocument } { spintent }
+  {
+    \__spintent_luafun_init_math_fallbacks:
+  }
 \msg_new:nnn { spintent } { mathcal-fallback }
   {
     Using~classic~\token_to_str:N \mathcal \c_space_tl as~fallback~(font~not~found~or~
@@ -129,7 +133,7 @@
       }
   }
 %% Internal copy of invisible separator U-2063 => <mo>...</mo>.
-\cs_new_protected:Nn \__spintent_invisible_sep:
+\cs_new_protected:Nn \__spintent_invisible_sep_old:
   {
     \luamml_annotate:en
       {
@@ -138,6 +142,10 @@
       {
         \latelua{}
       }
+  }
+\cs_new_protected:Nn \__spintent_invisible_sep:
+  {
+    \__spintent_luafun_invisible_sep:
   }
 %% Internal copy of invisible separator U-2063 => <mi>...</mi>.
 \hook_gput_code:nnn { begindocument } { spintent }
@@ -2620,6 +2628,7 @@
       {
         \bool_if:NTF \l__spintent_spPoint_silent_cmd_bool
           {
+            \tl_clear:N \l__spintent_spPoint_prefix_tl
             \str_set:Ne \l__spintent_geo_luaset_intent_str { _- }
           }
           {
@@ -2627,44 +2636,46 @@
           }
       }
       {
-        \str_set:Ne \l__spintent_geo_luaset_intent_str { _punto:prefix($pt) }
-        \bool_if:NT \l__spintent_spPoint_silent_cmd_bool
+        \bool_if:NTF \l__spintent_spPoint_silent_cmd_bool
           {
-            \str_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent }
+            \str_set:Ne \l__spintent_geo_luaset_intent_str { :silent($pt) }
+          }
+          {
+            \str_set:Ne \l__spintent_geo_luaset_intent_str { _punto:prefix($pt) }
           }
       }
     \__spintent_spPoint_mathml:
   }
 \cs_new_protected:Nn \__spintent_spPoint_mathml:
   {
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \__spintent_invisible_sep:
     \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
       {
-        \MathMLintent
+        \__spintent_luafun_wrap_mrow_intent:n
           {
             \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
-              {
-                \tl_use:N \l__spintent_spPoint_prefix_tl -
-              }
+              { \tl_use:N \l__spintent_spPoint_prefix_tl - }
             \l__spintent_geo_luaset_intent_str
           }
-          {
-            \c__spintent_invisible_sep_tl
-            \l__spintent_geo_luaset_print_tl
-          }
+        { \l__spintent_geo_luaset_print_tl }
       }
       {
-        \MathMLintent
+        \bool_if:NTF \l__spintent_spPoint_silent_cmd_bool
           {
-            \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
-              {
-                \tl_use:N \l__spintent_spPoint_prefix_tl -
-              }
-            \l__spintent_geo_luaset_intent_str
+            \__spintent_luafun_wrap_mrow_intent_arg_silent:nn
+              { \l__spintent_geo_luaset_intent_str }
+              { pt }
+            { \l__spintent_geo_luaset_print_tl }
           }
           {
-            \c__spintent_invisible_sep_tl
-            \MathMLarg { pt } { \l__spintent_geo_luaset_print_tl }
+            \__spintent_luafun_wrap_mrow_intent_arg:nn
+              {
+                \tl_if_empty:NF \l__spintent_spPoint_prefix_tl
+                  { \tl_use:N \l__spintent_spPoint_prefix_tl - }
+                \l__spintent_geo_luaset_intent_str
+              }
+              { pt }
+            { \l__spintent_geo_luaset_print_tl }
           }
       }
   }
@@ -4103,7 +4114,9 @@
   {
     \str_if_eq:VnTF \l__spintent_spcirc_print_sym_str { odot }
       {
-        \textstyle\bigodot
+        \group_begin:
+          \textstyle\bigodot
+        \group_end:
       }
       { C }
   }
@@ -4334,7 +4347,9 @@
 \cs_new_protected:Nn \__spintent_spcircfig_sym:n
   {
     \str_if_eq:vnTF { l__spintent_sp #1 _print_sym_str } { odot }
-      { \bigodot }
+      {
+        \bigodot
+      }
       { C }
   }
 \cs_new_protected:Nn \__spintent_spcircfig_radio_print:n
