@@ -117,14 +117,96 @@ local function register_tex_cmd(name, func, args)
 end
 
 -- ============================================================
--- \__spintent_invisible_sep: (exterior, <mo>) -- ÚNICAMENTE esto.
+-- spintent: anotación de MathML con 'intent' sin token fantasma.
+-- Aplica solo cuando el contenido es un noad simple o compuesto
+-- (mi, msub, msup, radical, fraction) cuyo 'nucleus' es
+-- alcanzable directamente en la lista de nivel superior.
 --
--- Deduplicación: un flag en Lua que se pone en true al
--- inyectar, y se resetea a false cuando termina de procesarse
--- la fórmula actual (pre_mlist_to_hlist_filter, que se dispara
--- una vez por fórmula completa).
+-- NO aplica a contenido envuelto en accent (\overline,
+-- \overleftrightarrow, \vec, etc.): luamml no expone un punto de
+-- enganche para decorar el resultado del accent completo, solo
+-- su nucleus. Esos casos siguen usando \MathMLintent nativo con
+-- \c__spintent_invisible_sep_tl, sin cambios.
 -- ============================================================
 
+local spintent_sub_mlist_t = node.id("sub_mlist")
+local spintent_noad_t      = node.id("noad")
+
+local spintent_pending_mrow_intent_queue = {}
+
+-- Registra {concept_intent} en la cola. El grupo TeX que sigue
+-- inmediatamente en el código fuente queda envuelto en
+-- <mrow intent="concept_intent">.
+register_tex_cmd("luafun_wrap_mrow_intent", function(concept_intent)
+    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = concept_intent
+end, { "string" })
+
+-- Igual que arriba, además agrega arg="arg_name" al resultado.
+register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, arg_name)
+    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
+        concept_intent = concept_intent,
+        arg_name       = arg_name,
+    }
+end, { "string", "string" })
+
+-- Igual que arriba, además fija intent=":silent" en el resultado.
+register_tex_cmd("luafun_wrap_mrow_intent_arg_silent", function(concept_intent, arg_name)
+    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
+        concept_intent = concept_intent,
+        arg_name       = arg_name,
+        child_intent   = ":silent",
+    }
+end, { "string", "string" })
+
+-- Consume la cola en orden. Para cada entrada, busca el próximo
+-- nodo con 'nucleus' que aún no tenga mathml_filter asignado, y
+-- le instala uno que aplica arg/child_intent y envuelve el
+-- resultado en <mrow intent="concept_intent">.
+luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
+    if #spintent_pending_mrow_intent_queue == 0 then return true end
+
+    local properties = node.get_properties_table()
+
+    for n, id in node.traverse(mlist) do
+        if #spintent_pending_mrow_intent_queue == 0 then break end
+        if n.nucleus then
+            local existing = properties[n.nucleus]
+            if not (existing and existing.mathml_filter) then
+                local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
+
+                local concept_intent, arg_name, child_intent
+                if type(entry) == "table" then
+                    concept_intent = entry.concept_intent
+                    arg_name       = entry.arg_name
+                    child_intent   = entry.child_intent
+                else
+                    concept_intent = entry
+                end
+
+                local p = properties[n.nucleus] or {}
+                p.mathml_filter = function(result, core)
+                    if arg_name then result.arg = arg_name end
+                    if child_intent then result.intent = child_intent end
+                    return { [0] = "mrow", intent = concept_intent, result }, nil
+                end
+                properties[n.nucleus] = p
+            end
+        end
+    end
+
+    return true
+end, "spintent.wrap_mrow_intent")
+
+luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
+    "spintent.wrap_mrow_intent", "before", "luamml.to_mathml")
+
+-- ============================================================
+-- \__spintent_invisible_sep: (fantasma exterior, <mo intent=":silent">).
+-- Necesario cuando el resultado anotado es el único elemento de
+-- nivel superior de la fórmula: sin un segundo hermano, to_math
+-- renombra el <mrow> resultante directamente a <math intent=...>
+-- en vez de dejarlo como hijo (luamml issue #26).
+-- ============================================================
 local spintent_ghost_injected = false
 
 register_tex_cmd("luafun_invisible_sep", function()
@@ -141,9 +223,6 @@ register_tex_cmd("luafun_invisible_sep", function()
     local properties = node.get_properties_table()
     local p = properties[kernel] or {}
     p.mathml_filter = function(result, core)
-        -- Reusar 'result' (ya trae [':nodes'] del glyph físico
-        -- calculado por la conversión natural) en vez de
-        -- descartarlo -- solo cambiamos su tag e intent.
         result[0]     = "mo"
         result.intent = ":silent"
         return result, core
@@ -157,88 +236,6 @@ luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
     spintent_ghost_injected = false
     return true
 end, "spintent.reset_ghost")
-
--- ============================================================
--- spintent -- reemplazo de \c__spintent_invisible_sep_tl (issue
--- luamml #26). Construye <mrow intent="..."> directamente en
--- Lua, sin token fantasma, sin depender de \MathMLarg (que falla
--- silenciosamente poniendo 'arg' cuando el contenido es
--- compuesto: A''', A_{1}, etc. -- por eso 'arg' lo ponemos acá
--- nosotros mismos, directo sobre el resultado).
---
---   \__spintent_luafun_wrap_mrow_intent:n        {concept}           {contenido}
---   \__spintent_luafun_wrap_mrow_intent_arg:nn   {concept}{arg}      {contenido}
---   \__spintent_luafun_wrap_mrow_intent_arg_silent:nn {concept}{arg} {contenido}
--- ============================================================
-
-local spintent_sub_mlist_t = node.id("sub_mlist")
-local spintent_noad_t      = node.id("noad")
-
-local spintent_pending_mrow_intent_queue = {}
-
--- Solo concept-intent. Ej: \spPoint modo school, \spcirc, etc.
-register_tex_cmd("luafun_wrap_mrow_intent", function(concept_intent)
-    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = concept_intent
-end, { "string" })
-
--- concept-intent + arg, sin tocar el intent del hijo.
--- Ej: \spPoint modo mathcat, no silencioso.
-register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, arg_name)
-    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
-        concept_intent = concept_intent,
-        arg_name       = arg_name,
-    }
-end, { "string", "string" })
-
--- concept-intent + arg + intent=":silent" fijo en el hijo.
--- Ej: \spPoint modo mathcat, silencioso.
-register_tex_cmd("luafun_wrap_mrow_intent_arg_silent", function(concept_intent, arg_name)
-    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
-        concept_intent = concept_intent,
-        arg_name       = arg_name,
-        child_intent   = ":silent",
-    }
-end, { "string", "string" })
-
--- ------------------------------------------------------------
--- Callback compartido por las tres funciones. Consume la cola
--- en orden, emparejando cada entrada con el próximo sub_mlist
--- que aparezca en la fórmula.
--- ------------------------------------------------------------
-luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
-    if #spintent_pending_mrow_intent_queue == 0 then return true end
-
-    local properties = node.get_properties_table()
-
-    for n, id in node.traverse(mlist) do
-        if #spintent_pending_mrow_intent_queue == 0 then break end
-        if id == spintent_noad_t and n.nucleus and n.nucleus.id == spintent_sub_mlist_t then
-            local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
-
-            local concept_intent, arg_name, child_intent
-            if type(entry) == "table" then
-                concept_intent = entry.concept_intent
-                arg_name       = entry.arg_name
-                child_intent   = entry.child_intent
-            else
-                concept_intent = entry
-            end
-
-            local p = properties[n.nucleus] or {}
-            p.mathml_filter = function(result, core)
-                if arg_name then result.arg = arg_name end
-                if child_intent then result.intent = child_intent end
-                return { [0] = "mrow", intent = concept_intent, result }, nil
-            end
-            properties[n.nucleus] = p
-        end
-    end
-
-    return true
-end, "spintent.wrap_mrow_intent")
-
-luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
-    "spintent.wrap_mrow_intent", "before", "luamml.to_mathml")
 
 -- 1. MOTOR CENTRAL Y NÚMEROS (\spnum y \spunit)
 

@@ -8995,12 +8995,20 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spPoint}}
 %
-% \begin{variable}[int]{\l_@@_spPoint_mode_str, \l_@@_spPoint_prefix_tl}
+% \begin{variable}[int]
+%   {
+%     \l_@@_spPoint_mode_str,
+%     \l_@@_spPoint_prefix_tl,
+%     \l_@@_spPoint_intent_arg_tl,
+%     \l_@@_spPoint_kv_tl,
+%   }
 %   Internal variables holding the values set by
 %   \mykey[spPoint]{read-cmd} and \mykey[spPoint]{prefix}.
 %    \begin{macrocode}
 \str_new:N \l_@@_spPoint_mode_str
 \tl_new:N  \l_@@_spPoint_prefix_tl
+\tl_new:N  \l_@@_spPoint_intent_arg_tl
+\tl_new:N  \l_@@_spPoint_kv_tl
 %    \end{macrocode}
 % \end{variable}
 %
@@ -9026,7 +9034,8 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, unknown}
 %   We define the \mymeta{keys} \mykey[spPoint]{read-cmd},
-%   \mykey[spPoint]{prefix} and \mykey[spPoint]{silent-cmd}.
+%   \mykey[spPoint]{prefix}, \mykey[spPoint]{silent-cmd}  and
+%   \mykey[spPoint]{concept}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spPoint }
   {
@@ -9050,6 +9059,9 @@ end, "shekel_fallback_patch")
     silent-cmd          .bool_set:N = \l_@@_spPoint_silent_cmd_bool,
     silent-cmd          .initial:n  = false,
     silent-cmd          .value_required:n = true,
+    concept             .bool_set:N = \l_@@_spPoint_concept_bool,
+    concept             .initial:n  = true,
+    concept             .value_required:n = true,
     unknown             .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spPoint }
@@ -9065,15 +9077,10 @@ end, "shekel_fallback_patch")
 %   The internal function \myhlc|\@@_spPoint_print:n| process the \mymarg{argument}
 %   passed in `|#1|'. First, call the function \myhlc|\@@_luafun_geo_parse_and_set:n|
 %   to process the \mymarg{argument}, returning an \enquote{error} if the
-%   input is invalid, then, it checks if the value of the variable
-%   \myhlc|\l_@@_spPoint_mode_str| handled by the key \mykey{read-cmd} is
-%   |school|. If so, it checks if the variable \myhlc|\l_@@_spPoint_silent_cmd_bool|
-%   handled by the key \mykey{silent-cmd} is |true|; if so, we clear
-%   \myhlc|\l_@@_spPoint_prefix_tl| (the \mykey{prefix} key is ignored while
-%   silent) and set \myhlc|\l_@@_geo_luaset_intent_str| with the
-%   `\textcolor{red}{\texttt{_-}}' trick for a \emph{silent} |<mrow>| since
-%   |:silent| alone doesn't work here; if |silent-cmd=false| we place
-%   |punto-| to the left of \myhlc|\l_@@_geo_luaset_intent_str|.
+%   input is invalid. Then, if \mykey{silent-cmd} is |true| or \mykey{concept}
+%   is |false|, set \myhlc|\l_@@_spPont_intent_arg_tl| to |:silent($pt)|;
+%   otherwise set it to |punto:prefix($pt)|, prefixed with \mykey{prefix}
+%   when given. Finally, call \myhlc|\@@_spPoint_mathml:|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_print:n
   {
@@ -9082,32 +9089,23 @@ end, "shekel_fallback_patch")
       {
         \msg_error:nne { spintent } { spPoint-invalid-point } { \exp_not:n {#1} }
       }
-    \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
+    \bool_if:nTF
       {
-        \bool_if:NTF \l_@@_spPoint_silent_cmd_bool
-          {
-            \tl_clear:N \l_@@_spPoint_prefix_tl
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
-          }
-          {
-            \str_put_left:Ne \l_@@_geo_luaset_intent_str { punto- }
-          }
+        \bool_lazy_or_p:nn
+          { \l_@@_spPoint_silent_cmd_bool }
+          { ! \l_@@_spPoint_concept_bool }
       }
-%    \end{macrocode}
-%   If the value of the variable \myhlc|\l_@@_spPoint_mode_str| is not
-%   |school|, that is, |read-cmd=mathcat|, and |silent-cmd=true|, we set
-%   \myhlc|\l_@@_geo_luaset_intent_str| to \myhlc|:silent($pt)| directly
-%   (the \mykey{prefix} key is likewise ignored while silent); otherwise
-%   we set it to \myhlc|_punto:prefix($pt)|. Finally, we call the function
-%   \myhlc|\@@_spPoint_mathml:|.
-%    \begin{macrocode}
       {
-        \bool_if:NTF \l_@@_spPoint_silent_cmd_bool
+        \tl_set:Nn \l_@@_spPoint_intent_arg_tl { :silent($pt) }
+      }
+      {
+        \tl_set:Ne \l_@@_spPoint_intent_arg_tl
           {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { :silent($pt) }
-          }
-          {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _punto:prefix($pt) }
+            \tl_if_empty:NF \l_@@_spPoint_prefix_tl
+              {
+                \tl_use:N \l_@@_spPoint_prefix_tl -
+              }
+            punto:prefix($pt)
           }
       }
     \@@_spPoint_mathml:
@@ -9116,69 +9114,39 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spPoint_mathml:}
-%   The function \myhlc|\@@_spPoint_mathml:| generates the code \mynvmath{MathML}
-%   and prints the \mymarg{argument} passed to |\spPoint|. The key
-%   \mykey{prefix} (already folded into \myhlc|\l_@@_geo_luaset_intent_str|
-%   or cleared, depending on |silent-cmd|) is applied here for the |school|
-%   branch. We call \myhlc|\@@_invisible_sep:| first, still required by the
-%   |luamml| bug \href{https://github.com/latex3/luamml/issues/26}{\#26}, to
-%   stop the sole |<mrow>| from being renamed to |<math>|.
+%   The function \myhlc|\@@_spPoint_mathml:| generates the |<mrow>| and
+%   prints \myhlc|\l_@@_geo_luaset_print_tl|. \myhlc|\@@_invisible_sep:|
+%   is called first (|luamml| issue \href{https://github.com/latex3/luamml/issues/26}{\#26}).
 %
-%   For |read-cmd=school|, the function \myhlc|\@@_luafun_wrap_mrow_intent:n|
-%   wraps \myhlc|\l_@@_geo_luaset_print_tl| directly in
-%   |<mrow intent="...">|, built in Lua via a |mathml_filter| on the
-%   content's own kernel -- no |arg| is needed, no phantom node either.
-%
-%   For |read-cmd=mathcat|, we additionally need |arg="pt"| on the printed
-%   content, which \myhlc|\MathMLarg| fails to set when the content is
-%   compound (e.g.\ a point with a prime or a subscript, producing
-%   |<msup>|/|<msub>|). We avoid \myhlc|\MathMLarg| entirely and set |arg|
-%   ourselves: \myhlc|\@@_luafun_wrap_mrow_intent_arg_silent:nn| when
-%   |silent-cmd=true| (also forces |intent=":silent"| on the content), or
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| otherwise.
+%   The |kv| string is |arg="pt", intent="_-"| when \mykey{silent-cmd} is
+%   |true|; otherwise, for |read-cmd=school| it is |arg="pt", intent="_body-"|
+%   (literal spelling); for |read-cmd=mathcat| it is |arg="pt"| alone.
+%   A single call to \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| applies it,
+%   with \myhlc|\l_@@_spPont_intent_arg_tl| as the concept |intent|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_mathml:
   {
     \@@_invisible_sep:
-    \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
+    \bool_if:NTF \l_@@_spPoint_silent_cmd_bool
       {
-        \@@_luafun_wrap_mrow_intent:n
-          {
-            \tl_if_empty:NF \l_@@_spPoint_prefix_tl
-              { \tl_use:N \l_@@_spPoint_prefix_tl - }
-            \l_@@_geo_luaset_intent_str
-          }
-        { \l_@@_geo_luaset_print_tl }
+        \tl_set:Nn \l_@@_spPoint_kv_tl { arg = "pt", intent = "_-" }
       }
       {
-        \bool_if:NTF \l_@@_spPoint_silent_cmd_bool
+        \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
           {
-            \@@_luafun_wrap_mrow_intent_arg_silent:nn
-              { \l_@@_geo_luaset_intent_str }
-              { pt }
-            { \l_@@_geo_luaset_print_tl }
+            \tl_set:Ne \l_@@_spPoint_kv_tl
+              { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
           }
           {
-            \@@_luafun_wrap_mrow_intent_arg:nn
-              {
-                \tl_if_empty:NF \l_@@_spPoint_prefix_tl
-                  { \tl_use:N \l_@@_spPoint_prefix_tl - }
-                \l_@@_geo_luaset_intent_str
-              }
-              { pt }
-            { \l_@@_geo_luaset_print_tl }
+            \tl_set:Nn \l_@@_spPoint_kv_tl { arg = "pt" }
           }
       }
+    \@@_luafun_wrap_mrow_intent_arg:nn
+      { \l_@@_spPoint_intent_arg_tl }
+      { \l_@@_spPoint_kv_tl }
+    { \l_@@_geo_luaset_print_tl }
   }
 %    \end{macrocode}
-%   \begin{important}*
-%     The internal function \myhlc|\@@_spPoint_print:n| always returns
-%     the bare body (e.g. |A| or |A-sub-uno|) in \myhlc|\l_@@_geo_luaset_intent_str|.
-%     Only \emph{after} the call does \mypkg[no-index]{expl3} assemble the
-%     final literal intent — prepending |punto-|, or wrapping the body in |_...-|
-%     when \mykey[spPoint]{silent-cmd} is active — since neither depends
-%     on anything Lua computes.
-%   \end{important}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spPoint_exec:nn}
@@ -9207,6 +9175,51 @@ end, "shekel_fallback_patch")
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPoint } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_mathmlarg_point:nnn}
+%   Annotates one point (|#3|) with |arg| and, when applicable, a literal
+%   |intent|, without wrapping it in its own |<mrow>|. |#1| is the
+%   reference name (|arg="#1"|); |#2| is the calling command's name,
+%   used to look up its own \mykey{silent-cmd}/\mykey{read-cmd}
+%   variables. Same |kv| logic as \myhlc|\@@_spPoint_mathml:|. Concept
+%   |intent| is passed empty on purpose: the caller applies it once,
+%   externally, via a native |\MathMLintent|.
+%    \begin{macrocode}
+\tl_new:N   \l_@@_mathmlarg_point_ref_tl
+\str_new:N  \l_@@_mathmlarg_point_mode_str
+\tl_new:N   \l_@@_mathmlarg_point_kv_tl
+\bool_new:N \l_@@_mathmlarg_point_silent_bool
+\cs_new_protected:Nn \@@_mathmlarg_point:nnn
+  {
+    % referencia del intent ($ref)
+    \tl_set:Nn \l_@@_mathmlarg_point_ref_tl {#1}
+    \@@_luafun_geo_point_parse_and_set:n { \exp_not:n {#3} }
+    % Ajustamos la lectura acorde al comando
+    \bool_set_eq:Nc \l_@@_mathmlarg_point_silent_bool { l_@@_ #2 _silent_cmd_bool }
+    \str_set_eq:Nc  \l_@@_mathmlarg_point_mode_str  { l_@@_ #2 _mode_str }
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_mathmlarg_point_silent_bool
+      {
+        \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
+          { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_-" }
+      }
+      {
+        \str_if_eq:VnTF \l_@@_mathmlarg_point_mode_str { school }
+          {
+            \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
+              { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_ \l_@@_geo_luaset_intent_str -" }
+          }
+          {
+            \tl_set:Ne \l_@@_mathmlarg_point_kv_tl { arg = "\l_@@_mathmlarg_point_ref_tl" }
+          }
+      }
+    \@@_luafun_wrap_mrow_intent_arg:nn
+      {  } % debe ir vacío
+      { \l_@@_mathmlarg_point_kv_tl }
+    { \l_@@_geo_luaset_print_tl }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -9283,6 +9296,9 @@ end, "shekel_fallback_patch")
     silent-cmd          .bool_set:N = \l_@@_sprecta_silent_cmd_bool,
     silent-cmd          .initial:n  = false,
     silent-cmd          .value_required:n = true,
+    concept             .bool_set:N = \l_@@_sprecta_concept_bool,
+    concept             .initial:n  = true,
+    concept             .value_required:n = true,
     unknown             .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { sprecta }
@@ -9317,6 +9333,7 @@ end, "shekel_fallback_patch")
       {
         \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
           {
+            \tl_clear:N \l_@@_sprecta_prefix_tl
             \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
@@ -9332,10 +9349,13 @@ end, "shekel_fallback_patch")
 %   \myhlc|\@@_sprecta_mathml:|.
 %    \begin{macrocode}
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _recta:prefix($pts) }
-        \bool_if:NT \l_@@_sprecta_silent_cmd_bool
+        \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
           {
-            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+            \tl_clear:N \l_@@_sprecta_prefix_tl
+            \str_set:Ne \l_@@_geo_luaset_intent_str { :silent($pts) }
+          }
+          {
+            \str_set:Ne \l_@@_geo_luaset_intent_str { _recta:prefix($pts) }
           }
       }
     \@@_sprecta_mathml:
@@ -9349,6 +9369,12 @@ end, "shekel_fallback_patch")
 %   |read-cmd| and \mykey{prefix} are executed, applying |\overleftrightarrow|
 %   to the output when necessary.
 %    \begin{macrocode}
+\cs_new_protected:Nn \@@_sprecta_two_point:
+  {
+    \@@_invisible_sep: %%
+    \overleftrightarrow { \l_@@_geo_luaset_print_tl }
+  }
+
 \cs_new_protected:Nn \@@_sprecta_mathml:
   {
     \@@_invisible_sep: % need by MathCAT (luamml issues #26)
@@ -9356,31 +9382,31 @@ end, "shekel_fallback_patch")
       {
         \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
           {
-            \MathMLintent
+            \@@_luafun_wrap_mrow_intent:n
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                  {
-                    \tl_use:N \l_@@_sprecta_prefix_tl -
-                  }
+                  { \tl_use:N \l_@@_sprecta_prefix_tl - }
                 \l_@@_geo_luaset_intent_str
               }
-              {
-                \c_@@_invisible_sep_tl
-                \l_@@_geo_luaset_print_tl
-              }
+            { \l_@@_geo_luaset_print_tl }
           }
           {
-            \MathMLintent
+            \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
               {
-                \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                  {
-                    \tl_use:N \l_@@_sprecta_prefix_tl -
-                  }
-                \l_@@_geo_luaset_intent_str
+                \@@_luafun_wrap_mrow_intent_arg_silent:nn
+                  { \l_@@_geo_luaset_intent_str }
+                  { pts }
+                { \l_@@_geo_luaset_print_tl }
               }
               {
-                \c_@@_invisible_sep_tl
-                \MathMLarg { pts }  { \l_@@_geo_luaset_print_tl }
+                \@@_luafun_wrap_mrow_intent_arg:nn
+                  {
+                    \tl_if_empty:NF \l_@@_sprecta_prefix_tl
+                      { \tl_use:N \l_@@_sprecta_prefix_tl - }
+                    \l_@@_geo_luaset_intent_str
+                  }
+                  { pts }
+                { \l_@@_geo_luaset_print_tl }
               }
           }
       }
@@ -9390,23 +9416,19 @@ end, "shekel_fallback_patch")
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                  {
-                    \tl_use:N \l_@@_sprecta_prefix_tl -
-                  }
-                \l_@@_geo_luaset_intent_str
+                  { \tl_use:N \l_@@_sprecta_prefix_tl - }
+                \l_@@_geo_luaset_intent_str :nofix
               }
               {
                 \c_@@_invisible_sep_tl
                 \overleftrightarrow { \l_@@_geo_luaset_print_tl }
-              }
+             }
           }
           {
             \MathMLintent
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                  {
-                    \tl_use:N \l_@@_sprecta_prefix_tl -
-                  }
+                  { \tl_use:N \l_@@_sprecta_prefix_tl - }
                 \l_@@_geo_luaset_intent_str
               }
               {
@@ -9578,6 +9600,7 @@ end, "shekel_fallback_patch")
       {
         \bool_if:NTF \l_@@_sprayo_silent_cmd_bool
           {
+            \tl_clear:N \l_@@_sprayo_prefix_tl
             \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
@@ -9603,7 +9626,8 @@ end, "shekel_fallback_patch")
           }
         \bool_if:NT \l_@@_sprayo_silent_cmd_bool
           {
-            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+            \tl_clear:N \l_@@_sprayo_prefix_tl
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent($pts) }
           }
       }
     \@@_sprayo_mathml:
@@ -9879,6 +9903,7 @@ end, "shekel_fallback_patch")
       {
         \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
+            \tl_clear:c { l_@@_sp #1 _prefix_tl }
             \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
@@ -9903,7 +9928,8 @@ end, "shekel_fallback_patch")
           }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
           {
-            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+            \tl_clear:c { l_@@_sp #1 _prefix_tl }
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent($pts) }
           }
       }
     \@@_spside_mathml:n { #1 }
@@ -10201,6 +10227,7 @@ end, "shekel_fallback_patch")
       {
         \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
+            \tl_clear:c { l_@@_sp #1 _prefix_tl }
             \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
@@ -10217,7 +10244,8 @@ end, "shekel_fallback_patch")
           }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
           {
-            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+            \tl_clear:c { l_@@_sp #1 _prefix_tl }
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent($pts) }
           }
       }
     \@@_spangle_mathml:n {#1}
@@ -10477,6 +10505,7 @@ end, "shekel_fallback_patch")
       {
         \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
+            \tl_clear:c { l_@@_sp #1 _prefix_tl }
             \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
           }
           {
@@ -10493,7 +10522,8 @@ end, "shekel_fallback_patch")
           }
         \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
           {
-            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent }
+            \tl_clear:c { l_@@_sp #1 _prefix_tl }
+            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent($pts) }
           }
       }
     \@@_sparc_mathml:n {#1}
@@ -12132,9 +12162,10 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcircfig_mathml:nn
   {
+    \@@_invisible_sep:
     \str_if_eq:VnTF \l_@@_geo_circfig_mode_str { bare }
       {
-        \@@_invisible_sep:
+        %%\@@_invisible_sep:
         \MathMLintent
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
@@ -12156,7 +12187,7 @@ end, "shekel_fallback_patch")
       {
         \tl_if_empty:nTF {#2}
           {
-            \@@_invisible_sep:
+            %%\@@_invisible_sep:
             \MathMLintent
               {
                 \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
@@ -12172,7 +12203,7 @@ end, "shekel_fallback_patch")
               }
           }
           {
-            \@@_invisible_sep:
+            %%\@@_invisible_sep:
             \str_if_empty:NTF \l_@@_geo_luaset_circ_radio_type_str
               {
                 \MathMLintent
@@ -12216,7 +12247,7 @@ end, "shekel_fallback_patch")
                     \MathMLintent
                       { :silent }
                       {
-                        \@@_spcircfig_sym:n {#1}
+                        \MathMLintent{ :silent } { \@@_spcircfig_sym:n {#1} }
                         \str_if_empty:cF { l_@@_sp #1 _sub_index_str }
                           {
                             \c_math_subscript_token
@@ -12224,7 +12255,7 @@ end, "shekel_fallback_patch")
                           }
                         ( \l_@@_geo_luaset_print_tl , \,
                       }
-                    \@@_invisible_sep:
+                    %%\@@_invisible_sep:
                     \@@_spcircfig_radio_print:n {#1}
                     \MathMLintent { :silent } { ) }
                   }
@@ -12413,20 +12444,102 @@ local function register_tex_cmd(name, func, args)
 end
 
 -- ============================================================
--- \@@_invisible_sep: (exterior, <mo>) -- ÚNICAMENTE esto.
---
--- Deduplicación: un flag en Lua que se pone en true al
--- inyectar, y se resetea a false cuando termina de procesarse
--- la fórmula actual (pre_mlist_to_hlist_filter, que se dispara
--- una vez por fórmula completa).
+-- spintent: anotación de MathML con 'intent'/'arg' sin token
+-- fantasma. Aplica cuando el contenido es un noad simple o
+-- compuesto (mi, msub, msup, radical, fraction) cuyo 'nucleus'
+-- es alcanzable directamente en la lista de nivel superior, o
+-- anidado dentro de un accent/contenedor con múltiples items
+-- (el callback recursa para encontrarlo).
 -- ============================================================
 
-local spintent_ghost_injected = false
+local spintent_sub_mlist_t = node.id("sub_mlist")
 
-register_tex_cmd("luafun_invisible_sep", function()
-    if spintent_ghost_injected then return end
-    spintent_ghost_injected = true
+local spintent_pending_mrow_intent_queue = {}
 
+-- El segundo argumento es una lista estilo Lua (key = value,
+-- separadas por coma), evaluada con load() -- mismo mecanismo
+-- que \luamml_annotate:en usa para su propio core=/mathml=.
+-- Función interna: sin pcall -- si la sintaxis está mal, el error
+-- de Lua sale directo (somos los únicos que la llamamos).
+register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, kv_string)
+    local opts = load('return {' .. kv_string .. '}')()
+
+    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
+        concept_intent = (concept_intent ~= "") and concept_intent or nil,  -- <- agregar el chequeo
+        arg_name       = opts.arg,
+        child_intent   = opts.intent,
+    }
+end, { "string", "string" })
+
+local function spintent_count_items(head)
+    local n = 0
+    for _ in node.traverse(head) do n = n + 1 end
+    return n
+end
+
+-- Busca el próximo nodo con 'nucleus' que aún no tenga
+-- mathml_filter asignado. Si el nucleus es un sub_mlist con más
+-- de 1 item, recursa buscando adentro (caso: varios puntos
+-- dentro de un mismo \overleftrightarrow/\overline). Si tiene 1
+-- solo item o no es sub_mlist, es el objetivo final.
+local function spintent_try_annotate(n, properties)
+    if #spintent_pending_mrow_intent_queue == 0 then return end
+    if not n.nucleus then return end
+
+    local nucleus  = n.nucleus
+    local existing = properties[nucleus]
+
+    if nucleus.id == spintent_sub_mlist_t and nucleus.head then
+        local count = spintent_count_items(nucleus.head)
+        if count > 1 then
+            for inner in node.traverse(nucleus.head) do
+                spintent_try_annotate(inner, properties)
+                if #spintent_pending_mrow_intent_queue == 0 then return end
+            end
+            return
+        end
+    end
+
+    if existing and existing.mathml_filter then
+        return  -- ya anotado por otra cosa (p.ej. \MathMLintent nativo)
+    end
+
+    local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
+
+    local p = properties[nucleus] or {}
+    p.mathml_filter = function(result, core)
+        if entry.arg_name then result.arg = entry.arg_name end
+        if entry.child_intent then result.intent = entry.child_intent end
+        if entry.concept_intent then
+            return { [0] = "mrow", intent = entry.concept_intent, result }, nil
+        end
+        return result, core
+    end
+    properties[nucleus] = p
+end
+
+luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
+    if #spintent_pending_mrow_intent_queue == 0 then return true end
+    local properties = node.get_properties_table()
+    for n in node.traverse(mlist) do
+        if #spintent_pending_mrow_intent_queue == 0 then break end
+        spintent_try_annotate(n, properties)
+    end
+    return true
+end, "spintent.wrap_mrow_intent")
+
+luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
+    "spintent.wrap_mrow_intent", "before", "luamml.to_mathml")
+
+-- Reemplaza \c__spintent_invisible_sep_tl cuando se usa junto a
+-- \MathMLintent nativo (necesita un segundo hermano para no
+-- colapsar). Se auto-anota con su propio mathml_filter al
+-- crearse -- por eso la recursión de wrap_mrow_intent_arg lo
+-- reconoce como "ya reclamado" y lo salta, en vez de confundirlo
+-- con un objetivo libre de la cola. A diferencia del fantasma
+-- exterior, este NO se deduplica: puede hacer falta más de una
+-- vez por fórmula (una por cada \MathMLintent anidado).
+register_tex_cmd("luafun_inner_sep", function()
     local kernel = node.new("math_char")
     kernel.char  = 0x2063
     kernel.fam   = 0
@@ -12437,10 +12550,42 @@ register_tex_cmd("luafun_invisible_sep", function()
     local properties = node.get_properties_table()
     local p = properties[kernel] or {}
     p.mathml_filter = function(result, core)
-        -- Reusar 'result' (ya trae [':nodes'] del glyph físico
-        -- calculado por la conversión natural) en vez de
-        -- descartarlo -- solo cambiamos su tag e intent.
-        result[0]     = "mo"
+        result.intent = ":silent"
+        return result, core
+    end
+    properties[kernel] = p
+
+    node.write(noad)
+end, {})
+
+-- ============================================================
+-- \@@_invisible_sep: (fantasma exterior, <mo intent=":silent">).
+-- Necesario cuando el resultado anotado es el único elemento de
+-- nivel superior de la fórmula: sin un segundo hermano, to_math
+-- renombra el <mrow> resultante directamente a <math intent=...>
+-- en vez de dejarlo como hijo (luamml issue #26).
+-- ============================================================
+local spintent_ghost_injected = false
+
+register_tex_cmd("luafun_invisible_sep", function()
+    if spintent_ghost_injected then return end
+    spintent_ghost_injected = true
+
+    local kernel = node.new("math_char")
+    kernel.char  = 0x2063
+    kernel.fam   = 0
+    local noad   = node.new("noad")
+    noad.subtype = 0   -- noad_ord. Forzar op (1) da <mo> correcto
+                       -- pero agrega espaciado real de operador al
+                       -- PDF (rspace visible). Se acepta <mi> sin
+                       -- efecto lateral -- intent=':silent' hace
+                       -- que la etiqueta (mi/mo) sea irrelevante
+                       -- para cualquier lector.
+    noad.nucleus = kernel
+
+    local properties = node.get_properties_table()
+    local p = properties[kernel] or {}
+    p.mathml_filter = function(result, core)
         result.intent = ":silent"
         return result, core
     end
@@ -12453,88 +12598,6 @@ luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
     spintent_ghost_injected = false
     return true
 end, "spintent.reset_ghost")
-
--- ============================================================
--- spintent -- reemplazo de \c__spintent_invisible_sep_tl (issue
--- luamml #26). Construye <mrow intent="..."> directamente en
--- Lua, sin token fantasma, sin depender de \MathMLarg (que falla
--- silenciosamente poniendo 'arg' cuando el contenido es
--- compuesto: A''', A_{1}, etc. -- por eso 'arg' lo ponemos acá
--- nosotros mismos, directo sobre el resultado).
---
---   \@@_luafun_wrap_mrow_intent:n        {concept}           {contenido}
---   \@@_luafun_wrap_mrow_intent_arg:nn   {concept}{arg}      {contenido}
---   \@@_luafun_wrap_mrow_intent_arg_silent:nn {concept}{arg} {contenido}
--- ============================================================
-
-local spintent_sub_mlist_t = node.id("sub_mlist")
-local spintent_noad_t      = node.id("noad")
-
-local spintent_pending_mrow_intent_queue = {}
-
--- Solo concept-intent. Ej: \spPoint modo school, \spcirc, etc.
-register_tex_cmd("luafun_wrap_mrow_intent", function(concept_intent)
-    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = concept_intent
-end, { "string" })
-
--- concept-intent + arg, sin tocar el intent del hijo.
--- Ej: \spPoint modo mathcat, no silencioso.
-register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, arg_name)
-    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
-        concept_intent = concept_intent,
-        arg_name       = arg_name,
-    }
-end, { "string", "string" })
-
--- concept-intent + arg + intent=":silent" fijo en el hijo.
--- Ej: \spPoint modo mathcat, silencioso.
-register_tex_cmd("luafun_wrap_mrow_intent_arg_silent", function(concept_intent, arg_name)
-    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
-        concept_intent = concept_intent,
-        arg_name       = arg_name,
-        child_intent   = ":silent",
-    }
-end, { "string", "string" })
-
--- ------------------------------------------------------------
--- Callback compartido por las tres funciones. Consume la cola
--- en orden, emparejando cada entrada con el próximo sub_mlist
--- que aparezca en la fórmula.
--- ------------------------------------------------------------
-luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
-    if #spintent_pending_mrow_intent_queue == 0 then return true end
-
-    local properties = node.get_properties_table()
-
-    for n, id in node.traverse(mlist) do
-        if #spintent_pending_mrow_intent_queue == 0 then break end
-        if id == spintent_noad_t and n.nucleus and n.nucleus.id == spintent_sub_mlist_t then
-            local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
-
-            local concept_intent, arg_name, child_intent
-            if type(entry) == "table" then
-                concept_intent = entry.concept_intent
-                arg_name       = entry.arg_name
-                child_intent   = entry.child_intent
-            else
-                concept_intent = entry
-            end
-
-            local p = properties[n.nucleus] or {}
-            p.mathml_filter = function(result, core)
-                if arg_name then result.arg = arg_name end
-                if child_intent then result.intent = child_intent end
-                return { [0] = "mrow", intent = concept_intent, result }, nil
-            end
-            properties[n.nucleus] = p
-        end
-    end
-
-    return true
-end, "spintent.wrap_mrow_intent")
-
-luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
-    "spintent.wrap_mrow_intent", "before", "luamml.to_mathml")
 
 -- 1. MOTOR CENTRAL Y NÚMEROS (\spnum y \spunit)
 
