@@ -9891,28 +9891,26 @@ end, "shekel_fallback_patch")
   }
 %    \end{macrocode}
 %   \begin{important}*
-%     The key \mykey{print-m} is defined for both commands for simplicity,
-%     but has no effect on |\spside|.
+%     The keys \mykey{print-m} and \mykey{concept} are defined for both
+%     commands for simplicity, but has no effect on |\spside|.
 %   \end{important}
 % \end{macro}
 %
-% \subsubsection{Internal functions for \cs[no-index]{spside} and
-%   \cs[no-index]{spmside}}
-%
 % \begin{variable}[int]
 %   {
-%     \l_@@_geo_intent_tl,
+%     \l_@@_spside_intent_tl,
 %     \l_@@_spside_pt_seq,
 %     \l_@@_spside_refs_tl,
 %     \l_@@_spside_intent_arg_tl,
 %     \l_@@_spside_pt_idx_int,
 %   }
-%   \myhlc|\l_@@_geo_intent_tl| holds the concept word (\mykey{read-arg}
-%   or \mykey{read-sty}, `|medida-del-|'-prefixed for |\spmside|). The
-%   rest are scratch variables shared by both commands (the function
-%   itself is shared) to split \myhlc|\l_@@_geo_luaset_points_str| and
-%   build the |$pts1,$pts2,...| reference list.
+%   \myhlc|\l_@@_spside_intent_tl| holds the concept word
+%   (\mykey{read-arg} or \mykey{read-sty}). The rest are scratch
+%   variables shared by both commands (the function itself is shared)
+%   to split \myhlc|\l_@@_geo_luaset_points_str| and build the
+%   |$pts1,$pts2,...| reference list.
 %    \begin{macrocode}
+\tl_new:N  \l_@@_spside_intent_tl
 \seq_new:N \l_@@_spside_pt_seq
 \tl_new:N  \l_@@_spside_refs_tl
 \tl_new:N  \l_@@_spside_intent_arg_tl
@@ -9925,11 +9923,17 @@ end, "shekel_fallback_patch")
 %   short name of the command (|side| or |mside|) in `|#1|' and the
 %   \mymarg{argument} in `|#2|'. It calls
 %   \myhlc|\@@_luafun_geo_parse_and_set:n| to process `|#2|', returning
-%   an \enquote{error} if invalid, then builds \myhlc|\l_@@_geo_intent_tl|
-%   from \mykey{read-arg} (if given) or \mykey{read-sty}, prefixed with
-%   `|medida-del-|' for |\spmside|. No |intent| is built here: it needs
-%   the reference list, which \myhlc|\@@_spside_mathml:n| builds after
-%   splitting the points.
+%   an \enquote{error} if invalid, then builds \myhlc|\l_@@_spside_intent_tl|.
+%
+%   When \mykey{read-arg} is empty, it is set from \mykey{read-sty},
+%   prefixed with `|medida-del-|' for |\spmside|. When \mykey{read-arg}
+%   is given, it is used as is, and `|medida-del-|' is prepended only
+%   if \mykey{concept} is |true|: with |concept=false|, |read-arg| is
+%   the verbatim escape hatch for a full user-written phrase (e.g.\
+%   |read-arg={medida de la hipotenusa}|), gender and article left to
+%   the user. No |intent| is built here: it needs the reference list,
+%   which \myhlc|\@@_spside_mathml:n| builds after splitting the
+%   points.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_process:nn
   {
@@ -9939,15 +9943,23 @@ end, "shekel_fallback_patch")
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \tl_set:Ne \l_@@_geo_intent_tl
+    \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
       {
-        \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
-          { \str_use:c { l_@@_sp #1 _read_sty_str } }
-          { \tl_use:c  { l_@@_sp #1 _read_arg_tl  } }
+        \tl_set:Ne \l_@@_spside_intent_tl { \str_use:c { l_@@_sp #1 _read_sty_str } }
+        \str_if_eq:eeT {#1} { mside }
+          {
+            \tl_put_left:Nn \l_@@_spside_intent_tl { medida-del- }
+          }
       }
-    \str_if_eq:eeT {#1} { mside }
       {
-        \tl_put_left:Nn \l_@@_geo_intent_tl { medida-del- }
+        \tl_set:Ne \l_@@_spside_intent_tl { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
+        \bool_if:cT { l_@@_sp #1 _concept_bool }
+          {
+            \str_if_eq:eeT {#1} { mside }
+              {
+                \tl_put_left:Nn \l_@@_spside_intent_tl { medida-del- }
+              }
+          }
       }
     \@@_spside_mathml:n { #1 }
   }
@@ -9961,10 +9973,15 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_spside_refs_tl|, the comma-separated |$pts1,$pts2,...|
 %   reference list, naming each point by position.
 %
-%   The concept |intent| is |_-:nofix(refs)| when \mykey{silent-cmd} is
-%   |true| \emph{or} \mykey{concept} is |false|; otherwise it is
-%   \myhlc|\l_@@_geo_intent_tl|\myhlc|:prefix(refs)|, prefixed with
-%   \mykey{prefix} when given. It is applied with a native
+%   The concept |intent| is |_(refs)| when \mykey{silent-cmd} is |true|;
+%   otherwise, if \mykey{read-arg} is empty, it is |_(refs)| when
+%   \mykey{concept} is |false| or
+%   \myhlc|\l_@@_spside_intent_tl|\myhlc|:prefix(refs)| when |true|; if
+%   \mykey{read-arg} is given, it is always
+%   \myhlc|\l_@@_spside_intent_tl|\myhlc|:prefix(refs)| — |concept|
+%   never silences a user-given |read-arg| (see
+%   \myhlc|\@@_spside_process:nn|). The |:prefix(...)| form is prefixed
+%   with \mykey{prefix} when given. It is applied with a native
 %   |\MathMLintent|, preceded by \myhlc|\@@_luafun_inner_sep:| (a second
 %   sibling so the sole |<mrow>| does not collapse into |<math>|,
 %   |luamml| issue \href{https://github.com/latex3/luamml/issues/26}{\#26}).
@@ -9985,7 +10002,6 @@ end, "shekel_fallback_patch")
 \cs_new_protected:Nn \@@_spside_mathml:n
   {
     \seq_set_from_clist:NN \l_@@_spside_pt_seq \l_@@_geo_luaset_points_str
-
     \tl_clear:N \l_@@_spside_refs_tl
     \int_zero:N \l_@@_spside_pt_idx_int
     \seq_map_inline:Nn \l_@@_spside_pt_seq
@@ -9995,26 +10011,36 @@ end, "shekel_fallback_patch")
           { \tl_put_right:Nn \l_@@_spside_refs_tl { , } }
         \tl_put_right:Ne \l_@@_spside_refs_tl { $ pts \int_use:N \l_@@_spside_pt_idx_int }
       }
-
-    \bool_if:nTF
+    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
-        \bool_lazy_or_p:nn
-          { \bool_if_p:c { l_@@_sp #1 _silent_cmd_bool } }
-          { ! \bool_if_p:c { l_@@_sp #1 _concept_bool } }
+        \tl_set:Ne \l_@@_spside_intent_arg_tl { _( \l_@@_spside_refs_tl ) }
       }
       {
-        \tl_set:Ne \l_@@_spside_intent_arg_tl { _-:nofix( \l_@@_spside_refs_tl ) }
-      }
-      {
-        \tl_set:Ne \l_@@_spside_intent_arg_tl
+        \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
           {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_intent_tl :prefix( \l_@@_spside_refs_tl )
+            \bool_if:cTF { l_@@_sp #1 _concept_bool }
+              {
+                \tl_set:Ne \l_@@_spside_intent_arg_tl
+                  {
+                    \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                      { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                    \l_@@_spside_intent_tl :prefix( \l_@@_spside_refs_tl )
+                  }
+              }
+              {
+                \tl_set:Ne \l_@@_spside_intent_arg_tl { _( \l_@@_spside_refs_tl ) }
+              }
+          }
+          {
+            \tl_set:Ne \l_@@_spside_intent_arg_tl
+              {
+                \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                  { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                \l_@@_spside_intent_tl :prefix( \l_@@_spside_refs_tl )
+              }
           }
       }
-
-    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \@@_invisible_sep: % (luamml issues #26)
     \MathMLintent { \l_@@_spside_intent_arg_tl }
       {
         \@@_luafun_inner_sep:
@@ -10025,11 +10051,6 @@ end, "shekel_fallback_patch")
           {
             \bool_if:cTF { l_@@_sp #1 _print_m_bool }
               {
-                % antes: \MathMLintent { :silent } { \operatorname { m } }
-                % -- se reemplaza por nuestro propio mecanismo de cola,
-                % para no mezclar el orden de \MathMLintent nativo con
-                % la cola de puntos (causaba desalineamiento: el "m"
-                % se robaba la entrada del primer punto).
                 \@@_luafun_wrap_mrow_intent_arg:nn
                   { } { intent = ":silent" }
                 { \operatorname { m } }
@@ -10232,8 +10253,8 @@ end, "shekel_fallback_patch")
   }
 %    \end{macrocode}
 %   \begin{important}*
-%     The key \mykey{print-m} is defined for both commands for simplicity,
-%     but has no effect on |\spangle|.
+%     The keys \mykey{print-m} and \mykey{concept} are defined for both
+%     commands for simplicity, but has no effect on |\spangle|.
 %   \end{important}
 % \end{macro}
 %
@@ -10269,53 +10290,56 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{variable}[int]
+%   {
+%     \l_@@_spangle_intent_tl,
+%     \l_@@_spangle_pt_seq,
+%     \l_@@_spangle_refs_tl,
+%     \l_@@_spangle_intent_arg_tl,
+%     \l_@@_spangle_pt_idx_int,
+%   }
+%   \myhlc|\l_@@_spangle_intent_tl| holds the concept word (|ángulo| or
+%   |medida-del-ángulo|, `|-recto|'-suffixed when \mykey{recto} is
+%   |true|). The rest are scratch variables shared by both commands to
+%   split \myhlc|\l_@@_geo_luaset_points_str| and build the reference
+%   list — used only in the |tres-puntos| and |un-punto| cases (see
+%   \myhlc|\@@_spangle_mathml:n|).
+%    \begin{macrocode}
+\tl_new:N  \l_@@_spangle_intent_tl
+\seq_new:N \l_@@_spangle_pt_seq
+\tl_new:N  \l_@@_spangle_refs_tl
+\tl_new:N  \l_@@_spangle_intent_arg_tl
+\int_new:N \l_@@_spangle_pt_idx_int
+%    \end{macrocode}
+% \end{variable}
+%
 % \begin{macro}[int]{\@@_spangle_process:nn}
-%   Resolves the base name — |ángulo| or |medida-del-ángulo| — into
-%   \cs{l_@@_geo_intent_tl}, appends |-recto| when
-%   \myhlc|l_@@_sp#1_recto_bool| is |true|, then applies the same
-%   silent-cmd resolution as \myhlc|\@@_spside_process:nn|
-%   (\S\ref{cmd:spside}) before calling
-%   \myhlc|\@@_luafun_geo_angulo_parse_and_set:nnn|.
+%   The internal function \myhlc|\@@_spangle_process:nn| receives the
+%   short name of the command (|angle| or |mangle|) in `|#1|' and the
+%   \mymarg{argument} in `|#2|'. It calls
+%   \myhlc|\@@_luafun_geo_angulo_parse_and_set:n| to process `|#2|',
+%   returning an \enquote{error} if invalid, then sets
+%   \myhlc|\l_@@_spangle_intent_tl| to |ángulo| (or
+%   |medida-del-ángulo| for |\spmangle|), suffixed with `|-recto|'
+%   when \mykey{recto} is |true|. No |intent| is built here: it
+%   depends on \myhlc|\l_@@_geo_luaset_angulo_case_str| (|tres-puntos|,
+%   |un-punto| or |nombre|), which \myhlc|\@@_spangle_mathml:n| branches
+%   on.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangle_process:nn
   {
     \@@_luafun_geo_angulo_parse_and_set:n { \exp_not:n {#2} }
-    \str_if_eq:eeTF {#1} { mangle }
-      { \tl_set:Nn \l_@@_geo_intent_tl { medida-del-ángulo } }
-      { \tl_set:Nn \l_@@_geo_intent_tl { ángulo } }
-    \bool_if:cT { l_@@_sp #1 _recto_bool }
-      {
-        \tl_put_right:Nn \l_@@_geo_intent_tl { -recto }
-      }
     \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
-    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
+    \str_if_eq:eeTF {#1} { mangle }
+      { \tl_set:Nn \l_@@_spangle_intent_tl { medida-del-ángulo } }
+      { \tl_set:Nn \l_@@_spangle_intent_tl { ángulo } }
+    \bool_if:cT { l_@@_sp #1 _recto_bool }
       {
-        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
-          {
-            \tl_clear:c { l_@@_sp #1 _prefix_tl }
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
-          }
-          {
-            \str_put_left:Ne \l_@@_geo_luaset_intent_str
-              {
-                \l_@@_geo_intent_tl -
-              }
-          }
-      }
-      {
-        \str_set:Ne \l_@@_geo_luaset_intent_str
-          {
-            _ \l_@@_geo_intent_tl :prefix($pts)
-          }
-        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
-          {
-            \tl_clear:c { l_@@_sp #1 _prefix_tl }
-            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent($pts) }
-          }
+        \tl_put_right:Nn \l_@@_spangle_intent_tl { -recto }
       }
     \@@_spangle_mathml:n {#1}
   }
@@ -10323,57 +10347,124 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spangle_mathml:n}
-%   The function \myhlc|\@@_spangle_mathml:n| receives the short name of the
-%   command passed as an argument in `|#1|'; it generates the code
-%   \mynvmath{MathML} and prints the \mymarg{argument} passed to |\spangle|
-%   and |\spmangle|. The keys |read-cmd| and \mykey{prefix} are executed for
-%   both commands along with the |print-m| key which adds |\operatorname{m}|
-%   to |\spmangle|.
+%   The function \myhlc|\@@_spangle_mathml:n| receives the short
+%   command name in `|#1|' and branches on
+%   \myhlc|\l_@@_geo_luaset_angulo_case_str|.
+%
+%   For |nombre| (a free-text name, e.g.\ |\spangle{alfa}|, no
+%   vertices at all), the whole thing is wrapped with
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|, concept |intent| only
+%   (|_(...)|-silenced when \mykey{silent-cmd} is |true| or
+%   \mykey{concept} is |false|; otherwise
+%   \myhlc|\l_@@_spangle_intent_tl|\myhlc|:prefix()|, prefixed with
+%   \mykey{prefix}), no |arg| since there is no point to reference.
+%
+%   For |un-punto| (angle at a single vertex, e.g.\ |\spangle{A}|) and
+%   |tres-puntos| (e.g.\ |\spangle{A,B,C}|), \myhlc|\l_@@_geo_luaset_points_str|
+%   is split into \myhlc|\l_@@_spangle_pt_seq| and walked once to
+%   build \myhlc|\l_@@_spangle_refs_tl| (|$pt1|, or |$pt1,$pt2,$pt3|),
+%   naming each point by position. The concept |intent| follows the
+%   same silencing rule as |nombre|, using the reference list instead
+%   of an empty argument. It is applied with a native |\MathMLintent|
+%   wrapping the angle symbol (\myhlc|\@@_spangle_sym:n|) and, for
+%   |\spmangle| with \mykey{print-m} |true|, a silent
+%   |\operatorname{m}| — both via
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| with an empty concept,
+%   to share the same queue as the points and avoid the ordering bug
+%   already found with |\spside| (a native |\MathMLintent{:silent}{...}|
+%   there stole the first point's queue entry). Points are typeset
+%   bare (no accent wraps an angle), so the recursive lookup finds
+%   them directly inside the |\MathMLintent| group, exactly as with
+%   |\spmside|'s |print-m=false| case. The sequence is walked a second
+%   time, calling \myhlc|\@@_mathmlarg_point:nnn| once per point with
+%   its |pt|$n$ reference name, looked up under |sp#1|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangle_mathml:n
   {
     \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
-    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
+    \str_if_eq:VnTF \l_@@_geo_luaset_angulo_case_str { nombre }
       {
-        \MathMLintent
+        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              {
-                \tl_use:c { l_@@_sp #1 _prefix_tl } -
-              }
-            \l_@@_geo_luaset_intent_str
+            \tl_set:Nn \l_@@_spangle_intent_arg_tl { _- }
           }
           {
-            \str_if_eq:eeT {#1} { mangle }
+            \bool_if:cTF { l_@@_sp #1 _concept_bool }
               {
-                \bool_if:cT { l_@@_sp #1 _print_m_bool }
+                \tl_set:Ne \l_@@_spangle_intent_arg_tl
                   {
-                    \MathMLintent { :silent } { \operatorname { m } }
+                    \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                      { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                    \l_@@_spangle_intent_tl
                   }
               }
-            \@@_spangle_sym:n {#1}
-            \l_@@_geo_luaset_print_tl
+              {
+                \tl_set:Nn \l_@@_spangle_intent_arg_tl { _- }
+              }
           }
+        \@@_luafun_wrap_mrow_intent_arg:nn
+          { \l_@@_spangle_intent_arg_tl } { }
+        {
+          \@@_spangle_sym:n {#1}
+          \l_@@_geo_luaset_print_tl
+        }
       }
       {
-        \MathMLintent
+        \seq_set_from_clist:NN \l_@@_spangle_pt_seq \l_@@_geo_luaset_points_str
+
+        \tl_clear:N \l_@@_spangle_refs_tl
+        \int_zero:N \l_@@_spangle_pt_idx_int
+        \seq_map_inline:Nn \l_@@_spangle_pt_seq
           {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              {
-                \tl_use:c { l_@@_sp #1 _prefix_tl } -
-              }
-            \l_@@_geo_luaset_intent_str
+            \int_incr:N \l_@@_spangle_pt_idx_int
+            \tl_if_empty:NF \l_@@_spangle_refs_tl
+              { \tl_put_right:Nn \l_@@_spangle_refs_tl { , } }
+            \tl_put_right:Ne \l_@@_spangle_refs_tl { $ pt \int_use:N \l_@@_spangle_pt_idx_int }
+          }
+
+        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+          {
+            \tl_set:Ne \l_@@_spangle_intent_arg_tl { _( \l_@@_spangle_refs_tl ) }
           }
           {
+            \bool_if:cTF { l_@@_sp #1 _concept_bool }
+              {
+                \tl_set:Ne \l_@@_spangle_intent_arg_tl
+                  {
+                    \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                      { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                    \l_@@_spangle_intent_tl :prefix( \l_@@_spangle_refs_tl )
+                  }
+              }
+              {
+                \tl_set:Ne \l_@@_spangle_intent_arg_tl { _( \l_@@_spangle_refs_tl ) }
+              }
+          }
+
+        \MathMLintent { \l_@@_spangle_intent_arg_tl }
+          {
+            \@@_luafun_inner_sep:
             \str_if_eq:eeT {#1} { mangle }
               {
                 \bool_if:cT { l_@@_sp #1 _print_m_bool }
                   {
-                    \MathMLintent { :silent } { \operatorname { m } }
+                    \@@_luafun_wrap_mrow_intent_arg:nn
+                      { } { intent = ":silent" }
+                    { \operatorname { m } }
                   }
               }
-            \@@_spangle_sym:n {#1}
-            \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
+            \@@_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = ":silent" }
+            { \@@_spangle_sym:n {#1} }
+            \int_zero:N \l_@@_spangle_pt_idx_int
+            \seq_map_inline:Nn \l_@@_spangle_pt_seq
+              {
+                \int_incr:N \l_@@_spangle_pt_idx_int
+                \@@_mathmlarg_point:nnn
+                  { pt \int_use:N \l_@@_spangle_pt_idx_int }
+                  { sp #1 }
+                  { ##1 }
+              }
           }
       }
   }
@@ -14415,6 +14506,7 @@ local function spintent_geo_build_body_angulo(csv)
         end
         local cuerpo = spintent_geo_build_body(puntos)
         local visual = spintent_geo_build_visual(puntos)
+        spintent_geo_set_points_str(puntos) -- AGREGADO
         return cuerpo, visual, "tres-puntos"
     else
         local un_punto = spintent_geo_angulo_un_punto:match(csv)
@@ -14422,11 +14514,13 @@ local function spintent_geo_build_body_angulo(csv)
             local base = spintent_geo_build_body_nombre(un_punto)
             local cuerpo = "en-" .. base
             local visual = spintent_geo_build_visual_nombre(un_punto)
+            spintent_geo_set_points_str({ un_punto }) -- AGREGADO
             return cuerpo, visual, "un-punto"
         else
             local nombre = spintent_trim(csv)
             if nombre == "" then return nil, nil, nil end
             local cuerpo = spintent_sanitize_for_screen_reader(nombre)
+            token_set_macro("l__spintent_geo_luaset_points_str", "") -- AGREGADO
             return cuerpo, nombre, "nombre"
         end
     end
@@ -14443,6 +14537,7 @@ register_tex_cmd("luafun_geo_angulo_parse_and_set",
         token_set_macro("l__spintent_geo_luaset_intent_str",      "")
         token_set_macro("l__spintent_geo_luaset_print_tl",        "")
         token_set_macro("l__spintent_geo_luaset_angulo_case_str", "")
+        token_set_macro("l__spintent_geo_luaset_points_str",      "") -- AGREGADO
         return
     end
 
