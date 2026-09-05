@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-04} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-05} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -132,22 +132,12 @@
         \rightangle
       }
   }
-%% Internal copy of invisible separator U-2063 => <mo>...</mo>.
-\cs_new_protected:Nn \__spintent_invisible_sep_old:
-  {
-    \luamml_annotate:en
-      {
-        core = {[0] = 'mo', intent=':silent', "^^^^2063"}
-      }
-      {
-        \latelua{}
-      }
-  }
+%% Internal invisible separator U-2063 => <mi intent=":silent" mathvariant="normal">⁣</mi>.
 \cs_new_protected:Nn \__spintent_invisible_sep:
   {
     \__spintent_luafun_invisible_sep:
   }
-%% Internal copy of invisible separator U-2063 => <mi>...</mi>.
+%% Internal invisible separator U-2063 => <mi intent=":silent" mathvariant="normal">⁣</mi>.
 \hook_gput_code:nnn { begindocument } { spintent }
   {
     \Umathchardef \c__spintent_invisible_sep_tl = "0 "0 "2063
@@ -2570,6 +2560,7 @@
 \str_new:N \l__spintent_geo_luaset_error_str
 \str_new:N \l__spintent_geo_luaset_intent_str
 \tl_new:N  \l__spintent_geo_luaset_print_tl
+\str_new:N \l__spintent_geo_luaset_points_str
 \str_new:N \l__spintent_geo_luaset_is_name_str
 \str_new:N \l__spintent_geo_luaset_poly_sym_str
 \str_new:N \l__spintent_geo_luaset_intent_pts_str
@@ -3236,15 +3227,18 @@
           { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
         prefix              .initial:n  = ,
         prefix              .value_required:n = true,
-        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
         recto               .bool_set:c = { l__spintent_sp #1 _recto_bool },
         recto               .initial:n  = false,
         recto               .value_required:n = true,
         print-m             .bool_set:c = { l__spintent_sp #1 _print_m_bool },
         print-m             .initial:n  = false,
         print-m             .value_required:n = true,
+        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
+        silent-cmd          .initial:n  = false,
+        silent-cmd          .value_required:n = true,
+        concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
+        concept             .initial:n  = true,
+        concept             .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l__spintent_command_name_str { sp #1 }
@@ -3424,6 +3418,9 @@
         silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
         silent-cmd          .initial:n  = false,
         silent-cmd          .value_required:n = true,
+        concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
+        concept             .initial:n  = true,
+        concept             .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l__spintent_command_name_str { sp #1 }
@@ -3582,6 +3579,9 @@
     print-sym           .initial:n  = true,
     print-sym           .value_required:n = true,
     silent-cmd          .meta:n     = { print-sym = false },
+    concept             .bool_set:N = \l__spintent_spPoly_concept_bool,
+    concept             .initial:n  = true,
+    concept             .value_required:n = true,
     unknown             .code:n =
       {
         \str_set:Nn \l__spintent_command_name_str { spPoly }

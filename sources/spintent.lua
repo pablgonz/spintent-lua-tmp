@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-04]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-05]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -20,20 +20,14 @@ local s_gsub     = string.gsub
 local s_lower    = string.lower
 local s_upper    = string.upper
 local s_byte     = string.byte
-
--- Nuevas referencias locales para rendimiento
 local pairs      = pairs
-
-local token_set_macro = token.set_macro
-
--- APIs node.direct cacheadas a nivel de módulo (una sola vez, no en cada
--- invocación de \spmQ) para máximo rendimiento, mismo criterio que mylhmc.lua.
 local d_todirect = node.direct.todirect
 local d_tonode   = node.direct.tonode
 local d_traverse = node.direct.traverse_glyph
 local d_getfield = node.direct.getfield
 local d_new      = node.direct.new
 local d_setfield = node.direct.setfield
+local token_set_macro = token.set_macro
 
 local lpeg_base = lpeg or require("lpeg")
 local P, R, S, Cs, Ct, Cg, C, Cc =
@@ -57,8 +51,7 @@ local spintent_math_space =
 local spintent_discard_space = (S" \t\r\n" + spintent_math_space) / ""
 local spintent_opt_spaces = spintent_discard_space^0
 
--- Trim de espacios centralizado en LPeg (sin backtracking), reemplaza el
--- patrón s_match(x, "^%s*(.-)%s*$") repetido en cada función de registro.
+-- Trim de espacios centralizado en LPeg (sin backtracking)
 local spintent_ws = S" \t\r\n"
 local spintent_trim_pattern =
     spintent_ws^0 * C((P(1) - spintent_ws^0 * P(-1))^0) * spintent_ws^0
@@ -67,8 +60,7 @@ local function spintent_trim(str)
 end
 
 -- Combina trim + minúsculas para los casos que no necesitan conservar
--- el case original después (a diferencia de luafun_spmoney_lookup_data,
--- que sí reutiliza la versión sin s_lower para la detección ISO).
+-- el case original después.
 local function spintent_normalize_key(str)
     return str and s_lower(spintent_trim(str)) or ""
 end
@@ -116,24 +108,20 @@ local function register_tex_cmd(name, func, args)
     token.set_lua(name, index, "global", "protected")
 end
 
--- ============================================================
 -- spintent: anotación de MathML con 'intent'/'arg' sin token
 -- fantasma. Aplica cuando el contenido es un noad simple o
 -- compuesto (mi, msub, msup, radical, fraction) cuyo 'nucleus'
 -- es alcanzable directamente en la lista de nivel superior, o
 -- anidado dentro de un accent/contenedor con múltiples items
 -- (el callback recursa para encontrarlo).
--- ============================================================
 
 local spintent_sub_mlist_t = node.id("sub_mlist")
 
 local spintent_pending_mrow_intent_queue = {}
 
--- El segundo argumento es una lista estilo Lua (key = value,
--- separadas por coma), evaluada con load() -- mismo mecanismo
--- que \luamml_annotate:en usa para su propio core=/mathml=.
--- Función interna: sin pcall -- si la sintaxis está mal, el error
--- de Lua sale directo (somos los únicos que la llamamos).
+-- El segundo argumento es una lista estilo Lua (key = val), evaluada
+-- con load(); mismo mecanismo que \luamml_annotate:en usa para su propio
+-- core=/mathml=.
 register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, kv_string)
     local opts = load('return {' .. kv_string .. '}')()
 
@@ -150,11 +138,10 @@ local function spintent_count_items(head)
     return n
 end
 
--- Busca el próximo nodo con 'nucleus' que aún no tenga
--- mathml_filter asignado. Si el nucleus es un sub_mlist con más
--- de 1 item, recursa buscando adentro (caso: varios puntos
--- dentro de un mismo \overleftrightarrow/\overline). Si tiene 1
--- solo item o no es sub_mlist, es el objetivo final.
+-- Busca el próximo nodo con 'nucleus' que aún no tenga mathml_filter
+-- asignado. Si el nucleus es un sub_mlist con más de 1 item, recursa
+-- buscando adentro (caso: varios puntos dentro de un mismo \overleftrightarrow/\overline).
+-- Si tiene 1 solo item o no es sub_mlist, es el objetivo final.
 local function spintent_try_annotate(n, properties)
     if #spintent_pending_mrow_intent_queue == 0 then return end
     if not n.nucleus then return end
@@ -231,7 +218,6 @@ register_tex_cmd("luafun_inner_sep", function()
     node.write(noad)
 end, {})
 
--- ============================================================
 -- \__spintent_invisible_sep: (fantasma exterior, <mo intent=":silent">).
 -- Necesario cuando el resultado anotado es el único elemento de
 -- nivel superior de la fórmula: sin un segundo hermano, to_math
@@ -271,6 +257,112 @@ luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
     spintent_ghost_injected = false
     return true
 end, "spintent.reset_ghost")
+
+-- Implementación interna para \mathcal clásico y \right_angle_sqr
+
+local function spintent_find_free_family()
+    for i = 15, 1, -1 do
+        local ok, id = pcall(tex.getfontoffamily, i)
+        if ok and (not id or id == 0) then return i end
+    end
+    return nil
+end
+
+local spintent_mathfb_font_cache = {}
+local function spintent_load_scaled(spec, size)
+    local key = spec .. ":" .. size
+    if spintent_mathfb_font_cache[key] then return spintent_mathfb_font_cache[key] end
+    local id = luaotfload.define_font(spec, size)
+    if not id or id == 0 or type(id) ~= "number" then
+        texio.write_nl("term and log", "[spintent] ERROR: id invalido para " .. spec .. " @ " .. size)
+        return nil
+    end
+    spintent_mathfb_font_cache[key] = id
+    return id
+end
+
+local function spintent_load_family(fontfile, features, fam)
+    local path = kpse.find_file(fontfile, "opentype fonts")
+    if not path or path == "" then
+        texio.write_nl("term and log", "[spintent] ERROR FATAL: kpse no encontro '" .. fontfile .. "'")
+        return false
+    end
+    local spec = "[" .. path .. "]:mode=base;script=math;language=dflt;" .. features
+    local main_id = tex.getfontoffamily(0)
+    local main_fd = main_id and font.getfont(main_id)
+    if not main_fd then
+        texio.write_nl("term and log",
+            "[spintent] ERROR: familia matematica 0 sin fuente -- llama a "
+            .. "\\setmathfont antes de \\begin{document}")
+        return false
+    end
+    local cur_size = main_fd.size
+
+    local text_id = spintent_load_scaled(spec, cur_size)
+    if not text_id then return false end
+    local mc = font.getfont(text_id).MathConstants
+    local script_pct    = (mc and mc.ScriptPercentScaleDown or 70) / 100
+    local scriptscr_pct = (mc and mc.ScriptScriptPercentScaleDown or 50) / 100
+    local script_id       = spintent_load_scaled(spec, math.floor(cur_size * script_pct))
+    local scriptscript_id = spintent_load_scaled(spec, math.floor(cur_size * scriptscr_pct))
+    if not script_id or not scriptscript_id then return false end
+
+    tex.definefont(true, "MathFBtmpText",      text_id)
+    tex.definefont(true, "MathFBtmpScript",    script_id)
+    tex.definefont(true, "MathFBtmpScriptScr", scriptscript_id)
+
+    tex.runtoks(function()
+        tex.sprint(string.format(
+            "\\global\\textfont%d=\\MathFBtmpText"
+            .."\\global\\scriptfont%d=\\MathFBtmpScript"
+            .."\\global\\scriptscriptfont%d=\\MathFBtmpScriptScr",
+            fam, fam, fam))
+    end)
+    return true
+end
+
+local spintent_cal_slots = {
+  A=0x1D49C, B=0x212C,  C=0x1D49E, D=0x1D49F, E=0x2130,  F=0x2131,  G=0x1D4A2,
+  H=0x210B,  I=0x2110,  J=0x1D4A5, K=0x1D4A6, L=0x2112,  M=0x2133,  N=0x1D4A9,
+  O=0x1D4AA, P=0x1D4AB, Q=0x1D4AC, R=0x211B,  S=0x1D4AE, T=0x1D4AF, U=0x1D4B0,
+  V=0x1D4B1, W=0x1D4B2, X=0x1D4B3, Y=0x1D4B4, Z=0x1D4B5,
+}
+
+-- spintent_init_math_fallbacks, diferida a \AtBeginDocument.
+local spintent_cal_fam, spintent_cal_fam_ok
+local spintent_sym_fam, spintent_sym_fam_ok
+
+local function spintent_classic_mathcal(letters)
+    if not spintent_cal_fam_ok then tex.sprint(letters); return end
+    local parts = {}
+    for i = 1, #letters do
+        local ch = letters:sub(i,i)
+        local cp = spintent_cal_slots[ch]
+        parts[#parts+1] = cp and string.format("\\Umathchar 0 %d \"%X ", spintent_cal_fam, cp) or ch
+    end
+    tex.sprint(table.concat(parts))
+end
+register_tex_cmd("luafun_classic_mathcal", spintent_classic_mathcal, {"string"})
+
+local function spintent_right_angle_sqr()
+    if not spintent_sym_fam_ok then return end
+    tex.sprint(string.format("\\Umathchar 0 %d \"299C ", spintent_sym_fam))
+end
+register_tex_cmd("luafun_right_angle_sqr", spintent_right_angle_sqr, {})
+
+-- Se llama desde \AtBeginDocument en spintent.sty, no al cargar el modulo
+-- asi el orden de \usepackage ya no importa, y si de verdad no hay fuente
+-- matematica cargada, degrada con un aviso en vez de un crash.
+local function spintent_init_math_fallbacks()
+    spintent_cal_fam = spintent_find_free_family()
+    spintent_cal_fam_ok = spintent_cal_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_cal_fam)
+    token_set_macro("l__spintent_luaset_cal_fam_ok_str", spintent_cal_fam_ok and "true" or "false")
+
+    spintent_sym_fam = spintent_find_free_family()
+    spintent_sym_fam_ok = spintent_sym_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_sym_fam)
+    token_set_macro("l__spintent_luaset_sym_fam_ok_str", spintent_sym_fam_ok and "true" or "false")
+end
+register_tex_cmd("luafun_init_math_fallbacks", spintent_init_math_fallbacks, {})
 
 -- 1. MOTOR CENTRAL Y NÚMEROS (\spnum y \spunit)
 
@@ -1562,7 +1654,7 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     -- 3. Factor
     local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
 
-    -- 4-5. Escalado + ancho + glyphs físicos en una sola pasada node.direct
+    -- 4. Escalado + ancho + glyphs físicos en una sola pasada node.direct
 
     local ancho = 0
     local glyph_nodes = {}
@@ -1593,7 +1685,7 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     h_esc.depth  = frac_depth
     h_esc.shift  = math_floor(frac_depth + 0.5)
 
-    -- 6. sub_box con mathml_filter usando node.direct
+    -- 5. sub_box con mathml_filter usando node.direct
     local sub = d_new("sub_box")
     d_setfield(sub, "head", d_todirect(h_esc))
 
@@ -1601,7 +1693,7 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     d_setfield(noad, "subtype", 0)
     d_setfield(noad, "nucleus", sub)
 
-    -- Devolvemos a userdata para interactuar con las properties de luamml y node.write
+    -- 6. Devolvemos a userdata para interactuar con las properties de luamml y node.write
     local sub_user = d_tonode(sub)
     local noad_user = d_tonode(noad)
 
@@ -1630,116 +1722,6 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     node.write(noad_user)
 
 end, {"string", "string"})
-
--- Implementación interna para \mathcal clásico y \right_angle_sqr
-
-local function spintent_find_free_family()
-    for i = 15, 1, -1 do
-        local ok, id = pcall(tex.getfontoffamily, i)
-        if ok and (not id or id == 0) then return i end
-    end
-    return nil
-end
-
-local spintent_mathfb_font_cache = {}
-local function spintent_load_scaled(spec, size)
-    local key = spec .. ":" .. size
-    if spintent_mathfb_font_cache[key] then return spintent_mathfb_font_cache[key] end
-    local id = luaotfload.define_font(spec, size)
-    if not id or id == 0 or type(id) ~= "number" then
-        texio.write_nl("term and log", "[spintent] ERROR: id invalido para " .. spec .. " @ " .. size)
-        return nil
-    end
-    spintent_mathfb_font_cache[key] = id
-    return id
-end
-
-local function spintent_load_family(fontfile, features, fam)
-    local path = kpse.find_file(fontfile, "opentype fonts")
-    if not path or path == "" then
-        texio.write_nl("term and log", "[spintent] ERROR FATAL: kpse no encontro '" .. fontfile .. "'")
-        return false
-    end
-    local spec = "[" .. path .. "]:mode=base;script=math;language=dflt;" .. features
-    local main_id = tex.getfontoffamily(0)
-    local main_fd = main_id and font.getfont(main_id)
-    if not main_fd then
-        texio.write_nl("term and log",
-            "[spintent] ERROR: familia matematica 0 sin fuente -- llama a "
-            .. "\\setmathfont antes de \\begin{document}")
-        return false
-    end
-    local cur_size = main_fd.size
-
-    local text_id = spintent_load_scaled(spec, cur_size)
-    if not text_id then return false end
-    local mc = font.getfont(text_id).MathConstants
-    local script_pct    = (mc and mc.ScriptPercentScaleDown or 70) / 100
-    local scriptscr_pct = (mc and mc.ScriptScriptPercentScaleDown or 50) / 100
-    local script_id       = spintent_load_scaled(spec, math.floor(cur_size * script_pct))
-    local scriptscript_id = spintent_load_scaled(spec, math.floor(cur_size * scriptscr_pct))
-    if not script_id or not scriptscript_id then return false end
-
-    tex.definefont(true, "MathFBtmpText",      text_id)
-    tex.definefont(true, "MathFBtmpScript",    script_id)
-    tex.definefont(true, "MathFBtmpScriptScr", scriptscript_id)
-
-    tex.runtoks(function()
-        tex.sprint(string.format(
-            "\\global\\textfont%d=\\MathFBtmpText"
-            .."\\global\\scriptfont%d=\\MathFBtmpScript"
-            .."\\global\\scriptscriptfont%d=\\MathFBtmpScriptScr",
-            fam, fam, fam))
-    end)
-    return true
-end
-
-local spintent_cal_slots = {
-  A=0x1D49C, B=0x212C,  C=0x1D49E, D=0x1D49F, E=0x2130,  F=0x2131,  G=0x1D4A2,
-  H=0x210B,  I=0x2110,  J=0x1D4A5, K=0x1D4A6, L=0x2112,  M=0x2133,  N=0x1D4A9,
-  O=0x1D4AA, P=0x1D4AB, Q=0x1D4AC, R=0x211B,  S=0x1D4AE, T=0x1D4AF, U=0x1D4B0,
-  V=0x1D4B1, W=0x1D4B2, X=0x1D4B3, Y=0x1D4B4, Z=0x1D4B5,
-}
-
--- Antes estas dos lineas ejecutaban la carga YA, al cargar el modulo.
--- Ahora solo se DECLARAN (nil), y se rellenan dentro de
--- spintent_init_math_fallbacks, diferida a \AtBeginDocument.
-local spintent_cal_fam, spintent_cal_fam_ok
-local spintent_sym_fam, spintent_sym_fam_ok
-
-local function spintent_classic_mathcal(letters)
-    if not spintent_cal_fam_ok then tex.sprint(letters); return end
-    local parts = {}
-    for i = 1, #letters do
-        local ch = letters:sub(i,i)
-        local cp = spintent_cal_slots[ch]
-        parts[#parts+1] = cp and string.format("\\Umathchar 0 %d \"%X ", spintent_cal_fam, cp) or ch
-    end
-    tex.sprint(table.concat(parts))
-end
-register_tex_cmd("luafun_classic_mathcal", spintent_classic_mathcal, {"string"})
-
-local function spintent_right_angle_sqr()
-    if not spintent_sym_fam_ok then return end
-    tex.sprint(string.format("\\Umathchar 0 %d \"299C ", spintent_sym_fam))
-end
-register_tex_cmd("luafun_right_angle_sqr", spintent_right_angle_sqr, {})
-
--- Funcion nueva: hace lo que antes hacian las lineas de inicializacion de
--- arriba, pero ahora se llama desde \AtBeginDocument en spintent.sty, no
--- al cargar el modulo -- asi el orden de \usepackage ya no importa, y si
--- de verdad no hay fuente matematica cargada, degrada con un aviso en vez
--- de un crash.
-local function spintent_init_math_fallbacks()
-    spintent_cal_fam = spintent_find_free_family()
-    spintent_cal_fam_ok = spintent_cal_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_cal_fam)
-    token_set_macro("l__spintent_luaset_cal_fam_ok_str", spintent_cal_fam_ok and "true" or "false")
-
-    spintent_sym_fam = spintent_find_free_family()
-    spintent_sym_fam_ok = spintent_sym_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_sym_fam)
-    token_set_macro("l__spintent_luaset_sym_fam_ok_str", spintent_sym_fam_ok and "true" or "false")
-end
-register_tex_cmd("luafun_init_math_fallbacks", spintent_init_math_fallbacks, {})
 
 -- ============================================================
 -- §12  GEOMETRÍA PLANA
@@ -1897,14 +1879,13 @@ local function spintent_geo_build_visual_nombre(nombre)
     end
 end
 
--- ============================================================
--- AGREGADO: reconstrucción del texto crudo de UN punto, y helper
+-- Reconstrucción del texto crudo de UN punto, y helper
 -- que arma "l__spintent_geo_luaset_points_str" (la lista de puntos
 -- SIN combinar, separada por comas) a partir de una tabla 'puntos'.
 -- Reusa el mismo formato {letra, contenido, tipo} que ya usan
 -- spintent_geo_build_visual/build_intent -- ninguna gramática
 -- cambia, solo se agrega esta lectura adicional del mismo dato.
--- ============================================================
+
 local function spintent_geo_build_raw_nombre(punto)
     local letra, contenido, tipo = punto[1], punto[2], punto[3]
     if tipo == "sub" then
@@ -1951,8 +1932,6 @@ end, { "string" })
 
 -- ------------------------------------------------------------
 -- §12.2  RECTA, RAYO, SEGMENTO Y ARCO
---        \sprecta, \sprayo, \spside, \spmside, \sparc, \spmarc
---
 -- Orden de intentos en la rama sin coma: nombre de recta primero
 -- (preserva la semántica de \sprecta con una sola letra), luego
 -- puntos concatenados sin separador, luego error.
@@ -2068,10 +2047,6 @@ end, { "string" })
 
 -- ------------------------------------------------------------
 -- §12.4  POLÍGONO — \spPoly, \spAfig, \spPfig
---
--- \spPoly acepta ahora también puntos concatenados sin coma como
--- alternativa a la lista separada por comas (mínimo 3 vértices en
--- ambos casos).
 -- ------------------------------------------------------------
 local spintent_geo_poly_npts = {
     [3] = { cmd = "triángulo",  sym = "triangle" },
@@ -2122,8 +2097,7 @@ end, { "string" })
 -- (p.ej. "F_{1}", "P", "B_{2}"). Cada letra lleva su palabra y el
 -- conector gramatical correcto: sustantivos usan "de-la"/"del" según
 -- género; adjetivos usan conector vacío (van pegados directamente
--- tras "área"/"perímetro"). "C" queda reservada para círculo/
--- circunferencia, no forma parte de esta tabla.
+-- tras "área"/"perímetro").
 local spintent_geo_fig_letras = {
     F = { palabra = "figura",   conector = "de-la"  },
     P = { palabra = "polígono", conector = "del"    },
