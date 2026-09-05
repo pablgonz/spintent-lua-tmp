@@ -9241,6 +9241,10 @@ end, "shekel_fallback_patch")
 %   {
 %     \l_@@_sprecta_mode_str,
 %     \l_@@_sprecta_prefix_tl,
+%     \l_@@_sprecta_pt_seq,
+%     \l_@@_sprecta_refs_tl,
+%     \l_@@_sprecta_intent_arg_tl,
+%     \l_@@_sprecta_pt_idx_int,
 %   }
 %   The variable \myhlc|\l_@@_sprecta_mode_str| store the values set by
 %   the key \mykey[sprecta]{read-cmd} and the variable \myhlc|\l_@@_sprayo_prefix_tl|
@@ -9248,6 +9252,10 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \str_new:N \l_@@_sprecta_mode_str
 \tl_new:N  \l_@@_sprecta_prefix_tl
+\seq_new:N \l_@@_sprecta_pt_seq
+\tl_new:N  \l_@@_sprecta_refs_tl
+\tl_new:N  \l_@@_sprecta_intent_arg_tl
+\int_new:N \l_@@_sprecta_pt_idx_int
 %    \end{macrocode}
 % \end{variable}
 %
@@ -9312,15 +9320,13 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_sprecta_print:n}
 %   The internal function \myhlc|\@@_sprecta_print:n| process the \mymarg{argument}
-%   passed in `|#1|'. First, call the function \myhlc|\@@_luafun_geo_parse_and_set:n|
-%   to process the \mymarg{argument}, returning an \enquote{error} if the
-%   input is invalid, then, it checks if the value of the variable
-%   \myhlc|\l_@@_sprecta_mode_str| handled by the key \mykey{read-cmd} is
-%   |school|. If so, it checks if the variable \myhlc|\l_@@_sprecta_silent_cmd_bool|
-%   handled by the key \mykey{silent-cmd} is |true| by setting the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str| with the `\textcolor{red}{\texttt{_-}}'
-%   trick for \emph{silent} |<mrow>| since |:silent| doesn't work here; if
-%   the state is |false| we place |recta-| to the left of \myhlc|\l_@@_geo_luaset_intent_str|.
+%   passed in `|#1|'. It calls \myhlc|\@@_luafun_geo_parse_and_set:n| to
+%   process the \mymarg{argument}, returning an \enquote{error} if the
+%   input is invalid, then calls \myhlc|\@@_sprecta_mathml:|. Unlike
+%   \cs[no-index]{spPoint}, no |intent| is built here: both branches of
+%   \myhlc|\@@_sprecta_mathml:| build their own, since a proper name
+%   (|m|, |l|, \ldots) and a list of points need different amounts of
+%   it (a single |$pt| versus |$pt1,$pt2,\ldots|).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_print:n
   {
@@ -9329,113 +9335,129 @@ end, "shekel_fallback_patch")
       {
         \msg_error:nne { spintent } { sprecta-invalid-points } { \exp_not:n {#1} }
       }
-    \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
-      {
-        \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
-          {
-            \tl_clear:N \l_@@_sprecta_prefix_tl
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
-          }
-          {
-            \str_put_left:Ne \l_@@_geo_luaset_intent_str { recta - }
-          }
-      }
-%    \end{macrocode}
-%   If the value of the variable \myhlc|\l_@@_sprecta_mode_str| is not
-%   |school|, that is, |read-cmd=mathcat|, we will set the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str| to \myhlc|_recta:prefix($pts)|; if
-%   |silent-cmd=true|, we simply add |:silent| to the right of the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str|. Finally, we call the function
-%   \myhlc|\@@_sprecta_mathml:|.
-%    \begin{macrocode}
-      {
-        \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
-          {
-            \tl_clear:N \l_@@_sprecta_prefix_tl
-            \str_set:Ne \l_@@_geo_luaset_intent_str { :silent($pts) }
-          }
-          {
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _recta:prefix($pts) }
-          }
-      }
     \@@_sprecta_mathml:
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_sprecta_mathml:}
-%   The function \myhlc|\@@_sprecta_mathml:| generates the code \mynvmath{MathML}
-%   and prints the \mymarg{argument} passed to |\sprayo|. The keys
-%   |read-cmd| and \mykey{prefix} are executed, applying |\overleftrightarrow|
-%   to the output when necessary.
+%   The function \myhlc|\@@_sprecta_mathml:| branches on
+%   \myhlc|\l_@@_geo_luaset_is_name_str|.
+%
+%   For a proper name (|m|, |l|, \ldots), the logic mirrors
+%   \myhlc|\@@_spPoint_mathml:| exactly: the concept |intent| is
+%   |:silent($pt)| when \mykey{silent-cmd} is |true| \emph{or}
+%   \mykey{concept} is |false|; otherwise it is |recta:prefix($pt)|,
+%   prefixed with \mykey{prefix} when given. The |kv| string, however,
+%   depends \emph{only} on \mykey{silent-cmd} — |concept=false| alone
+%   must not silence the letter itself: |arg="pt", intent="_-"| when
+%   silent; otherwise |arg="pt"| plus a literal |intent| for
+%   |read-cmd=school|, or |arg="pt"| alone for |read-cmd=mathcat|. A
+%   single call to \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| applies
+%   both.
+%
+%   For a list of points, \myhlc|\l_@@_geo_luaset_points_str| (set by
+%   Lua, one raw point per element, unmerged) is split into
+%   \myhlc|\l_@@_sprecta_pt_seq| and walked once to build
+%   \myhlc|\l_@@_sprecta_refs_tl|, the comma-separated |$pt1,$pt2,...|
+%   reference list, naming each point by position. The concept |intent|
+%   is |_-:nofix(refs)| when \mykey{silent-cmd} is |true| \emph{or}
+%   \mykey{concept} is |false|; otherwise |recta:prefix(refs)|,
+%   prefixed as above. It is applied with a native |\MathMLintent|
+%   wrapping |\overleftrightarrow|, preceded by
+%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
+%   |<mrow>| does not collapse into |<math>|, |luamml| issue
+%   \href{https://github.com/latex3/luamml/issues/26}{\#26}). The
+%   sequence is walked a second time, calling
+%   \myhlc|\@@_mathmlarg_point:nnn| once per point with its |pt|$n$
+%   reference name and \mykey[sprecta]{silent-cmd}/\mykey[sprecta]{read-cmd}
+%   looked up under |sprecta|: it alone decides |arg|/literal |intent|
+%   per point, so |concept| plays no role at that level.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_sprecta_two_point:
-  {
-    \@@_invisible_sep: %%
-    \overleftrightarrow { \l_@@_geo_luaset_print_tl }
-  }
-
 \cs_new_protected:Nn \@@_sprecta_mathml:
   {
-    \@@_invisible_sep: % need by MathCAT (luamml issues #26)
     \str_if_eq:VnTF \l_@@_geo_luaset_is_name_str { true }
       {
-        \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
+        \@@_invisible_sep:
+        \bool_if:nTF
           {
-            \@@_luafun_wrap_mrow_intent:n
+            \bool_lazy_or_p:nn
+              { \l_@@_sprecta_silent_cmd_bool }
+              { ! \l_@@_sprecta_concept_bool }
+          }
+          {
+            \tl_set:Nn \l_@@_sprecta_intent_arg_tl { :silent($pt) }
+          }
+          {
+            \tl_set:Ne \l_@@_sprecta_intent_arg_tl
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
                   { \tl_use:N \l_@@_sprecta_prefix_tl - }
-                \l_@@_geo_luaset_intent_str
+                recta:prefix($pt)
               }
-            { \l_@@_geo_luaset_print_tl }
+          }
+        \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
+          {
+            \tl_set:Nn \l_@@_sprecta_kv_tl { arg = "pt", intent = "_-" }
           }
           {
-            \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
+            \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
               {
-                \@@_luafun_wrap_mrow_intent_arg_silent:nn
-                  { \l_@@_geo_luaset_intent_str }
-                  { pts }
-                { \l_@@_geo_luaset_print_tl }
+                \tl_set:Ne \l_@@_sprecta_kv_tl
+                  { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
               }
               {
-                \@@_luafun_wrap_mrow_intent_arg:nn
-                  {
-                    \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                      { \tl_use:N \l_@@_sprecta_prefix_tl - }
-                    \l_@@_geo_luaset_intent_str
-                  }
-                  { pts }
-                { \l_@@_geo_luaset_print_tl }
+                \tl_set:Nn \l_@@_sprecta_kv_tl { arg = "pt" }
               }
           }
+        \@@_luafun_wrap_mrow_intent_arg:nn
+          { \l_@@_sprecta_intent_arg_tl }
+          { \l_@@_sprecta_kv_tl }
+        { \l_@@_geo_luaset_print_tl }
       }
       {
-        \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
+        \seq_set_from_clist:NN \l_@@_sprecta_pt_seq \l_@@_geo_luaset_points_str
+        \tl_clear:N \l_@@_sprecta_refs_tl
+        \int_zero:N \l_@@_sprecta_pt_idx_int
+        \seq_map_inline:Nn \l_@@_sprecta_pt_seq
           {
-            \MathMLintent
-              {
-                \tl_if_empty:NF \l_@@_sprecta_prefix_tl
-                  { \tl_use:N \l_@@_sprecta_prefix_tl - }
-                \l_@@_geo_luaset_intent_str :nofix
-              }
-              {
-                \c_@@_invisible_sep_tl
-                \overleftrightarrow { \l_@@_geo_luaset_print_tl }
-             }
+            \int_incr:N \l_@@_sprecta_pt_idx_int
+            \tl_if_empty:NF \l_@@_sprecta_refs_tl
+              { \tl_put_right:Nn \l_@@_sprecta_refs_tl { , } }
+            \tl_put_right:Ne \l_@@_sprecta_refs_tl { $ pt \int_use:N \l_@@_sprecta_pt_idx_int }
+          }
+
+        \bool_if:nTF
+          {
+            \bool_lazy_or_p:nn
+              { \l_@@_sprecta_silent_cmd_bool }
+              { ! \l_@@_sprecta_concept_bool }
           }
           {
-            \MathMLintent
+            \tl_set:Ne \l_@@_sprecta_intent_arg_tl { _-:nofix( \l_@@_sprecta_refs_tl ) }
+          }
+          {
+            \tl_set:Ne \l_@@_sprecta_intent_arg_tl
               {
                 \tl_if_empty:NF \l_@@_sprecta_prefix_tl
                   { \tl_use:N \l_@@_sprecta_prefix_tl - }
-                \l_@@_geo_luaset_intent_str
+                recta:prefix( \l_@@_sprecta_refs_tl )
               }
+          }
+        \@@_invisible_sep:
+        \MathMLintent { \l_@@_sprecta_intent_arg_tl }
+          {
+            \@@_luafun_inner_sep:
+            \overleftrightarrow
               {
-                \c_@@_invisible_sep_tl
-                \overleftrightarrow
+                \int_zero:N \l_@@_sprecta_pt_idx_int
+                \seq_map_inline:Nn \l_@@_sprecta_pt_seq
                   {
-                    \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
+                    \int_incr:N \l_@@_sprecta_pt_idx_int
+                    \@@_mathmlarg_point:nnn
+                      { pt \int_use:N \l_@@_sprecta_pt_idx_int }
+                      { sprecta }
+                      { ##1 }
                   }
               }
           }
@@ -9527,8 +9549,8 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{read-cmd, prefix, silent-cmd, read-sty, unknown}
 %   We define the \mymeta{keys} \mykey[sprayo]{read-cmd},
-%   \mykey[sprayo]{prefix}, \mykey[sprayo]{silent-cmd} and
-%   \mykey[sprayo]{read-sty}.
+%   \mykey[sprayo]{prefix}, \mykey[sprayo]{silent-cmd}, \mykey[sprayo]{concept}
+%   and \mykey[sprayo]{read-sty}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / sprayo }
   {
@@ -9552,6 +9574,9 @@ end, "shekel_fallback_patch")
     silent-cmd          .bool_set:N = \l_@@_sprayo_silent_cmd_bool,
     silent-cmd          .initial:n  = false,
     silent-cmd          .value_required:n = true,
+    concept             .bool_set:N = \l_@@_sprayo_concept_bool,
+    concept             .initial:n  = true,
+    concept             .value_required:n = true,
     read-sty            .choices:nn = { rayo , semirrecta }
       {
         \int_case:nn { \l_keys_choice_int }
@@ -9576,18 +9601,31 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Internal functions for \cs[no-index]{sprayo}}
 %
+% \begin{variable}[int]
+%   {
+%     \l_@@_sprayo_pt_seq,
+%     \l_@@_sprayo_refs_tl,
+%     \l_@@_sprayo_intent_arg_tl,
+%     \l_@@_sprayo_pt_idx_int,
+%   }
+%   Auxiliary variables used by \myhlc|\@@_sprayo_mathml:| to split
+%   \myhlc|\l_@@_geo_luaset_points_str| and build the |$pts1,$pts2,...|
+%   reference list.
+%    \begin{macrocode}
+\seq_new:N \l_@@_sprayo_pt_seq
+\tl_new:N  \l_@@_sprayo_refs_tl
+\tl_new:N  \l_@@_sprayo_intent_arg_tl
+\int_new:N \l_@@_sprayo_pt_idx_int
+%    \end{macrocode}
+% \end{variable}
+%
 % \begin{macro}[int]{\@@_sprayo_print:n}
 %   The internal function \myhlc|\@@_sprayo_print:n| process the \mymarg{argument}
-%   passed in `|#1|'. First, call the function \myhlc|\@@_luafun_geo_parse_and_set:n|
-%   to process the \mymarg{argument}, returning an \enquote{error} if the
-%   input is invalid, then, it checks if the value of the variable
-%   \myhlc|\l_@@_sprayo_mode_str| handled by the key \mykey{read-cmd} is
-%   |school|. If so, it checks if the variable \myhlc|\l_@@_sprayo_silent_cmd_bool|
-%   handled by the key \mykey{silent-cmd} is |true| by setting the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str| with the `\textcolor{red}{\texttt{_-}}'
-%   trick for \emph{silent} |<mrow>| since |:silent| doesn't work here; if
-%   the state is |false| we place the variable \myhlc|\l_@@_sprayo_read_sty_str|
-%   and `\textcolor{red}{\texttt{-}}' to the left of \myhlc|\l_@@_geo_luaset_intent_str|.
+%   passed in `|#1|'. It calls \myhlc|\@@_luafun_geo_parse_and_set:n| to
+%   process the \mymarg{argument}, returning an \enquote{error} if the
+%   input is invalid, then calls \myhlc|\@@_sprayo_mathml:|. Unlike
+%   \cs[no-index]{sprecta}, |\sprayo| has no proper-name argument: it
+%   always takes a list of points, so no |intent| is built here.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprayo_print:n
   {
@@ -9596,83 +9634,77 @@ end, "shekel_fallback_patch")
       {
         \msg_error:nne { spintent } { sprayo-invalid-points } { \exp_not:n {#1} }
       }
-    \str_if_eq:VnTF \l_@@_sprayo_mode_str { school }
-      {
-        \bool_if:NTF \l_@@_sprayo_silent_cmd_bool
-          {
-            \tl_clear:N \l_@@_sprayo_prefix_tl
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
-          }
-          {
-            \str_put_left:Ne \l_@@_geo_luaset_intent_str
-              {
-                \l_@@_sprayo_read_sty_str -
-              }
-          }
-      }
-%    \end{macrocode}
-%   If the value of the variable \myhlc|\l_@@_sprayo_mode_str| is not
-%   |school|, that is, |read-cmd=mathcat|, we will set the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str| to the value of the variable
-%   \myhlc|\l_@@_sprayo_read_sty_str| using \myhlc|:prefix($pts)|; if
-%   |silent-cmd=true|, we simply add |:silent| to the right of the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str|. Finally, we call the function
-%   \myhlc|\@@_sprayo_mathml:|.
-%    \begin{macrocode}
-      {
-        \str_set:Ne \l_@@_geo_luaset_intent_str
-          {
-            _ \l_@@_sprayo_read_sty_str :prefix($pts)
-          }
-        \bool_if:NT \l_@@_sprayo_silent_cmd_bool
-          {
-            \tl_clear:N \l_@@_sprayo_prefix_tl
-            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent($pts) }
-          }
-      }
     \@@_sprayo_mathml:
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_sprayo_mathml:}
-%   The function \myhlc|\@@_sprayo_mathml:| generates the code \mynvmath{MathML}
-%   and prints the \mymarg{argument} passed to |\sprayo|. The keys
-%   |read-cmd| and \mykey{prefix} are executed, applying |\overrightarrow|
-%   to the output in both branches.
+%   The function \myhlc|\@@_sprayo_mathml:| splits
+%   \myhlc|\l_@@_geo_luaset_points_str| (set by Lua, one raw point per
+%   element) into \myhlc|\l_@@_sprayo_pt_seq| and walks it once to
+%   build \myhlc|\l_@@_sprayo_refs_tl|, the comma-separated
+%   |$pts1,$pts2,...| reference list, naming each point by position.
+%
+%   The concept |intent| is |_-:nofix(refs)| when \mykey{silent-cmd} is
+%   |true| \emph{or} \mykey{concept} is |false|; otherwise it is
+%   \myhlc|\l_@@_sprayo_read_sty_str|\myhlc|:prefix(refs)| — the concept
+%   word itself (|rayo| or |semirrecta|) comes from the
+%   \mykey{read-sty} key, not a literal, since |\sprayo| verbalizes
+%   under two names — prefixed with \mykey{prefix} when given. It is
+%   applied with a native |\MathMLintent| wrapping |\overrightarrow|,
+%   preceded by \myhlc|\@@_luafun_inner_sep:| (a second sibling so the
+%   sole |<mrow>| does not collapse into |<math>|, |luamml| issue
+%   \href{https://github.com/latex3/luamml/issues/26}{\#26}). The
+%   sequence is walked a second time, calling
+%   \myhlc|\@@_mathmlarg_point:nnn| once per point with its |pts|$n$
+%   reference name and \mykey[sprayo]{silent-cmd}/\mykey[sprayo]{read-cmd}
+%   looked up under |sprayo|: it alone decides |arg|/literal |intent|
+%   per point, so |concept| plays no role at that level.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprayo_mathml:
   {
-    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
-    \str_if_eq:VnTF \l_@@_sprayo_mode_str { school }
+    \seq_set_from_clist:NN \l_@@_sprayo_pt_seq \l_@@_geo_luaset_points_str
+    \tl_clear:N \l_@@_sprayo_refs_tl
+    \int_zero:N \l_@@_sprayo_pt_idx_int
+    \seq_map_inline:Nn \l_@@_sprayo_pt_seq
       {
-        \MathMLintent
-          {
-            \tl_if_empty:NF \l_@@_sprayo_prefix_tl
-              {
-                \tl_use:N \l_@@_sprayo_prefix_tl -
-              }
-            \l_@@_geo_luaset_intent_str
-          }
-          {
-            \c_@@_invisible_sep_tl
-            \overrightarrow { \l_@@_geo_luaset_print_tl }
-          }
+        \int_incr:N \l_@@_sprayo_pt_idx_int
+        \tl_if_empty:NF \l_@@_sprayo_refs_tl
+          { \tl_put_right:Nn \l_@@_sprayo_refs_tl { , } }
+        \tl_put_right:Ne \l_@@_sprayo_refs_tl { $ pts \int_use:N \l_@@_sprayo_pt_idx_int }
+      }
+    \bool_if:nTF
+      {
+        \bool_lazy_or_p:nn
+          { \l_@@_sprayo_silent_cmd_bool }
+          { ! \l_@@_sprayo_concept_bool }
       }
       {
-        \MathMLintent
+        \tl_set:Ne \l_@@_sprayo_intent_arg_tl { _-:nofix( \l_@@_sprayo_refs_tl ) }
+      }
+      {
+        \tl_set:Ne \l_@@_sprayo_intent_arg_tl
           {
             \tl_if_empty:NF \l_@@_sprayo_prefix_tl
-              {
-                \tl_use:N \l_@@_sprayo_prefix_tl -
-              }
-            \l_@@_geo_luaset_intent_str
+              { \tl_use:N \l_@@_sprayo_prefix_tl - }
+            \l_@@_sprayo_read_sty_str :prefix( \l_@@_sprayo_refs_tl )
           }
+      }
+    \@@_invisible_sep:
+    \MathMLintent { \l_@@_sprayo_intent_arg_tl }
+      {
+        \@@_luafun_inner_sep:
+        \overrightarrow
           {
-            \c_@@_invisible_sep_tl
-            \overrightarrow
+            \int_zero:N \l_@@_sprayo_pt_idx_int
+            \seq_map_inline:Nn \l_@@_sprayo_pt_seq
               {
-                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
+                \int_incr:N \l_@@_sprayo_pt_idx_int
+                \@@_mathmlarg_point:nnn
+                  { pts \int_use:N \l_@@_sprayo_pt_idx_int }
+                  { sprayo }
+                  { ##1 }
               }
           }
       }
@@ -9823,6 +9855,9 @@ end, "shekel_fallback_patch")
         silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
         silent-cmd          .initial:n  = false,
         silent-cmd          .value_required:n = true,
+        concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
+        concept             .initial:n  = true,
+        concept             .value_required:n = true,
         read-sty            .choices:nn = { lado , segmento , trazo }
           {
             \int_case:nn { \l_keys_choice_int }
@@ -13882,13 +13917,7 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     local ht_frac_real = frac_height + frac_depth
 
     -- 2. Construir y medir la hlist del entero UNA sola vez, antes de
-    --    escalarla. Antes se llamaba node.mlist_to_hlist dos veces sobre
-    --    la misma estructura (una para medir y descartar, otra para
-    --    escalar) — la operación más costosa de esta función. Como
-    --    spintent_build_submlist_noad/spintent_build_char_noads son puras (sin efectos
-    --    secundarios) y spintent_measuring no se lee en ningún lado,
-    --    medir antes de escalar produce los mismos valores sin pagar
-    --    el costo de una segunda conversión mlist->hlist.
+    --    escalarla.
     local h_esc = node.mlist_to_hlist(spintent_build_submlist_noad(entero), display_type, false)
     local ht_entero = h_esc.height + h_esc.depth
 
@@ -13896,11 +13925,7 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
 
     -- 4-5. Escalado + ancho + glyphs físicos en una sola pasada node.direct
-    -- (antes: una pasada con node.traverse_glyph para escalar, luego una
-    -- segunda pasada separada con d_traverse para medir/recolectar --
-    -- dos recorridos completos de la misma lista más conversión userdata
-    -- de por medio en ambos). El chequeo de dígito vía d_getfield evita
-    -- convertir a userdata los glyphs que no son dígitos.
+
     local ancho = 0
     local glyph_nodes = {}
 
@@ -14080,9 +14105,6 @@ register_tex_cmd("luafun_init_math_fallbacks", spintent_init_math_fallbacks, {})
 
 -- ============================================================
 -- §12  GEOMETRÍA PLANA
---      Comandos cubiertos: \spPoint, \sprecta, \sprayo, \spside,
---      \spmside, \spangle, \spmangle, \sparc, \spmarc, \spPoly,
---      \spAfig, \spPfig
 -- ============================================================
 
 local spintent_geo_cont_sub = C((1 - P"}")^1)
@@ -14237,6 +14259,33 @@ local function spintent_geo_build_visual_nombre(nombre)
     end
 end
 
+-- ============================================================
+-- AGREGADO: reconstrucción del texto crudo de UN punto, y helper
+-- que arma "l__spintent_geo_luaset_points_str" (la lista de puntos
+-- SIN combinar, separada por comas) a partir de una tabla 'puntos'.
+-- Reusa el mismo formato {letra, contenido, tipo} que ya usan
+-- spintent_geo_build_visual/build_intent -- ninguna gramática
+-- cambia, solo se agrega esta lectura adicional del mismo dato.
+-- ============================================================
+local function spintent_geo_build_raw_nombre(punto)
+    local letra, contenido, tipo = punto[1], punto[2], punto[3]
+    if tipo == "sub" then
+        return letra .. "_{" .. contenido .. "}"
+    elseif tipo == "prima" then
+        return letra .. contenido
+    else
+        return letra
+    end
+end
+
+local function spintent_geo_set_points_str(puntos)
+    local raw_parts = {}
+    for i, punto in ipairs(puntos) do
+        raw_parts[i] = spintent_geo_build_raw_nombre(punto)
+    end
+    token_set_macro("l__spintent_geo_luaset_points_str", t_concat(raw_parts, ","))
+end
+
 -- ------------------------------------------------------------
 -- §12.1  PUNTO — \spPoint
 -- ------------------------------------------------------------
@@ -14283,6 +14332,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
             token_set_macro("l__spintent_geo_luaset_intent_str",   "")
             token_set_macro("l__spintent_geo_luaset_print_tl",     "")
             token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+            token_set_macro("l__spintent_geo_luaset_points_str",   "") -- AGREGADO
             return
         end
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
@@ -14291,6 +14341,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body(puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
+        spintent_geo_set_points_str(puntos) -- AGREGADO
         return
     end
 
@@ -14302,6 +14353,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body_nombre(nombre))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
+        token_set_macro("l__spintent_geo_luaset_points_str", "") -- AGREGADO (nombre = 1 solo punto, no aplica)
         return
     end
 
@@ -14313,6 +14365,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body(puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
+        spintent_geo_set_points_str(puntos) -- AGREGADO
         return
     end
 
@@ -14320,6 +14373,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
     token_set_macro("l__spintent_geo_luaset_intent_str",   "")
     token_set_macro("l__spintent_geo_luaset_print_tl",     "")
     token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+    token_set_macro("l__spintent_geo_luaset_points_str",   "") -- AGREGADO
 end, { "string" })
 
 -- ------------------------------------------------------------
@@ -14409,6 +14463,7 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
         token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
         token_set_macro("l__spintent_geo_luaset_print_tl",       "")
         token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
+        token_set_macro("l__spintent_geo_luaset_points_str",     "") -- AGREGADO
         return
     end
 
@@ -14422,6 +14477,7 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_intent_pts_str", spintent_geo_build_intent("", puntos))
     token_set_macro("l__spintent_geo_luaset_intent_str", spintent_geo_build_intent(cmd_base, puntos))
     token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
+    spintent_geo_set_points_str(puntos) -- AGREGADO
 end, { "string" })
 
 -- Tabla de letras válidas para el argumento único de \spAfig/\spPfig
@@ -14501,6 +14557,7 @@ local function spintent_geo_fig_set_vertices(op, puntos)
     token_set_macro("l__spintent_geo_luaset_vertices_str", cuerpo)
     token_set_macro("l__spintent_geo_luaset_intent_pts_str",
                     spintent_geo_build_intent(op, puntos))
+    spintent_geo_set_points_str(puntos) -- AGREGADO
 end
 
 local function spintent_geo_fig_set_error()
@@ -14514,6 +14571,7 @@ local function spintent_geo_fig_set_error()
     token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
     token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
     token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
+    token_set_macro("l__spintent_geo_luaset_points_str",        "") -- AGREGADO
 end
 
 -- l__spintent_geo_luaset_concept_str lleva solo el nombre del
@@ -14539,6 +14597,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
         token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
         token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
         token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
+        token_set_macro("l__spintent_geo_luaset_points_str",        "") -- AGREGADO
         return
     end
 
@@ -14566,6 +14625,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
         token_set_macro("l__spintent_geo_luaset_intent_str",     "")
         token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
         token_set_macro("l__spintent_geo_luaset_vertices_str",   "")
+        token_set_macro("l__spintent_geo_luaset_points_str",     "") -- AGREGADO (letra sola, no aplica)
         return
     end
 
