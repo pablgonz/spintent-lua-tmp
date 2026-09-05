@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-03]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-04]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -117,88 +117,119 @@ local function register_tex_cmd(name, func, args)
 end
 
 -- ============================================================
--- spintent: anotación de MathML con 'intent' sin token fantasma.
--- Aplica solo cuando el contenido es un noad simple o compuesto
--- (mi, msub, msup, radical, fraction) cuyo 'nucleus' es
--- alcanzable directamente en la lista de nivel superior.
---
--- NO aplica a contenido envuelto en accent (\overline,
--- \overleftrightarrow, \vec, etc.): luamml no expone un punto de
--- enganche para decorar el resultado del accent completo, solo
--- su nucleus. Esos casos siguen usando \MathMLintent nativo con
--- \c__spintent_invisible_sep_tl, sin cambios.
+-- spintent: anotación de MathML con 'intent'/'arg' sin token
+-- fantasma. Aplica cuando el contenido es un noad simple o
+-- compuesto (mi, msub, msup, radical, fraction) cuyo 'nucleus'
+-- es alcanzable directamente en la lista de nivel superior, o
+-- anidado dentro de un accent/contenedor con múltiples items
+-- (el callback recursa para encontrarlo).
 -- ============================================================
 
 local spintent_sub_mlist_t = node.id("sub_mlist")
-local spintent_noad_t      = node.id("noad")
 
 local spintent_pending_mrow_intent_queue = {}
 
--- Registra {concept_intent} en la cola. El grupo TeX que sigue
--- inmediatamente en el código fuente queda envuelto en
--- <mrow intent="concept_intent">.
-register_tex_cmd("luafun_wrap_mrow_intent", function(concept_intent)
-    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = concept_intent
-end, { "string" })
+-- El segundo argumento es una lista estilo Lua (key = value,
+-- separadas por coma), evaluada con load() -- mismo mecanismo
+-- que \luamml_annotate:en usa para su propio core=/mathml=.
+-- Función interna: sin pcall -- si la sintaxis está mal, el error
+-- de Lua sale directo (somos los únicos que la llamamos).
+register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, kv_string)
+    local opts = load('return {' .. kv_string .. '}')()
 
--- Igual que arriba, además agrega arg="arg_name" al resultado.
-register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, arg_name)
     spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
-        concept_intent = concept_intent,
-        arg_name       = arg_name,
+        concept_intent = (concept_intent ~= "") and concept_intent or nil,  -- <- agregar el chequeo
+        arg_name       = opts.arg,
+        child_intent   = opts.intent,
     }
 end, { "string", "string" })
 
--- Igual que arriba, además fija intent=":silent" en el resultado.
-register_tex_cmd("luafun_wrap_mrow_intent_arg_silent", function(concept_intent, arg_name)
-    spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
-        concept_intent = concept_intent,
-        arg_name       = arg_name,
-        child_intent   = ":silent",
-    }
-end, { "string", "string" })
+local function spintent_count_items(head)
+    local n = 0
+    for _ in node.traverse(head) do n = n + 1 end
+    return n
+end
 
--- Consume la cola en orden. Para cada entrada, busca el próximo
--- nodo con 'nucleus' que aún no tenga mathml_filter asignado, y
--- le instala uno que aplica arg/child_intent y envuelve el
--- resultado en <mrow intent="concept_intent">.
-luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
-    if #spintent_pending_mrow_intent_queue == 0 then return true end
+-- Busca el próximo nodo con 'nucleus' que aún no tenga
+-- mathml_filter asignado. Si el nucleus es un sub_mlist con más
+-- de 1 item, recursa buscando adentro (caso: varios puntos
+-- dentro de un mismo \overleftrightarrow/\overline). Si tiene 1
+-- solo item o no es sub_mlist, es el objetivo final.
+local function spintent_try_annotate(n, properties)
+    if #spintent_pending_mrow_intent_queue == 0 then return end
+    if not n.nucleus then return end
 
-    local properties = node.get_properties_table()
+    local nucleus  = n.nucleus
+    local existing = properties[nucleus]
 
-    for n, id in node.traverse(mlist) do
-        if #spintent_pending_mrow_intent_queue == 0 then break end
-        if n.nucleus then
-            local existing = properties[n.nucleus]
-            if not (existing and existing.mathml_filter) then
-                local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
-
-                local concept_intent, arg_name, child_intent
-                if type(entry) == "table" then
-                    concept_intent = entry.concept_intent
-                    arg_name       = entry.arg_name
-                    child_intent   = entry.child_intent
-                else
-                    concept_intent = entry
-                end
-
-                local p = properties[n.nucleus] or {}
-                p.mathml_filter = function(result, core)
-                    if arg_name then result.arg = arg_name end
-                    if child_intent then result.intent = child_intent end
-                    return { [0] = "mrow", intent = concept_intent, result }, nil
-                end
-                properties[n.nucleus] = p
+    if nucleus.id == spintent_sub_mlist_t and nucleus.head then
+        local count = spintent_count_items(nucleus.head)
+        if count > 1 then
+            for inner in node.traverse(nucleus.head) do
+                spintent_try_annotate(inner, properties)
+                if #spintent_pending_mrow_intent_queue == 0 then return end
             end
+            return
         end
     end
 
+    if existing and existing.mathml_filter then
+        return  -- ya anotado por otra cosa (p.ej. \MathMLintent nativo)
+    end
+
+    local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
+
+    local p = properties[nucleus] or {}
+    p.mathml_filter = function(result, core)
+        if entry.arg_name then result.arg = entry.arg_name end
+        if entry.child_intent then result.intent = entry.child_intent end
+        if entry.concept_intent then
+            return { [0] = "mrow", intent = entry.concept_intent, result }, nil
+        end
+        return result, core
+    end
+    properties[nucleus] = p
+end
+
+luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
+    if #spintent_pending_mrow_intent_queue == 0 then return true end
+    local properties = node.get_properties_table()
+    for n in node.traverse(mlist) do
+        if #spintent_pending_mrow_intent_queue == 0 then break end
+        spintent_try_annotate(n, properties)
+    end
     return true
 end, "spintent.wrap_mrow_intent")
 
 luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
     "spintent.wrap_mrow_intent", "before", "luamml.to_mathml")
+
+-- Reemplaza \c__spintent_invisible_sep_tl cuando se usa junto a
+-- \MathMLintent nativo (necesita un segundo hermano para no
+-- colapsar). Se auto-anota con su propio mathml_filter al
+-- crearse -- por eso la recursión de wrap_mrow_intent_arg lo
+-- reconoce como "ya reclamado" y lo salta, en vez de confundirlo
+-- con un objetivo libre de la cola. A diferencia del fantasma
+-- exterior, este NO se deduplica: puede hacer falta más de una
+-- vez por fórmula (una por cada \MathMLintent anidado).
+register_tex_cmd("luafun_inner_sep", function()
+    local kernel = node.new("math_char")
+    kernel.char  = 0x2063
+    kernel.fam   = 0
+    local noad   = node.new("noad")
+    noad.subtype = 0
+    noad.nucleus = kernel
+
+    local properties = node.get_properties_table()
+    local p = properties[kernel] or {}
+    p.mathml_filter = function(result, core)
+        result.intent = ":silent"
+        return result, core
+    end
+    properties[kernel] = p
+
+    node.write(noad)
+end, {})
 
 -- ============================================================
 -- \__spintent_invisible_sep: (fantasma exterior, <mo intent=":silent">).
@@ -217,13 +248,17 @@ register_tex_cmd("luafun_invisible_sep", function()
     kernel.char  = 0x2063
     kernel.fam   = 0
     local noad   = node.new("noad")
-    noad.subtype = 0
+    noad.subtype = 0   -- noad_ord. Forzar op (1) da <mo> correcto
+                       -- pero agrega espaciado real de operador al
+                       -- PDF (rspace visible). Se acepta <mi> sin
+                       -- efecto lateral -- intent=':silent' hace
+                       -- que la etiqueta (mi/mo) sea irrelevante
+                       -- para cualquier lector.
     noad.nucleus = kernel
 
     local properties = node.get_properties_table()
     local p = properties[kernel] or {}
     p.mathml_filter = function(result, core)
-        result[0]     = "mo"
         result.intent = ":silent"
         return result, core
     end
@@ -1520,13 +1555,7 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     local ht_frac_real = frac_height + frac_depth
 
     -- 2. Construir y medir la hlist del entero UNA sola vez, antes de
-    --    escalarla. Antes se llamaba node.mlist_to_hlist dos veces sobre
-    --    la misma estructura (una para medir y descartar, otra para
-    --    escalar) — la operación más costosa de esta función. Como
-    --    spintent_build_submlist_noad/spintent_build_char_noads son puras (sin efectos
-    --    secundarios) y spintent_measuring no se lee en ningún lado,
-    --    medir antes de escalar produce los mismos valores sin pagar
-    --    el costo de una segunda conversión mlist->hlist.
+    --    escalarla.
     local h_esc = node.mlist_to_hlist(spintent_build_submlist_noad(entero), display_type, false)
     local ht_entero = h_esc.height + h_esc.depth
 
@@ -1534,11 +1563,7 @@ register_tex_cmd("luafun_spmQ_scale_int", function(entero, frac_cmd)
     local factor = (ht_entero == 0) and 1.0 or (ht_frac_real / ht_entero)
 
     -- 4-5. Escalado + ancho + glyphs físicos en una sola pasada node.direct
-    -- (antes: una pasada con node.traverse_glyph para escalar, luego una
-    -- segunda pasada separada con d_traverse para medir/recolectar --
-    -- dos recorridos completos de la misma lista más conversión userdata
-    -- de por medio en ambos). El chequeo de dígito vía d_getfield evita
-    -- convertir a userdata los glyphs que no son dígitos.
+
     local ancho = 0
     local glyph_nodes = {}
 
@@ -1718,9 +1743,6 @@ register_tex_cmd("luafun_init_math_fallbacks", spintent_init_math_fallbacks, {})
 
 -- ============================================================
 -- §12  GEOMETRÍA PLANA
---      Comandos cubiertos: \spPoint, \sprecta, \sprayo, \spside,
---      \spmside, \spangle, \spmangle, \sparc, \spmarc, \spPoly,
---      \spAfig, \spPfig
 -- ============================================================
 
 local spintent_geo_cont_sub = C((1 - P"}")^1)
@@ -1875,6 +1897,33 @@ local function spintent_geo_build_visual_nombre(nombre)
     end
 end
 
+-- ============================================================
+-- AGREGADO: reconstrucción del texto crudo de UN punto, y helper
+-- que arma "l__spintent_geo_luaset_points_str" (la lista de puntos
+-- SIN combinar, separada por comas) a partir de una tabla 'puntos'.
+-- Reusa el mismo formato {letra, contenido, tipo} que ya usan
+-- spintent_geo_build_visual/build_intent -- ninguna gramática
+-- cambia, solo se agrega esta lectura adicional del mismo dato.
+-- ============================================================
+local function spintent_geo_build_raw_nombre(punto)
+    local letra, contenido, tipo = punto[1], punto[2], punto[3]
+    if tipo == "sub" then
+        return letra .. "_{" .. contenido .. "}"
+    elseif tipo == "prima" then
+        return letra .. contenido
+    else
+        return letra
+    end
+end
+
+local function spintent_geo_set_points_str(puntos)
+    local raw_parts = {}
+    for i, punto in ipairs(puntos) do
+        raw_parts[i] = spintent_geo_build_raw_nombre(punto)
+    end
+    token_set_macro("l__spintent_geo_luaset_points_str", t_concat(raw_parts, ","))
+end
+
 -- ------------------------------------------------------------
 -- §12.1  PUNTO — \spPoint
 -- ------------------------------------------------------------
@@ -1921,6 +1970,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
             token_set_macro("l__spintent_geo_luaset_intent_str",   "")
             token_set_macro("l__spintent_geo_luaset_print_tl",     "")
             token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+            token_set_macro("l__spintent_geo_luaset_points_str",   "") -- AGREGADO
             return
         end
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
@@ -1929,6 +1979,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body(puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
+        spintent_geo_set_points_str(puntos) -- AGREGADO
         return
     end
 
@@ -1940,6 +1991,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body_nombre(nombre))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
+        token_set_macro("l__spintent_geo_luaset_points_str", "") -- AGREGADO (nombre = 1 solo punto, no aplica)
         return
     end
 
@@ -1951,6 +2003,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body(puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
+        spintent_geo_set_points_str(puntos) -- AGREGADO
         return
     end
 
@@ -1958,6 +2011,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
     token_set_macro("l__spintent_geo_luaset_intent_str",   "")
     token_set_macro("l__spintent_geo_luaset_print_tl",     "")
     token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+    token_set_macro("l__spintent_geo_luaset_points_str",   "") -- AGREGADO
 end, { "string" })
 
 -- ------------------------------------------------------------
@@ -2047,6 +2101,7 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
         token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
         token_set_macro("l__spintent_geo_luaset_print_tl",       "")
         token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
+        token_set_macro("l__spintent_geo_luaset_points_str",     "") -- AGREGADO
         return
     end
 
@@ -2060,6 +2115,7 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_intent_pts_str", spintent_geo_build_intent("", puntos))
     token_set_macro("l__spintent_geo_luaset_intent_str", spintent_geo_build_intent(cmd_base, puntos))
     token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
+    spintent_geo_set_points_str(puntos) -- AGREGADO
 end, { "string" })
 
 -- Tabla de letras válidas para el argumento único de \spAfig/\spPfig
@@ -2139,6 +2195,7 @@ local function spintent_geo_fig_set_vertices(op, puntos)
     token_set_macro("l__spintent_geo_luaset_vertices_str", cuerpo)
     token_set_macro("l__spintent_geo_luaset_intent_pts_str",
                     spintent_geo_build_intent(op, puntos))
+    spintent_geo_set_points_str(puntos) -- AGREGADO
 end
 
 local function spintent_geo_fig_set_error()
@@ -2152,6 +2209,7 @@ local function spintent_geo_fig_set_error()
     token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
     token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
     token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
+    token_set_macro("l__spintent_geo_luaset_points_str",        "") -- AGREGADO
 end
 
 -- l__spintent_geo_luaset_concept_str lleva solo el nombre del
@@ -2177,6 +2235,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
         token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
         token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
         token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
+        token_set_macro("l__spintent_geo_luaset_points_str",        "") -- AGREGADO
         return
     end
 
@@ -2204,6 +2263,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
         token_set_macro("l__spintent_geo_luaset_intent_str",     "")
         token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
         token_set_macro("l__spintent_geo_luaset_vertices_str",   "")
+        token_set_macro("l__spintent_geo_luaset_points_str",     "") -- AGREGADO (letra sola, no aplica)
         return
     end
 

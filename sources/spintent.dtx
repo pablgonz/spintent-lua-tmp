@@ -203,7 +203,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-03}
+\def\filedate{2026-09-04}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4153,7 +4153,7 @@ end, "shekel_fallback_patch")
 % Now declare the \mypkg*[no-index]{spintent} package and we will add the
 % only key \mykey{mathcal} that can be passed as a package option.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-03} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-04} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -9898,16 +9898,37 @@ end, "shekel_fallback_patch")
 % \subsubsection{Internal functions for \cs[no-index]{spside} and
 %   \cs[no-index]{spmside}}
 %
+% \begin{variable}[int]
+%   {
+%     \l_@@_geo_intent_tl,
+%     \l_@@_spside_pt_seq,
+%     \l_@@_spside_refs_tl,
+%     \l_@@_spside_intent_arg_tl,
+%     \l_@@_spside_pt_idx_int,
+%   }
+%   \myhlc|\l_@@_geo_intent_tl| holds the concept word (\mykey{read-arg}
+%   or \mykey{read-sty}, `|medida-del-|'-prefixed for |\spmside|). The
+%   rest are scratch variables shared by both commands (the function
+%   itself is shared) to split \myhlc|\l_@@_geo_luaset_points_str| and
+%   build the |$pts1,$pts2,...| reference list.
+%    \begin{macrocode}
+\seq_new:N \l_@@_spside_pt_seq
+\tl_new:N  \l_@@_spside_refs_tl
+\tl_new:N  \l_@@_spside_intent_arg_tl
+\int_new:N \l_@@_spside_pt_idx_int
+%    \end{macrocode}
+% \end{variable}
+%
 % \begin{macro}[int]{\@@_spside_process:nn}
-%   The internal function \myhlc|\@@_spside_process:nn| passes the short
-%   name of the command |side| or |mside| passed in `|#1|' and the
-%   \mymarg{argument} passed in `|#2|'. First, call the function
-%   \myhlc|\@@_luafun_geo_parse_and_set:n| to process the \mymarg{argument}
-%   passed in `|#2|', returning an \enquote{error} if the input is invalid,
-%   then stores the value set by the key \mykey{read-sty} or the key \mykey{read-arg},
-%   if present, in the variable \myhlc|\l_@@_geo_intent_tl|. If |\spmside|
-%   is running, we will place `|medida-del-|' to the left of the
-%   variable \myhlc|\l_@@_geo_intent_tl|.
+%   The internal function \myhlc|\@@_spside_process:nn| receives the
+%   short name of the command (|side| or |mside|) in `|#1|' and the
+%   \mymarg{argument} in `|#2|'. It calls
+%   \myhlc|\@@_luafun_geo_parse_and_set:n| to process `|#2|', returning
+%   an \enquote{error} if invalid, then builds \myhlc|\l_@@_geo_intent_tl|
+%   from \mykey{read-arg} (if given) or \mykey{read-sty}, prefixed with
+%   `|medida-del-|' for |\spmside|. No |intent| is built here: it needs
+%   the reference list, which \myhlc|\@@_spside_mathml:n| builds after
+%   splitting the points.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_process:nn
   {
@@ -9927,116 +9948,119 @@ end, "shekel_fallback_patch")
       {
         \tl_put_left:Nn \l_@@_geo_intent_tl { medida-del- }
       }
-%    \end{macrocode}
-%   If |read-cmd=school| and |silent-cmd=true|, we will set the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str| with the `\textcolor{red}{\texttt{_-}}'
-%   trick for \emph{silent} |<mrow>| since |:silent| doesn't work here; if
-%   |silent-cmd=false| we place the variable \myhlc|\l_@@_geo_intent_tl|
-%   and `\textcolor{red}{\texttt{-}}' to the left of \myhlc|\l_@@_geo_luaset_intent_str|.
-%    \begin{macrocode}
-    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
-      {
-        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
-          {
-            \tl_clear:c { l_@@_sp #1 _prefix_tl }
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
-          }
-          {
-            \str_put_left:Ne \l_@@_geo_luaset_intent_str
-              {
-                \l_@@_geo_intent_tl -
-              }
-          }
-      }
-%    \end{macrocode}
-%   If we use |read-cmd=mathcat|, we will set the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str| to the value of the variable
-%   \myhlc|\l_@@_geo_intent_tl| using \myhlc|:prefix($pts)|; if
-%   |silent-cmd=true|, we simply add |:silent| to the right of the variable
-%   \myhlc|\l_@@_geo_luaset_intent_str|. Finally, we call the function
-%   \myhlc|\@@_spside_mathml:n|.
-%    \begin{macrocode}
-      {
-        \str_set:Ne \l_@@_geo_luaset_intent_str
-          {
-            _ \l_@@_geo_intent_tl :prefix($pts)
-          }
-        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
-          {
-            \tl_clear:c { l_@@_sp #1 _prefix_tl }
-            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent($pts) }
-          }
-      }
     \@@_spside_mathml:n { #1 }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spside_mathml:n}
-%   The function \myhlc|\@@_spside_mathml:n| receives the short name of the
-%   command passed as an argument in `|#1|'; it generates the code
-%   \mynvmath{MathML} and prints the \mymarg{argument} passed to |\spside|
-%   and |\spmside|. The keys |read-cmd| and \mykey{prefix} are executed for
-%   both commands along with the |print-m| key which adds
-%   \myhlc|\operatorname{m}| to |\spmside|.
+%   The function \myhlc|\@@_spside_mathml:n| receives the short command
+%   name in `|#1|'. It splits \myhlc|\l_@@_geo_luaset_points_str| into
+%   \myhlc|\l_@@_spside_pt_seq| and walks it once to build
+%   \myhlc|\l_@@_spside_refs_tl|, the comma-separated |$pts1,$pts2,...|
+%   reference list, naming each point by position.
+%
+%   The concept |intent| is |_-:nofix(refs)| when \mykey{silent-cmd} is
+%   |true| \emph{or} \mykey{concept} is |false|; otherwise it is
+%   \myhlc|\l_@@_geo_intent_tl|\myhlc|:prefix(refs)|, prefixed with
+%   \mykey{prefix} when given. It is applied with a native
+%   |\MathMLintent|, preceded by \myhlc|\@@_luafun_inner_sep:| (a second
+%   sibling so the sole |<mrow>| does not collapse into |<math>|,
+%   |luamml| issue \href{https://github.com/latex3/luamml/issues/26}{\#26}).
+%
+%   Inside, for |#1=side| the points are always wrapped in |\overline|;
+%   for |#1=mside|, when \mykey{print-m} is |true| a silent
+%   |\operatorname{m}| precedes the |\overline|-wrapped points; when
+%   |false|, the points are typeset bare, with no |\overline| at all —
+%   the recursive lookup in the shared |mathml_filter| callback finds
+%   each point either way, whether nested inside |\overline| or sitting
+%   directly in the |\MathMLintent| group. In every case the sequence
+%   is walked a second time, calling \myhlc|\@@_mathmlarg_point:nnn|
+%   once per point with its |pts|$n$ reference name and
+%   \mykey[spside,spmside]{silent-cmd}/\mykey[spside,spmside]{read-cmd}
+%   looked up under |sp#1|: it alone decides |arg|/literal |intent| per
+%   point, so |concept| plays no role at that level.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_mathml:n
   {
-    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
-    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
+    \seq_set_from_clist:NN \l_@@_spside_pt_seq \l_@@_geo_luaset_points_str
+
+    \tl_clear:N \l_@@_spside_refs_tl
+    \int_zero:N \l_@@_spside_pt_idx_int
+    \seq_map_inline:Nn \l_@@_spside_pt_seq
       {
-        \MathMLintent
+        \int_incr:N \l_@@_spside_pt_idx_int
+        \tl_if_empty:NF \l_@@_spside_refs_tl
+          { \tl_put_right:Nn \l_@@_spside_refs_tl { , } }
+        \tl_put_right:Ne \l_@@_spside_refs_tl { $ pts \int_use:N \l_@@_spside_pt_idx_int }
+      }
+
+    \bool_if:nTF
+      {
+        \bool_lazy_or_p:nn
+          { \bool_if_p:c { l_@@_sp #1 _silent_cmd_bool } }
+          { ! \bool_if_p:c { l_@@_sp #1 _concept_bool } }
+      }
+      {
+        \tl_set:Ne \l_@@_spside_intent_arg_tl { _-:nofix( \l_@@_spside_refs_tl ) }
+      }
+      {
+        \tl_set:Ne \l_@@_spside_intent_arg_tl
           {
             \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              {
-                \tl_use:c { l_@@_sp #1 _prefix_tl } -
-              }
-            \l_@@_geo_luaset_intent_str
+              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+            \l_@@_geo_intent_tl :prefix( \l_@@_spside_refs_tl )
+          }
+      }
+
+    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \MathMLintent { \l_@@_spside_intent_arg_tl }
+      {
+        \@@_luafun_inner_sep:
+        \str_if_eq:eeTF {#1} { side }
+          {
+            \overline { \@@_spside_points_loop:n {#1} }
           }
           {
-            \c_@@_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { side }
+            \bool_if:cTF { l_@@_sp #1 _print_m_bool }
               {
-                \overline { \l_@@_geo_luaset_print_tl }
+                % antes: \MathMLintent { :silent } { \operatorname { m } }
+                % -- se reemplaza por nuestro propio mecanismo de cola,
+                % para no mezclar el orden de \MathMLintent nativo con
+                % la cola de puntos (causaba desalineamiento: el "m"
+                % se robaba la entrada del primer punto).
+                \@@_luafun_wrap_mrow_intent_arg:nn
+                  { } { intent = ":silent" }
+                { \operatorname { m } }
+                \overline { \@@_spside_points_loop:n {#1} }
               }
               {
-                \bool_if:cTF { l_@@_sp #1 _print_m_bool }
-                  {
-                    \MathMLintent { :silent } { \operatorname { m } }
-                    \overline { \l_@@_geo_luaset_print_tl }
-                  }
-                  {
-                    \l_@@_geo_luaset_print_tl
-                  }
+                \@@_spside_points_loop:n {#1}
               }
           }
       }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spside_points_loop:n}
+%   Walks \myhlc|\l_@@_spside_pt_seq| a second time, calling
+%   \myhlc|\@@_mathmlarg_point:nnn| once per point. Factored out of
+%   \myhlc|\@@_spside_mathml:n| since it is needed identically in three
+%   places there (|side|, |mside| with and without \mykey{print-m}); it
+%   takes the short command name in `|#1|' again since a separate
+%   macro does not inherit its caller's own |#1|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spside_points_loop:n
+  {
+    \int_zero:N \l_@@_spside_pt_idx_int
+    \seq_map_inline:Nn \l_@@_spside_pt_seq
       {
-        \MathMLintent
-          {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              {
-                \tl_use:c { l_@@_sp #1 _prefix_tl } -
-              }
-            \l_@@_geo_luaset_intent_str
-          }
-          {
-            \c_@@_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { side }
-              {
-                \overline { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
-              }
-              {
-                \bool_if:cTF { l_@@_sp #1 _print_m_bool }
-                  {
-                    \MathMLintent { :silent } { \operatorname { m } }
-                    \overline { \MathMLarg { pts } { \l_@@_geo_luaset_print_tl } }
-                  }
-                  {
-                    \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
-                  }
-              }
-          }
+        \int_incr:N \l_@@_spside_pt_idx_int
+        \@@_mathmlarg_point:nnn
+          { pts \int_use:N \l_@@_spside_pt_idx_int }
+          { sp #1 }
+          { ##1 }
       }
   }
 %    \end{macrocode}
@@ -12361,7 +12385,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-03]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-04]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
