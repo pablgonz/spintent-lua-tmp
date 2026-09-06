@@ -3502,6 +3502,11 @@
       { \widearc {#1} }
       { \__spintent_sparc_wide_arc:n {#1} }
   }
+\tl_new:N  \l__spintent_sparc_intent_tl
+\seq_new:N \l__spintent_sparc_pt_seq
+\tl_new:N  \l__spintent_sparc_refs_tl
+\tl_new:N  \l__spintent_sparc_intent_arg_tl
+\int_new:N \l__spintent_sparc_pt_idx_int
 \cs_new_protected:Nn \__spintent_sparc_process:nn
   {
     \__spintent_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
@@ -3511,77 +3516,63 @@
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeTF {#1} { marc }
-      {
-        \tl_set:Nn \l__spintent_geo_intent_tl { medida-del-arco }
-      }
-      {
-        \tl_set:Nn \l__spintent_geo_intent_tl { arco }
-      }
-    \str_if_eq:eeTF { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
-      {
-        \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
-          {
-            \tl_clear:c { l__spintent_sp #1 _prefix_tl }
-            \str_set:Ne \l__spintent_geo_luaset_intent_str { _- }
-          }
-          {
-            \str_put_left:Ne \l__spintent_geo_luaset_intent_str
-              {
-                \l__spintent_geo_intent_tl -
-              }
-          }
-      }
-      {
-        \str_set:Ne \l__spintent_geo_luaset_intent_str
-          {
-            _ \l__spintent_geo_intent_tl :prefix($pts)
-          }
-        \bool_if:cT { l__spintent_sp #1 _silent_cmd_bool }
-          {
-            \tl_clear:c { l__spintent_sp #1 _prefix_tl }
-            \str_put_right:Nn \l__spintent_geo_luaset_intent_str { :silent($pts) }
-          }
-      }
+      { \tl_set:Nn \l__spintent_sparc_intent_tl { medida-del-arco } }
+      { \tl_set:Nn \l__spintent_sparc_intent_tl { arco } }
     \__spintent_sparc_mathml:n {#1}
   }
 \cs_new_protected:Nn \__spintent_sparc_mathml:n
   {
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
-    \str_if_eq:eeTF { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
+    \seq_set_from_clist:NN \l__spintent_sparc_pt_seq \l__spintent_geo_luaset_points_str
+
+    \tl_clear:N \l__spintent_sparc_refs_tl
+    \int_zero:N \l__spintent_sparc_pt_idx_int
+    \seq_map_inline:Nn \l__spintent_sparc_pt_seq
       {
-        \MathMLintent
-          {
-            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
-              {
-                \tl_use:c { l__spintent_sp #1 _prefix_tl } -
-              }
-            \l__spintent_geo_luaset_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \str_if_eq:eeT {#1} { marc }
-              {
-                \MathMLintent { :silent } { \operatorname { m } }
-              }
-            \__spintent_sparc_print_arc:n { \l__spintent_geo_luaset_print_tl }
-          }
+        \int_incr:N \l__spintent_sparc_pt_idx_int
+        \tl_if_empty:NF \l__spintent_sparc_refs_tl
+          { \tl_put_right:Nn \l__spintent_sparc_refs_tl { , } }
+        \tl_put_right:Ne \l__spintent_sparc_refs_tl { $ pt \int_use:N \l__spintent_sparc_pt_idx_int }
+      }
+
+    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+      {
+        \tl_set:Nn \l__spintent_sparc_intent_arg_tl { _- }
       }
       {
-        \MathMLintent
+        \bool_if:cTF { l__spintent_sp #1 _concept_bool }
           {
-            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
-              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_luaset_intent_str
+            \tl_set:Ne \l__spintent_sparc_intent_arg_tl
+              {
+                \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+                  { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
+                \l__spintent_sparc_intent_tl :prefix( \l__spintent_sparc_refs_tl )
+              }
           }
           {
-            \c__spintent_invisible_sep_tl
-            \str_if_eq:eeT {#1} { marc }
+            \tl_set:Nn \l__spintent_sparc_intent_arg_tl { _- }
+          }
+      }
+
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \MathMLintent { \l__spintent_sparc_intent_arg_tl }
+      {
+        \__spintent_luafun_inner_sep:
+        \str_if_eq:eeT {#1} { marc }
+          {
+            \__spintent_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = ":silent" }
+            { \operatorname { m } }
+          }
+        \__spintent_sparc_print_arc:n
+          {
+            \int_zero:N \l__spintent_sparc_pt_idx_int
+            \seq_map_inline:Nn \l__spintent_sparc_pt_seq
               {
-                \MathMLintent { :silent } { \operatorname { m } }
-              }
-            \__spintent_sparc_print_arc:n
-              {
-                \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
+                \int_incr:N \l__spintent_sparc_pt_idx_int
+                \__spintent_mathmlarg_point:nnn
+                  { pt \int_use:N \l__spintent_sparc_pt_idx_int }
+                  { sp #1 }
+                  { ##1 }
               }
           }
       }

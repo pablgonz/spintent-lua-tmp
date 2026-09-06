@@ -10675,12 +10675,36 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{variable}[int]
+%   {
+%     \l_@@_sparc_intent_tl,
+%     \l_@@_sparc_pt_seq,
+%     \l_@@_sparc_refs_tl,
+%     \l_@@_sparc_intent_arg_tl,
+%     \l_@@_sparc_pt_idx_int,
+%   }
+%   \myhlc|\l_@@_sparc_intent_tl| holds the concept word (|arco| or
+%   |medida-del-arco|). The rest are scratch variables to split
+%   \myhlc|\l_@@_geo_luaset_points_str| and build the |$pt1,$pt2,...|
+%   reference list used in the concept |intent|.
+%    \begin{macrocode}
+\tl_new:N  \l_@@_sparc_intent_tl
+\seq_new:N \l_@@_sparc_pt_seq
+\tl_new:N  \l_@@_sparc_refs_tl
+\tl_new:N  \l_@@_sparc_intent_arg_tl
+\int_new:N \l_@@_sparc_pt_idx_int
+%    \end{macrocode}
+% \end{variable}
+%
 % \begin{macro}[int]{\@@_sparc_process:nn}
-%   Follows the same resolution pattern as
-%   \myhlc|\@@_spside_process:nn| (\S\ref{cmd:spside}), with the base
-%   names |arco|/|medida-del-arco|. When |#1| is |marc|,
-%   |\operatorname{m}| is always typeset, wrapped in
-%   |\MathMLintent|\marg{:silent}, before \myhlc|\@@_sparc_print_arc:n|.
+%   The internal function \myhlc|\@@_sparc_process:nn| receives the
+%   short name of the command (|arc| or |marc|) in `|#1|' and the
+%   \mymarg{argument} in `|#2|'. It calls
+%   \myhlc|\@@_luafun_geo_parse_and_set:n| to process `|#2|', returning
+%   an \enquote{error} if invalid, then sets \myhlc|\l_@@_sparc_intent_tl|
+%   to |arco| (or |medida-del-arco| for |\spmarc|). No |intent| is
+%   built here: it needs the reference list, which
+%   \myhlc|\@@_sparc_mathml:n| builds after splitting the points.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sparc_process:nn
   {
@@ -10691,87 +10715,99 @@ end, "shekel_fallback_patch")
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeTF {#1} { marc }
-      {
-        \tl_set:Nn \l_@@_geo_intent_tl { medida-del-arco }
-      }
-      {
-        \tl_set:Nn \l_@@_geo_intent_tl { arco }
-      }
-    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
-      {
-        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
-          {
-            \tl_clear:c { l_@@_sp #1 _prefix_tl }
-            \str_set:Ne \l_@@_geo_luaset_intent_str { _- }
-          }
-          {
-            \str_put_left:Ne \l_@@_geo_luaset_intent_str
-              {
-                \l_@@_geo_intent_tl -
-              }
-          }
-      }
-      {
-        \str_set:Ne \l_@@_geo_luaset_intent_str
-          {
-            _ \l_@@_geo_intent_tl :prefix($pts)
-          }
-        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
-          {
-            \tl_clear:c { l_@@_sp #1 _prefix_tl }
-            \str_put_right:Nn \l_@@_geo_luaset_intent_str { :silent($pts) }
-          }
-      }
+      { \tl_set:Nn \l_@@_sparc_intent_tl { medida-del-arco } }
+      { \tl_set:Nn \l_@@_sparc_intent_tl { arco } }
     \@@_sparc_mathml:n {#1}
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_sparc_mathml:n}
-%   The function \myhlc|\@@_sparc_mathml:n| receives the short name of the
-%   command passed as an argument in `|#1|'; it generates the code
-%   \mynvmath{MathML} and prints the \mymarg{argument} passed to |\sparc|
-%   and |\spmarc|. The keys |read-cmd| and \mykey{prefix} are executed for
-%   both commands along with the \myhlc|\operatorname{m}| to |\spmarc|.
+%   The function \myhlc|\@@_sparc_mathml:n| receives the short command
+%   name in `|#1|'. It splits \myhlc|\l_@@_geo_luaset_points_str| into
+%   \myhlc|\l_@@_sparc_pt_seq| and walks it once to build
+%   \myhlc|\l_@@_sparc_refs_tl|, the comma-separated |$pt1,$pt2,...|
+%   reference list, naming each point by position.
+%
+%   The concept |intent| is |_-| when \mykey{silent-cmd} is |true| or
+%   \mykey{concept} is |false|; otherwise
+%   \myhlc|\l_@@_sparc_intent_tl|\myhlc|:prefix(refs)|, prefixed with
+%   \mykey{prefix} when given. It is applied with a single native
+%   |\MathMLintent| wrapping \myhlc|\@@_sparc_print_arc:n| directly
+%   (same shape as \myhlc|\@@_spside_mathml:n|), preceded by
+%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
+%   |<mrow>| does not collapse into |<math>|, |luamml| issue
+%   \href{https://github.com/latex3/luamml/issues/26}{\#26}). A silent
+%   |\operatorname{m}| precedes it for |\spmarc| (always, no
+%   \mykey{print-m} key here). The sequence is walked a second time,
+%   calling \myhlc|\@@_mathmlarg_point:nnn| once per point with its
+%   |pt|$n$ reference name, looked up under |sp#1|.
+%
+%   \begin{important}*
+%     With three or more points (e.g.\ |\sparc{A,B,C}|, used to
+%     distinguish major/minor arc), |MathCAT| only speaks the first
+%     point — a confirmed |MathCAT| bug in |:prefix(...)| with several
+%     explicit |$|-references (verified directly with David Carlisle),
+%     not something fixable from |spintent|. The |\@@_spangle_mathml:n|
+%     |tres-puntos| shape (concept and points as separate siblings)
+%     does not help here: with a |<mover>| involved, |MathCAT| still
+%     applies its own native accent reading regardless of the
+%     surrounding |intent|. Two points work correctly.
+%   \end{important}
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sparc_mathml:n
   {
-    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
-    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
+    \seq_set_from_clist:NN \l_@@_sparc_pt_seq \l_@@_geo_luaset_points_str
+
+    \tl_clear:N \l_@@_sparc_refs_tl
+    \int_zero:N \l_@@_sparc_pt_idx_int
+    \seq_map_inline:Nn \l_@@_sparc_pt_seq
       {
-        \MathMLintent
-          {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              {
-                \tl_use:c { l_@@_sp #1 _prefix_tl } -
-              }
-            \l_@@_geo_luaset_intent_str
-          }
-          {
-            \c_@@_invisible_sep_tl
-            \str_if_eq:eeT {#1} { marc }
-              {
-                \MathMLintent { :silent } { \operatorname { m } }
-              }
-            \@@_sparc_print_arc:n { \l_@@_geo_luaset_print_tl }
-          }
+        \int_incr:N \l_@@_sparc_pt_idx_int
+        \tl_if_empty:NF \l_@@_sparc_refs_tl
+          { \tl_put_right:Nn \l_@@_sparc_refs_tl { , } }
+        \tl_put_right:Ne \l_@@_sparc_refs_tl { $ pt \int_use:N \l_@@_sparc_pt_idx_int }
+      }
+
+    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+      {
+        \tl_set:Nn \l_@@_sparc_intent_arg_tl { _- }
       }
       {
-        \MathMLintent
+        \bool_if:cTF { l_@@_sp #1 _concept_bool }
           {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-            \l_@@_geo_luaset_intent_str
+            \tl_set:Ne \l_@@_sparc_intent_arg_tl
+              {
+                \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                  { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                \l_@@_sparc_intent_tl :prefix( \l_@@_sparc_refs_tl )
+              }
           }
           {
-            \c_@@_invisible_sep_tl
-            \str_if_eq:eeT {#1} { marc }
+            \tl_set:Nn \l_@@_sparc_intent_arg_tl { _- }
+          }
+      }
+
+    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \MathMLintent { \l_@@_sparc_intent_arg_tl }
+      {
+        \@@_luafun_inner_sep:
+        \str_if_eq:eeT {#1} { marc }
+          {
+            \@@_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = ":silent" }
+            { \operatorname { m } }
+          }
+        \@@_sparc_print_arc:n
+          {
+            \int_zero:N \l_@@_sparc_pt_idx_int
+            \seq_map_inline:Nn \l_@@_sparc_pt_seq
               {
-                \MathMLintent { :silent } { \operatorname { m } }
-              }
-            \@@_sparc_print_arc:n
-              {
-                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
+                \int_incr:N \l_@@_sparc_pt_idx_int
+                \@@_mathmlarg_point:nnn
+                  { pt \int_use:N \l_@@_sparc_pt_idx_int }
+                  { sp #1 }
+                  { ##1 }
               }
           }
       }
@@ -12668,36 +12704,57 @@ end
 -- asignado. Si el nucleus es un sub_mlist con más de 1 item, recursa
 -- buscando adentro (caso: varios puntos dentro de un mismo \overleftrightarrow/\overline).
 -- Si tiene 1 solo item o no es sub_mlist, es el objetivo final.
+-- Recursa SIEMPRE dentro de cualquier sub_mlist, sin importar
+-- cuántos items tenga ni si ya está anotado -- porque un grupo de
+-- 1 solo item (como el nucleus de un accent envolviendo OTRO
+-- \MathMLintent) puede tener, más adentro, nuestros propios
+-- objetivos sin reclamar todavía. Solo se decide "reclamar o
+-- saltar" en las hojas (lo que NO es un sub_mlist).
+
+
+-- local spintent_sub_mlist_t = node.id("sub_mlist")
+
 local function spintent_try_annotate(n, properties)
     if #spintent_pending_mrow_intent_queue == 0 then return end
     if not n.nucleus then return end
 
-    local nucleus  = n.nucleus
-    local existing = properties[nucleus]
+    local nucleus = n.nucleus
 
     if nucleus.id == spintent_sub_mlist_t and nucleus.head then
-        local count = spintent_count_items(nucleus.head)
-        if count > 1 then
-            for inner in node.traverse(nucleus.head) do
-                spintent_try_annotate(inner, properties)
-                if #spintent_pending_mrow_intent_queue == 0 then return end
-            end
-            return
+        for inner in node.traverse(nucleus.head) do
+            spintent_try_annotate(inner, properties)
+            if #spintent_pending_mrow_intent_queue == 0 then return end
         end
+        return
     end
 
+    -- Hoja (no es un grupo TeX): reclamar si nadie la anotó todavía.
+    local existing = properties[nucleus]
     if existing and existing.mathml_filter then
-        return  -- ya anotado por otra cosa (p.ej. \MathMLintent nativo)
+        return
     end
 
     local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
 
+    local concept_intent, arg_name, child_intent
+    if type(entry) == "table" then
+        concept_intent = entry.concept_intent
+        arg_name       = entry.arg_name
+        child_intent   = entry.child_intent
+    else
+        concept_intent = entry
+    end
+
     local p = properties[nucleus] or {}
     p.mathml_filter = function(result, core)
-        if entry.arg_name then result.arg = entry.arg_name end
-        if entry.child_intent then result.intent = entry.child_intent end
-        if entry.concept_intent then
-            return { [0] = "mrow", intent = entry.concept_intent, result }, nil
+        if arg_name then result.arg = arg_name end
+        if child_intent then result.intent = child_intent end
+        if result[0] == "mrow" then
+            if concept_intent then result.intent = concept_intent end
+            return result, core
+        end
+        if concept_intent then
+            return { [0] = "mrow", intent = concept_intent, result }, nil
         end
         return result, core
     end

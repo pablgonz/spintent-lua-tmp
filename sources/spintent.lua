@@ -142,36 +142,56 @@ end
 -- asignado. Si el nucleus es un sub_mlist con más de 1 item, recursa
 -- buscando adentro (caso: varios puntos dentro de un mismo \overleftrightarrow/\overline).
 -- Si tiene 1 solo item o no es sub_mlist, es el objetivo final.
+-- Recursa SIEMPRE dentro de cualquier sub_mlist, sin importar
+-- cuántos items tenga ni si ya está anotado -- porque un grupo de
+-- 1 solo item (como el nucleus de un accent envolviendo OTRO
+-- \MathMLintent) puede tener, más adentro, nuestros propios
+-- objetivos sin reclamar todavía. Solo se decide "reclamar o
+-- saltar" en las hojas (lo que NO es un sub_mlist).
+
+-- local spintent_sub_mlist_t = node.id("sub_mlist")
+
 local function spintent_try_annotate(n, properties)
     if #spintent_pending_mrow_intent_queue == 0 then return end
     if not n.nucleus then return end
 
-    local nucleus  = n.nucleus
-    local existing = properties[nucleus]
+    local nucleus = n.nucleus
 
     if nucleus.id == spintent_sub_mlist_t and nucleus.head then
-        local count = spintent_count_items(nucleus.head)
-        if count > 1 then
-            for inner in node.traverse(nucleus.head) do
-                spintent_try_annotate(inner, properties)
-                if #spintent_pending_mrow_intent_queue == 0 then return end
-            end
-            return
+        for inner in node.traverse(nucleus.head) do
+            spintent_try_annotate(inner, properties)
+            if #spintent_pending_mrow_intent_queue == 0 then return end
         end
+        return
     end
 
+    -- Hoja (no es un grupo TeX): reclamar si nadie la anotó todavía.
+    local existing = properties[nucleus]
     if existing and existing.mathml_filter then
-        return  -- ya anotado por otra cosa (p.ej. \MathMLintent nativo)
+        return
     end
 
     local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
 
+    local concept_intent, arg_name, child_intent
+    if type(entry) == "table" then
+        concept_intent = entry.concept_intent
+        arg_name       = entry.arg_name
+        child_intent   = entry.child_intent
+    else
+        concept_intent = entry
+    end
+
     local p = properties[nucleus] or {}
     p.mathml_filter = function(result, core)
-        if entry.arg_name then result.arg = entry.arg_name end
-        if entry.child_intent then result.intent = entry.child_intent end
-        if entry.concept_intent then
-            return { [0] = "mrow", intent = entry.concept_intent, result }, nil
+        if arg_name then result.arg = arg_name end
+        if child_intent then result.intent = child_intent end
+        if result[0] == "mrow" then
+            if concept_intent then result.intent = concept_intent end
+            return result, core
+        end
+        if concept_intent then
+            return { [0] = "mrow", intent = concept_intent, result }, nil
         end
         return result, core
     end
