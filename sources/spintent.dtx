@@ -10353,35 +10353,24 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spangle_mathml:n}
-%   For |tres-puntos|/|un-punto|, the concept word and the position
-%   fixity cannot share one node: MathCAT stops after the first
-%   |arg| child's own |intent|, never reaching the parent's
-%   |:prefix(...)|. Split into two sibling \cs{MathMLintent} calls:
-%   concept word alone (same silencing as |nombre|), and a separate
-%   |mrow| with only |_($pt1,$pt2,$pt3)|, never silenced.
+%   For |tres-puntos|/|un-punto|, a single native \cs{MathMLintent}
+%   wraps the symbol and the points together, with
+%   \myhlc|\l_@@_spangle_intent_tl|\myhlc|:prefix(refs)| — the same
+%   shape as \myhlc|\@@_spside_mathml:n|. The earlier split into two
+%   sibling \cs{MathMLintent} calls worked around a |MathCAT| bug
+%   with several explicit |$|-references in |:prefix(...)| that only
+%   affects the demo build; the stable |NVDA|/updated Acrobat Reader
+%   combination reads this shape correctly, so the split is no longer
+%   needed and both commands now share the same structure.
 %
-%   The symbol's own claim (|kv|, no wrapping |mrow|) must sit
-%   \emph{immediately} before \myhlc|\@@_spangle_sym:n|: the pending
-%   queue matches claims to nuclei in typeset order, not call order,
-%   so anything emitted earlier without its own claim (e.g.\
-%   |print-m|'s |m|) would steal it.
+%   For |\spmangle| with \mykey{print-m} |true|, a silent
+%   |\operatorname{m}| precedes \myhlc|\@@_spangle_sym:n| inside the
+%   same |\MathMLintent|, exactly as \myhlc|\@@_spside_mathml:n| does
+%   for its own |m|.
 %
-%   For |\spmangle| with \mykey{print-m} |true|, |m| and the symbol
-%   share one native \cs{MathMLintent} instead of two adjacent
-%   |:silent| siblings — the latter made MathCAT read \enquote{punto y
-%   coma}. Since a native \cs{MathMLintent} does not claim its
-%   internal nuclei, |m| and the symbol are each given an empty queue
-%   claim inside it, so neither is left free for the points' own
-%   claims (via \myhlc|\@@_mathmlarg_point:nnn|) to land on by mistake.
-%
-%   |nombre| splits the same way: the symbol's claim always carries
-%   |:prefix|; the free-text/number claim is silenced (|_-|) under
-%   \mykey{silent-cmd}, gets a phonetic |intent| only when
-%   \myhlc|\l_@@_geo_luaset_nombre_es_num_str| is true (digits), and is
-%   left bare otherwise — letters (e.g.\ |\alpha|) never get a forced
-%   |intent|, since \myhlc|\@@_luafun_geo_angulo_parse_and_set:n| may
-%   return them already corrupted by \pkg{unicode-math} expansion, and
-%   embedding that in a |kv| string crashes Lua's |load|.
+%   |nombre| is unchanged (see below): it never references more than
+%   one thing, so it was never affected by the bug this simplifies
+%   away from.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangle_mathml:n
   {
@@ -10450,7 +10439,7 @@ end, "shekel_fallback_patch")
                   {
                     \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
                       { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-                    \l_@@_spangle_intent_tl :prefix
+                    \l_@@_spangle_intent_tl :prefix( \l_@@_spangle_refs_tl )
                   }
               }
               {
@@ -10463,27 +10452,18 @@ end, "shekel_fallback_patch")
             \bool_if:cT { l_@@_sp #1 _print_m_bool }
               { \bool_set_true:N \l_@@_spangle_print_m_now_bool }
           }
-        \bool_if:NTF \l_@@_spangle_print_m_now_bool
-          {
-            \MathMLintent { \l_@@_spangle_intent_arg_tl }
-              {
-                \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" }
-                \operatorname { m }
-                \@@_luafun_wrap_mrow_intent_arg:nn { } { }
-                \@@_spangle_sym:n {#1}
-              }
-          }
-          {
-            \tl_set:Ne \l_@@_spangle_kv_tl
-              { intent = "\l_@@_spangle_intent_arg_tl" }
-            \@@_luafun_wrap_mrow_intent_arg:nn
-              { } { \l_@@_spangle_kv_tl }
-            { \@@_spangle_sym:n {#1} }
-          }
-        \tl_set:Ne \l_@@_spangle_intent_arg_tl { _( \l_@@_spangle_refs_tl ) }
         \MathMLintent { \l_@@_spangle_intent_arg_tl }
           {
             \@@_luafun_inner_sep:
+            \bool_if:NT \l_@@_spangle_print_m_now_bool
+              {
+                \@@_luafun_wrap_mrow_intent_arg:nn
+                  { } { intent = ":silent" }
+                { \operatorname { m } }
+              }
+            \@@_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = ":silent" }
+            { \@@_spangle_sym:n {#1} }
             \int_zero:N \l_@@_spangle_pt_idx_int
             \seq_map_inline:Nn \l_@@_spangle_pt_seq
               {
@@ -10742,18 +10722,6 @@ end, "shekel_fallback_patch")
 %   \mykey{print-m} key here). The sequence is walked a second time,
 %   calling \myhlc|\@@_mathmlarg_point:nnn| once per point with its
 %   |pt|$n$ reference name, looked up under |sp#1|.
-%
-%   \begin{important}*
-%     With three or more points (e.g.\ |\sparc{A,B,C}|, used to
-%     distinguish major/minor arc), |MathCAT| only speaks the first
-%     point — a confirmed |MathCAT| bug in |:prefix(...)| with several
-%     explicit |$|-references (verified directly with David Carlisle),
-%     not something fixable from |spintent|. The |\@@_spangle_mathml:n|
-%     |tres-puntos| shape (concept and points as separate siblings)
-%     does not help here: with a |<mover>| involved, |MathCAT| still
-%     applies its own native accent reading regardless of the
-%     surrounding |intent|. Two points work correctly.
-%   \end{important}
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sparc_mathml:n
   {
@@ -10903,10 +10871,17 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spPoly}}
 %
-% \begin{macro}[int]{read-cmd, prefix, print-sym, concept, silent-cmd, unknown}
+% \begin{macro}[int]
+%   {
+%     read-cmd,
+%     prefix,
+%     print-sym,
+%     silent-cmd,
+%     concept,
+%     unknown,
+%   }
 %   We define the \mymeta{keys} \mykey[spPoly]{read-cmd}, \mykey[spPoly]{prefix},
-%  \mykey[spPoly]{print-sym}, \mykey[spPoly]{concept} and \mykey[spPoly]{silent-cmd}.
-%  The key \mykey[spPoly]{silent-cmd} is a \mymeta{key} alias for \mykey[spPoly]{print-sym}|=false|.
+%  \mykey[spPoly]{print-sym}, \mykey[spPoly]{silent-cmd} and \mykey[spPoly]{concept}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spPoly }
   {
@@ -10930,7 +10905,9 @@ end, "shekel_fallback_patch")
     print-sym           .bool_set:N = \l_@@_spPoly_print_sym_bool,
     print-sym           .initial:n  = true,
     print-sym           .value_required:n = true,
-    silent-cmd          .meta:n     = { print-sym = false },
+    silent-cmd          .bool_set:N = \l_@@_spPoly_silent_cmd_bool,
+    silent-cmd          .initial:n  = false,
+    silent-cmd          .value_required:n = true,
     concept             .bool_set:N = \l_@@_spPoly_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -10945,11 +10922,27 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Internal functions for \cs[no-index]{spPoly}}
 %
+% \begin{variable}[int]
+%   {
+%     \l_@@_spPoly_pt_seq,
+%     \l_@@_spPoly_refs_tl,
+%     \l_@@_spPoly_intent_arg_tl,
+%     \l_@@_spPoly_pt_idx_int,
+%   }
+%   Scratch variables to split \myhlc|\l_@@_geo_luaset_points_str| and
+%   build the |$pt1,$pt2,...| reference list, and to hold the final
+%   concept |intent| once built.
+%    \begin{macrocode}
+\seq_new:N \l_@@_spPoly_pt_seq
+\tl_new:N  \l_@@_spPoly_refs_tl
+\tl_new:N  \l_@@_spPoly_intent_arg_tl
+\int_new:N \l_@@_spPoly_pt_idx_int
+%    \end{macrocode}
+% \end{variable}
+%
 % \begin{macro}[int]{\@@_spPoly_sym:}
-%   The function \myhlc|\@@_spPoly_sym:| reads
-%   \myhlc|\l_@@_geo_luaset_poly_sym_str| and typesets the
-%   corresponding symbol: |\triangle| for the value |triangle|,
-%   |\mdlgwhtsquare| for the value |square|.
+%   Unchanged: reads \myhlc|\l_@@_geo_luaset_poly_sym_str| and
+%   typesets the corresponding symbol.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_sym:
   {
@@ -10962,13 +10955,91 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}[int]{\@@_spPoly_build_refs:}
+%   Splits \myhlc|\l_@@_geo_luaset_points_str| into
+%   \myhlc|\l_@@_spPoly_pt_seq| and walks it once to build
+%   \myhlc|\l_@@_spPoly_refs_tl|, the comma-separated |$pt1,$pt2,...|
+%   reference list, naming each vertex by position.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPoly_build_refs:
+  {
+    \seq_set_from_clist:NN \l_@@_spPoly_pt_seq \l_@@_geo_luaset_points_str
+    \tl_clear:N \l_@@_spPoly_refs_tl
+    \int_zero:N \l_@@_spPoly_pt_idx_int
+    \seq_map_inline:Nn \l_@@_spPoly_pt_seq
+      {
+        \int_incr:N \l_@@_spPoly_pt_idx_int
+        \tl_if_empty:NF \l_@@_spPoly_refs_tl
+          { \tl_put_right:Nn \l_@@_spPoly_refs_tl { , } }
+        \tl_put_right:Ne \l_@@_spPoly_refs_tl { $ pt \int_use:N \l_@@_spPoly_pt_idx_int }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spPoly_build_concept:}
+%   Builds \myhlc|\l_@@_spPoly_intent_arg_tl|, independently of
+%   \mykey{print-sym}: |_(refs)| when \mykey{silent-cmd} is |true| or
+%   \mykey{concept} is |false|; otherwise
+%   \myhlc|\l_@@_geo_luaset_concept_str|\myhlc|:prefix(refs)|,
+%   prefixed with \mykey{prefix} when given. Must be called after
+%   \myhlc|\@@_spPoly_build_refs:|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPoly_build_concept:
+  {
+    \bool_if:NTF \l_@@_spPoly_silent_cmd_bool
+      {
+        \tl_set:Ne \l_@@_spPoly_intent_arg_tl { _( \l_@@_spPoly_refs_tl ) }
+      }
+      {
+        \bool_if:NTF \l_@@_spPoly_concept_bool
+          {
+            \tl_set:Ne \l_@@_spPoly_intent_arg_tl
+              {
+                \tl_if_empty:NF \l_@@_spPoly_prefix_tl
+                  { \tl_use:N \l_@@_spPoly_prefix_tl - }
+                \l_@@_geo_luaset_concept_str :prefix( \l_@@_spPoly_refs_tl )
+              }
+          }
+          {
+            \tl_set:Ne \l_@@_spPoly_intent_arg_tl { _( \l_@@_spPoly_refs_tl ) }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spPoly_points_loop:}
+%   Walks \myhlc|\l_@@_spPoly_pt_seq| a second time, calling
+%   \myhlc|\@@_mathmlarg_point:nnn| once per vertex with its |pt|$n$
+%   reference name, looked up under |spPoly|: it alone decides
+%   |arg|/literal |intent| per vertex — replacing the single combined
+%   |\MathMLarg{pts}{...}| that lost |arg| on any vertex with a
+%   subscript or prime (the same |annotate_attribute|/sub-sup
+%   limitation already found and worked around for
+%   \cs[no-index]{spPoint}).
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPoly_points_loop:
+  {
+    \int_zero:N \l_@@_spPoly_pt_idx_int
+    \seq_map_inline:Nn \l_@@_spPoly_pt_seq
+      {
+        \int_incr:N \l_@@_spPoly_pt_idx_int
+        \@@_mathmlarg_point:nnn
+          { pt \int_use:N \l_@@_spPoly_pt_idx_int }
+          { spPoly }
+          { ##1 }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}[int]{\@@_spPoly_process:n}
-%   The function \myhlc|\@@_spPoly_process:n| calls
-%   \myhlc|\@@_luafun_geo_poly_parse_and_set:n|, reports
-%   |spPoly-invalid-points| on failure, adjusts
-%   \myhlc|\l_@@_geo_luaset_intent_str| for
-%   \mykey[spPoly]{read-cmd}|=mathcat|, and delegates the actual
-%   rendering to \myhlc|\@@_spPoly_mathml:|.
+%   Calls \myhlc|\@@_luafun_geo_poly_parse_and_set:n|, reports
+%   |spPoly-invalid-points| on failure, then delegates to
+%   \myhlc|\@@_spPoly_mathml:|. No |intent| is built here: it needs
+%   the reference list, which \myhlc|\@@_spPoly_mathml:| builds after
+%   splitting the vertices.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_process:n
   {
@@ -10978,101 +11049,47 @@ end, "shekel_fallback_patch")
         \msg_error:nne { spintent } { spPoly-invalid-points }
           { \exp_not:n {#1} }
       }
-    \str_if_eq:VnT \l_@@_spPoly_mode_str { mathcat }
-      {
-        \str_set:Ne \l_@@_geo_luaset_intent_str
-          {
-            _ \l_@@_geo_luaset_concept_str :prefix($pts)
-          }
-      }
     \@@_spPoly_mathml:
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spPoly_mathml:}
-%   The function \myhlc|\@@_spPoly_mathml:| reads the state already
-%   set by \myhlc|\@@_spPoly_process:n| and renders it: when
-%   \mykey[spPoly]{print-sym} is |true|, it uses
-%   \myhlc|\l_@@_geo_luaset_intent_str| and wraps
-%   \myhlc|\@@_spPoly_sym:| in |\MathMLintent|\marg{:silent} whenever
-%   a symbol is available; when |false|, it uses
-%   \myhlc|\l_@@_geo_luaset_intent_pts_str| and typesets no symbol at
-%   all.
+%   Builds the reference list and the concept |intent|
+%   (\myhlc|\@@_spPoly_build_refs:|,
+%   \myhlc|\@@_spPoly_build_concept:|), then wraps everything in a
+%   single native |\MathMLintent|, preceded by
+%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
+%   |<mrow>| does not collapse into |<math>|, |luamml| issue
+%   \href{https://github.com/latex3/luamml/issues/26}{\#26}).
+%
+%   \mykey{print-sym} and \mykey{concept}/\mykey{silent-cmd} are
+%   independent: the former only decides whether the glyph
+%   (\myhlc|\@@_spPoly_sym:|, silenced with
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|) is attempted — it is
+%   skipped anyway when \myhlc|\l_@@_geo_luaset_poly_sym_str| is empty
+%   (no symbol defined for that vertex count, e.g.\ pentagon and
+%   above) — and never affects whether the concept word itself is
+%   spoken.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_mathml:
   {
     \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
-    \bool_if:NTF \l_@@_spPoly_print_sym_bool
+    \@@_spPoly_build_refs:
+    \@@_spPoly_build_concept:
+    \MathMLintent { \l_@@_spPoly_intent_arg_tl }
       {
-        \str_if_eq:VnTF \l_@@_spPoly_mode_str { school }
+        \@@_luafun_inner_sep:
+        \bool_if:NT \l_@@_spPoly_print_sym_bool
           {
-            \MathMLintent
+            \str_if_empty:NF \l_@@_geo_luaset_poly_sym_str
               {
-                \tl_if_empty:NF \l_@@_spPoly_prefix_tl
-                  {
-                    \tl_use:N \l_@@_spPoly_prefix_tl -
-                  }
-                \l_@@_geo_luaset_intent_str
-              }
-              {
-                \c_@@_invisible_sep_tl
-                \str_if_empty:NF \l_@@_geo_luaset_poly_sym_str
-                  {
-                    \MathMLintent { :silent } { \@@_spPoly_sym: }
-                  }
-                \l_@@_geo_luaset_print_tl
+                \@@_luafun_wrap_mrow_intent_arg:nn
+                  { } { intent = ":silent" }
+                { \@@_spPoly_sym: }
               }
           }
-          {
-            \MathMLintent
-              {
-                \tl_if_empty:NF \l_@@_spPoly_prefix_tl
-                  {
-                    \tl_use:N \l_@@_spPoly_prefix_tl -
-                  }
-                \l_@@_geo_luaset_intent_str
-              }
-              {
-                \c_@@_invisible_sep_tl
-                \str_if_empty:NF \l_@@_geo_luaset_poly_sym_str
-                  {
-                    \MathMLintent { :silent } { \@@_spPoly_sym: }
-                  }
-                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
-              }
-          }
-      }
-      {
-        \str_if_eq:VnTF \l_@@_spPoly_mode_str { school }
-          {
-            \MathMLintent
-              {
-                \tl_if_empty:NF \l_@@_spPoly_prefix_tl
-                  {
-                    \tl_use:N \l_@@_spPoly_prefix_tl -
-                  }
-                \l_@@_geo_luaset_intent_pts_str
-              }
-              {
-                \c_@@_invisible_sep_tl
-                \l_@@_geo_luaset_print_tl
-              }
-          }
-          {
-            \MathMLintent
-              {
-                \tl_if_empty:NF \l_@@_spPoly_prefix_tl
-                  {
-                    \tl_use:N \l_@@_spPoly_prefix_tl -
-                  }
-                \l_@@_geo_luaset_intent_pts_str
-              }
-              {
-                \c_@@_invisible_sep_tl
-                \MathMLarg { pts } { \l_@@_geo_luaset_print_tl }
-              }
-          }
+        \@@_spPoly_points_loop:
       }
   }
 %    \end{macrocode}
@@ -14664,6 +14681,13 @@ local spintent_geo_poly_npts = {
     [8] = { cmd = "octágono",   sym = ""         },
 }
 
+-- Parsea el argumento de \spPoly: lista de vértices separados por
+-- coma, o concatenados sin separador (mínimo 3). Establece:
+--   l__spintent_geo_luaset_error_str    -- "true"/"false"
+--   l__spintent_geo_luaset_poly_sym_str -- "triangle"/"square"/"" (según cantidad de vértices)
+--   l__spintent_geo_luaset_concept_str  -- nombre del polígono ("triángulo", "cuadrado", ...)
+--   l__spintent_geo_luaset_print_tl     -- vértices concatenados, visual TeX ("ABC")
+--   l__spintent_geo_luaset_points_str   -- vértices sin combinar, separados por coma ("A,B,C")
 register_tex_cmd("luafun_geo_poly_parse_and_set",
     function(csv)
     csv = spintent_trim(csv)
@@ -14679,11 +14703,9 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
 
     if not puntos or #puntos < 3 then
         token_set_macro("l__spintent_geo_luaset_error_str",      "true")
-        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
-        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
         token_set_macro("l__spintent_geo_luaset_print_tl",       "")
         token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
-        token_set_macro("l__spintent_geo_luaset_points_str",     "") -- AGREGADO
+        token_set_macro("l__spintent_geo_luaset_points_str",     "")
         return
     end
 
@@ -14694,10 +14716,8 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_error_str",      "false")
     token_set_macro("l__spintent_geo_luaset_poly_sym_str",   sym)
     token_set_macro("l__spintent_geo_luaset_concept_str",    cmd_base)
-    token_set_macro("l__spintent_geo_luaset_intent_pts_str", spintent_geo_build_intent("", puntos))
-    token_set_macro("l__spintent_geo_luaset_intent_str", spintent_geo_build_intent(cmd_base, puntos))
     token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
-    spintent_geo_set_points_str(puntos) -- AGREGADO
+    spintent_geo_set_points_str(puntos)
 end, { "string" })
 
 -- Tabla de letras válidas para el argumento único de \spAfig/\spPfig

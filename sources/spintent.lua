@@ -2101,6 +2101,13 @@ local spintent_geo_poly_npts = {
     [8] = { cmd = "octágono",   sym = ""         },
 }
 
+-- Parsea el argumento de \spPoly: lista de vértices separados por
+-- coma, o concatenados sin separador (mínimo 3). Establece:
+--   l__spintent_geo_luaset_error_str    -- "true"/"false"
+--   l__spintent_geo_luaset_poly_sym_str -- "triangle"/"square"/"" (según cantidad de vértices)
+--   l__spintent_geo_luaset_concept_str  -- nombre del polígono ("triángulo", "cuadrado", ...)
+--   l__spintent_geo_luaset_print_tl     -- vértices concatenados, visual TeX ("ABC")
+--   l__spintent_geo_luaset_points_str   -- vértices sin combinar, separados por coma ("A,B,C")
 register_tex_cmd("luafun_geo_poly_parse_and_set",
     function(csv)
     csv = spintent_trim(csv)
@@ -2116,11 +2123,9 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
 
     if not puntos or #puntos < 3 then
         token_set_macro("l__spintent_geo_luaset_error_str",      "true")
-        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
-        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
         token_set_macro("l__spintent_geo_luaset_print_tl",       "")
         token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
-        token_set_macro("l__spintent_geo_luaset_points_str",     "") -- AGREGADO
+        token_set_macro("l__spintent_geo_luaset_points_str",     "")
         return
     end
 
@@ -2131,10 +2136,8 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_error_str",      "false")
     token_set_macro("l__spintent_geo_luaset_poly_sym_str",   sym)
     token_set_macro("l__spintent_geo_luaset_concept_str",    cmd_base)
-    token_set_macro("l__spintent_geo_luaset_intent_pts_str", spintent_geo_build_intent("", puntos))
-    token_set_macro("l__spintent_geo_luaset_intent_str", spintent_geo_build_intent(cmd_base, puntos))
     token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
-    spintent_geo_set_points_str(puntos) -- AGREGADO
+    spintent_geo_set_points_str(puntos)
 end, { "string" })
 
 -- Tabla de letras válidas para el argumento único de \spAfig/\spPfig

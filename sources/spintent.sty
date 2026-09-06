@@ -3372,7 +3372,7 @@
                   {
                     \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
                       { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-                    \l__spintent_spangle_intent_tl :prefix
+                    \l__spintent_spangle_intent_tl :prefix( \l__spintent_spangle_refs_tl )
                   }
               }
               {
@@ -3385,27 +3385,18 @@
             \bool_if:cT { l__spintent_sp #1 _print_m_bool }
               { \bool_set_true:N \l__spintent_spangle_print_m_now_bool }
           }
-        \bool_if:NTF \l__spintent_spangle_print_m_now_bool
-          {
-            \MathMLintent { \l__spintent_spangle_intent_arg_tl }
-              {
-                \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" }
-                \operatorname { m }
-                \__spintent_luafun_wrap_mrow_intent_arg:nn { } { }
-                \__spintent_spangle_sym:n {#1}
-              }
-          }
-          {
-            \tl_set:Ne \l__spintent_spangle_kv_tl
-              { intent = "\l__spintent_spangle_intent_arg_tl" }
-            \__spintent_luafun_wrap_mrow_intent_arg:nn
-              { } { \l__spintent_spangle_kv_tl }
-            { \__spintent_spangle_sym:n {#1} }
-          }
-        \tl_set:Ne \l__spintent_spangle_intent_arg_tl { _( \l__spintent_spangle_refs_tl ) }
         \MathMLintent { \l__spintent_spangle_intent_arg_tl }
           {
             \__spintent_luafun_inner_sep:
+            \bool_if:NT \l__spintent_spangle_print_m_now_bool
+              {
+                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                  { } { intent = ":silent" }
+                { \operatorname { m } }
+              }
+            \__spintent_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = ":silent" }
+            { \__spintent_spangle_sym:n {#1} }
             \int_zero:N \l__spintent_spangle_pt_idx_int
             \seq_map_inline:Nn \l__spintent_spangle_pt_seq
               {
@@ -3633,7 +3624,9 @@
     print-sym           .bool_set:N = \l__spintent_spPoly_print_sym_bool,
     print-sym           .initial:n  = true,
     print-sym           .value_required:n = true,
-    silent-cmd          .meta:n     = { print-sym = false },
+    silent-cmd          .bool_set:N = \l__spintent_spPoly_silent_cmd_bool,
+    silent-cmd          .initial:n  = false,
+    silent-cmd          .value_required:n = true,
     concept             .bool_set:N = \l__spintent_spPoly_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -3643,12 +3636,62 @@
         \__spintent_unknown_keys_cmd:n {#1}
       },
   }
+\seq_new:N \l__spintent_spPoly_pt_seq
+\tl_new:N  \l__spintent_spPoly_refs_tl
+\tl_new:N  \l__spintent_spPoly_intent_arg_tl
+\int_new:N \l__spintent_spPoly_pt_idx_int
 \cs_new_protected:Nn \__spintent_spPoly_sym:
   {
     \str_case:Vn \l__spintent_geo_luaset_poly_sym_str
       {
         { triangle } { \triangle      }
         { square   } { \mdlgwhtsquare }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spPoly_build_refs:
+  {
+    \seq_set_from_clist:NN \l__spintent_spPoly_pt_seq \l__spintent_geo_luaset_points_str
+    \tl_clear:N \l__spintent_spPoly_refs_tl
+    \int_zero:N \l__spintent_spPoly_pt_idx_int
+    \seq_map_inline:Nn \l__spintent_spPoly_pt_seq
+      {
+        \int_incr:N \l__spintent_spPoly_pt_idx_int
+        \tl_if_empty:NF \l__spintent_spPoly_refs_tl
+          { \tl_put_right:Nn \l__spintent_spPoly_refs_tl { , } }
+        \tl_put_right:Ne \l__spintent_spPoly_refs_tl { $ pt \int_use:N \l__spintent_spPoly_pt_idx_int }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spPoly_build_concept:
+  {
+    \bool_if:NTF \l__spintent_spPoly_silent_cmd_bool
+      {
+        \tl_set:Ne \l__spintent_spPoly_intent_arg_tl { _( \l__spintent_spPoly_refs_tl ) }
+      }
+      {
+        \bool_if:NTF \l__spintent_spPoly_concept_bool
+          {
+            \tl_set:Ne \l__spintent_spPoly_intent_arg_tl
+              {
+                \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
+                  { \tl_use:N \l__spintent_spPoly_prefix_tl - }
+                \l__spintent_geo_luaset_concept_str :prefix( \l__spintent_spPoly_refs_tl )
+              }
+          }
+          {
+            \tl_set:Ne \l__spintent_spPoly_intent_arg_tl { _( \l__spintent_spPoly_refs_tl ) }
+          }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spPoly_points_loop:
+  {
+    \int_zero:N \l__spintent_spPoly_pt_idx_int
+    \seq_map_inline:Nn \l__spintent_spPoly_pt_seq
+      {
+        \int_incr:N \l__spintent_spPoly_pt_idx_int
+        \__spintent_mathmlarg_point:nnn
+          { pt \int_use:N \l__spintent_spPoly_pt_idx_int }
+          { spPoly }
+          { ##1 }
       }
   }
 \cs_new_protected:Nn \__spintent_spPoly_process:n
@@ -3659,88 +3702,26 @@
         \msg_error:nne { spintent } { spPoly-invalid-points }
           { \exp_not:n {#1} }
       }
-    \str_if_eq:VnT \l__spintent_spPoly_mode_str { mathcat }
-      {
-        \str_set:Ne \l__spintent_geo_luaset_intent_str
-          {
-            _ \l__spintent_geo_luaset_concept_str :prefix($pts)
-          }
-      }
     \__spintent_spPoly_mathml:
   }
 \cs_new_protected:Nn \__spintent_spPoly_mathml:
   {
     \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
-    \bool_if:NTF \l__spintent_spPoly_print_sym_bool
+    \__spintent_spPoly_build_refs:
+    \__spintent_spPoly_build_concept:
+    \MathMLintent { \l__spintent_spPoly_intent_arg_tl }
       {
-        \str_if_eq:VnTF \l__spintent_spPoly_mode_str { school }
+        \__spintent_luafun_inner_sep:
+        \bool_if:NT \l__spintent_spPoly_print_sym_bool
           {
-            \MathMLintent
+            \str_if_empty:NF \l__spintent_geo_luaset_poly_sym_str
               {
-                \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
-                  {
-                    \tl_use:N \l__spintent_spPoly_prefix_tl -
-                  }
-                \l__spintent_geo_luaset_intent_str
-              }
-              {
-                \c__spintent_invisible_sep_tl
-                \str_if_empty:NF \l__spintent_geo_luaset_poly_sym_str
-                  {
-                    \MathMLintent { :silent } { \__spintent_spPoly_sym: }
-                  }
-                \l__spintent_geo_luaset_print_tl
+                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                  { } { intent = ":silent" }
+                { \__spintent_spPoly_sym: }
               }
           }
-          {
-            \MathMLintent
-              {
-                \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
-                  {
-                    \tl_use:N \l__spintent_spPoly_prefix_tl -
-                  }
-                \l__spintent_geo_luaset_intent_str
-              }
-              {
-                \c__spintent_invisible_sep_tl
-                \str_if_empty:NF \l__spintent_geo_luaset_poly_sym_str
-                  {
-                    \MathMLintent { :silent } { \__spintent_spPoly_sym: }
-                  }
-                \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
-              }
-          }
-      }
-      {
-        \str_if_eq:VnTF \l__spintent_spPoly_mode_str { school }
-          {
-            \MathMLintent
-              {
-                \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
-                  {
-                    \tl_use:N \l__spintent_spPoly_prefix_tl -
-                  }
-                \l__spintent_geo_luaset_intent_pts_str
-              }
-              {
-                \c__spintent_invisible_sep_tl
-                \l__spintent_geo_luaset_print_tl
-              }
-          }
-          {
-            \MathMLintent
-              {
-                \tl_if_empty:NF \l__spintent_spPoly_prefix_tl
-                  {
-                    \tl_use:N \l__spintent_spPoly_prefix_tl -
-                  }
-                \l__spintent_geo_luaset_intent_pts_str
-              }
-              {
-                \c__spintent_invisible_sep_tl
-                \MathMLarg { pts } { \l__spintent_geo_luaset_print_tl }
-              }
-          }
+        \__spintent_spPoly_points_loop:
       }
   }
 \cs_new_protected:Nn \__spintent_spPoly_exec:nn
