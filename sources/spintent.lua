@@ -2008,21 +2008,44 @@ local function spintent_geo_build_body_angulo(csv)
         end
         local cuerpo = spintent_geo_build_body(puntos)
         local visual = spintent_geo_build_visual(puntos)
+        spintent_geo_set_points_str(puntos)
         return cuerpo, visual, "tres-puntos"
-    else
-        local un_punto = spintent_geo_angulo_un_punto:match(csv)
-        if un_punto then
-            local base = spintent_geo_build_body_nombre(un_punto)
-            local cuerpo = "en-" .. base
-            local visual = spintent_geo_build_visual_nombre(un_punto)
-            return cuerpo, visual, "un-punto"
-        else
-            local nombre = spintent_trim(csv)
-            if nombre == "" then return nil, nil, nil end
-            local cuerpo = spintent_sanitize_for_screen_reader(nombre)
-            return cuerpo, nombre, "nombre"
-        end
     end
+
+    local un_punto = spintent_geo_angulo_un_punto:match(csv)
+    if un_punto then
+        local base = spintent_geo_build_body_nombre(un_punto)
+        local cuerpo = "en-" .. base
+        local visual = spintent_geo_build_visual_nombre(un_punto)
+        spintent_geo_set_points_str({ un_punto })
+        return cuerpo, visual, "un-punto"
+    end
+
+    -- NUEVO: concatenado sin coma ("AOB"), reutiliza la misma
+    -- gramática ya compartida con el resto de la familia geo.
+    local puntos_concat = spintent_geo_puntos_concat:match(csv)
+    if puntos_concat and #puntos_concat >= 2 then
+        local cuerpo = spintent_geo_build_body(puntos_concat)
+        local visual = spintent_geo_build_visual(puntos_concat)
+        spintent_geo_set_points_str(puntos_concat)
+        return cuerpo, visual, "tres-puntos"
+    end
+
+    -- Si llegó hasta aquí con un "_" en el texto, es un intento
+    -- fallido de notación de punto (p.ej. "A_1" sin llaves) — Lua no
+    -- sabe leer nada con "_" salvo el patrón letra+"_{...}" ya
+    -- descartado arriba. Se rechaza en vez de aceptarlo como nombre.
+    if s_match(csv, "_") then
+        return nil, nil, nil
+    end
+
+    local nombre = spintent_trim(csv)
+    if nombre == "" then return nil, nil, nil end
+    local es_numero = s_match(nombre, "^%d+$") ~= nil
+    local cuerpo = es_numero and nombre or spintent_sanitize_for_screen_reader(nombre)
+    token_set_macro("l__spintent_geo_luaset_points_str", "")
+    token_set_macro("l__spintent_geo_luaset_nombre_es_num_str", es_numero and "true" or "false")
+    return cuerpo, nombre, "nombre"
 end
 
 register_tex_cmd("luafun_geo_angulo_parse_and_set",
@@ -2036,6 +2059,7 @@ register_tex_cmd("luafun_geo_angulo_parse_and_set",
         token_set_macro("l__spintent_geo_luaset_intent_str",      "")
         token_set_macro("l__spintent_geo_luaset_print_tl",        "")
         token_set_macro("l__spintent_geo_luaset_angulo_case_str", "")
+        token_set_macro("l__spintent_geo_luaset_points_str",      "") -- AGREGADO
         return
     end
 
