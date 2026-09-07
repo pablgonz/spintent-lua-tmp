@@ -2372,12 +2372,14 @@ register_tex_cmd("luafun_geo_circ_parse_and_set",
         token_set_macro("l__spintent_geo_luaset_print_tl",       "")
         token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
         token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
+        token_set_macro("l__spintent_geo_luaset_points_clist",   "") -- AGREGADO
         return
     end
 
     token_set_macro("l__spintent_geo_luaset_error_str", "false")
     token_set_macro("l__spintent_geo_luaset_print_tl",
                     spintent_geo_build_visual_nombre(centro))
+    spintent_geo_set_points_str({ centro }) -- AGREGADO
 
     if radio_str == "" then
         token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")

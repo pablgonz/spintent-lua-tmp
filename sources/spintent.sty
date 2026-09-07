@@ -4224,6 +4224,9 @@
     silent-cmd   .bool_set:N = \l__spintent_spcirc_silent_cmd_bool,
     silent-cmd   .initial:n = false,
     silent-cmd   .value_required:n = true,
+    concept      .bool_set:N = \l__spintent_spcirc_concept_bool,
+    concept      .initial:n  = true,
+    concept      .value_required:n = true,
     spside       .meta:nn = { spintent / spside  } { #1 },
     spside       .value_required:n = true,
     spmside      .meta:nn = { spintent / spmside } { #1 },
@@ -4234,6 +4237,8 @@
         \__spintent_unknown_keys_cmd:n {#1}
       },
   }
+\tl_new:N \l__spintent_spcirc_intent_tl
+\tl_new:N \l__spintent_spcirc_intent_arg_tl
 \cs_new_protected:Nn \__spintent_spcirc_sym:
   {
     \str_if_eq:VnTF \l__spintent_spcirc_print_sym_str { odot }
@@ -4280,6 +4285,43 @@
           }
       }
   }
+\cs_new_protected:Nn \__spintent_spcirc_build_concept:
+  {
+    \__spintent_spcirc_word_and_article:
+    \tl_set:Ne \l__spintent_spcirc_intent_tl { \l__spintent_geo_circ_word_tl }
+    \str_if_empty:NF \l__spintent_spcirc_sub_index_str
+      {
+        \tl_put_right:Ne \l__spintent_spcirc_intent_tl
+          {
+            -
+            \bool_if:NT \l__spintent_spcirc_read_sub_bool { sub - }
+            \l__spintent_spcirc_sub_index_str
+          }
+      }
+    \tl_put_right:Nn \l__spintent_spcirc_intent_tl { -de-centro-en }
+    \str_if_empty:NF \l__spintent_geo_luaset_circ_radio_type_str
+      {
+        \tl_put_right:Nn \l__spintent_spcirc_intent_tl { -y-radio }
+      }
+    \bool_if:NTF \l__spintent_spcirc_silent_cmd_bool
+      {
+        \tl_set:Nn \l__spintent_spcirc_intent_arg_tl { _- }
+      }
+      {
+        \bool_if:NTF \l__spintent_spcirc_concept_bool
+          {
+            \tl_set:Ne \l__spintent_spcirc_intent_arg_tl
+              {
+                \tl_if_empty:NF \l__spintent_spcirc_prefix_tl
+                  { \tl_use:N \l__spintent_spcirc_prefix_tl - }
+                \l__spintent_spcirc_intent_tl :prefix( $ pt )
+              }
+          }
+          {
+            \tl_set:Nn \l__spintent_spcirc_intent_arg_tl { _( $pt ) }
+          }
+      }
+  }
 \cs_new_protected:Nn \__spintent_spcirc_process:n
   {
     \__spintent_luafun_geo_circ_parse_and_set:n { \exp_not:n {#1} }
@@ -4287,68 +4329,44 @@
       {
         \msg_error:nne { spintent } { spcirc-invalid-arg } { \exp_not:n {#1} }
       }
-    \__spintent_spcirc_word_and_article:
-    \str_set:Ne \l__spintent_geo_circ_intent_str { \l__spintent_geo_circ_word_tl }
-    \str_if_empty:NF \l__spintent_spcirc_sub_index_str
-      {
-        \str_put_right:Ne \l__spintent_geo_circ_intent_str
-          {
-            -
-            \bool_if:NT \l__spintent_spcirc_read_sub_bool { sub - }
-            \l__spintent_spcirc_sub_index_str
-          }
-      }
-    \str_put_right:Ne \l__spintent_geo_circ_intent_str
-      {
-        -de-centro-en-\l__spintent_geo_luaset_print_tl
-      }
-    \str_if_empty:NF \l__spintent_geo_luaset_circ_radio_type_str
-      {
-        \str_put_right:Nn \l__spintent_geo_circ_intent_str { -y-radio }
-      }
     \__spintent_spcirc_mathml:
   }
 \cs_new_protected:Nn \__spintent_spcirc_mathml:
   {
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \__spintent_spcirc_build_concept:
     \str_if_empty:NTF \l__spintent_geo_luaset_circ_radio_type_str
       {
-        \MathMLintent
+        \MathMLintent { \l__spintent_spcirc_intent_arg_tl }
           {
-            \tl_if_empty:NF \l__spintent_spcirc_prefix_tl
-              {
-                \tl_use:N \l__spintent_spcirc_prefix_tl -
-              }
-            \l__spintent_geo_circ_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \__spintent_spcirc_sym:
-            \str_if_empty:NF \l__spintent_spcirc_sub_index_str
-              {
-                \c_math_subscript_token { \l__spintent_spcirc_sub_index_str }
-              }
-            ( \l__spintent_geo_luaset_print_tl )
+            \__spintent_luafun_inner_sep:
+            \__spintent_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = ":silent" }
+            {
+              \__spintent_spcirc_sym:
+              \str_if_empty:NF \l__spintent_spcirc_sub_index_str
+                { \c_math_subscript_token { \l__spintent_spcirc_sub_index_str } }
+            }
+            \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } { ( }
+            \exp_args:Nnno \__spintent_mathmlarg_point:nnn { pt } { spcirc } \l__spintent_geo_luaset_points_clist
+            \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } { ) }
           }
       }
       {
-        \MathMLintent
+        \MathMLintent { \l__spintent_spcirc_intent_arg_tl }
           {
-            \tl_if_empty:NF \l__spintent_spcirc_prefix_tl
-              {
-                \tl_use:N \l__spintent_spcirc_prefix_tl -
-              }
-            \l__spintent_geo_circ_intent_str
+            \__spintent_luafun_inner_sep:
+            \__spintent_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = ":silent" }
+            {
+              \__spintent_spcirc_sym:
+              \str_if_empty:NF \l__spintent_spcirc_sub_index_str
+                { \c_math_subscript_token { \l__spintent_spcirc_sub_index_str } }
+            }
+            \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } { ( }
+            \exp_args:Nnno \__spintent_mathmlarg_point:nnn { pt } { spcirc } \l__spintent_geo_luaset_points_clist
+            \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } { , }
           }
-          {
-            \c__spintent_invisible_sep_tl
-            \__spintent_spcirc_sym:
-            \str_if_empty:NF \l__spintent_spcirc_sub_index_str
-              {
-                \c_math_subscript_token { \l__spintent_spcirc_sub_index_str }
-              }
-            ( \l__spintent_geo_luaset_print_tl ,
-           }
         \__spintent_invisible_sep:
         \__spintent_spcirc_radio_print:
         \MathMLintent { :silent } { ) }
