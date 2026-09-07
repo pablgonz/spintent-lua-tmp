@@ -3706,7 +3706,7 @@
   }
 \cs_new_protected:Nn \__spintent_spPoly_mathml:
   {
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \__spintent_invisible_sep: % (luamml issues #26)
     \__spintent_spPoly_build_refs:
     \__spintent_spPoly_build_concept:
     \MathMLintent { \l__spintent_spPoly_intent_arg_tl }
@@ -3827,6 +3827,9 @@
         silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
         silent-cmd          .initial:n  = false,
         silent-cmd          .value_required:n = true,
+        concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
+        concept             .initial:n  = true,
+        concept             .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l__spintent_command_name_str { sp #1 }
@@ -3842,6 +3845,14 @@
         { square   } { \mdlgwhtsquare }
       }
   }
+\tl_new:N  \l__spintent_spfig_op_tl
+\tl_new:N  \l__spintent_spfig_intent_tl
+\tl_new:N  \l__spintent_spfig_desc_tl
+\tl_new:N  \l__spintent_spfig_symbol_tl
+\seq_new:N \l__spintent_spfig_pt_seq
+\tl_new:N  \l__spintent_spfig_refs_tl
+\tl_new:N  \l__spintent_spfig_intent_arg_tl
+\int_new:N \l__spintent_spfig_pt_idx_int
 \cs_new_protected:Nn \__spintent_spfig_process:nn
   {
     \str_if_eq:eeTF {#1} { Afig }
@@ -3853,185 +3864,227 @@
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeTF {#1} { Afig }
-      { \tl_set:Nn \l__spintent_geo_fig_op_tl { área } }
-      { \tl_set:Nn \l__spintent_geo_fig_op_tl { perímetro } }
+      { \tl_set:Nn \l__spintent_spfig_op_tl { área } }
+      { \tl_set:Nn \l__spintent_spfig_op_tl { perímetro } }
     \str_set:Ne \l__spintent_geo_print_sym_str { \str_use:c { l__spintent_sp #1 _print_sym_str } }
-    \tl_if_empty:cF { l__spintent_sp #1 _read_arg_tl }
-      {
-        \str_if_empty:NF \l__spintent_geo_luaset_vertices_str
-          {
-            \str_set:Ne \l__spintent_geo_luaset_intent_str
-              {
-                \l__spintent_geo_fig_op_tl -del-
-                \tl_use:c { l__spintent_sp #1 _read_arg_tl } -
-                \l__spintent_geo_luaset_vertices_str
-              }
-          }
-      }
-    \str_if_eq:VnTF \l__spintent_geo_print_sym_str { triangle }
-      { \tl_set:Nn \l__spintent_geo_sym_word_tl { triángulo } }
-      {
-        \str_if_eq:VnTF \l__spintent_geo_print_sym_str { square }
-          { \tl_set:Nn \l__spintent_geo_sym_word_tl { cuadrado } }
-          { \tl_clear:N \l__spintent_geo_sym_word_tl }
-      }
-    \tl_if_empty:nTF {#2}
+    \__spintent_spfig_mathml:n {#1}
+  }
+\cs_new_protected:Nn \__spintent_spfig_build_simple:n
+  {
+    \tl_if_empty:nTF { \l__spintent_geo_luaset_print_tl }
       {
         \str_case:VnF \l__spintent_geo_print_sym_str
           {
             { auto }
               {
                 \tl_clear:N \l__spintent_geo_final_print_tl
-                \str_set:Ne \l__spintent_geo_final_intent_str { \l__spintent_geo_fig_op_tl }
-                \str_set:Ne \l__spintent_geo_mathcat_concept_str { \l__spintent_geo_fig_op_tl }
+                \tl_clear:N \l__spintent_spfig_desc_tl
               }
             { none }
               {
                 \tl_clear:N \l__spintent_geo_final_print_tl
-                \str_set:Ne \l__spintent_geo_final_intent_str { \l__spintent_geo_fig_op_tl }
-                \str_set:Ne \l__spintent_geo_mathcat_concept_str { \l__spintent_geo_fig_op_tl }
+                \tl_clear:N \l__spintent_spfig_desc_tl
               }
           }
           {
             \tl_set:Nn \l__spintent_geo_final_print_tl { \__spintent_spfig_sym: }
-            \str_set:Ne \l__spintent_geo_final_intent_str
+            \tl_set:Ne \l__spintent_spfig_desc_tl
               {
-                \l__spintent_geo_fig_op_tl - del - \l__spintent_geo_sym_word_tl
-              }
-            \str_set:Ne \l__spintent_geo_mathcat_concept_str
-              {
-                \l__spintent_geo_fig_op_tl - del - \l__spintent_geo_sym_word_tl
+                \str_if_eq:VnTF \l__spintent_geo_print_sym_str { triangle }
+                  { triángulo } { cuadrado }
               }
           }
       }
       {
-        \str_if_eq:VnTF \l__spintent_geo_luaset_intent_str { }
+        \str_if_empty:NTF \l__spintent_geo_luaset_letra_word_str
           {
-            \str_if_empty:NTF \l__spintent_geo_luaset_letra_word_str
+            \str_case:VnF \l__spintent_geo_print_sym_str
               {
-                \str_case:VnF \l__spintent_geo_print_sym_str
-                  {
-                    { auto }
-                      {
-                        \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl }
-                        \str_set:Ne \l__spintent_geo_final_intent_str
-                          {
-                            \l__spintent_geo_fig_op_tl -
-                            \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
-                            \l__spintent_geo_luaset_sub_spoken_str
-                          }
-                      }
-                    { none }
-                      {
-                        \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl }
-                        \str_set:Ne \l__spintent_geo_final_intent_str
-                          {
-                            \l__spintent_geo_fig_op_tl -
-                            \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
-                            \l__spintent_geo_luaset_sub_spoken_str
-                          }
-                      }
-                  }
-                  {
-                    \tl_set:Nn \l__spintent_geo_final_print_tl
-                      {
-                        \__spintent_spfig_sym:
-                        \c_math_subscript_token { \l__spintent_geo_luaset_print_tl }
-                      }
-                    \str_set:Ne \l__spintent_geo_final_intent_str
-                      {
-                        \l__spintent_geo_fig_op_tl - del - \l__spintent_geo_sym_word_tl -
-                        \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
-                        \l__spintent_geo_luaset_sub_spoken_str
-                      }
-                  }
+                { auto } { \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl } }
+                { none } { \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl } }
               }
               {
-                \str_case:VnF \l__spintent_geo_print_sym_str
+                \tl_set:Nn \l__spintent_geo_final_print_tl
                   {
-                    { auto } { }
-                    { none } { }
-                  }
-                  {
-                    \msg_error:nne { spintent } { sp #1 -sym-letra-conflict }
-                      { \c_backslash_str sp #1 }
-                  }
-                \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl }
-                \str_set:Ne \l__spintent_geo_final_intent_str
-                  {
-                    \l__spintent_geo_fig_op_tl -
-                    \str_if_empty:NF \l__spintent_geo_luaset_letra_conector_str
-                      { \l__spintent_geo_luaset_letra_conector_str - }
-                    \l__spintent_geo_luaset_letra_word_str
-                    \str_if_empty:NF \l__spintent_geo_luaset_sub_spoken_str
-                      {
-                        -
-                        \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
-                        \l__spintent_geo_luaset_sub_spoken_str
-                      }
+                    \__spintent_spfig_sym:
+                    \c_math_subscript_token { \l__spintent_geo_luaset_print_tl }
                   }
               }
-            \str_set:Ne \l__spintent_geo_mathcat_concept_str { \l__spintent_geo_fig_op_tl }
-          }
-          {
             \str_case:VnF \l__spintent_geo_print_sym_str
               {
                 { auto }
                   {
-                    \str_case:Vn \l__spintent_geo_luaset_poly_sym_str
+                    \tl_set:Ne \l__spintent_spfig_desc_tl
                       {
-                        { triangle } { \tl_set:Nn \l__spintent_geo_final_print_tl { \triangle      \l__spintent_geo_luaset_print_tl } }
-                        { square   } { \tl_set:Nn \l__spintent_geo_final_print_tl { \mdlgwhtsquare \l__spintent_geo_luaset_print_tl } }
+                        \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
+                        \l__spintent_geo_luaset_sub_spoken_str
                       }
-                    \str_if_empty:NT \l__spintent_geo_luaset_poly_sym_str
-                      { \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl } }
-                    \str_set:Ne \l__spintent_geo_final_intent_str { \l__spintent_geo_luaset_intent_str }
                   }
                 { none }
                   {
-                    \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl }
-                    \str_set:Ne \l__spintent_geo_final_intent_str { \l__spintent_geo_luaset_intent_pts_str }
+                    \tl_set:Ne \l__spintent_spfig_desc_tl
+                      {
+                        \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
+                        \l__spintent_geo_luaset_sub_spoken_str
+                      }
                   }
               }
               {
-                \str_if_eq:VVTF \l__spintent_geo_print_sym_str \l__spintent_geo_luaset_poly_sym_str
+                \tl_set:Ne \l__spintent_spfig_desc_tl
                   {
-                    \tl_set:Nn \l__spintent_geo_final_print_tl
-                      {
-                        \__spintent_spfig_sym:
-                        \l__spintent_geo_luaset_print_tl
-                      }
-                    \str_set:Ne \l__spintent_geo_final_intent_str { \l__spintent_geo_luaset_intent_str }
-                  }
-                  {
-                    \msg_error:nne { spintent } { sp #1 -sym-cardinality-conflict }
-                      { \c_backslash_str sp #1 }
+                    \str_if_eq:VnTF \l__spintent_geo_print_sym_str { triangle }
+                      { triángulo } { cuadrado }
+                    -
+                    \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
+                    \l__spintent_geo_luaset_sub_spoken_str
                   }
               }
-            \str_set:Ne \l__spintent_geo_mathcat_concept_str { \l__spintent_geo_luaset_concept_str }
+          }
+          {
+            \str_case:VnF \l__spintent_geo_print_sym_str
+              {
+                { auto } { }
+                { none } { }
+              }
+              {
+                \msg_error:nne { spintent } { sp #1 -sym-letra-conflict }
+                  { \c_backslash_str sp #1 }
+              }
+            \tl_set:Nn \l__spintent_geo_final_print_tl { \l__spintent_geo_luaset_print_tl }
+            \tl_set:Ne \l__spintent_spfig_desc_tl
+              {
+                \str_if_empty:NF \l__spintent_geo_luaset_letra_conector_str
+                  { \l__spintent_geo_luaset_letra_conector_str - }
+                \l__spintent_geo_luaset_letra_word_str
+                \str_if_empty:NF \l__spintent_geo_luaset_sub_spoken_str
+                  {
+                    -
+                    \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub - }
+                    \l__spintent_geo_luaset_sub_spoken_str
+                  }
+              }
           }
       }
-    \__spintent_spfig_mathml:n { #1 }
+    \tl_set:Ne \l__spintent_spfig_intent_tl
+      {
+        \tl_if_empty:NTF \l__spintent_spfig_desc_tl
+          { \l__spintent_spfig_op_tl }
+          { \l__spintent_spfig_op_tl - \l__spintent_spfig_desc_tl }
+      }
+    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+      { \tl_set:Nn \l__spintent_spfig_intent_arg_tl { _- } }
+      {
+        \bool_if:cTF { l__spintent_sp #1 _concept_bool }
+          { \tl_set:Ne \l__spintent_spfig_intent_arg_tl { \l__spintent_spfig_intent_tl } }
+          { \tl_set:Ne \l__spintent_spfig_intent_arg_tl { _ \l__spintent_spfig_desc_tl - } }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfig_build_refs:
+  {
+    \seq_set_from_clist:NN \l__spintent_spfig_pt_seq \l__spintent_geo_luaset_points_str
+    \tl_clear:N \l__spintent_spfig_refs_tl
+    \int_zero:N \l__spintent_spfig_pt_idx_int
+    \seq_map_inline:Nn \l__spintent_spfig_pt_seq
+      {
+        \int_incr:N \l__spintent_spfig_pt_idx_int
+        \tl_if_empty:NF \l__spintent_spfig_refs_tl
+          { \tl_put_right:Nn \l__spintent_spfig_refs_tl { , } }
+        \tl_put_right:Ne \l__spintent_spfig_refs_tl { $ pt \int_use:N \l__spintent_spfig_pt_idx_int }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfig_build_concept_vertices:n
+  {
+    \tl_if_empty:cTF { l__spintent_sp #1 _read_arg_tl }
+      { \tl_set:Ne \l__spintent_spfig_intent_tl { \l__spintent_geo_luaset_concept_str } }
+      {
+        \bool_if:cTF { l__spintent_sp #1 _concept_bool }
+          {
+            \tl_set:Ne \l__spintent_spfig_intent_tl
+              {
+                \l__spintent_spfig_op_tl -del-
+                \tl_use:c { l__spintent_sp #1 _read_arg_tl }
+              }
+          }
+          {
+            \tl_set:Ne \l__spintent_spfig_intent_tl { \tl_use:c { l__spintent_sp #1 _read_arg_tl } }
+          }
+      }
+
+    \str_case:VnF \l__spintent_geo_print_sym_str
+      {
+        { auto }
+          {
+            \str_case:Vn \l__spintent_geo_luaset_poly_sym_str
+              {
+                { triangle } { \tl_set:Nn \l__spintent_spfig_symbol_tl { \triangle      } }
+                { square   } { \tl_set:Nn \l__spintent_spfig_symbol_tl { \mdlgwhtsquare } }
+              }
+            \str_if_empty:NT \l__spintent_geo_luaset_poly_sym_str
+              { \tl_clear:N \l__spintent_spfig_symbol_tl }
+          }
+        { none }
+          { \tl_clear:N \l__spintent_spfig_symbol_tl }
+      }
+      {
+        \str_if_eq:VVTF \l__spintent_geo_print_sym_str \l__spintent_geo_luaset_poly_sym_str
+          { \tl_set:Nn \l__spintent_spfig_symbol_tl { \__spintent_spfig_sym: } }
+          {
+            \msg_error:nne { spintent } { sp #1 -sym-cardinality-conflict }
+              { \c_backslash_str sp #1 }
+          }
+      }
+
+    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+      {
+        \tl_set:Ne \l__spintent_spfig_intent_arg_tl { _( \l__spintent_spfig_refs_tl ) }
+      }
+      {
+        \tl_if_empty:cTF { l__spintent_sp #1 _read_arg_tl }
+          {
+            \bool_if:cTF { l__spintent_sp #1 _concept_bool }
+              {
+                \tl_set:Ne \l__spintent_spfig_intent_arg_tl
+                  {
+                    \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+                      { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
+                    \l__spintent_spfig_intent_tl :prefix( \l__spintent_spfig_refs_tl )
+                  }
+              }
+              {
+                \tl_set:Ne \l__spintent_spfig_intent_arg_tl { _( \l__spintent_spfig_refs_tl ) }
+              }
+          }
+          {
+            \tl_set:Ne \l__spintent_spfig_intent_arg_tl
+              {
+                \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+                  { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
+                \l__spintent_spfig_intent_tl :prefix( \l__spintent_spfig_refs_tl )
+              }
+          }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfig_points_loop:n
+  {
+    \int_zero:N \l__spintent_spfig_pt_idx_int
+    \seq_map_inline:Nn \l__spintent_spfig_pt_seq
+      {
+        \int_incr:N \l__spintent_spfig_pt_idx_int
+        \__spintent_mathmlarg_point:nnn
+          { pt \int_use:N \l__spintent_spfig_pt_idx_int }
+          { sp #1 }
+          { ##1 }
+      }
   }
 \cs_new_protected:Nn \__spintent_spfig_mathml:n
   {
-    \str_if_eq:eeT { \str_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \str_if_empty:NTF \l__spintent_geo_luaset_points_str
       {
-        \str_set:Ne \l__spintent_geo_luaset_intent_str { _ \l__spintent_geo_mathcat_concept_str :prefix($pts) }
-      }
-    \__spintent_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
-    \str_if_eq:eeTF { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
-      {
-        \MathMLintent
+        \__spintent_spfig_build_simple:n {#1}
+        \MathMLintent { \l__spintent_spfig_intent_arg_tl }
           {
-            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
-              {
-                \tl_use:c { l__spintent_sp #1 _prefix_tl } -
-              }
-            \l__spintent_geo_final_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
+            \__spintent_luafun_inner_sep:
             \str_if_eq:eeTF {#1} { Afig } { \__spintent_mathcal:n { A } } { \__spintent_mathcal:n { P } }
             \tl_if_empty:NF \l__spintent_geo_final_print_tl
               {
@@ -4040,20 +4093,25 @@
           }
       }
       {
-        \MathMLintent
+        \__spintent_spfig_build_refs:
+        \__spintent_spfig_build_concept_vertices:n {#1}
+        \MathMLintent { \l__spintent_spfig_intent_arg_tl }
           {
-            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+            \__spintent_luafun_inner_sep:
+            \__spintent_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = ":silent" }
+            {
+              \str_if_eq:eeTF {#1} { Afig } { \__spintent_mathcal:n { A } } { \__spintent_mathcal:n { P } }
+            }
+            \c_math_subscript_token
               {
-                \tl_use:c { l__spintent_sp #1 _prefix_tl } -
-              }
-            \l__spintent_geo_luaset_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { Afig } { \__spintent_mathcal:n { A } } { \__spintent_mathcal:n { P } }
-            \tl_if_empty:NF \l__spintent_geo_final_print_tl
-              {
-                \c_math_subscript_token { \l__spintent_geo_final_print_tl }
+                \tl_if_empty:NF \l__spintent_spfig_symbol_tl
+                  {
+                    \__spintent_luafun_wrap_mrow_intent_arg:nn
+                      { } { intent = ":silent" }
+                    { \tl_use:N \l__spintent_spfig_symbol_tl }
+                  }
+                \__spintent_spfig_points_loop:n {#1}
               }
           }
       }

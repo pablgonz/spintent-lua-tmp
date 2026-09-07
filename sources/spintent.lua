@@ -138,64 +138,94 @@ local function spintent_count_items(head)
     return n
 end
 
--- Busca el próximo nodo con 'nucleus' que aún no tenga mathml_filter
--- asignado. Si el nucleus es un sub_mlist con más de 1 item, recursa
--- buscando adentro (caso: varios puntos dentro de un mismo \overleftrightarrow/\overline).
--- Si tiene 1 solo item o no es sub_mlist, es el objetivo final.
--- Recursa SIEMPRE dentro de cualquier sub_mlist, sin importar
--- cuántos items tenga ni si ya está anotado -- porque un grupo de
--- 1 solo item (como el nucleus de un accent envolviendo OTRO
--- \MathMLintent) puede tener, más adentro, nuestros propios
--- objetivos sin reclamar todavía. Solo se decide "reclamar o
--- saltar" en las hojas (lo que NO es un sub_mlist).
+local spintent_sub_mlist_t = node.id("sub_mlist")
 
--- local spintent_sub_mlist_t = node.id("sub_mlist")
-
+-- Recursa dentro de cualquier sub_mlist encontrado en .nucleus O EN
+-- .sub (subíndice) -- \c_math_subscript_token pone el contenido ahí,
+-- no en .nucleus, así que sin esto la cola nunca alcanza nada
+-- dentro de un subíndice.
 local function spintent_try_annotate(n, properties)
     if #spintent_pending_mrow_intent_queue == 0 then return end
-    if not n.nucleus then return end
 
-    local nucleus = n.nucleus
+    if n.nucleus then
+        local nucleus = n.nucleus
+        if nucleus.id == spintent_sub_mlist_t and nucleus.head then
+            for inner in node.traverse(nucleus.head) do
+                spintent_try_annotate(inner, properties)
+                if #spintent_pending_mrow_intent_queue == 0 then return end
+            end
+        else
+            local existing = properties[nucleus]
+            if not (existing and existing.mathml_filter) then
+                local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
 
-    if nucleus.id == spintent_sub_mlist_t and nucleus.head then
-        for inner in node.traverse(nucleus.head) do
-            spintent_try_annotate(inner, properties)
-            if #spintent_pending_mrow_intent_queue == 0 then return end
+                local concept_intent, arg_name, child_intent
+                if type(entry) == "table" then
+                    concept_intent = entry.concept_intent
+                    arg_name       = entry.arg_name
+                    child_intent   = entry.child_intent
+                else
+                    concept_intent = entry
+                end
+
+                local p = properties[nucleus] or {}
+                p.mathml_filter = function(result, core)
+                    if arg_name then result.arg = arg_name end
+                    if child_intent then result.intent = child_intent end
+                    if result[0] == "mrow" then
+                        if concept_intent then result.intent = concept_intent end
+                        return result, core
+                    end
+                    if concept_intent then
+                        return { [0] = "mrow", intent = concept_intent, result }, nil
+                    end
+                    return result, core
+                end
+                properties[nucleus] = p
+            end
         end
-        return
     end
 
-    -- Hoja (no es un grupo TeX): reclamar si nadie la anotó todavía.
-    local existing = properties[nucleus]
-    if existing and existing.mathml_filter then
-        return
-    end
+    if #spintent_pending_mrow_intent_queue == 0 then return end
 
-    local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
+    if n.sub then
+        local sub = n.sub
+        if sub.id == spintent_sub_mlist_t and sub.head then
+            for inner in node.traverse(sub.head) do
+                spintent_try_annotate(inner, properties)
+                if #spintent_pending_mrow_intent_queue == 0 then return end
+            end
+        else
+            local existing = properties[sub]
+            if not (existing and existing.mathml_filter) then
+                local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
 
-    local concept_intent, arg_name, child_intent
-    if type(entry) == "table" then
-        concept_intent = entry.concept_intent
-        arg_name       = entry.arg_name
-        child_intent   = entry.child_intent
-    else
-        concept_intent = entry
-    end
+                local concept_intent, arg_name, child_intent
+                if type(entry) == "table" then
+                    concept_intent = entry.concept_intent
+                    arg_name       = entry.arg_name
+                    child_intent   = entry.child_intent
+                else
+                    concept_intent = entry
+                end
 
-    local p = properties[nucleus] or {}
-    p.mathml_filter = function(result, core)
-        if arg_name then result.arg = arg_name end
-        if child_intent then result.intent = child_intent end
-        if result[0] == "mrow" then
-            if concept_intent then result.intent = concept_intent end
-            return result, core
+                local p = properties[sub] or {}
+                p.mathml_filter = function(result, core)
+                    if arg_name then result.arg = arg_name end
+                    if child_intent then result.intent = child_intent end
+                    if result[0] == "mrow" then
+                        if concept_intent then result.intent = concept_intent end
+                        return result, core
+                    end
+                    if concept_intent then
+                        return { [0] = "mrow", intent = concept_intent, result }, nil
+                    end
+                    return result, core
+                end
+                properties[sub] = p
+            end
         end
-        if concept_intent then
-            return { [0] = "mrow", intent = concept_intent, result }, nil
-        end
-        return result, core
     end
-    properties[nucleus] = p
 end
 
 luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)

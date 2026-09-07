@@ -11074,7 +11074,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_mathml:
   {
-    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \@@_invisible_sep: % (luamml issues #26)
     \@@_spPoly_build_refs:
     \@@_spPoly_build_concept:
     \MathMLintent { \l_@@_spPoly_intent_arg_tl }
@@ -11232,8 +11232,17 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spAfig} and \cs[no-index]{spPfig}}
 %
-% \begin{macro}[int]{read-cmd, prefix, print-sym, read-arg, read-sub,
-%                    silent-cmd, unknown}
+% \begin{macro}[int]
+%   {
+%     read-cmd,
+%     prefix,
+%     print-sym,
+%     read-arg,
+%     read-sub,
+%     silent-cmd,
+%     concept,
+%     unknown,
+%   }
 %   The key \mykey[spAfig,spPfig]{print-sym} chooses the visual
 %   symbol: |auto| (default) infers it from the vertex count (three
 %   points give |\triangle|, four give |\mdlgwhtsquare|, five or more
@@ -11295,6 +11304,9 @@ end, "shekel_fallback_patch")
         silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
         silent-cmd          .initial:n  = false,
         silent-cmd          .value_required:n = true,
+        concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
+        concept             .initial:n  = true,
+        concept             .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l_@@_command_name_str { sp #1 }
@@ -11325,18 +11337,41 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{variable}[int]
+%   {
+%     \l_@@_spfig_op_tl,
+%     \l_@@_spfig_intent_tl,
+%     \l_@@_spfig_symbol_tl,
+%     \l_@@_spfig_pt_seq,
+%     \l_@@_spfig_refs_tl,
+%     \l_@@_spfig_intent_arg_tl,
+%     \l_@@_spfig_pt_idx_int,
+%   }
+%   \myhlc|\l_@@_spfig_op_tl| holds |área| or |perímetro|.
+%   \myhlc|\l_@@_spfig_intent_tl| holds the concept word for the
+%   vertices case (\mykey{read-arg} or the auto-detected figure name).
+%   The rest are scratch variables to split
+%   \myhlc|\l_@@_geo_luaset_points_str| and build the
+%   |$pt1,$pt2,...| reference list.
+%    \begin{macrocode}
+\tl_new:N  \l_@@_spfig_op_tl
+\tl_new:N  \l_@@_spfig_intent_tl
+\tl_new:N  \l_@@_spfig_desc_tl
+\tl_new:N  \l_@@_spfig_symbol_tl
+\seq_new:N \l_@@_spfig_pt_seq
+\tl_new:N  \l_@@_spfig_refs_tl
+\tl_new:N  \l_@@_spfig_intent_arg_tl
+\int_new:N \l_@@_spfig_pt_idx_int
+%    \end{macrocode}
+% \end{variable}
+%
 % \begin{macro}[int]{\@@_spfig_process:nn}
-%   The function \myhlc|\@@_spfig_process:nn| calls
+%   Receives the short command name (|Afig| or |Pfig|) in `|#1|' and
+%   the \mymarg{argument} in `|#2|'. Calls
 %   \myhlc|\@@_luafun_geo_afig_parse_and_set:n| or
 %   \myhlc|\@@_luafun_geo_pfig_parse_and_set:n|, reports
-%   |sp #1-invalid-arg| on failure, sets \myhlc|\l_@@_geo_fig_op_tl| to
-%   |área| or |perímetro|, and builds \myhlc|\l_@@_geo_sym_word_tl|
-%   from \mykey[spAfig,spPfig]{print-sym}. It then branches on |#2|
-%   and on \myhlc|\l_@@_geo_luaset_letra_word_str| to set
-%   \myhlc|\l_@@_geo_final_print_tl|,
-%   \myhlc|\l_@@_geo_final_intent_str| and
-%   \myhlc|\l_@@_geo_mathcat_concept_str|, delegating the rendering to
-%   \myhlc|\@@_spfig_mathml:n|.
+%   |sp#1-invalid-arg| on failure, sets \myhlc|\l_@@_spfig_op_tl| to
+%   |área|/|perímetro|, then delegates to \myhlc|\@@_spfig_mathml:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_process:nn
   {
@@ -11349,192 +11384,308 @@ end, "shekel_fallback_patch")
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
     \str_if_eq:eeTF {#1} { Afig }
-      { \tl_set:Nn \l_@@_geo_fig_op_tl { área } }
-      { \tl_set:Nn \l_@@_geo_fig_op_tl { perímetro } }
+      { \tl_set:Nn \l_@@_spfig_op_tl { área } }
+      { \tl_set:Nn \l_@@_spfig_op_tl { perímetro } }
     \str_set:Ne \l_@@_geo_print_sym_str { \str_use:c { l_@@_sp #1 _print_sym_str } }
-    \tl_if_empty:cF { l_@@_sp #1 _read_arg_tl }
-      {
-        \str_if_empty:NF \l_@@_geo_luaset_vertices_str
-          {
-            \str_set:Ne \l_@@_geo_luaset_intent_str
-              {
-                \l_@@_geo_fig_op_tl -del-
-                \tl_use:c { l_@@_sp #1 _read_arg_tl } -
-                \l_@@_geo_luaset_vertices_str
-              }
-          }
-      }
-    \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
-      { \tl_set:Nn \l_@@_geo_sym_word_tl { triángulo } }
-      {
-        \str_if_eq:VnTF \l_@@_geo_print_sym_str { square }
-          { \tl_set:Nn \l_@@_geo_sym_word_tl { cuadrado } }
-          { \tl_clear:N \l_@@_geo_sym_word_tl }
-      }
-    \tl_if_empty:nTF {#2}
+    \@@_spfig_mathml:n {#1}
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfig_build_simple:n}
+%   Handles the argument-less, table-letter and bare number/letter
+%   cases (no vertices). Builds \myhlc|\l_@@_geo_final_print_tl| and
+%   \myhlc|\l_@@_spfig_desc_tl| (the descriptive part, without
+%   |área|/|perímetro|). \myhlc|\l_@@_spfig_intent_tl| is
+%   \myhlc|\l_@@_spfig_op_tl|\myhlc|-|\myhlc|\l_@@_spfig_desc_tl|.
+%   \mykey{silent-cmd} overrides
+%   \myhlc|\l_@@_spfig_intent_arg_tl| with |_-|; with |silent-cmd=false|
+%   and \mykey{concept} |false|, it becomes |_|\myhlc|\l_@@_spfig_desc_tl|\myhlc|-|
+%   (the descriptive part alone, literally, without |área|/|perímetro|);
+%   with \mykey{concept} |true| it is \myhlc|\l_@@_spfig_intent_tl|.
+%   Preserves the |sym-letra-conflict| check (a table letter cannot
+%   combine with a forced \mykey{print-sym}). Receives the short
+%   command name in `|#1|'.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfig_build_simple:n
+  {
+    \tl_if_empty:nTF { \l_@@_geo_luaset_print_tl }
       {
         \str_case:VnF \l_@@_geo_print_sym_str
           {
             { auto }
               {
                 \tl_clear:N \l_@@_geo_final_print_tl
-                \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_fig_op_tl }
-                \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_fig_op_tl }
+                \tl_clear:N \l_@@_spfig_desc_tl
               }
             { none }
               {
                 \tl_clear:N \l_@@_geo_final_print_tl
-                \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_fig_op_tl }
-                \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_fig_op_tl }
+                \tl_clear:N \l_@@_spfig_desc_tl
               }
           }
           {
             \tl_set:Nn \l_@@_geo_final_print_tl { \@@_spfig_sym: }
-            \str_set:Ne \l_@@_geo_final_intent_str
+            \tl_set:Ne \l_@@_spfig_desc_tl
               {
-                \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl
-              }
-            \str_set:Ne \l_@@_geo_mathcat_concept_str
-              {
-                \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl
+                \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
+                  { triángulo } { cuadrado }
               }
           }
       }
       {
-        \str_if_eq:VnTF \l_@@_geo_luaset_intent_str { }
+        \str_if_empty:NTF \l_@@_geo_luaset_letra_word_str
           {
-            \str_if_empty:NTF \l_@@_geo_luaset_letra_word_str
+            \str_case:VnF \l_@@_geo_print_sym_str
               {
-                \str_case:VnF \l_@@_geo_print_sym_str
-                  {
-                    { auto }
-                      {
-                        \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
-                        \str_set:Ne \l_@@_geo_final_intent_str
-                          {
-                            \l_@@_geo_fig_op_tl -
-                            \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
-                            \l_@@_geo_luaset_sub_spoken_str
-                          }
-                      }
-                    { none }
-                      {
-                        \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
-                        \str_set:Ne \l_@@_geo_final_intent_str
-                          {
-                            \l_@@_geo_fig_op_tl -
-                            \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
-                            \l_@@_geo_luaset_sub_spoken_str
-                          }
-                      }
-                  }
-                  {
-                    \tl_set:Nn \l_@@_geo_final_print_tl
-                      {
-                        \@@_spfig_sym:
-                        \c_math_subscript_token { \l_@@_geo_luaset_print_tl }
-                      }
-                    \str_set:Ne \l_@@_geo_final_intent_str
-                      {
-                        \l_@@_geo_fig_op_tl - del - \l_@@_geo_sym_word_tl -
-                        \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
-                        \l_@@_geo_luaset_sub_spoken_str
-                      }
-                  }
+                { auto } { \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl } }
+                { none } { \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl } }
               }
               {
-                \str_case:VnF \l_@@_geo_print_sym_str
+                \tl_set:Nn \l_@@_geo_final_print_tl
                   {
-                    { auto } { }
-                    { none } { }
-                  }
-                  {
-                    \msg_error:nne { spintent } { sp #1 -sym-letra-conflict }
-                      { \c_backslash_str sp #1 }
-                  }
-                \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
-                \str_set:Ne \l_@@_geo_final_intent_str
-                  {
-                    \l_@@_geo_fig_op_tl -
-                    \str_if_empty:NF \l_@@_geo_luaset_letra_conector_str
-                      { \l_@@_geo_luaset_letra_conector_str - }
-                    \l_@@_geo_luaset_letra_word_str
-                    \str_if_empty:NF \l_@@_geo_luaset_sub_spoken_str
-                      {
-                        -
-                        \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
-                        \l_@@_geo_luaset_sub_spoken_str
-                      }
+                    \@@_spfig_sym:
+                    \c_math_subscript_token { \l_@@_geo_luaset_print_tl }
                   }
               }
-            \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_fig_op_tl }
-          }
-          {
             \str_case:VnF \l_@@_geo_print_sym_str
               {
                 { auto }
                   {
-                    \str_case:Vn \l_@@_geo_luaset_poly_sym_str
+                    \tl_set:Ne \l_@@_spfig_desc_tl
                       {
-                        { triangle } { \tl_set:Nn \l_@@_geo_final_print_tl { \triangle      \l_@@_geo_luaset_print_tl } }
-                        { square   } { \tl_set:Nn \l_@@_geo_final_print_tl { \mdlgwhtsquare \l_@@_geo_luaset_print_tl } }
+                        \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
+                        \l_@@_geo_luaset_sub_spoken_str
                       }
-                    \str_if_empty:NT \l_@@_geo_luaset_poly_sym_str
-                      { \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl } }
-                    \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_str }
                   }
                 { none }
                   {
-                    \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
-                    \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_pts_str }
+                    \tl_set:Ne \l_@@_spfig_desc_tl
+                      {
+                        \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
+                        \l_@@_geo_luaset_sub_spoken_str
+                      }
                   }
               }
               {
-                \str_if_eq:VVTF \l_@@_geo_print_sym_str \l_@@_geo_luaset_poly_sym_str
+                \tl_set:Ne \l_@@_spfig_desc_tl
                   {
-                    \tl_set:Nn \l_@@_geo_final_print_tl
-                      {
-                        \@@_spfig_sym:
-                        \l_@@_geo_luaset_print_tl
-                      }
-                    \str_set:Ne \l_@@_geo_final_intent_str { \l_@@_geo_luaset_intent_str }
-                  }
-                  {
-                    \msg_error:nne { spintent } { sp #1 -sym-cardinality-conflict }
-                      { \c_backslash_str sp #1 }
+                    \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
+                      { triángulo } { cuadrado }
+                    -
+                    \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
+                    \l_@@_geo_luaset_sub_spoken_str
                   }
               }
-            \str_set:Ne \l_@@_geo_mathcat_concept_str { \l_@@_geo_luaset_concept_str }
+          }
+          {
+            \str_case:VnF \l_@@_geo_print_sym_str
+              {
+                { auto } { }
+                { none } { }
+              }
+              {
+                \msg_error:nne { spintent } { sp #1 -sym-letra-conflict }
+                  { \c_backslash_str sp #1 }
+              }
+            \tl_set:Nn \l_@@_geo_final_print_tl { \l_@@_geo_luaset_print_tl }
+            \tl_set:Ne \l_@@_spfig_desc_tl
+              {
+                \str_if_empty:NF \l_@@_geo_luaset_letra_conector_str
+                  { \l_@@_geo_luaset_letra_conector_str - }
+                \l_@@_geo_luaset_letra_word_str
+                \str_if_empty:NF \l_@@_geo_luaset_sub_spoken_str
+                  {
+                    -
+                    \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub - }
+                    \l_@@_geo_luaset_sub_spoken_str
+                  }
+              }
           }
       }
-    \@@_spfig_mathml:n { #1 }
+    \tl_set:Ne \l_@@_spfig_intent_tl
+      {
+        \tl_if_empty:NTF \l_@@_spfig_desc_tl
+          { \l_@@_spfig_op_tl }
+          { \l_@@_spfig_op_tl - \l_@@_spfig_desc_tl }
+      }
+    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+      { \tl_set:Nn \l_@@_spfig_intent_arg_tl { _- } }
+      {
+        \bool_if:cTF { l_@@_sp #1 _concept_bool }
+          { \tl_set:Ne \l_@@_spfig_intent_arg_tl { \l_@@_spfig_intent_tl } }
+          { \tl_set:Ne \l_@@_spfig_intent_arg_tl { _ \l_@@_spfig_desc_tl - } }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}[int]{\@@_spfig_build_refs:}
+%   Splits \myhlc|\l_@@_geo_luaset_points_str| into
+%   \myhlc|\l_@@_spfig_pt_seq| and walks it once to build
+%   \myhlc|\l_@@_spfig_refs_tl|, the comma-separated |$pt1,$pt2,...|
+%   reference list, naming each vertex by position.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfig_build_refs:
+  {
+    \seq_set_from_clist:NN \l_@@_spfig_pt_seq \l_@@_geo_luaset_points_str
+    \tl_clear:N \l_@@_spfig_refs_tl
+    \int_zero:N \l_@@_spfig_pt_idx_int
+    \seq_map_inline:Nn \l_@@_spfig_pt_seq
+      {
+        \int_incr:N \l_@@_spfig_pt_idx_int
+        \tl_if_empty:NF \l_@@_spfig_refs_tl
+          { \tl_put_right:Nn \l_@@_spfig_refs_tl { , } }
+        \tl_put_right:Ne \l_@@_spfig_refs_tl { $ pt \int_use:N \l_@@_spfig_pt_idx_int }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfig_build_concept_vertices:n}
+%   Handles the vertices case. \mykey{read-arg}, when given, overrides
+%   the auto-detected figure name; with \mykey{concept} |true| it is
+%   still prefixed with |área-del-|/|perímetro-del-|, with |concept|
+%   |false| it is used verbatim, and never silenced (only
+%   \mykey{silent-cmd} silences when \mykey{read-arg} is given — same
+%   convention as \myhlc|\@@_spside_process:nn|). With \mykey{read-arg}
+%   empty, \mykey{concept} controls silencing as usual. Also determines
+%   \myhlc|\l_@@_spfig_symbol_tl| (empty when none applies), preserving
+%   the |sym-cardinality-conflict| check (a forced \mykey{print-sym}
+%   must match the actual vertex count). Receives the short command
+%   name in `|#1|'. Must be called after \myhlc|\@@_spfig_build_refs:|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfig_build_concept_vertices:n
+  {
+    \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
+      { \tl_set:Ne \l_@@_spfig_intent_tl { \l_@@_geo_luaset_concept_str } }
+      {
+        \bool_if:cTF { l_@@_sp #1 _concept_bool }
+          {
+            \tl_set:Ne \l_@@_spfig_intent_tl
+              {
+                \l_@@_spfig_op_tl -del-
+                \tl_use:c { l_@@_sp #1 _read_arg_tl }
+              }
+          }
+          {
+            \tl_set:Ne \l_@@_spfig_intent_tl { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
+          }
+      }
+
+    \str_case:VnF \l_@@_geo_print_sym_str
+      {
+        { auto }
+          {
+            \str_case:Vn \l_@@_geo_luaset_poly_sym_str
+              {
+                { triangle } { \tl_set:Nn \l_@@_spfig_symbol_tl { \triangle      } }
+                { square   } { \tl_set:Nn \l_@@_spfig_symbol_tl { \mdlgwhtsquare } }
+              }
+            \str_if_empty:NT \l_@@_geo_luaset_poly_sym_str
+              { \tl_clear:N \l_@@_spfig_symbol_tl }
+          }
+        { none }
+          { \tl_clear:N \l_@@_spfig_symbol_tl }
+      }
+      {
+        \str_if_eq:VVTF \l_@@_geo_print_sym_str \l_@@_geo_luaset_poly_sym_str
+          { \tl_set:Nn \l_@@_spfig_symbol_tl { \@@_spfig_sym: } }
+          {
+            \msg_error:nne { spintent } { sp #1 -sym-cardinality-conflict }
+              { \c_backslash_str sp #1 }
+          }
+      }
+
+    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+      {
+        \tl_set:Ne \l_@@_spfig_intent_arg_tl { _( \l_@@_spfig_refs_tl ) }
+      }
+      {
+        \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
+          {
+            \bool_if:cTF { l_@@_sp #1 _concept_bool }
+              {
+                \tl_set:Ne \l_@@_spfig_intent_arg_tl
+                  {
+                    \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                      { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                    \l_@@_spfig_intent_tl :prefix( \l_@@_spfig_refs_tl )
+                  }
+              }
+              {
+                \tl_set:Ne \l_@@_spfig_intent_arg_tl { _( \l_@@_spfig_refs_tl ) }
+              }
+          }
+          {
+            \tl_set:Ne \l_@@_spfig_intent_arg_tl
+              {
+                \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                  { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
+                \l_@@_spfig_intent_tl :prefix( \l_@@_spfig_refs_tl )
+              }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}[int]{\@@_spfig_points_loop:n}
+%   Walks \myhlc|\l_@@_spfig_pt_seq| a second time, calling
+%   \myhlc|\@@_mathmlarg_point:nnn| once per vertex with its |pt|$n$
+%   reference name, looked up under |sp#1|. Receives the short command
+%   name in `|#1|'.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfig_points_loop:n
+  {
+    \int_zero:N \l_@@_spfig_pt_idx_int
+    \seq_map_inline:Nn \l_@@_spfig_pt_seq
+      {
+        \int_incr:N \l_@@_spfig_pt_idx_int
+        \@@_mathmlarg_point:nnn
+          { pt \int_use:N \l_@@_spfig_pt_idx_int }
+          { sp #1 }
+          { ##1 }
+      }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spfig_mathml:n}
-%   The function \myhlc|\@@_spfig_mathml:n| reads the state already
-%   set by \myhlc|\@@_spfig_process:nn| and renders it.
+%   Receives the short command name in `|#1|'. Branches on whether
+%   \myhlc|\l_@@_geo_luaset_points_str| is empty.
+%
+%   Without vertices, \myhlc|\@@_spfig_build_simple:n| builds the
+%   content; a |\MathMLintent| wraps it only when \mykey{concept} is
+%   |true| — with |concept=false| the content is typeset directly,
+%   with no |intent| at all.
+%
+%   With vertices, \myhlc|\@@_spfig_build_refs:| then
+%   \myhlc|\@@_spfig_build_concept_vertices:n| build the reference list
+%   and the concept |intent|, applied with a single native
+%   |\MathMLintent|. Inside, \myhlc|\@@_mathcal:n|\marg{A|P} is
+%   silenced with \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| (it would
+%   otherwise be claimed by the queue meant for the symbol/vertices,
+%   the same ordering issue already found and fixed for
+%   \cs[no-index]{spangle}'s own symbol); \myhlc|\l_@@_spfig_symbol_tl|
+%   is silenced the same way when non-empty; the sequence is then
+%   walked by \myhlc|\@@_spfig_points_loop:n|. All of this sits nested
+%   inside a subscript (|\c_math_subscript_token|), reached by the
+%   shared |mathml_filter| callback's recursive lookup through a
+%   noad's |sub| field, not just its |nucleus|.
+%
+%   \myhlc|\@@_invisible_sep:| precedes both branches (a second
+%   sibling so the sole |<mrow>| does not collapse into |<math>|,
+%   |luamml| issue
+%   \href{https://github.com/latex3/luamml/issues/26}{\#26}).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_mathml:n
   {
-    \str_if_eq:eeT { \str_use:c { l_@@_sp #1 _mode_str } } { mathcat }
+    \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \str_if_empty:NTF \l_@@_geo_luaset_points_str
       {
-        \str_set:Ne \l_@@_geo_luaset_intent_str { _ \l_@@_geo_mathcat_concept_str :prefix($pts) }
-      }
-    \@@_invisible_sep: % need by MathCAT (bug in luamml https://github.com/latex3/luamml/issues/26)
-    \str_if_eq:eeTF { \str_use:c { l_@@_sp #1 _mode_str } } { school }
-      {
-        \MathMLintent
+        \@@_spfig_build_simple:n {#1}
+        \MathMLintent { \l_@@_spfig_intent_arg_tl }
           {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-              {
-                \tl_use:c { l_@@_sp #1 _prefix_tl } -
-              }
-            \l_@@_geo_final_intent_str
-          }
-          {
-            \c_@@_invisible_sep_tl
+            \@@_luafun_inner_sep:
             \str_if_eq:eeTF {#1} { Afig } { \@@_mathcal:n { A } } { \@@_mathcal:n { P } }
             \tl_if_empty:NF \l_@@_geo_final_print_tl
               {
@@ -11543,20 +11694,25 @@ end, "shekel_fallback_patch")
           }
       }
       {
-        \MathMLintent
+        \@@_spfig_build_refs:
+        \@@_spfig_build_concept_vertices:n {#1}
+        \MathMLintent { \l_@@_spfig_intent_arg_tl }
           {
-            \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+            \@@_luafun_inner_sep:
+            \@@_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = ":silent" }
+            {
+              \str_if_eq:eeTF {#1} { Afig } { \@@_mathcal:n { A } } { \@@_mathcal:n { P } }
+            }
+            \c_math_subscript_token
               {
-                \tl_use:c { l_@@_sp #1 _prefix_tl } -
-              }
-            \l_@@_geo_luaset_intent_str
-          }
-          {
-            \c_@@_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { Afig } { \@@_mathcal:n { A } } { \@@_mathcal:n { P } }
-            \tl_if_empty:NF \l_@@_geo_final_print_tl
-              {
-                \c_math_subscript_token { \l_@@_geo_final_print_tl }
+                \tl_if_empty:NF \l_@@_spfig_symbol_tl
+                  {
+                    \@@_luafun_wrap_mrow_intent_arg:nn
+                      { } { intent = ":silent" }
+                    { \tl_use:N \l_@@_spfig_symbol_tl }
+                  }
+                \@@_spfig_points_loop:n {#1}
               }
           }
       }
@@ -12717,65 +12873,94 @@ local function spintent_count_items(head)
     return n
 end
 
--- Busca el próximo nodo con 'nucleus' que aún no tenga mathml_filter
--- asignado. Si el nucleus es un sub_mlist con más de 1 item, recursa
--- buscando adentro (caso: varios puntos dentro de un mismo \overleftrightarrow/\overline).
--- Si tiene 1 solo item o no es sub_mlist, es el objetivo final.
--- Recursa SIEMPRE dentro de cualquier sub_mlist, sin importar
--- cuántos items tenga ni si ya está anotado -- porque un grupo de
--- 1 solo item (como el nucleus de un accent envolviendo OTRO
--- \MathMLintent) puede tener, más adentro, nuestros propios
--- objetivos sin reclamar todavía. Solo se decide "reclamar o
--- saltar" en las hojas (lo que NO es un sub_mlist).
+local spintent_sub_mlist_t = node.id("sub_mlist")
 
-
--- local spintent_sub_mlist_t = node.id("sub_mlist")
-
+-- Recursa dentro de cualquier sub_mlist encontrado en .nucleus O EN
+-- .sub (subíndice) -- \c_math_subscript_token pone el contenido ahí,
+-- no en .nucleus, así que sin esto la cola nunca alcanza nada
+-- dentro de un subíndice.
 local function spintent_try_annotate(n, properties)
     if #spintent_pending_mrow_intent_queue == 0 then return end
-    if not n.nucleus then return end
 
-    local nucleus = n.nucleus
+    if n.nucleus then
+        local nucleus = n.nucleus
+        if nucleus.id == spintent_sub_mlist_t and nucleus.head then
+            for inner in node.traverse(nucleus.head) do
+                spintent_try_annotate(inner, properties)
+                if #spintent_pending_mrow_intent_queue == 0 then return end
+            end
+        else
+            local existing = properties[nucleus]
+            if not (existing and existing.mathml_filter) then
+                local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
 
-    if nucleus.id == spintent_sub_mlist_t and nucleus.head then
-        for inner in node.traverse(nucleus.head) do
-            spintent_try_annotate(inner, properties)
-            if #spintent_pending_mrow_intent_queue == 0 then return end
+                local concept_intent, arg_name, child_intent
+                if type(entry) == "table" then
+                    concept_intent = entry.concept_intent
+                    arg_name       = entry.arg_name
+                    child_intent   = entry.child_intent
+                else
+                    concept_intent = entry
+                end
+
+                local p = properties[nucleus] or {}
+                p.mathml_filter = function(result, core)
+                    if arg_name then result.arg = arg_name end
+                    if child_intent then result.intent = child_intent end
+                    if result[0] == "mrow" then
+                        if concept_intent then result.intent = concept_intent end
+                        return result, core
+                    end
+                    if concept_intent then
+                        return { [0] = "mrow", intent = concept_intent, result }, nil
+                    end
+                    return result, core
+                end
+                properties[nucleus] = p
+            end
         end
-        return
     end
 
-    -- Hoja (no es un grupo TeX): reclamar si nadie la anotó todavía.
-    local existing = properties[nucleus]
-    if existing and existing.mathml_filter then
-        return
-    end
+    if #spintent_pending_mrow_intent_queue == 0 then return end
 
-    local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
+    if n.sub then
+        local sub = n.sub
+        if sub.id == spintent_sub_mlist_t and sub.head then
+            for inner in node.traverse(sub.head) do
+                spintent_try_annotate(inner, properties)
+                if #spintent_pending_mrow_intent_queue == 0 then return end
+            end
+        else
+            local existing = properties[sub]
+            if not (existing and existing.mathml_filter) then
+                local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
 
-    local concept_intent, arg_name, child_intent
-    if type(entry) == "table" then
-        concept_intent = entry.concept_intent
-        arg_name       = entry.arg_name
-        child_intent   = entry.child_intent
-    else
-        concept_intent = entry
-    end
+                local concept_intent, arg_name, child_intent
+                if type(entry) == "table" then
+                    concept_intent = entry.concept_intent
+                    arg_name       = entry.arg_name
+                    child_intent   = entry.child_intent
+                else
+                    concept_intent = entry
+                end
 
-    local p = properties[nucleus] or {}
-    p.mathml_filter = function(result, core)
-        if arg_name then result.arg = arg_name end
-        if child_intent then result.intent = child_intent end
-        if result[0] == "mrow" then
-            if concept_intent then result.intent = concept_intent end
-            return result, core
+                local p = properties[sub] or {}
+                p.mathml_filter = function(result, core)
+                    if arg_name then result.arg = arg_name end
+                    if child_intent then result.intent = child_intent end
+                    if result[0] == "mrow" then
+                        if concept_intent then result.intent = concept_intent end
+                        return result, core
+                    end
+                    if concept_intent then
+                        return { [0] = "mrow", intent = concept_intent, result }, nil
+                    end
+                    return result, core
+                end
+                properties[sub] = p
+            end
         end
-        if concept_intent then
-            return { [0] = "mrow", intent = concept_intent, result }, nil
-        end
-        return result, core
     end
-    properties[nucleus] = p
 end
 
 luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
