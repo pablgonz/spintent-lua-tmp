@@ -11661,14 +11661,14 @@ end, "shekel_fallback_patch")
 %   With vertices, \myhlc|\@@_spfig_build_refs:| then
 %   \myhlc|\@@_spfig_build_concept_vertices:n| build the reference list
 %   and the concept |intent|, applied with a single native
-%   |\MathMLintent|. Inside, \myhlc|\@@_mathcal:n|\marg{A|P} is
+%   |\MathMLintent|. Inside, \myhlc|\@@_mathcal:n|\mymarg{A \textnormal{\textcolor{lightgray}{\textbar}} P} is
 %   silenced with \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| (it would
 %   otherwise be claimed by the queue meant for the symbol/vertices,
 %   the same ordering issue already found and fixed for
 %   \cs[no-index]{spangle}'s own symbol); \myhlc|\l_@@_spfig_symbol_tl|
 %   is silenced the same way when non-empty; the sequence is then
 %   walked by \myhlc|\@@_spfig_points_loop:n|. All of this sits nested
-%   inside a subscript (|\c_math_subscript_token|), reached by the
+%   inside a subscript (\myhlc|\c_math_subscript_token|), reached by the
 %   shared |mathml_filter| callback's recursive lookup through a
 %   noad's |sub| field, not just its |nucleus|.
 %
