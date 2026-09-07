@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-05]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-07]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -1930,7 +1930,7 @@ local function spintent_geo_build_visual_nombre(nombre)
 end
 
 -- Reconstrucción del texto crudo de UN punto, y helper
--- que arma "l__spintent_geo_luaset_points_str" (la lista de puntos
+-- que arma "l__spintent_geo_luaset_points_clist" (la lista de puntos
 -- SIN combinar, separada por comas) a partir de una tabla 'puntos'.
 -- Reusa el mismo formato {letra, contenido, tipo} que ya usan
 -- spintent_geo_build_visual/build_intent -- ninguna gramática
@@ -1952,7 +1952,7 @@ local function spintent_geo_set_points_str(puntos)
     for i, punto in ipairs(puntos) do
         raw_parts[i] = spintent_geo_build_raw_nombre(punto)
     end
-    token_set_macro("l__spintent_geo_luaset_points_str", t_concat(raw_parts, ","))
+    token_set_macro("l__spintent_geo_luaset_points_clist", t_concat(raw_parts, ","))
 end
 
 -- ------------------------------------------------------------
@@ -1999,7 +1999,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
             token_set_macro("l__spintent_geo_luaset_intent_str",   "")
             token_set_macro("l__spintent_geo_luaset_print_tl",     "")
             token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
-            token_set_macro("l__spintent_geo_luaset_points_str",   "") -- AGREGADO
+            token_set_macro("l__spintent_geo_luaset_points_clist", "") -- AGREGADO
             return
         end
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
@@ -2020,7 +2020,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body_nombre(nombre))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
-        token_set_macro("l__spintent_geo_luaset_points_str", "") -- AGREGADO (nombre = 1 solo punto, no aplica)
+        token_set_macro("l__spintent_geo_luaset_points_clist", "") -- AGREGADO (nombre = 1 solo punto, no aplica)
         return
     end
 
@@ -2040,7 +2040,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
     token_set_macro("l__spintent_geo_luaset_intent_str",   "")
     token_set_macro("l__spintent_geo_luaset_print_tl",     "")
     token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
-    token_set_macro("l__spintent_geo_luaset_points_str",   "") -- AGREGADO
+    token_set_macro("l__spintent_geo_luaset_points_clist", "") -- AGREGADO
 end, { "string" })
 
 -- ------------------------------------------------------------
@@ -2093,7 +2093,7 @@ local function spintent_geo_build_body_angulo(csv)
     if nombre == "" then return nil, nil, nil end
     local es_numero = s_match(nombre, "^%d+$") ~= nil
     local cuerpo = es_numero and nombre or spintent_sanitize_for_screen_reader(nombre)
-    token_set_macro("l__spintent_geo_luaset_points_str", "")
+    token_set_macro("l__spintent_geo_luaset_points_clist", "")
     token_set_macro("l__spintent_geo_luaset_nombre_es_num_str", es_numero and "true" or "false")
     return cuerpo, nombre, "nombre"
 end
@@ -2109,7 +2109,7 @@ register_tex_cmd("luafun_geo_angulo_parse_and_set",
         token_set_macro("l__spintent_geo_luaset_intent_str",      "")
         token_set_macro("l__spintent_geo_luaset_print_tl",        "")
         token_set_macro("l__spintent_geo_luaset_angulo_case_str", "")
-        token_set_macro("l__spintent_geo_luaset_points_str",      "") -- AGREGADO
+        token_set_macro("l__spintent_geo_luaset_points_clist",    "") -- AGREGADO
         return
     end
 
@@ -2137,7 +2137,7 @@ local spintent_geo_poly_npts = {
 --   l__spintent_geo_luaset_poly_sym_str -- "triangle"/"square"/"" (según cantidad de vértices)
 --   l__spintent_geo_luaset_concept_str  -- nombre del polígono ("triángulo", "cuadrado", ...)
 --   l__spintent_geo_luaset_print_tl     -- vértices concatenados, visual TeX ("ABC")
---   l__spintent_geo_luaset_points_str   -- vértices sin combinar, separados por coma ("A,B,C")
+--   l__spintent_geo_luaset_points_clist   -- vértices sin combinar, separados por coma ("A,B,C")
 register_tex_cmd("luafun_geo_poly_parse_and_set",
     function(csv)
     csv = spintent_trim(csv)
@@ -2152,10 +2152,10 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     end
 
     if not puntos or #puntos < 3 then
-        token_set_macro("l__spintent_geo_luaset_error_str",      "true")
-        token_set_macro("l__spintent_geo_luaset_print_tl",       "")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",   "")
-        token_set_macro("l__spintent_geo_luaset_points_str",     "")
+        token_set_macro("l__spintent_geo_luaset_error_str", "true")
+        token_set_macro("l__spintent_geo_luaset_print_tl", "")
+        token_set_macro("l__spintent_geo_luaset_poly_sym_str", "")
+        token_set_macro("l__spintent_geo_luaset_points_clist","")
         return
     end
 
@@ -2260,7 +2260,7 @@ local function spintent_geo_fig_set_error()
     token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
     token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
     token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
-    token_set_macro("l__spintent_geo_luaset_points_str",        "") -- AGREGADO
+    token_set_macro("l__spintent_geo_luaset_points_clist",      "") -- AGREGADO
 end
 
 -- l__spintent_geo_luaset_concept_str lleva solo el nombre del
@@ -2286,7 +2286,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
         token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
         token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
         token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
-        token_set_macro("l__spintent_geo_luaset_points_str",        "") -- AGREGADO
+        token_set_macro("l__spintent_geo_luaset_points_clist",      "") -- AGREGADO
         return
     end
 
@@ -2314,7 +2314,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
         token_set_macro("l__spintent_geo_luaset_intent_str",     "")
         token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
         token_set_macro("l__spintent_geo_luaset_vertices_str",   "")
-        token_set_macro("l__spintent_geo_luaset_points_str",     "") -- AGREGADO (letra sola, no aplica)
+        token_set_macro("l__spintent_geo_luaset_points_clist",   "") -- AGREGADO (letra sola, no aplica)
         return
     end
 
