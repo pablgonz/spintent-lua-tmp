@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-07} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-08} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -2685,10 +2685,8 @@
 \bool_new:N \l__spintent_mathmlarg_point_silent_bool
 \cs_new_protected:Nn \__spintent_mathmlarg_point:nnn
   {
-    % referencia del intent ($ref)
     \tl_set:Nn \l__spintent_mathmlarg_point_ref_tl {#1}
     \__spintent_luafun_geo_point_parse_and_set:n { \exp_not:n {#3} }
-    % Ajustamos la lectura acorde al comando
     \bool_set_eq:Nc \l__spintent_mathmlarg_point_silent_bool { l__spintent_ #2 _silent_cmd_bool }
     \str_set_eq:Nc  \l__spintent_mathmlarg_point_mode_str  { l__spintent_ #2 _mode_str }
     \__spintent_invisible_sep:
@@ -2712,6 +2710,7 @@
       { \l__spintent_mathmlarg_point_kv_tl }
     { \l__spintent_geo_luaset_print_tl }
   }
+\cs_generate_variant:Nn \__spintent_mathmlarg_point:nnn { nnV }
 \str_new:N \l__spintent_sprecta_mode_str
 \tl_new:N  \l__spintent_sprecta_prefix_tl
 \seq_new:N \l__spintent_sprecta_pt_seq
@@ -4200,6 +4199,9 @@
       },
     read-sty     .initial:n = circun,
     read-sty     .value_required:n = true,
+    diameter     .bool_set:N = \l__spintent_spcirc_diameter_bool,
+    diameter     .initial:n  = false,
+    diameter     .value_required:n = true,
     radio-sty    .choices:nn = { side , mside }
       {
         \int_case:nn { \l_keys_choice_int }
@@ -4237,8 +4239,12 @@
         \__spintent_unknown_keys_cmd:n {#1}
       },
   }
+\bool_new:N \l__spintent_spcirc_has_arg_bool
 \tl_new:N \l__spintent_spcirc_intent_tl
 \tl_new:N \l__spintent_spcirc_intent_arg_tl
+\tl_new:N \l__spintent_spcirc_connector_tl
+\tl_new:N \l__spintent_spcirc_connector_arg_tl
+\tl_new:N \l__spintent_spcirc_radio_arg_tl
 \cs_new_protected:Nn \__spintent_spcirc_sym:
   {
     \str_if_eq:VnTF \l__spintent_spcirc_print_sym_str { odot }
@@ -4298,14 +4304,12 @@
             \l__spintent_spcirc_sub_index_str
           }
       }
-    \tl_put_right:Nn \l__spintent_spcirc_intent_tl { -de-centro-en }
-    \str_if_empty:NF \l__spintent_geo_luaset_circ_radio_type_str
-      {
-        \tl_put_right:Nn \l__spintent_spcirc_intent_tl { -y-radio }
-      }
+    \tl_set:Nn \l__spintent_spcirc_connector_tl { de-centro-en }
     \bool_if:NTF \l__spintent_spcirc_silent_cmd_bool
       {
-        \tl_set:Nn \l__spintent_spcirc_intent_arg_tl { _- }
+        \tl_set:Nn \l__spintent_spcirc_intent_arg_tl     { _- }
+        \tl_set:Ne \l__spintent_spcirc_connector_arg_tl  { _( $ pt ) }
+        \tl_set:Nn \l__spintent_spcirc_radio_arg_tl      { _- }
       }
       {
         \bool_if:NTF \l__spintent_spcirc_concept_bool
@@ -4314,20 +4318,45 @@
               {
                 \tl_if_empty:NF \l__spintent_spcirc_prefix_tl
                   { \tl_use:N \l__spintent_spcirc_prefix_tl - }
-                \l__spintent_spcirc_intent_tl :prefix( $ pt )
+                \l__spintent_spcirc_intent_tl :prefix
               }
+            \tl_set:Ne \l__spintent_spcirc_connector_arg_tl
+              { \l__spintent_spcirc_connector_tl :prefix( $ pt ) }
+            \bool_if:NTF \l__spintent_spcirc_diameter_bool
+              { \tl_set:Nn \l__spintent_spcirc_radio_arg_tl { _y-diámetro- } }
+              { \tl_set:Nn \l__spintent_spcirc_radio_arg_tl { _y-radio- } }
           }
           {
-            \tl_set:Nn \l__spintent_spcirc_intent_arg_tl { _( $pt ) }
+            \tl_if_empty:NTF \l__spintent_spcirc_read_arg_tl
+              {
+                \tl_set:Nn \l__spintent_spcirc_intent_arg_tl    { _- }
+                \tl_set:Ne \l__spintent_spcirc_connector_arg_tl { _( $ pt ) }
+                \tl_set:Nn \l__spintent_spcirc_radio_arg_tl     { _- }
+              }
+              {
+                \tl_set:Ne \l__spintent_spcirc_intent_arg_tl { \l__spintent_spcirc_intent_tl }
+                \tl_set:Ne \l__spintent_spcirc_connector_arg_tl
+                  { \l__spintent_spcirc_connector_tl :prefix( $ pt ) }
+                \bool_if:NTF \l__spintent_spcirc_diameter_bool
+                  { \tl_set:Nn \l__spintent_spcirc_radio_arg_tl { _y-diámetro- } }
+                  { \tl_set:Nn \l__spintent_spcirc_radio_arg_tl { _y-radio- } }
+              }
           }
       }
   }
 \cs_new_protected:Nn \__spintent_spcirc_process:n
   {
-    \__spintent_luafun_geo_circ_parse_and_set:n { \exp_not:n {#1} }
-    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
+    \tl_if_empty:nTF {#1}
       {
-        \msg_error:nne { spintent } { spcirc-invalid-arg } { \exp_not:n {#1} }
+        \bool_set_false:N \l__spintent_spcirc_has_arg_bool
+      }
+      {
+        \bool_set_true:N \l__spintent_spcirc_has_arg_bool
+        \__spintent_luafun_geo_circ_parse_and_set:n { \exp_not:n {#1} }
+        \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
+          {
+            \msg_error:nne { spintent } { spcirc-invalid-arg } { \exp_not:n {#1} }
+          }
       }
     \__spintent_spcirc_mathml:
   }
@@ -4335,41 +4364,45 @@
   {
     \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \__spintent_spcirc_build_concept:
-    \str_if_empty:NTF \l__spintent_geo_luaset_circ_radio_type_str
+    \MathMLintent { \l__spintent_spcirc_intent_arg_tl }
       {
-        \MathMLintent { \l__spintent_spcirc_intent_arg_tl }
+        \__spintent_luafun_inner_sep:
+        \__spintent_luafun_wrap_mrow_intent_arg:nn
+          { } { intent = ":silent" }
+        { \__spintent_spcirc_sym: }
+        \str_if_empty:NF \l__spintent_spcirc_sub_index_str
           {
-            \__spintent_luafun_inner_sep:
-            \__spintent_luafun_wrap_mrow_intent_arg:nn
-              { } { intent = ":silent" }
-            {
-              \__spintent_spcirc_sym:
-              \str_if_empty:NF \l__spintent_spcirc_sub_index_str
-                { \c_math_subscript_token { \l__spintent_spcirc_sub_index_str } }
-            }
-            \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } { ( }
-            \exp_args:Nnno \__spintent_mathmlarg_point:nnn { pt } { spcirc } \l__spintent_geo_luaset_points_clist
-            \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } { ) }
+            \c_math_subscript_token
+              {
+                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                  { } { intent = ":silent" }
+                { \l__spintent_spcirc_sub_index_str }
+              }
           }
       }
+    \bool_if:NT \l__spintent_spcirc_has_arg_bool
       {
-        \MathMLintent { \l__spintent_spcirc_intent_arg_tl }
+        \str_if_empty:NTF \l__spintent_geo_luaset_circ_radio_type_str
           {
-            \__spintent_luafun_inner_sep:
-            \__spintent_luafun_wrap_mrow_intent_arg:nn
-              { } { intent = ":silent" }
-            {
-              \__spintent_spcirc_sym:
-              \str_if_empty:NF \l__spintent_spcirc_sub_index_str
-                { \c_math_subscript_token { \l__spintent_spcirc_sub_index_str } }
-            }
-            \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } { ( }
-            \exp_args:Nnno \__spintent_mathmlarg_point:nnn { pt } { spcirc } \l__spintent_geo_luaset_points_clist
-            \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } { , }
+            \MathMLintent { \l__spintent_spcirc_connector_arg_tl }
+              {
+                \__spintent_luafun_inner_sep:
+                \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
+                \__spintent_mathmlarg_point:nnV { pt } { spcirc } \l__spintent_geo_luaset_points_clist
+                \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } )
+              }
           }
-        \__spintent_invisible_sep:
-        \__spintent_spcirc_radio_print:
-        \MathMLintent { :silent } { ) }
+          {
+            \MathMLintent { \l__spintent_spcirc_connector_arg_tl }
+              {
+                \__spintent_luafun_inner_sep:
+                \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
+                \__spintent_mathmlarg_point:nnV { pt } { spcirc } \l__spintent_geo_luaset_points_clist
+              }
+            \MathMLintent { \l__spintent_spcirc_radio_arg_tl } { , }
+            \__spintent_spcirc_radio_print:
+            \MathMLintent { :silent } { \rparen }
+          }
       }
   }
 \cs_new_protected:Nn \__spintent_spcirc_exec:nn
@@ -4451,6 +4484,12 @@
           },
         read-sty            .initial:n  = circun,
         read-sty            .value_required:n = true,
+        concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
+        concept             .initial:n  = true,
+        concept             .value_required:n = true,
+        diameter            .bool_set:c = { l__spintent_sp #1 _diameter_bool },
+        diameter            .initial:n  = false,
+        diameter            .value_required:n = true,
         radio-sty           .choices:nn = { side , mside }
           {
             \int_case:nn { \l_keys_choice_int }

@@ -203,7 +203,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-07}
+\def\filedate{2026-09-08}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4153,7 +4153,7 @@ end, "shekel_fallback_patch")
 % Now declare the \mypkg*[no-index]{spintent} package and we will add the
 % only key \mykey{mathcal} that can be passed as a package option.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-07} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-08} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -9191,10 +9191,8 @@ end, "shekel_fallback_patch")
 \bool_new:N \l_@@_mathmlarg_point_silent_bool
 \cs_new_protected:Nn \@@_mathmlarg_point:nnn
   {
-    % referencia del intent ($ref)
     \tl_set:Nn \l_@@_mathmlarg_point_ref_tl {#1}
     \@@_luafun_geo_point_parse_and_set:n { \exp_not:n {#3} }
-    % Ajustamos la lectura acorde al comando
     \bool_set_eq:Nc \l_@@_mathmlarg_point_silent_bool { l_@@_ #2 _silent_cmd_bool }
     \str_set_eq:Nc  \l_@@_mathmlarg_point_mode_str  { l_@@_ #2 _mode_str }
     \@@_invisible_sep:
@@ -9218,6 +9216,7 @@ end, "shekel_fallback_patch")
       { \l_@@_mathmlarg_point_kv_tl }
     { \l_@@_geo_luaset_print_tl }
   }
+\cs_generate_variant:Nn \@@_mathmlarg_point:nnn { nnV }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -11874,6 +11873,7 @@ end, "shekel_fallback_patch")
 %     prefix,
 %     print-sym,
 %     read-sty,
+%     diameter,
 %     radio-sty,
 %     sub-index,
 %     read-sub,
@@ -11933,6 +11933,9 @@ end, "shekel_fallback_patch")
       },
     read-sty     .initial:n = circun,
     read-sty     .value_required:n = true,
+    diameter     .bool_set:N = \l_@@_spcirc_diameter_bool,
+    diameter     .initial:n  = false,
+    diameter     .value_required:n = true,
     radio-sty    .choices:nn = { side , mside }
       {
         \int_case:nn { \l_keys_choice_int }
@@ -11975,23 +11978,29 @@ end, "shekel_fallback_patch")
 %
 % \begin{variable}[int]
 %   {
+%     \l_@@_spcirc_has_arg_bool,
 %     \l_@@_spcirc_intent_tl,
 %     \l_@@_spcirc_intent_arg_tl,
 %     \l_@@_spcirc_connector_tl,
 %     \l_@@_spcirc_connector_arg_tl,
 %     \l_@@_spcirc_radio_arg_tl,
 %   }
-%   \myhlc|\l_@@_spcirc_intent_tl| holds the word (|circunferencia| or
-%   |círculo|, with an optional \mykey{sub-index} suffix) paired with
-%   the symbol. \myhlc|\l_@@_spcirc_connector_tl| holds |de-centro-en|,
-%   paired with the |(|center|)| group; the center is read through
+%   \myhlc|\l_@@_spcirc_has_arg_bool| records whether the |d()|
+%   argument was given at all (|\spcirc| with no |(...)| at all has
+%   neither a center nor a radius). \myhlc|\l_@@_spcirc_intent_tl|
+%   holds the word (|circunferencia| or |círculo|, with an optional
+%   \mykey{sub-index} suffix) paired with the symbol.
+%   \myhlc|\l_@@_spcirc_connector_tl| holds |de-centro-en|, paired
+%   with the |(|center|)| group; the center is read through
 %   \myhlc|\@@_mathmlarg_point:nnn|, referenced as |$pt|, not
 %   concatenated into either word — it can be subscripted or primed
 %   (e.g.\ |O_{1}|, as in the Euler circle) without breaking anything.
 %   The |_arg_tl| variables hold each word's final wrapped form; a
-%   third, \myhlc|\l_@@_spcirc_radio_arg_tl|, pairs |y-radio| with
-%   whatever \myhlc|\@@_spcirc_radio_print:| typesets.
+%   third, \myhlc|\l_@@_spcirc_radio_arg_tl|, is spoken directly on the
+%   |,| delimiter after the center, replacing its own reading rather
+%   than pairing with a group.
 %    \begin{macrocode}
+\bool_new:N \l_@@_spcirc_has_arg_bool
 \tl_new:N \l_@@_spcirc_intent_tl
 \tl_new:N \l_@@_spcirc_intent_arg_tl
 \tl_new:N \l_@@_spcirc_connector_tl
@@ -12076,21 +12085,35 @@ end, "shekel_fallback_patch")
 %   \myhlc|\@@_spcirc_word_and_article:|, plus an optional
 %   \mykey{sub-index} suffix), paired with the symbol, and
 %   \myhlc|\l_@@_spcirc_connector_tl| (|de-centro-en|), paired with the
-%   |(|center|)| group. Neither carries the center's own text: it is
-%   read separately, by reference, through
-%   \myhlc|\@@_mathmlarg_point:nnn| — so a subscripted or primed center
-%   (e.g.\ |O_{1}|, as in the Euler circle) is never an issue.
+%   |(|center|)| group — built even when
+%   \myhlc|\l_@@_spcirc_has_arg_bool| is |false|, though
+%   \myhlc|\@@_spcirc_mathml:| never uses it in that case. Neither
+%   carries the center's own text: it is read separately, by
+%   reference, through \myhlc|\@@_mathmlarg_point:nnn| — so a
+%   subscripted or primed center (e.g.\ |O_{1}|, as in the Euler
+%   circle) is never an issue.
 %
-%   Each word gets its own |_arg_tl|: |_-| for
-%   \myhlc|\l_@@_spcirc_intent_arg_tl| and |y-radio| itself
-%   (\myhlc|\l_@@_spcirc_radio_arg_tl|, spoken before whatever
-%   \myhlc|\@@_spcirc_radio_print:| typesets, only when a radius is
-%   present) when \mykey{silent-cmd} is |true| or \mykey{concept} is
-%   |false|; \myhlc|\l_@@_spcirc_connector_arg_tl| is |_($pt)| in that
-%   case instead — the center is always read, only the words are
-%   silenced. Otherwise, |:prefix| for the symbol and |y-radio| words
-%   (prefixed with \mykey{prefix} when given), and
-%   |:prefix($pt)| for the connector word.
+%   \myhlc|\l_@@_spcirc_intent_arg_tl| (the symbol's word) is bare —
+%   the group it wraps has nothing to reference, only a silenced
+%   symbol — while \myhlc|\l_@@_spcirc_connector_arg_tl| (the
+%   connector word) is |:prefix($pt)|: both when \mykey{concept} is
+%   |true|, prefixed with \mykey{prefix} when given.
+%   \myhlc|\l_@@_spcirc_radio_arg_tl| — spoken directly on the |,|
+%   delimiter, replacing its own reading rather than pairing with any
+%   group — is the literal |_y-radio-|, or |_y-diámetro-| when
+%   \mykey{diameter} is |true|, read as its own phrase right before
+%   \myhlc|\@@_spcirc_radio_print:|'s independent reading follows as
+%   the next sibling.
+%
+%   \mykey{silent-cmd} |true| overrides all three with |_-| (the
+%   connector with |_($pt)| instead — the center is always read),
+%   regardless of \mykey{read-arg}. With \mykey{concept} |false| and
+%   \mykey{read-arg} empty, the same |_-|/|_($pt)| silencing applies;
+%   with \mykey{read-arg} given, none of the three is silenced instead
+%   — the connector and |y-radio|/|y-diámetro| words are fixed
+%   structural pieces, not customized by \mykey{read-arg}, but once a
+%   real word is being spoken there is nothing left to silence around
+%   it (same convention as \myhlc|\@@_spside_process:nn|).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcirc_build_concept:
   {
@@ -12119,16 +12142,29 @@ end, "shekel_fallback_patch")
               {
                 \tl_if_empty:NF \l_@@_spcirc_prefix_tl
                   { \tl_use:N \l_@@_spcirc_prefix_tl - }
-                \l_@@_spcirc_intent_tl %%%:prefix
+                \l_@@_spcirc_intent_tl :prefix
               }
             \tl_set:Ne \l_@@_spcirc_connector_arg_tl
               { \l_@@_spcirc_connector_tl :prefix( $ pt ) }
-            \tl_set:Nn \l_@@_spcirc_radio_arg_tl {_y-radio }
+            \bool_if:NTF \l_@@_spcirc_diameter_bool
+              { \tl_set:Nn \l_@@_spcirc_radio_arg_tl { _y-diámetro- } }
+              { \tl_set:Nn \l_@@_spcirc_radio_arg_tl { _y-radio- } }
           }
           {
-            \tl_set:Nn \l_@@_spcirc_intent_arg_tl    { _- }
-            \tl_set:Ne \l_@@_spcirc_connector_arg_tl { _( $ pt ) }
-            \tl_set:Nn \l_@@_spcirc_radio_arg_tl     { _- }
+            \tl_if_empty:NTF \l_@@_spcirc_read_arg_tl
+              {
+                \tl_set:Nn \l_@@_spcirc_intent_arg_tl    { _- }
+                \tl_set:Ne \l_@@_spcirc_connector_arg_tl { _( $ pt ) }
+                \tl_set:Nn \l_@@_spcirc_radio_arg_tl     { _- }
+              }
+              {
+                \tl_set:Ne \l_@@_spcirc_intent_arg_tl { \l_@@_spcirc_intent_tl }
+                \tl_set:Ne \l_@@_spcirc_connector_arg_tl
+                  { \l_@@_spcirc_connector_tl :prefix( $ pt ) }
+                \bool_if:NTF \l_@@_spcirc_diameter_bool
+                  { \tl_set:Nn \l_@@_spcirc_radio_arg_tl { _y-diámetro- } }
+                  { \tl_set:Nn \l_@@_spcirc_radio_arg_tl { _y-radio- } }
+              }
           }
       }
   }
@@ -12136,17 +12172,29 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spcirc_process:n}
-%   Calls \myhlc|\@@_luafun_geo_circ_parse_and_set:n|, reports
+%   Receives the |d()| argument in `|#1|', an explicit empty group
+%   when omitted (\myhlc|\spcirc| itself converts |-NoValue-| to |{ }|
+%   before calling \myhlc|\@@_spcirc_exec:nn|) —
+%   \myhlc|\l_@@_spcirc_has_arg_bool| set to |false| in that case, and
+%   \myhlc|\@@_luafun_geo_circ_parse_and_set:n| never called at all —
+%   there is nothing to parse. Otherwise calls it, reports
 %   |spcirc-invalid-arg| on failure, then delegates to
 %   \myhlc|\@@_spcirc_mathml:|, which calls
 %   \myhlc|\@@_spcirc_build_concept:| itself.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcirc_process:n
   {
-    \@@_luafun_geo_circ_parse_and_set:n { \exp_not:n {#1} }
-    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+    \tl_if_empty:nTF {#1}
       {
-        \msg_error:nne { spintent } { spcirc-invalid-arg } { \exp_not:n {#1} }
+        \bool_set_false:N \l_@@_spcirc_has_arg_bool
+      }
+      {
+        \bool_set_true:N \l_@@_spcirc_has_arg_bool
+        \@@_luafun_geo_circ_parse_and_set:n { \exp_not:n {#1} }
+        \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+          {
+            \msg_error:nne { spintent } { spcirc-invalid-arg } { \exp_not:n {#1} }
+          }
       }
     \@@_spcirc_mathml:
   }
@@ -12154,32 +12202,40 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spcirc_mathml:}
-%   Calls \myhlc|\@@_spcirc_build_concept:|, then wraps the result in
-%   two or three separate native |\MathMLintent| siblings, never one
-%   wrapping the others: the symbol
-%   (\myhlc|\l_@@_spcirc_intent_arg_tl|), the |(|center|)| group
-%   (\myhlc|\l_@@_spcirc_connector_arg_tl|), and, when a radius is
-%   present, |y-radio| (\myhlc|\l_@@_spcirc_radio_arg_tl|), with
-%   \myhlc|\@@_spcirc_radio_print:| as a following sibling, not
-%   nested inside it — wrapping it directly loses the reading of
-%   whatever \myhlc|\@@_spcirc_radio_print:| itself produces (a
-%   native |\MathMLintent|, from |\spnum|/|\spunit|, nested inside
-%   another one). Wrapping everything in one |intent| instead lets
-%   |MathCAT| fall back to its own structural reading of the
-%   underlying |<mover>|/|<msub>|, the same problem already found for
-%   \cs[no-index]{spangle}'s symbol and \cs[no-index]{sparc}'s accent.
+%   Calls \myhlc|\@@_spcirc_build_concept:|, then wraps the symbol
+%   (\myhlc|\l_@@_spcirc_intent_arg_tl|) in its own native
+%   |\MathMLintent| — this alone is the whole result when
+%   \myhlc|\l_@@_spcirc_has_arg_bool| is |false| (|\spcirc| with no
+%   |(...)| at all: no center, no radius).
 %
-%   The symbol (plus its optional \mykey{sub-index} subscript), the
-%   center, and the |y-radio| group's own placeholder content are each
-%   silenced with \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| — left
-%   unmarked, any of them could be claimed by the shared queue entry
-%   meant for something else, the same ordering issue already found
-%   for \cs[no-index]{spangle}'s own symbol. The |(| and |,|
-%   delimiters are silenced the same way, but \emph{without} the
-%   usual |{...}| around the character: |luamml| only keeps a
-%   delimiter's own math class (giving |<mo>| instead of |<mi>|,
-%   needed for |MathCAT| to read the group at all) when it is not
-%   itself sitting inside a brace group.
+%   Otherwise, the |(|center|)| group
+%   (\myhlc|\l_@@_spcirc_connector_arg_tl|) follows as a separate
+%   sibling, never nested inside the symbol's own |\MathMLintent| — or
+%   |MathCAT| falls back to its own structural reading of the
+%   underlying |<mover>|/|<msub>| instead, the same problem already
+%   found for \cs[no-index]{spangle}'s symbol and
+%   \cs[no-index]{sparc}'s accent. When a radius is present, the |,|
+%   delimiter after the center carries \myhlc|\l_@@_spcirc_radio_arg_tl|
+%   directly (replacing its own reading, not paired with any group),
+%   and \myhlc|\@@_spcirc_radio_print:| follows as an ordinary sibling
+%   right after — wrapping it in another |\MathMLintent| would lose
+%   the reading of whatever it produces (itself a native
+%   |\MathMLintent|, from |\spnum|/|\spunit|, nested inside another
+%   one does not compose).
+%
+%   The symbol and, when \mykey{sub-index} is given, its subscript
+%   number are each silenced with
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| \emph{separately} — one
+%   queue entry per leaf. The two are reached differently by the
+%   shared |mathml_filter| callback's recursive lookup (the symbol via
+%   |nucleus|, the subscript via |sub|), so a single entry covering
+%   both leaves nothing registered for the second one, which the
+%   recursion then assigns whatever comes next in the queue instead —
+%   shifting every claim after it by one. The |(| delimiter is
+%   silenced the same way, but \emph{without} the usual |{...}| around
+%   the character: |luamml| only keeps a delimiter's own math class
+%   (giving |<mo>| instead of |<mi>|, needed for |MathCAT| to read the
+%   group at all) when it is not itself sitting inside a brace group.
 %
 %   The final |)| — following \myhlc|\@@_spcirc_radio_print:|, whose
 %   own output the shared queue does not reliably skip over — is
@@ -12201,32 +12257,40 @@ end, "shekel_fallback_patch")
         \@@_luafun_inner_sep:
         \@@_luafun_wrap_mrow_intent_arg:nn
           { } { intent = ":silent" }
-        {
-          \@@_spcirc_sym:
-          \str_if_empty:NF \l_@@_spcirc_sub_index_str
-            { \c_math_subscript_token { \l_@@_spcirc_sub_index_str } }
-        }
-      }
-    \str_if_empty:NTF \l_@@_geo_luaset_circ_radio_type_str
-      {
-        \MathMLintent { \l_@@_spcirc_connector_arg_tl }
+        { \@@_spcirc_sym: }
+        \str_if_empty:NF \l_@@_spcirc_sub_index_str
           {
-            \@@_luafun_inner_sep:
-            \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
-            \exp_args:Nnno \@@_mathmlarg_point:nnn { pt } { spcirc } \l_@@_geo_luaset_points_clist
-            \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } )
+            \c_math_subscript_token
+              {
+                \@@_luafun_wrap_mrow_intent_arg:nn
+                  { } { intent = ":silent" }
+                { \l_@@_spcirc_sub_index_str }
+              }
           }
       }
+    \bool_if:NT \l_@@_spcirc_has_arg_bool
       {
-        \MathMLintent { \l_@@_spcirc_connector_arg_tl }
+        \str_if_empty:NTF \l_@@_geo_luaset_circ_radio_type_str
           {
-            \@@_luafun_inner_sep:
-            \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
-            \exp_args:Nnno \@@_mathmlarg_point:nnn { pt } { spcirc } \l_@@_geo_luaset_points_clist
+            \MathMLintent { \l_@@_spcirc_connector_arg_tl }
+              {
+                \@@_luafun_inner_sep:
+                \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
+                \@@_mathmlarg_point:nnV { pt } { spcirc } \l_@@_geo_luaset_points_clist
+                \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } )
+              }
           }
-        \MathMLintent{ \l_@@_spcirc_radio_arg_tl } { , }
-        \@@_spcirc_radio_print:
-        \MathMLintent { :silent } { \rparen }
+          {
+            \MathMLintent { \l_@@_spcirc_connector_arg_tl }
+              {
+                \@@_luafun_inner_sep:
+                \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
+                \@@_mathmlarg_point:nnV { pt } { spcirc } \l_@@_geo_luaset_points_clist
+              }
+            \MathMLintent { \l_@@_spcirc_radio_arg_tl } { , }
+            \@@_spcirc_radio_print:
+            \MathMLintent { :silent } { \rparen }
+          }
       }
   }
 %    \end{macrocode}
@@ -12346,6 +12410,8 @@ end, "shekel_fallback_patch")
 %     print-sym,
 %     read-sty,
 %     radio-sty,
+%     concept,
+%     diameter,
 %     sub-index,
 %     read-sub,
 %     read-arg,
@@ -12407,6 +12473,12 @@ end, "shekel_fallback_patch")
           },
         read-sty            .initial:n  = circun,
         read-sty            .value_required:n = true,
+        concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
+        concept             .initial:n  = true,
+        concept             .value_required:n = true,
+        diameter            .bool_set:c = { l_@@_sp #1 _diameter_bool },
+        diameter            .initial:n  = false,
+        diameter            .value_required:n = true,
         radio-sty           .choices:nn = { side , mside }
           {
             \int_case:nn { \l_keys_choice_int }
@@ -12444,6 +12516,8 @@ end, "shekel_fallback_patch")
   }
 %    \end{macrocode}
 % \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spAcirc} and \cs[no-index]{spPcirc}}
 %
 % \subsubsection{Internal functions for \cs[no-index]{spAcirc} and \cs[no-index]{spPcirc}}
 %
@@ -12769,6 +12843,7 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
+%
 % \begin{macro}[int]{\@@_spcircfig_exec:nnn}
 %   The function \myhlc|\@@_spcircfig_exec:nnn| receives the short
 %   name of the command in |#1|, the optional keys in |#2|, and the
@@ -12829,7 +12904,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-07]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-08]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -13097,39 +13172,6 @@ register_tex_cmd("luafun_inner_sep", function()
 
     node.write(noad)
 end, {})
-
--- Como luafun_inner_sep (autoinstala su propio filtro, sin pasar
--- por la cola compartida), pero para un carácter REAL en vez de un
--- fantasma invisible. Usar cuando un carácter puntual necesita
--- silenciarse de forma determinística, sin depender de qué otra
--- cosa pueda aparecer entre su registro y su turno en la cola
--- compartida (p. ej. tras \spnum/\spunit).
---
--- subtype=5 (Close) mantiene la clase matemática del carácter --
--- necesario para que MathCAT lo procese como delimitador (<mo>),
--- no como si fuera un fantasma (<mi>, donde la clase no importa
--- porque no hay nada real que estructurar alrededor).
-register_tex_cmd("luafun_silent_char", function(charcode)
-    local kernel = node.new("math_char")
-    kernel.char = tonumber(charcode)
-    kernel.fam  = 0
-    local noad  = node.new("noad")
-    noad.subtype = 5
-    noad.nucleus = kernel
-
-    local properties = node.get_properties_table()
-    local p = properties[kernel] or {}
-    p.mathml_filter = function(result, core)
-        result.intent   = ":silent"
-        result.lspace   = "0"
-        result.rspace   = "0"
-        result.stretchy = "false"
-        return result, core
-    end
-    properties[kernel] = p
-
-    node.write(noad)
-end, { "string" })
 
 -- \__spintent_invisible_sep: (fantasma exterior, <mo intent=":silent">).
 -- Necesario cuando el resultado anotado es el único elemento de
