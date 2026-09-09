@@ -4487,19 +4487,6 @@
         concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
-        diameter            .bool_set:c = { l__spintent_sp #1 _diameter_bool },
-        diameter            .initial:n  = false,
-        diameter            .value_required:n = true,
-        radio-sty           .choices:nn = { side , mside }
-          {
-            \int_case:nn { \l_keys_choice_int }
-              {
-                {1} { \str_set:cn { l__spintent_sp #1 _radio_sty_str } { side  } }
-                {2} { \str_set:cn { l__spintent_sp #1 _radio_sty_str } { mside } }
-              }
-          },
-        radio-sty           .initial:n  = mside,
-        radio-sty           .value_required:n = true,
         sub-index           .code:n =
           { \str_set:cn { l__spintent_sp #1 _sub_index_str } {##1} },
         sub-index           .initial:n  = ,
@@ -4514,10 +4501,6 @@
         silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
         silent-cmd          .initial:n  = false,
         silent-cmd          .value_required:n = true,
-        spside              .meta:nn = { spintent / spside  } { ##1 },
-        spside              .value_required:n = true,
-        spmside             .meta:nn = { spintent / spmside } { ##1 },
-        spmside             .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l__spintent_command_name_str { sp #1 }
@@ -4525,8 +4508,11 @@
           },
       }
   }
-\str_new:N \l__spintent_geo_circ_connector_intent_str
-\str_new:N \l__spintent_geo_circ_radio_intent_str
+\bool_new:N \l__spintent_spcircfig_short_bool
+\tl_new:N  \l__spintent_spcircfig_op_tl
+\tl_new:N  \l__spintent_spcircfig_del_word_tl
+\tl_new:N  \l__spintent_spcircfig_intent_tl
+\tl_new:N  \l__spintent_spcircfig_intent_arg_tl
 \cs_new_protected:Nn \__spintent_spcircfig_sym:n
   {
     \str_if_eq:vnTF { l__spintent_sp #1 _print_sym_str } { odot }
@@ -4535,52 +4521,117 @@
   }
 \cs_new_protected:Nn \__spintent_spcircfig_word_and_article:n
   {
+    \str_if_eq:vnTF { l__spintent_sp #1 _read_sty_str } { circun }
+      { \str_set:Nn \l__spintent_spcirc_articulo_str { la } }
+      { \str_set:Nn \l__spintent_spcirc_articulo_str { el } }
     \tl_if_empty:cTF { l__spintent_sp #1 _read_arg_tl }
       {
         \str_if_eq:vnTF { l__spintent_sp #1 _read_sty_str } { circun }
-          {
-            \tl_set:Nn \l__spintent_geo_circ_word_tl { circunferencia }
-            \str_set:Nn \l__spintent_spcirc_articulo_str { la }
-          }
-          {
-            \tl_set:Nn \l__spintent_geo_circ_word_tl { círculo }
-            \str_set:Nn \l__spintent_spcirc_articulo_str { el }
-          }
+          { \tl_set:Nn \l__spintent_geo_circ_word_tl { circunferencia } }
+          { \tl_set:Nn \l__spintent_geo_circ_word_tl { círculo } }
       }
+      { \tl_set:Ne \l__spintent_geo_circ_word_tl { \tl_use:c { l__spintent_sp #1 _read_arg_tl } } }
+  }
+\cs_new_protected:Nn \__spintent_spcircfig_del_word:n
+  {
+    \__spintent_spcircfig_word_and_article:n {#1}
+    \str_if_eq:VnTF \l__spintent_spcirc_articulo_str { el }
+      { \tl_set:Ne \l__spintent_spcircfig_del_word_tl { del- \l__spintent_geo_circ_word_tl } }
+      { \tl_set:Ne \l__spintent_spcircfig_del_word_tl { de-la- \l__spintent_geo_circ_word_tl } }
+  }
+\cs_new_protected:Nn \__spintent_spcircfig_build_short:n
+  {
+    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+      { \tl_set:Nn \l__spintent_spcircfig_intent_arg_tl { _- } }
       {
-        \tl_set:Ne \l__spintent_geo_circ_word_tl { \tl_use:c { l__spintent_sp #1 _read_arg_tl } }
-        \str_if_eq:vnTF { l__spintent_sp #1 _read_sty_str } { circun }
-          { \str_set:Nn \l__spintent_spcirc_articulo_str { la } }
-          { \str_set:Nn \l__spintent_spcirc_articulo_str { el } }
+        \bool_if:cTF { l__spintent_sp #1 _concept_bool }
+          {
+            \__spintent_spcircfig_del_word:n {#1}
+            \tl_set:Ne \l__spintent_spcircfig_intent_arg_tl
+              {
+                \l__spintent_spcircfig_op_tl - \l__spintent_spcircfig_del_word_tl -
+                \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub- }
+                \l__spintent_geo_luaset_sub_spoken_str :prefix
+              }
+          }
+          { \tl_set:Nn \l__spintent_spcircfig_intent_arg_tl { _- } }
       }
   }
-\cs_new_protected:Nn \__spintent_spcircfig_radio_print:n
+\cs_new_protected:Nn \__spintent_spcircfig_finish_intent:nn
   {
-    \str_case:Vn \l__spintent_geo_luaset_circ_radio_type_str
+    \str_if_empty:cF { l__spintent_sp #1 _sub_index_str }
       {
-        { number  } { \exp_args:No \spnum  { \l__spintent_geo_luaset_circ_radio_raw_str } }
-        { measure } { \exp_args:No \spunit { \l__spintent_geo_luaset_circ_radio_raw_str } }
-        { label   } { \l__spintent_geo_luaset_circ_radio_raw_str }
-        { segment }
+        \tl_put_right:Ne \l__spintent_spcircfig_intent_tl
           {
-            \str_if_eq:vnTF { l__spintent_sp #1 _radio_sty_str } { side }
-              { \exp_args:No \spside  { \l__spintent_geo_luaset_circ_radio_raw_str } }
-              { \exp_args:No \spmside { \l__spintent_geo_luaset_circ_radio_raw_str } }
+            -
+            \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub- }
+            \str_use:c { l__spintent_sp #1 _sub_index_str }
+          }
+      }
+    \tl_if_empty:nF {#2}
+      { \tl_put_right:Nn \l__spintent_spcircfig_intent_tl { -con-centro-en } }
+  }
+\cs_new_protected:Nn \__spintent_spcircfig_build_concept:nn
+  {
+    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+      {
+        \tl_if_empty:nTF {#2}
+          { \tl_set:Nn \l__spintent_spcircfig_intent_arg_tl { _- } }
+          { \tl_set:Ne \l__spintent_spcircfig_intent_arg_tl { _( $ pt ) } }
+      }
+      {
+        \bool_if:cTF { l__spintent_sp #1 _concept_bool }
+          {
+            \__spintent_spcircfig_del_word:n {#1}
+            \tl_set:Ne \l__spintent_spcircfig_intent_tl { \l__spintent_spcircfig_op_tl - \l__spintent_spcircfig_del_word_tl }
+            \__spintent_spcircfig_finish_intent:nn {#1} {#2}
+            \tl_set:Ne \l__spintent_spcircfig_intent_arg_tl
+              {
+                \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
+                  { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
+                \l__spintent_spcircfig_intent_tl :prefix
+                \tl_if_empty:nF {#2} { ( $ pt ) }
+              }
+          }
+          {
+            \tl_if_empty:cTF { l__spintent_sp #1 _read_arg_tl }
+              {
+                \tl_if_empty:nTF {#2}
+                  { \tl_set:Nn \l__spintent_spcircfig_intent_arg_tl { _- } }
+                  { \tl_set:Ne \l__spintent_spcircfig_intent_arg_tl { _( $ pt ) } }
+              }
+              {
+                \tl_set:Ne \l__spintent_spcircfig_intent_tl
+                  { \tl_use:c { l__spintent_sp #1 _read_arg_tl } }
+                \__spintent_spcircfig_finish_intent:nn {#1} {#2}
+                \tl_set:Ne \l__spintent_spcircfig_intent_arg_tl
+                  {
+                    \l__spintent_spcircfig_intent_tl :prefix
+                    \tl_if_empty:nF {#2} { ( $ pt ) }
+                  }
+              }
           }
       }
   }
 \cs_new_protected:Nn \__spintent_spcircfig_process:nn
   {
     \str_if_eq:eeTF {#1} { Acirc }
-      { \tl_set:Nn \l__spintent_geo_fig_op_tl { área } }
-      { \tl_set:Nn \l__spintent_geo_fig_op_tl { perímetro } }
-    \str_set:Nn \l__spintent_geo_circfig_mode_str { circle }
-    \tl_if_empty:nF {#2}
+      { \tl_set:Nn \l__spintent_spcircfig_op_tl { área } }
+      { \tl_set:Nn \l__spintent_spcircfig_op_tl { perímetro } }
+    \tl_if_empty:nTF {#2}
       {
-        \__spintent_luafun_geo_circ_parse_and_set:n { \exp_not:n {#2} }
-        \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
+        \bool_set_false:N \l__spintent_spcircfig_short_bool
+      }
+      {
+        \bool_set_false:N \l__spintent_spcircfig_short_bool
+        \tl_if_in:nnTF {#2} { , }
           {
-            \tl_if_in:nnF {#2} { , }
+            \msg_error:nnee { spintent } { sp #1 -invalid-arg }
+              { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+          }
+          {
+            \__spintent_luafun_geo_circ_parse_and_set:n { \exp_not:n {#2} }
+            \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
               {
                 \str_if_eq:eeTF {#1} { Acirc }
                   { \__spintent_luafun_geo_afig_parse_and_set:n { \exp_not:n {#2} } }
@@ -4588,227 +4639,61 @@
                 \str_if_eq:VnF \l__spintent_geo_luaset_error_str { true }
                   {
                     \str_if_empty:NTF \l__spintent_geo_luaset_letra_word_str
-                      { \str_set:Nn \l__spintent_geo_circfig_mode_str { short } }
+                      { \bool_set_true:N \l__spintent_spcircfig_short_bool }
                       { \str_set:Nn \l__spintent_geo_luaset_error_str { true } }
                   }
               }
-          }
-        \str_if_eq:VnF \l__spintent_geo_circfig_mode_str { short }
-          {
-            \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
+            \bool_if:NF \l__spintent_spcircfig_short_bool
               {
-                \msg_error:nnee { spintent } { sp #1 -invalid-arg }
-                  { \c_backslash_str sp #1 } { \exp_not:n {#2} }
-              }
-          }
-      }
-    \__spintent_spcircfig_word_and_article:n {#1}
-    \str_if_eq:VnTF \l__spintent_geo_circfig_mode_str { short }
-      {
-        \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
-          { \str_set:Nn \l__spintent_geo_circ_intent_str { _- } }
-          {
-            \bool_if:cTF { l__spintent_sp #1 _concept_bool }
-              {
-                \str_set:Ne \l__spintent_geo_circ_intent_str
+                \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
                   {
-                    \l__spintent_geo_fig_op_tl -
-                    \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub- }
-                    \l__spintent_geo_luaset_sub_spoken_str
+                    \msg_error:nnee { spintent } { sp #1 -invalid-arg }
+                      { \c_backslash_str sp #1 } { \exp_not:n {#2} }
                   }
-                \str_if_eq:eeT { \str_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
-                  {
-                    \str_set:Ne \l__spintent_geo_circ_intent_str
-                      {
-                        _ \l__spintent_geo_fig_op_tl -
-                        \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub- }
-                        \l__spintent_geo_luaset_sub_spoken_str :prefix($pts)
-                      }
-                  }
-              }
-              { \str_set:Nn \l__spintent_geo_circ_intent_str { _- } }
-          }
-      }
-      {
-        \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
-          { \str_set:Nn \l__spintent_geo_circ_intent_str { _- } }
-          {
-            \bool_if:cTF { l__spintent_sp #1 _concept_bool }
-              {
-                \tl_if_empty:nTF {#2}
-                  {
-                    \str_set:Ne \l__spintent_geo_circ_intent_str
-                      {
-                        \l__spintent_geo_fig_op_tl -de- \l__spintent_spcirc_articulo_str -
-                        \l__spintent_geo_circ_word_tl
-                      }
-                    \str_if_eq:eeT { \str_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
-                      {
-                        \str_set:Ne \l__spintent_geo_circ_intent_str
-                          {
-                            _ \l__spintent_geo_fig_op_tl -de-
-                            \l__spintent_spcirc_articulo_str -
-                            \l__spintent_geo_circ_word_tl :prefix($pts)
-                          }
-                      }
-                  }
-                  {
-                    \str_set:Ne \l__spintent_geo_circ_intent_str
-                      {
-                        \l__spintent_geo_fig_op_tl -de- \l__spintent_spcirc_articulo_str -
-                        \l__spintent_geo_circ_word_tl
-                      }
-                    \str_if_empty:cF { l__spintent_sp #1 _sub_index_str }
-                      {
-                        \str_put_right:Ne \l__spintent_geo_circ_intent_str
-                          {
-                            -
-                            \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub- }
-                            \str_use:c { l__spintent_sp #1 _sub_index_str }
-                          }
-                      }
-                    \str_if_empty:NTF \l__spintent_geo_luaset_circ_radio_type_str
-                      {
-                        \str_put_right:Ne \l__spintent_geo_circ_intent_str
-                          { -de-centro-en- \l__spintent_geo_luaset_print_tl }
-                        \str_if_eq:eeT { \str_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
-                          {
-                            \str_set:Ne \l__spintent_geo_circ_intent_str
-                              {
-                                _ \l__spintent_geo_fig_op_tl -de-
-                                \l__spintent_spcirc_articulo_str -
-                                \l__spintent_geo_circ_word_tl :prefix($pts)
-                              }
-                          }
-                      }
-                      {
-                        \str_set:Ne \l__spintent_geo_circ_intent_str
-                          { _ \l__spintent_geo_circ_intent_str :prefix }
-                        \str_set:Ne \l__spintent_geo_circ_connector_intent_str
-                          { _de-centro-en- \l__spintent_geo_luaset_print_tl :prefix }
-                        \bool_if:cTF { l__spintent_sp #1 _diameter_bool }
-                          { \str_set:Nn \l__spintent_geo_circ_radio_intent_str { _y-diámetro- } }
-                          { \str_set:Nn \l__spintent_geo_circ_radio_intent_str { _y-radio- } }
-                      }
-                  }
-              }
-              {
-                \str_set:Nn \l__spintent_geo_circ_intent_str { _- }
-                \str_set:Nn \l__spintent_geo_circ_connector_intent_str { _- }
-                \str_set:Nn \l__spintent_geo_circ_radio_intent_str { _- }
               }
           }
       }
+    \bool_if:NTF \l__spintent_spcircfig_short_bool
+      { \__spintent_spcircfig_build_short:n {#1} }
+      { \__spintent_spcircfig_build_concept:nn {#1} {#2} }
     \__spintent_spcircfig_mathml:nn { #1 } { #2 }
   }
 \cs_new_protected:Nn \__spintent_spcircfig_mathml:nn
   {
-    \__spintent_invisible_sep:
-    \str_if_eq:VnTF \l__spintent_geo_circfig_mode_str { short }
+    \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
+    \MathMLintent { \l__spintent_spcircfig_intent_arg_tl }
       {
-        \MathMLintent
+        \__spintent_luafun_inner_sep:
+        \__spintent_luafun_wrap_mrow_intent_arg:nn
+          { } { intent = ":silent" }
+        {
+          \str_if_eq:eeTF {#1} { Acirc } { \__spintent_mathcal:n { A } } { \__spintent_mathcal:n { P } }
+        }
+        \bool_if:NTF \l__spintent_spcircfig_short_bool
           {
-            \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
-              { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-            \l__spintent_geo_circ_intent_str
-          }
-          {
-            \c__spintent_invisible_sep_tl
-            \str_if_eq:eeTF {#1} { Acirc }
-              { \__spintent_mathcal:n { A } }
-              { \__spintent_mathcal:n { P } }
             \c_math_subscript_token
               {
                 \__spintent_spcircfig_sym:n {#1}
                 \c_math_subscript_token { \l__spintent_geo_luaset_print_tl }
               }
           }
-      }
-      {
-        \tl_if_empty:nTF {#2}
           {
-            \MathMLintent
+            \c_math_subscript_token
               {
-                \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
-                  { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-                \l__spintent_geo_circ_intent_str
-              }
-              {
-                \c__spintent_invisible_sep_tl
-                \str_if_eq:eeTF {#1} { Acirc }
-                  { \__spintent_mathcal:n { A } }
-                  { \__spintent_mathcal:n { P } }
-                \c_math_subscript_token { \__spintent_spcircfig_sym:n {#1} }
-              }
-          }
-          {
-            \str_if_empty:NTF \l__spintent_geo_luaset_circ_radio_type_str
-              {
-                \MathMLintent
+                \MathMLintent { :silent } { \__spintent_spcircfig_sym:n {#1} }
+                \str_if_empty:cF { l__spintent_sp #1 _sub_index_str }
                   {
-                    \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
-                      { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-                    \l__spintent_geo_circ_intent_str
-                  }
-                  {
-                    \c__spintent_invisible_sep_tl
-                    \str_if_eq:eeTF {#1} { Acirc }
-                      { \__spintent_mathcal:n { A } }
-                      { \__spintent_mathcal:n { P } }
                     \c_math_subscript_token
                       {
-                        \__spintent_spcircfig_sym:n {#1}
-                        \str_if_empty:cF { l__spintent_sp #1 _sub_index_str }
-                          {
-                            \c_math_subscript_token
-                              { \str_use:c { l__spintent_sp #1 _sub_index_str } }
-                          }
-                        ( \l__spintent_geo_luaset_print_tl )
+                        \MathMLintent { :silent }
+                          { \str_use:c { l__spintent_sp #1 _sub_index_str } }
                       }
                   }
-              }
-              {
-                \MathMLintent { \l__spintent_geo_circ_intent_str }
+                \tl_if_empty:nF {#2}
                   {
-                    \__spintent_luafun_inner_sep:
-                    \str_if_eq:eeTF {#1} { Acirc }
-                      { \__spintent_mathcal:n { A } }
-                      { \__spintent_mathcal:n { P } }
-                    \scriptstyle
-                    \Unosubscript
-                      {
-                        \MathMLintent { :silent } { \__spintent_spcircfig_sym:n {#1} }
-                        \str_if_empty:cF { l__spintent_sp #1 _sub_index_str }
-                          {
-                            \c_math_subscript_token
-                              {
-                                \MathMLintent { :silent }
-                                  { \str_use:c { l__spintent_sp #1 _sub_index_str } }
-                              }
-                          }
-                      }
-                  }
-                \MathMLintent { \l__spintent_geo_circ_connector_intent_str }
-                  {
-                    \__spintent_luafun_inner_sep:
-                    \scriptstyle
-                    \Unosubscript
-                      {
-                        \MathMLintent { :silent } { \lparen }
-                        \MathMLintent { :silent } { \l__spintent_geo_luaset_print_tl }
-                        \MathMLintent { :silent } { , \, }
-                      }
-                  }
-                \MathMLintent { :silent }
-                  {
-                    \__spintent_luafun_inner_sep:
-                    \scriptstyle
-                    \Unosubscript
-                      {
-                        \MathMLintent { \l__spintent_geo_circ_radio_intent_str :nofix} { \c__spintent_invisible_sep_tl }
-                        \__spintent_spcircfig_radio_print:n {#1}
-                        \MathMLintent { :silent } { \rparen }
-                      }
+                    \MathMLintent { :silent } { \lparen }
+                    \exp_args:Nnno \__spintent_mathmlarg_point:nnn { pt } { sp #1 } \l__spintent_geo_luaset_points_clist
+                    \MathMLintent { :silent } { \rparen }
                   }
               }
           }
