@@ -1883,10 +1883,6 @@ local function spintent_geo_build_intent(cmd, puntos)
     return resultado
 end
 
-local function spintent_geo_build_intent_nombre(cmd, nombre)
-    return spintent_geo_build_intent(cmd, { nombre })
-end
-
 -- Constructores "puros": solo el cuerpo (puntos convertidos a texto),
 -- sin concepto ni envoltorio "_...-" — usados por las funciones que ya
 -- no reciben "cmd"/"read_arg" desde expl3 (se antepone/envuelve del
@@ -1899,58 +1895,38 @@ local function spintent_geo_build_body_nombre(nombre)
     return spintent_geo_build_body({ nombre })
 end
 
-local function spintent_geo_build_visual(puntos)
-    local partes = {}
-    for _, pt in ipairs(puntos) do
-        local letra, mod, tipo = pt[1], pt[2], pt[3]
-        if tipo == "sub" then
-            partes[#partes + 1] = letra .. "_{" .. mod .. "}"
-        elseif tipo == "prima" then
-            local buf = { letra }
-            for _ = 1, #mod do buf[#buf + 1] = "'" end
-            partes[#partes + 1] = t_concat(buf)
-        else
-            partes[#partes + 1] = letra
-        end
-    end
-    return t_concat(partes)
-end
-
+-- Un solo punto {letra, contenido, tipo}: usada tanto para el texto
+-- visual (TeX) como para reconstruir el crudo sin combinar de
+-- "points_clist" -- el mismo formato sirve para las dos cosas, ya que
+-- para "prima" el contenido ya trae las comillas ("'", "''", ...)
+-- listas para pegar, sin necesidad de reconstruirlas caracter por
+-- caracter.
 local function spintent_geo_build_visual_nombre(nombre)
     local letra, mod, tipo = nombre[1], nombre[2], nombre[3]
     if tipo == "sub" then
         return letra .. "_{" .. mod .. "}"
     elseif tipo == "prima" then
-        local buf = { letra }
-        for _ = 1, #mod do buf[#buf + 1] = "'" end
-        return t_concat(buf)
+        return letra .. mod
     else
         return letra
     end
 end
 
--- Reconstrucción del texto crudo de UN punto, y helper
--- que arma "l__spintent_geo_luaset_points_clist" (la lista de puntos
--- SIN combinar, separada por comas) a partir de una tabla 'puntos'.
--- Reusa el mismo formato {letra, contenido, tipo} que ya usan
--- spintent_geo_build_visual/build_intent -- ninguna gramática
--- cambia, solo se agrega esta lectura adicional del mismo dato.
-
-local function spintent_geo_build_raw_nombre(punto)
-    local letra, contenido, tipo = punto[1], punto[2], punto[3]
-    if tipo == "sub" then
-        return letra .. "_{" .. contenido .. "}"
-    elseif tipo == "prima" then
-        return letra .. contenido
-    else
-        return letra
+local function spintent_geo_build_visual(puntos)
+    local partes = {}
+    for _, pt in ipairs(puntos) do
+        partes[#partes + 1] = spintent_geo_build_visual_nombre(pt)
     end
+    return t_concat(partes)
 end
 
-local function spintent_geo_set_points_str(puntos)
+-- Arma "l__spintent_geo_luaset_points_clist" (la lista de puntos SIN
+-- combinar, separada por comas) a partir de una tabla 'puntos', para
+-- que expl3 pueda referenciar cada uno por separado (__spintent_mathmlarg_point:nnn).
+local function spintent_geo_set_points_clist(puntos)
     local raw_parts = {}
     for i, punto in ipairs(puntos) do
-        raw_parts[i] = spintent_geo_build_raw_nombre(punto)
+        raw_parts[i] = spintent_geo_build_visual_nombre(punto)
     end
     token_set_macro("l__spintent_geo_luaset_points_clist", t_concat(raw_parts, ","))
 end
@@ -1986,6 +1962,14 @@ end, { "string" })
 -- (preserva la semántica de \sprecta con una sola letra), luego
 -- puntos concatenados sin separador, luego error.
 -- ------------------------------------------------------------
+local function spintent_geo_set_error_recta()
+    token_set_macro("l__spintent_geo_luaset_error_str",    "true")
+    token_set_macro("l__spintent_geo_luaset_intent_str",   "")
+    token_set_macro("l__spintent_geo_luaset_print_tl",     "")
+    token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
+    token_set_macro("l__spintent_geo_luaset_points_clist", "")
+end
+
 register_tex_cmd("luafun_geo_parse_and_set", function(csv)
     csv = spintent_trim(csv)
     csv = spintent_geo_normalize_primes(csv)
@@ -1995,11 +1979,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
     if tiene_coma then
         local puntos = spintent_geo_grammar:match(csv)
         if not puntos or #puntos == 0 then
-            token_set_macro("l__spintent_geo_luaset_error_str",    "true")
-            token_set_macro("l__spintent_geo_luaset_intent_str",   "")
-            token_set_macro("l__spintent_geo_luaset_print_tl",     "")
-            token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
-            token_set_macro("l__spintent_geo_luaset_points_clist", "") -- AGREGADO
+            spintent_geo_set_error_recta()
             return
         end
         token_set_macro("l__spintent_geo_luaset_error_str",    "false")
@@ -2008,7 +1988,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body(puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
-        spintent_geo_set_points_str(puntos) -- AGREGADO
+        spintent_geo_set_points_clist(puntos)
         return
     end
 
@@ -2020,7 +2000,7 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body_nombre(nombre))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
-        token_set_macro("l__spintent_geo_luaset_points_clist", "") -- AGREGADO (nombre = 1 solo punto, no aplica)
+        token_set_macro("l__spintent_geo_luaset_points_clist", "") -- nombre = 1 solo punto, no aplica
         return
     end
 
@@ -2032,15 +2012,11 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
                         spintent_geo_build_body(puntos))
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual(puntos))
-        spintent_geo_set_points_str(puntos) -- AGREGADO
+        spintent_geo_set_points_clist(puntos)
         return
     end
 
-    token_set_macro("l__spintent_geo_luaset_error_str",    "true")
-    token_set_macro("l__spintent_geo_luaset_intent_str",   "")
-    token_set_macro("l__spintent_geo_luaset_print_tl",     "")
-    token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
-    token_set_macro("l__spintent_geo_luaset_points_clist", "") -- AGREGADO
+    spintent_geo_set_error_recta()
 end, { "string" })
 
 -- ------------------------------------------------------------
@@ -2058,7 +2034,7 @@ local function spintent_geo_build_body_angulo(csv)
         end
         local cuerpo = spintent_geo_build_body(puntos)
         local visual = spintent_geo_build_visual(puntos)
-        spintent_geo_set_points_str(puntos)
+        spintent_geo_set_points_clist(puntos)
         return cuerpo, visual, "tres-puntos"
     end
 
@@ -2067,7 +2043,7 @@ local function spintent_geo_build_body_angulo(csv)
         local base = spintent_geo_build_body_nombre(un_punto)
         local cuerpo = "en-" .. base
         local visual = spintent_geo_build_visual_nombre(un_punto)
-        spintent_geo_set_points_str({ un_punto })
+        spintent_geo_set_points_clist({ un_punto })
         return cuerpo, visual, "un-punto"
     end
 
@@ -2077,7 +2053,7 @@ local function spintent_geo_build_body_angulo(csv)
     if puntos_concat and #puntos_concat >= 2 then
         local cuerpo = spintent_geo_build_body(puntos_concat)
         local visual = spintent_geo_build_visual(puntos_concat)
-        spintent_geo_set_points_str(puntos_concat)
+        spintent_geo_set_points_clist(puntos_concat)
         return cuerpo, visual, "tres-puntos"
     end
 
@@ -2167,7 +2143,7 @@ register_tex_cmd("luafun_geo_poly_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_poly_sym_str",   sym)
     token_set_macro("l__spintent_geo_luaset_concept_str",    cmd_base)
     token_set_macro("l__spintent_geo_luaset_print_tl", spintent_geo_build_visual(puntos))
-    spintent_geo_set_points_str(puntos)
+    spintent_geo_set_points_clist(puntos)
 end, { "string" })
 
 -- Tabla de letras válidas para el argumento único de \spAfig/\spPfig
@@ -2224,9 +2200,8 @@ end
 -- Arma y establece las variables de salida para el caso de vértices
 -- reales (lista de al menos 3 puntos), sin importar si vinieron
 -- separados por comas o concatenados sin separador. Siempre usa el
--- nombre inferido por cardinalidad; expl3 reconstruye el intent con
--- l__spintent_geo_luaset_vertices_str (cuerpo puro, sin nombre de
--- figura) cuando corresponde sobrescribir.
+-- nombre inferido por cardinalidad; expl3 arma el intent completo por
+-- su cuenta (via __spintent_mathmlarg_point:nnn, punto por punto).
 local function spintent_geo_fig_set_vertices(op, puntos)
     local info    = spintent_geo_poly_npts[#puntos]
     local cmd_fig = info and info.cmd or "polígono"
@@ -2240,27 +2215,21 @@ local function spintent_geo_fig_set_vertices(op, puntos)
     token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
     token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
     token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
-
-    local cuerpo = spintent_geo_build_body(puntos)
-    token_set_macro("l__spintent_geo_luaset_intent_str", concepto .. "-" .. cuerpo)
-    token_set_macro("l__spintent_geo_luaset_vertices_str", cuerpo)
-    token_set_macro("l__spintent_geo_luaset_intent_pts_str",
-                    spintent_geo_build_intent(op, puntos))
-    spintent_geo_set_points_str(puntos) -- AGREGADO
+    spintent_geo_set_points_clist(puntos)
 end
 
-local function spintent_geo_fig_set_error()
-    token_set_macro("l__spintent_geo_luaset_error_str",         "true")
-    token_set_macro("l__spintent_geo_luaset_intent_str",        "")
-    token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
-    token_set_macro("l__spintent_geo_luaset_vertices_str",      "")
-    token_set_macro("l__spintent_geo_luaset_concept_str",       "")
-    token_set_macro("l__spintent_geo_luaset_print_tl",          "")
-    token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
-    token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
-    token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
-    token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
-    token_set_macro("l__spintent_geo_luaset_points_clist",      "") -- AGREGADO
+-- Reset compartido por los tres casos que no traen vértices reales
+-- (argumento vacío, error, y letra sola de la tabla F/P/B/L/T): ningún
+-- campo de vértices aplica, solo cambian error/concept/print/letra.
+local function spintent_geo_fig_reset(error_val, concept_val, print_val, palabra, conector, sub_spoken)
+    token_set_macro("l__spintent_geo_luaset_error_str",          error_val)
+    token_set_macro("l__spintent_geo_luaset_poly_sym_str",       "")
+    token_set_macro("l__spintent_geo_luaset_concept_str",        concept_val)
+    token_set_macro("l__spintent_geo_luaset_print_tl",           print_val)
+    token_set_macro("l__spintent_geo_luaset_letra_word_str",     palabra)
+    token_set_macro("l__spintent_geo_luaset_letra_conector_str", conector)
+    token_set_macro("l__spintent_geo_luaset_sub_spoken_str",     sub_spoken)
+    token_set_macro("l__spintent_geo_luaset_points_clist",       "")
 end
 
 -- l__spintent_geo_luaset_concept_str lleva solo el nombre del
@@ -2276,17 +2245,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
     csv = spintent_geo_normalize_primes(csv)
 
     if csv == "" then
-        token_set_macro("l__spintent_geo_luaset_error_str",         "false")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
-        token_set_macro("l__spintent_geo_luaset_intent_str",        op)
-        token_set_macro("l__spintent_geo_luaset_intent_pts_str",    "")
-        token_set_macro("l__spintent_geo_luaset_vertices_str",      "")
-        token_set_macro("l__spintent_geo_luaset_concept_str",       op)
-        token_set_macro("l__spintent_geo_luaset_print_tl",          "")
-        token_set_macro("l__spintent_geo_luaset_letra_word_str",    "")
-        token_set_macro("l__spintent_geo_luaset_letra_conector_str","")
-        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    "")
-        token_set_macro("l__spintent_geo_luaset_points_clist",      "") -- AGREGADO
+        spintent_geo_fig_reset("false", op, "", "", "", "")
         return
     end
 
@@ -2295,7 +2254,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
     if tiene_coma then
         local puntos = spintent_geo_poly_grammar:match(csv)
         if not puntos or #puntos < 3 then
-            spintent_geo_fig_set_error()
+            spintent_geo_fig_reset("true", "", "", "", "", "")
             return
         end
         spintent_geo_fig_set_vertices(op, puntos)
@@ -2304,17 +2263,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
 
     local ok, visual, palabra, conector, sub_spoken = spintent_geo_fig_parse_arg(csv)
     if ok then
-        token_set_macro("l__spintent_geo_luaset_error_str",         "false")
-        token_set_macro("l__spintent_geo_luaset_poly_sym_str",      "")
-        token_set_macro("l__spintent_geo_luaset_concept_str",       op)
-        token_set_macro("l__spintent_geo_luaset_print_tl",          visual)
-        token_set_macro("l__spintent_geo_luaset_letra_word_str",    palabra)
-        token_set_macro("l__spintent_geo_luaset_letra_conector_str",conector)
-        token_set_macro("l__spintent_geo_luaset_sub_spoken_str",    sub_spoken)
-        token_set_macro("l__spintent_geo_luaset_intent_str",     "")
-        token_set_macro("l__spintent_geo_luaset_intent_pts_str", "")
-        token_set_macro("l__spintent_geo_luaset_vertices_str",   "")
-        token_set_macro("l__spintent_geo_luaset_points_clist",   "") -- AGREGADO (letra sola, no aplica)
+        spintent_geo_fig_reset("false", op, visual, palabra, conector, sub_spoken)
         return
     end
 
@@ -2324,7 +2273,7 @@ local function spintent_geo_fig_parse_and_set(op, csv)
         return
     end
 
-    spintent_geo_fig_set_error()
+    spintent_geo_fig_reset("true", "", "", "", "", "")
 end
 
 register_tex_cmd("luafun_geo_afig_parse_and_set",
@@ -2379,7 +2328,7 @@ register_tex_cmd("luafun_geo_circ_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_error_str", "false")
     token_set_macro("l__spintent_geo_luaset_print_tl",
                     spintent_geo_build_visual_nombre(centro))
-    spintent_geo_set_points_str({ centro }) -- AGREGADO
+    spintent_geo_set_points_clist({ centro }) -- AGREGADO
 
     if radio_str == "" then
         token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
@@ -2387,25 +2336,25 @@ register_tex_cmd("luafun_geo_circ_parse_and_set",
         return
     end
 
-    if spintent_geo_radio_segment:match(radio_str) then
-        local puntos = spintent_geo_radio_segment:match(radio_str)
+    local seg_puntos = spintent_geo_radio_segment:match(radio_str)
+    if seg_puntos then
         token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "segment")
         token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",
-                        spintent_geo_build_visual(puntos))
+                        spintent_geo_build_visual(seg_puntos))
         return
     end
 
-    if spintent_geo_radio_number:match(radio_str) then
-        local n = spintent_geo_radio_number:match(radio_str)
+    local numero = spintent_geo_radio_number:match(radio_str)
+    if numero then
         token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "number")
-        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  n)
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  numero)
         return
     end
 
-    if spintent_geo_radio_label:match(radio_str) then
-        local l = spintent_geo_radio_label:match(radio_str)
+    local etiqueta = spintent_geo_radio_label:match(radio_str)
+    if etiqueta then
         token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "label")
-        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  l)
+        token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  etiqueta)
         return
     end
 

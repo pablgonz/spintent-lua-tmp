@@ -4692,7 +4692,7 @@
                 \tl_if_empty:nF {#2}
                   {
                     \MathMLintent { :silent } { \lparen }
-                    \exp_args:Nnno \__spintent_mathmlarg_point:nnn { pt } { sp #1 } \l__spintent_geo_luaset_points_clist
+                    \__spintent_mathmlarg_point:nnV { pt } { sp #1 } \l__spintent_geo_luaset_points_clist
                     \MathMLintent { :silent } { \rparen }
                   }
               }
