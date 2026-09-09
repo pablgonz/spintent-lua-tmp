@@ -13115,6 +13115,45 @@ local spintent_sub_mlist_t = node.id("sub_mlist")
 -- .sub (subíndice) -- \c_math_subscript_token pone el contenido ahí,
 -- no en .nucleus, así que sin esto la cola nunca alcanza nada
 -- dentro de un subíndice.
+-- Reclama 'target' (la nucleus o el sub de un noad) con la siguiente
+-- entrada pendiente de la cola, si todavía no tiene su propio filtro
+-- instalado. Compartida por las dos ramas de spintent_try_annotate
+-- (antes duplicada línea por línea entre nucleus y sub).
+local function spintent_claim_target(target, properties)
+    local existing = properties[target]
+    if existing and existing.mathml_filter then return end
+
+    local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
+
+    local concept_intent, arg_name, child_intent
+    if type(entry) == "table" then
+        concept_intent = entry.concept_intent
+        arg_name       = entry.arg_name
+        child_intent   = entry.child_intent
+    else
+        concept_intent = entry
+    end
+
+    local p = properties[target] or {}
+    p.mathml_filter = function(result, core)
+        if arg_name then result.arg = arg_name end
+        if child_intent then result.intent = child_intent end
+        if result[0] == "mrow" then
+            if concept_intent then result.intent = concept_intent end
+            return result, core
+        end
+        if concept_intent then
+            return { [0] = "mrow", intent = concept_intent, result }, nil
+        end
+        return result, core
+    end
+    properties[target] = p
+end
+
+-- Recursa dentro de cualquier sub_mlist encontrado en .nucleus O EN
+-- .sub (subíndice) -- \c_math_subscript_token pone el contenido ahí,
+-- no en .nucleus, así que sin esto la cola nunca alcanza nada
+-- dentro de un subíndice.
 local function spintent_try_annotate(n, properties)
     if #spintent_pending_mrow_intent_queue == 0 then return end
 
@@ -13126,34 +13165,7 @@ local function spintent_try_annotate(n, properties)
                 if #spintent_pending_mrow_intent_queue == 0 then return end
             end
         else
-            local existing = properties[nucleus]
-            if not (existing and existing.mathml_filter) then
-                local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
-
-                local concept_intent, arg_name, child_intent
-                if type(entry) == "table" then
-                    concept_intent = entry.concept_intent
-                    arg_name       = entry.arg_name
-                    child_intent   = entry.child_intent
-                else
-                    concept_intent = entry
-                end
-
-                local p = properties[nucleus] or {}
-                p.mathml_filter = function(result, core)
-                    if arg_name then result.arg = arg_name end
-                    if child_intent then result.intent = child_intent end
-                    if result[0] == "mrow" then
-                        if concept_intent then result.intent = concept_intent end
-                        return result, core
-                    end
-                    if concept_intent then
-                        return { [0] = "mrow", intent = concept_intent, result }, nil
-                    end
-                    return result, core
-                end
-                properties[nucleus] = p
-            end
+            spintent_claim_target(nucleus, properties)
         end
     end
 
@@ -13167,34 +13179,7 @@ local function spintent_try_annotate(n, properties)
                 if #spintent_pending_mrow_intent_queue == 0 then return end
             end
         else
-            local existing = properties[sub]
-            if not (existing and existing.mathml_filter) then
-                local entry = table.remove(spintent_pending_mrow_intent_queue, 1)
-
-                local concept_intent, arg_name, child_intent
-                if type(entry) == "table" then
-                    concept_intent = entry.concept_intent
-                    arg_name       = entry.arg_name
-                    child_intent   = entry.child_intent
-                else
-                    concept_intent = entry
-                end
-
-                local p = properties[sub] or {}
-                p.mathml_filter = function(result, core)
-                    if arg_name then result.arg = arg_name end
-                    if child_intent then result.intent = child_intent end
-                    if result[0] == "mrow" then
-                        if concept_intent then result.intent = concept_intent end
-                        return result, core
-                    end
-                    if concept_intent then
-                        return { [0] = "mrow", intent = concept_intent, result }, nil
-                    end
-                    return result, core
-                end
-                properties[sub] = p
-            end
+            spintent_claim_target(sub, properties)
         end
     end
 end
@@ -13696,6 +13681,12 @@ register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
     token_set_macro("l__spintent_spunit_luaset_status_str", "success")
 end, { "string", "string" })
 
+-- °, ′, ″ son los tres símbolos sexagesimales reconocidos -- chequeo
+-- compartido por las dos ramas de luafun_spunit_lookup_alias.
+local function spintent_is_sexagesimal_symbol(s)
+    return s == "°" or s == "′" or s == "″"
+end
+
 register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
     raw_unit_name = s_gsub(raw_unit_name, "%s+", "")
     local clean_exp_format = s_gsub(raw_unit_name, "[{}]", "")
@@ -13729,7 +13720,7 @@ register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
             token_set_macro("l__spintent_spunit_luaset_is_compact_str", "false")
         end
 
-        if canonical == "°" or canonical == "′" or canonical == "″" then
+        if spintent_is_sexagesimal_symbol(canonical) then
             token_set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "true")
         else
             token_set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "false")
@@ -13745,7 +13736,7 @@ register_tex_cmd("luafun_spunit_lookup_alias", function(raw_unit_name)
                 token_set_macro("l__spintent_spunit_luaset_is_compact_str", "true")
                 local spoken = spintent_custom_spunit_spoken_names[canonical_base] or ":unit"
                 token_set_macro("l__spintent_spunit_luaset_read_str", spoken)
-                if canonical_base == "°" or canonical_base == "′" or canonical_base == "″" then
+                if spintent_is_sexagesimal_symbol(canonical_base) then
                     token_set_macro("l__spintent_spunit_luaset_is_sexagesimal_str", "true")
                 end
                 token_set_macro("l__spintent_spunit_luaset_lookup_status_str", "found")
