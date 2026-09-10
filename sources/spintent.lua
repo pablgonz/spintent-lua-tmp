@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-10]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-11]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -219,6 +219,13 @@ luatexbase.add_to_callback("pre_mlist_to_hlist_filter", function(mlist, style)
     for n in node.traverse(mlist) do
         if #spintent_pending_mrow_intent_queue == 0 then break end
         spintent_try_annotate(n, properties)
+    end
+    -- Cualquier entrada sobrante (un comando pidio mas anotaciones de
+    -- las que encontro hojas libres) se descarta aca -- si no, se
+    -- queda esperando y puede terminar aplicandose, sin aviso, a una
+    -- formula completamente distinta mas adelante en el documento.
+    if #spintent_pending_mrow_intent_queue > 0 then
+        spintent_pending_mrow_intent_queue = {}
     end
     return true
 end, "spintent.wrap_mrow_intent")
@@ -2358,4 +2365,106 @@ register_tex_cmd("luafun_geo_circ_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_error_str",           "true")
     token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
     token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
+end, { "string" })
+
+-- Coordenadas
+
+-- \spcoord (modo school): separa "#1,#2" o "#1;#2", clasifica cada
+-- mitad (numero/crudo), y distingue frac/dfrac/ninguno para el
+-- tamano del parentesis -- \mathstyle se lee directo en expl3 (mismo
+-- mecanismo que ya usa \spnQ), no hace falta reportarlo desde aca.
+--
+-- Reutiliza spintent_number_pattern (la gramatica LPeg de
+-- luafun_clean_split_and_set) solo como clasificador -- sin llamar a
+-- esa funcion completa ni disparar sus propios token_set_macro de
+-- unidades/millones/exponente, que no aplican aca.
+
+local function spintent_spcoord_classify(part)
+    local sign, rest = "", part
+    local first = s_sub(part, 1, 1)
+    if first == "+" or first == "-" then
+        sign = first
+        rest = spintent_trim(s_sub(part, 2))
+    end
+
+    if s_match(rest, "^\\dfrac%s*%{") then
+        return sign, "raw", rest, "dfrac"
+    end
+    if s_match(rest, "^\\frac%s*%{") then
+        return sign, "raw", rest, "frac"
+    end
+
+    local num_result = spintent_number_pattern:match(rest)
+    if num_result
+       and (num_result.extra or "") == ""
+       and ((num_result.integer or "") ~= "" or (num_result.fraction or "") ~= "") then
+        return sign, "number", rest, "none"
+    end
+
+    return sign, "raw", rest, "none"
+end
+
+local function spintent_spcoord_set_error()
+    token_set_macro("l__spintent_spcoord_luaset_error_str", "true")
+    token_set_macro("l__spintent_spcoord_luaset_sep_str",   "")
+    token_set_macro("l__spintent_spcoord_luaset_x_sign_str",     "")
+    token_set_macro("l__spintent_spcoord_luaset_x_type_str",     "")
+    token_set_macro("l__spintent_spcoord_luaset_x_value_str",    "")
+    token_set_macro("l__spintent_spcoord_luaset_x_has_frac_str", "")
+    token_set_macro("l__spintent_spcoord_luaset_y_sign_str",     "")
+    token_set_macro("l__spintent_spcoord_luaset_y_type_str",     "")
+    token_set_macro("l__spintent_spcoord_luaset_y_value_str",    "")
+    token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", "")
+end
+
+register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
+    raw_content = spintent_trim(raw_content)
+
+    local sep_char, x_raw, y_raw
+
+    if s_match(raw_content, ";") then
+        sep_char = ";"
+        x_raw, y_raw = raw_content:match("^([^;]*);([^;]*)$")
+    else
+        sep_char = ","
+        x_raw, y_raw = raw_content:match("^([^,]*),([^,]*)$")
+    end
+
+    if not x_raw or not y_raw then
+        spintent_spcoord_set_error()
+        return
+    end
+
+    x_raw = spintent_trim(x_raw)
+    y_raw = spintent_trim(y_raw)
+
+    if x_raw == "" or y_raw == "" then
+        spintent_spcoord_set_error()
+        return
+    end
+
+    -- si el separador es coma, ninguna mitad puede tener OTRA coma
+    -- (ambiguedad con un decimal) -- con punto y coma no hay problema
+    if sep_char == "," then
+        if s_match(x_raw, ",") or s_match(y_raw, ",") then
+            spintent_spcoord_set_error()
+            return
+        end
+    end
+
+    local x_sign, x_type, x_value, x_has_frac = spintent_spcoord_classify(x_raw)
+    local y_sign, y_type, y_value, y_has_frac = spintent_spcoord_classify(y_raw)
+
+    token_set_macro("l__spintent_spcoord_luaset_error_str", "false")
+    token_set_macro("l__spintent_spcoord_luaset_sep_str",   sep_char)
+
+    token_set_macro("l__spintent_spcoord_luaset_x_sign_str",     x_sign)
+    token_set_macro("l__spintent_spcoord_luaset_x_type_str",     x_type)
+    token_set_macro("l__spintent_spcoord_luaset_x_value_str",    x_value)
+    token_set_macro("l__spintent_spcoord_luaset_x_has_frac_str", x_has_frac)
+
+    token_set_macro("l__spintent_spcoord_luaset_y_sign_str",     y_sign)
+    token_set_macro("l__spintent_spcoord_luaset_y_type_str",     y_type)
+    token_set_macro("l__spintent_spcoord_luaset_y_value_str",    y_value)
+    token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", y_has_frac)
 end, { "string" })
