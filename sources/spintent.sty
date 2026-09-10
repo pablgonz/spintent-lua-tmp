@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-09} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-10} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -4143,6 +4143,207 @@
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPfig } }
+  }
+\clist_map_inline:nn { rad , diam }
+  {
+    \str_new:c  { l__spintent_sp #1 _mode_str        }
+    \str_new:c  { l__spintent_sp #1 _sub_index_str   }
+    \tl_new:c   { l__spintent_sp #1 _read_arg_tl     }
+  }
+\tl_new:N \l__spintent_sp_rad_diam_letra_tl
+\tl_new:N \l__spintent_sp_rad_diam_word_tl
+\tl_new:N \l__spintent_sp_rad_diam_print_tl
+\tl_new:N \l__spintent_sp_rad_diam_intent_arg_tl
+\clist_map_inline:nn { rad , diam }
+  {
+    \keys_define:nn { spintent / sp #1 }
+      {
+        read-cmd    .choices:nn = { school , mathcat }
+          {
+            \int_case:nn { \l_keys_choice_int }
+              {
+                {1} { \str_set:cn { l__spintent_sp #1 _mode_str } { school  } }
+                {2} { \str_set:cn { l__spintent_sp #1 _mode_str } { mathcat } }
+              }
+          },
+        read-cmd    .initial:n  = school,
+        read-cmd    .value_required:n = true,
+        read-cmd / unknown .code:n =
+          \msg_error:nneee { spintent } { unknown-choice }
+            { read-cmd } { school,~mathcat } { \exp_not:n {##1} },
+        upper-case  .bool_set:c = { l__spintent_sp #1 _upper_case_bool },
+        upper-case  .initial:n  = false,
+        upper-case  .value_required:n = true,
+        sub-index   .code:n =
+          { \str_set:cn { l__spintent_sp #1 _sub_index_str } {##1} },
+        sub-index   .initial:n  = ,
+        sub-index   .value_required:n = true,
+        read-sub    .bool_set:c = { l__spintent_sp #1 _read_sub_bool },
+        read-sub    .initial:n  = false,
+        read-sub    .value_required:n = true,
+        read-arg    .code:n =
+          { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _read_arg_tl } {##1} },
+        read-arg    .initial:n  = ,
+        read-arg    .value_required:n = true,
+        concept     .bool_set:c = { l__spintent_sp #1 _concept_bool },
+        concept     .initial:n  = true,
+        concept     .value_required:n = true,
+        silent-cmd  .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
+        silent-cmd  .initial:n  = false,
+        silent-cmd  .value_required:n = true,
+        print-sym   .bool_set:c = { l__spintent_sp #1 _print_sym_bool },
+        print-sym   .initial:n  = false,
+        print-sym   .value_required:n = true,
+        unknown             .code:n =
+          {
+            \str_set:Nn \l__spintent_command_name_str { sp #1 }
+            \__spintent_unknown_keys_cmd:n {##1}
+          },
+      }
+  }
+\cs_new_protected:Nn \__spintent_sp_rad_diam_print:n
+  {
+    \bool_if:cTF { l__spintent_sp #1 _upper_case_bool }
+      {
+        \str_if_eq:eeTF {#1} { rad }
+          {
+            \tl_set:Nn \l__spintent_sp_rad_diam_letra_tl { R }
+          }
+          { \tl_set:Nn \l__spintent_sp_rad_diam_letra_tl { D } }
+      }
+      {
+        \str_if_eq:eeTF {#1} { rad }
+          {
+            \tl_set:Nn \l__spintent_sp_rad_diam_letra_tl { r }
+          }
+          { \tl_set:Nn \l__spintent_sp_rad_diam_letra_tl { d } }
+      }
+    \str_if_empty:cTF { l__spintent_sp #1 _sub_index_str }
+      {
+        \tl_set:Ne \l__spintent_sp_rad_diam_print_tl
+          {
+            \l__spintent_sp_rad_diam_letra_tl
+          }
+      }
+      {
+        \tl_set:Ne \l__spintent_sp_rad_diam_print_tl
+          {
+            \l__spintent_sp_rad_diam_letra_tl
+            _ {
+                \str_use:c { l__spintent_sp #1 _sub_index_str }
+              }
+          }
+      }
+    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+      {
+        \tl_set:Nn \l__spintent_sp_rad_diam_intent_arg_tl { _- }
+      }
+      {
+        \tl_clear:N \l__spintent_sp_rad_diam_intent_arg_tl
+        \str_if_empty:cT { l__spintent_sp #1 _sub_index_str }
+          {
+            \bool_if:cT { l__spintent_sp #1 _concept_bool }
+              {
+                \tl_if_empty:cT { l__spintent_sp #1 _read_arg_tl }
+                  {
+                    \str_if_eq:eeT
+                      { \str_use:c { l__spintent_sp #1 _mode_str } } { mathcat }
+                      {
+                        \str_if_eq:eeTF {#1} { rad }
+                          {
+                            \tl_set:Nn \l__spintent_sp_rad_diam_intent_arg_tl { radius:nofix }
+                          }
+                          {
+                            \tl_set:Nn \l__spintent_sp_rad_diam_intent_arg_tl { diameter:nofix }
+                          }
+                      }
+                  }
+              }
+          }
+        \tl_if_empty:NT \l__spintent_sp_rad_diam_intent_arg_tl
+          {
+            \bool_if:cTF { l__spintent_sp #1 _concept_bool }
+              {
+                \tl_if_empty:cTF { l__spintent_sp #1 _read_arg_tl }
+                  {
+                    \str_if_eq:eeTF {#1} { rad }
+                      { \tl_set:Nn \l__spintent_sp_rad_diam_word_tl { radio } }
+                      { \tl_set:Nn \l__spintent_sp_rad_diam_word_tl { diámetro } }
+                  }
+                  {
+                    \tl_set:Ne \l__spintent_sp_rad_diam_word_tl
+                      {
+                        \tl_use:c { l__spintent_sp #1 _read_arg_tl }
+                      }
+                   }
+              }
+              {
+                \tl_if_empty:cTF { l__spintent_sp #1 _read_arg_tl }
+                  {
+                    \str_if_eq:eeTF {#1} { rad }
+                      { \tl_set:Nn \l__spintent_sp_rad_diam_word_tl { erre } }
+                      { \tl_set:Nn \l__spintent_sp_rad_diam_word_tl { de } }
+                  }
+                  {
+                    \tl_set:Ne \l__spintent_sp_rad_diam_word_tl
+                      {
+                        \tl_use:c { l__spintent_sp #1 _read_arg_tl }
+                      }
+                  }
+              }
+            \str_if_empty:cTF { l__spintent_sp #1 _sub_index_str }
+              {
+                \tl_set:Ne \l__spintent_sp_rad_diam_intent_arg_tl
+                  {
+                    _ \l__spintent_sp_rad_diam_word_tl - :prefix }
+                  }
+              {
+                \tl_set:Ne \l__spintent_sp_rad_diam_intent_arg_tl
+                  {
+                    _ \l__spintent_sp_rad_diam_word_tl -
+                    \bool_if:cT { l__spintent_sp #1 _read_sub_bool } { sub- }
+                    \str_use:c { l__spintent_sp #1 _sub_index_str }
+                    :prefix
+                  }
+              }
+          }
+      }
+    \__spintent_invisible_sep:
+    \str_if_eq:eeT {#1} { diam }
+      {
+        \bool_if:NT \l__spintent_spdiam_print_sym_bool
+          {
+            \MathMLintent { :silent } { \diameter }
+          }
+      }
+    \__spintent_luafun_wrap_mrow_intent_arg:nn
+      { } { intent = "\l__spintent_sp_rad_diam_intent_arg_tl" }
+    { \l__spintent_sp_rad_diam_print_tl }
+  }
+\cs_new_protected:Nn \__spintent_sp_rad_diam_exec:nn
+  {
+    \keys_set:nn { spintent / sp #1 } {#2}
+    \__spintent_sp_rad_diam_print:n {#1}
+  }
+\NewDocumentCommand \sprad { O{} }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_sp_rad_diam_exec:nn { rad } {#1}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \sprad } }
+  }
+\NewDocumentCommand \spdiam { O{} }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_sp_rad_diam_exec:nn { diam } {#1}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spdiam } }
   }
 \str_new:N \l__spintent_geo_luaset_circ_radio_type_str
 \str_new:N \l__spintent_geo_luaset_circ_radio_raw_str
