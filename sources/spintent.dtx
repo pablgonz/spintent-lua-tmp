@@ -13300,6 +13300,196 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    \begin{macrocode}
+% ESQUELETO -- sin documentar todavia
+
+% -- variables primero --
+\str_new:N \l_@@_spcoord_mode_str
+\str_new:N \l_@@_spcoord_intent_str % ,;:infix
+
+\str_new:N \l_@@_spcoord_luaset_error_str
+\str_new:N \l_@@_spcoord_luaset_sep_str
+\str_new:N \l_@@_spcoord_luaset_x_sign_str
+\str_new:N \l_@@_spcoord_luaset_x_type_str
+\tl_new:N  \l_@@_spcoord_luaset_x_value_str
+\str_new:N \l_@@_spcoord_luaset_x_has_frac_str   % "none" / "frac" / "dfrac"
+\str_new:N \l_@@_spcoord_luaset_y_sign_str
+\str_new:N \l_@@_spcoord_luaset_y_type_str
+\tl_new:N  \l_@@_spcoord_luaset_y_value_str
+\str_new:N \l_@@_spcoord_luaset_y_has_frac_str   % "none" / "frac" / "dfrac"
+
+\tl_new:N \l_@@_spcoord_wrap_parens_l_tl
+\tl_new:N \l_@@_spcoord_wrap_parens_r_tl
+
+% -- keys --
+\keys_define:nn { spintent / spcoord }
+  {
+    read-cmd    .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spcoord_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spcoord_mode_str { mathcat } }
+          }
+      },
+    read-cmd    .initial:n  = school,
+    read-cmd    .value_required:n = true,
+    read-cmd / unknown .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {##1} },
+    silent-cmd  .bool_set:N = \l_@@_spcoord_silent_cmd_bool,
+    silent-cmd  .initial:n  = false,
+    silent-cmd  .value_required:n = true,
+    unknown     .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spcoord }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+% -- tamano de parentesis, igual mecanismo que \@@_spmQ_set_wrap_parens_size:
+% (linea 8704 del .dtx): \mathstyle directo, sin pasar por Lua. Fuerza
+% Bigl/Bigr cuando cualquiera de las dos mitades es \dfrac,
+% independiente del estilo -- mismo criterio que print-dfrac en spnQ.
+\cs_new_protected:Nn \@@_spcoord_set_wrap_parens_size:
+  {
+    \int_case:nnF { \mathstyle }
+      {
+        { 0 }
+          {
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \Bigr \rparen }
+          }
+        { 1 }
+          {
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \Bigr \rparen }
+          }
+        { 2 }
+          {
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \bigr \rparen }
+          }
+        { 3 }
+          {
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \bigr \rparen }
+          }
+      }
+      {
+        \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \lparen }
+        \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \rparen }
+      }
+    \bool_if:nT
+      {
+        \bool_lazy_or_p:nn
+          {
+            \str_if_eq_p:Vn \l_@@_spcoord_luaset_x_has_frac_str { dfrac }
+          }
+          {
+            \str_if_eq_p:Vn \l_@@_spcoord_luaset_y_has_frac_str { dfrac }
+          }
+      }
+      {
+        \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \Bigl \lparen }
+        \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \Bigr \rparen }
+      }
+  }
+% -- valor: number -> \spnum ; raw -> tal cual (frac/letra, sin tocar)
+\cs_new_protected:Nn \@@_spcoord_value:n
+  {
+    \str_if_eq:eeTF { \str_use:c { l_@@_spcoord_luaset_ #1 _type_str } } { number }
+      {
+        \exp_args:Ne \spnum { \str_use:c { l_@@_spcoord_luaset_ #1 _value_str } }
+      }
+      {
+        \str_use:c { l_@@_spcoord_luaset_ #1 _value_str }
+      }
+  }
+% -- signo: siempre "más"/"menos", nunca positivo/negativo, fijo
+\cs_new_protected:Nn \@@_spcoord_print:n
+  {
+    \str_case:enF { \str_use:c { l_@@_spcoord_luaset_ #1 _sign_str } }
+      {
+        { + }
+          {
+            \MathMLintent { _más:prefix ($vp) }
+              {
+                \str_use:c { l_@@_spcoord_luaset_ #1 _sign_str }
+                \MathMLarg{ vp }
+                  {
+                    \@@_spcoord_value:n { #1 }
+                  }
+              }
+          }
+        { - }
+          {
+            \MathMLintent { _menos :prefix($vn) }
+              {
+                \str_use:c { l_@@_spcoord_luaset_ #1 _sign_str }
+                \MathMLarg{ vn }
+                  {
+                    \@@_spcoord_value:n { #1 }
+                  }
+              }
+          }
+      }
+      {
+        \@@_spcoord_value:n { #1 }
+      }
+  }
+% infix
+\cs_new_protected:Nn \@@_spcoord_intent_infix:
+  {
+    \str_if_eq:VnTF \l_@@_spcoord_luaset_sep_str { ; }
+      {
+        \str_set:Nn \l_@@_spcoord_intent_str { _punto-y-coma:infix }
+      }
+      {
+        \str_set:Nn \l_@@_spcoord_intent_str { _coma:infix }
+      }
+    \MathMLintent{ \l_@@_spcoord_intent_str ($x, $y)}
+      {
+        \MathMLarg{x}{ \@@_spcoord_print:n { x } }
+        \l_@@_spcoord_luaset_sep_str
+        \MathMLarg{y}{ \@@_spcoord_print:n { y } }
+      }
+  }
+% -- irecto
+\cs_new_protected:Nn \@@_spcoord_mathml:
+  {
+    \@@_spcoord_set_wrap_parens_size:
+    \MathMLintent { :silent } { \l_@@_spcoord_wrap_parens_l_tl }
+      \@@_spcoord_intent_infix:
+    \MathMLintent { :silent } { \l_@@_spcoord_wrap_parens_r_tl }
+  }
+
+\cs_new_protected:Nn \@@_spcoord_exec:nn
+  {
+    \keys_set:nn { spintent / spcoord } {#1}
+    \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnTF \l_@@_spcoord_luaset_error_str { true }
+      {
+        \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} }
+      }
+      { \@@_spcoord_mathml: }
+  }
+
+\NewDocumentCommand \spcoord { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_spcoord_exec:nn {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spcoord } }
+  }
+%    \end{macrocode}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
 % \subsection{Finish package}
 %
 % Finish package implementation.
@@ -15673,6 +15863,114 @@ register_tex_cmd("luafun_geo_circ_parse_and_set",
     token_set_macro("l__spintent_geo_luaset_error_str",           "true")
     token_set_macro("l__spintent_geo_luaset_circ_radio_type_str", "")
     token_set_macro("l__spintent_geo_luaset_circ_radio_raw_str",  "")
+end, { "string" })
+
+-- Coordenadas
+
+-- \spcoord (modo school): separa "#1,#2" o "#1;#2", clasifica cada
+-- mitad (numero/crudo), y distingue frac/dfrac/ninguno para el
+-- tamano del parentesis -- \mathstyle se lee directo en expl3 (mismo
+-- mecanismo que ya usa \spnQ), no hace falta reportarlo desde aca.
+--
+-- Reutiliza spintent_number_pattern (la gramatica LPeg de
+-- luafun_clean_split_and_set) solo como clasificador -- sin llamar a
+-- esa funcion completa ni disparar sus propios token_set_macro de
+-- unidades/millones/exponente, que no aplican aca.
+
+local function spintent_spcoord_classify(part)
+    local sign, rest = "", part
+    local first = s_sub(part, 1, 1)
+    if first == "+" or first == "-" then
+        sign = first
+        rest = spintent_trim(s_sub(part, 2))
+    end
+
+    if s_match(rest, "^\\dfrac%s*%{") then
+        return sign, "raw", rest, "dfrac"
+    end
+    if s_match(rest, "^\\frac%s*%{") then
+        return sign, "raw", rest, "frac"
+    end
+
+    local num_result = spintent_number_pattern:match(rest)
+    if num_result
+       and (num_result.extra or "") == ""
+       and ((num_result.integer or "") ~= "" or (num_result.fraction or "") ~= "") then
+        return sign, "number", rest, "none"
+    end
+
+    return sign, "raw", rest, "none"
+end
+
+local function spintent_spcoord_set_error()
+    token_set_macro("l__spintent_spcoord_luaset_error_str", "true")
+    token_set_macro("l__spintent_spcoord_luaset_sep_str",   "")
+    token_set_macro("l__spintent_spcoord_luaset_x_sign_str",     "")
+    token_set_macro("l__spintent_spcoord_luaset_x_type_str",     "")
+    token_set_macro("l__spintent_spcoord_luaset_x_value_str",    "")
+    token_set_macro("l__spintent_spcoord_luaset_x_has_frac_str", "")
+    token_set_macro("l__spintent_spcoord_luaset_y_sign_str",     "")
+    token_set_macro("l__spintent_spcoord_luaset_y_type_str",     "")
+    token_set_macro("l__spintent_spcoord_luaset_y_value_str",    "")
+    token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", "")
+end
+
+register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
+    raw_content = spintent_trim(raw_content)
+    texio.write_nl("term", "[spcoord DEBUG] raw_content=[" .. raw_content .. "]")
+
+    local sep_char, x_raw, y_raw
+
+    if s_match(raw_content, ";") then
+        sep_char = ";"
+        x_raw, y_raw = raw_content:match("^([^;]*);([^;]*)$")
+    else
+        sep_char = ","
+        x_raw, y_raw = raw_content:match("^([^,]*),([^,]*)$")
+    end
+
+    texio.write_nl("term", "[spcoord DEBUG] sep=[" .. tostring(sep_char) .. "] x_raw=[" .. tostring(x_raw) .. "] y_raw=[" .. tostring(y_raw) .. "]")
+
+    if not x_raw or not y_raw then
+        spintent_spcoord_set_error()
+        return
+    end
+
+    x_raw = spintent_trim(x_raw)
+    y_raw = spintent_trim(y_raw)
+
+    if x_raw == "" or y_raw == "" then
+        spintent_spcoord_set_error()
+        return
+    end
+
+    -- si el separador es coma, ninguna mitad puede tener OTRA coma
+    -- (ambiguedad con un decimal) -- con punto y coma no hay problema
+    if sep_char == "," then
+        if s_match(x_raw, ",") or s_match(y_raw, ",") then
+            spintent_spcoord_set_error()
+            return
+        end
+    end
+
+    local x_sign, x_type, x_value, x_has_frac = spintent_spcoord_classify(x_raw)
+    local y_sign, y_type, y_value, y_has_frac = spintent_spcoord_classify(y_raw)
+
+    texio.write_nl("term", "[spcoord DEBUG] x: sign=[" .. x_sign .. "] type=[" .. x_type .. "] value=[" .. x_value .. "] has_frac=[" .. x_has_frac .. "]")
+    texio.write_nl("term", "[spcoord DEBUG] y: sign=[" .. y_sign .. "] type=[" .. y_type .. "] value=[" .. y_value .. "] has_frac=[" .. y_has_frac .. "]")
+
+    token_set_macro("l__spintent_spcoord_luaset_error_str", "false")
+    token_set_macro("l__spintent_spcoord_luaset_sep_str",   sep_char)
+
+    token_set_macro("l__spintent_spcoord_luaset_x_sign_str",     x_sign)
+    token_set_macro("l__spintent_spcoord_luaset_x_type_str",     x_type)
+    token_set_macro("l__spintent_spcoord_luaset_x_value_str",    x_value)
+    token_set_macro("l__spintent_spcoord_luaset_x_has_frac_str", x_has_frac)
+
+    token_set_macro("l__spintent_spcoord_luaset_y_sign_str",     y_sign)
+    token_set_macro("l__spintent_spcoord_luaset_y_type_str",     y_type)
+    token_set_macro("l__spintent_spcoord_luaset_y_value_str",    y_value)
+    token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", y_has_frac)
 end, { "string" })
 % \iffalse
 %</spintentlua>
