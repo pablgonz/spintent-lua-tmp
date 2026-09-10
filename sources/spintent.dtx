@@ -9038,6 +9038,9 @@ end, "shekel_fallback_patch")
 %    \l_@@_geo_luaset_letra_word_str,
 %    \l_@@_geo_luaset_sub_spoken_str,
 %    \l_@@_geo_luaset_nombre_es_num_str,
+%    \l_@@_geo_luaset_letra_str,
+%    \l_@@_geo_luaset_sub_str,
+%    \l_@@_geo_luaset_tipo_str,
 %  }
 %   Internal variables shared across all commands of the family to
 %   avoid repeated calls into Lua.
@@ -9053,6 +9056,9 @@ end, "shekel_fallback_patch")
 \str_new:N   \l_@@_geo_luaset_letra_word_str
 \str_new:N   \l_@@_geo_luaset_sub_spoken_str
 \str_new:N   \l_@@_geo_luaset_nombre_es_num_str
+\str_new:N   \l_@@_geo_luaset_letra_str
+\str_new:N   \l_@@_geo_luaset_sub_str
+\str_new:N   \l_@@_geo_luaset_tipo_str
 %    \end{macrocode}
 % \end{variable}
 %
@@ -11882,15 +11888,11 @@ end, "shekel_fallback_patch")
 %   {
 %     \l_@@_sp_rad_diam_letra_tl,
 %     \l_@@_sp_rad_diam_word_tl,
-%     \l_@@_sp_rad_diam_print_tl,
-%     \l_@@_sp_rad_diam_intent_arg_tl,
 %   }
 %   Scratch variables used by the function \myhlc|\@@_sp_rad_diam_print:n|.
 %    \begin{macrocode}
 \tl_new:N \l_@@_sp_rad_diam_letra_tl
 \tl_new:N \l_@@_sp_rad_diam_word_tl
-\tl_new:N \l_@@_sp_rad_diam_print_tl
-\tl_new:N \l_@@_sp_rad_diam_intent_arg_tl
 %    \end{macrocode}
 % \end{variable}
 %
@@ -13339,11 +13341,11 @@ end, "shekel_fallback_patch")
 \str_new:N \l_@@_spcoord_luaset_sep_str
 \str_new:N \l_@@_spcoord_luaset_x_sign_str
 \str_new:N \l_@@_spcoord_luaset_x_type_str
-\tl_new:N  \l_@@_spcoord_luaset_x_value_str
+\str_new:N \l_@@_spcoord_luaset_x_value_str
 \str_new:N \l_@@_spcoord_luaset_x_has_frac_str   % "none" / "frac" / "dfrac"
 \str_new:N \l_@@_spcoord_luaset_y_sign_str
 \str_new:N \l_@@_spcoord_luaset_y_type_str
-\tl_new:N  \l_@@_spcoord_luaset_y_value_str
+\str_new:N \l_@@_spcoord_luaset_y_value_str
 \str_new:N \l_@@_spcoord_luaset_y_has_frac_str   % "none" / "frac" / "dfrac"
 %    \end{macrocode}
 % \end{variable}
@@ -15569,6 +15571,9 @@ register_tex_cmd("luafun_geo_point_parse_and_set",
         token_set_macro("l__spintent_geo_luaset_error_str",  "true")
         token_set_macro("l__spintent_geo_luaset_intent_str", "")
         token_set_macro("l__spintent_geo_luaset_print_tl",   "")
+        token_set_macro("l__spintent_geo_luaset_letra_str",  "")
+        token_set_macro("l__spintent_geo_luaset_sub_str",    "")
+        token_set_macro("l__spintent_geo_luaset_tipo_str",   "")
         return
     end
 
@@ -15577,6 +15582,16 @@ register_tex_cmd("luafun_geo_point_parse_and_set",
                     spintent_geo_build_body_nombre(punto))
     token_set_macro("l__spintent_geo_luaset_print_tl",
                     spintent_geo_build_visual_nombre(punto))
+
+    -- letra/sub/tipo por separado -- necesario para que
+    -- \@@_mathmlarg_point:nnn pueda silenciar el subíndice VISUAL
+    -- aparte de la base, en vez de recibir todo pegado en una sola
+    -- cadena (donde el subíndice queda sin proteger, vulnerable a que
+    -- la cola compartida se lo robe a otro comando -- confirmado con
+    -- \spPoint{A_{1}}\spPoint{B}).
+    token_set_macro("l__spintent_geo_luaset_letra_str", punto[1])
+    token_set_macro("l__spintent_geo_luaset_sub_str",   punto[2] or "")
+    token_set_macro("l__spintent_geo_luaset_tipo_str",  punto[3] or "")
 end, { "string" })
 
 -- ------------------------------------------------------------
