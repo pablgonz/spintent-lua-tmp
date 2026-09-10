@@ -11971,126 +11971,163 @@ end, "shekel_fallback_patch")
 %   \cs[no-index]{spdiam}}
 %
 % \begin{macro}[int]{\@@_sp_rad_diam_print:n}
-% DOCUMENTAR COMO CORRESPONE
+%   The function \myhlc|\@@_sp_rad_diam_print:n| sets
+%   \myhlc|\l_@@_sp_rad_diam_letra_tl| to the bare letter — |r|/|R| for
+%   |\sprad|, |d|/|D| for |\spdiam| — per \mykey{upper-case}.
+%
+%   \smallskip
+%
+%   With \mykey{silent-cmd} |true|, the intent is |_-|. Otherwise, with
+%   \mykey{concept} |true| (the default), it verbalizes
+%   |radio|/|diámetro| (\mykey{read-arg} replaces this word when
+%   given), with \mykey{sub-index}, if present, appended right after
+%   (\mykey{read-sub} choosing |sub-|\mymeta{value} or \mymeta{value}
+%   alone) — the letter itself is never read here.
+%
+%   \smallskip
+%
+%   With \mykey{concept} |false|, the letter itself is read instead —
+%   but only when \mykey{read-cmd} is |school|, built the same way
+%   from the letter. With \mykey{read-cmd} |mathcat|, the intent is
+%   left empty: \mynvmath{MathCAT} applies its own rules to the letter
+%   and its subscript, unmarked by us.
+%
+%   \smallskip
+%
+%   With \mykey{sub-index} given and a non-empty intent, the letter
+%   and the \mymeta{value} are wrapped together in one native
+%   |\MathMLintent|, subscript silenced — an unmarked |<msub>| gets
+%   \mynvmath{MathCAT}'s own narration otherwise. With the intent
+%   empty, both stay bare. Receives the short command name in `|#1|'
+%   (|rad|/|diam|).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sp_rad_diam_print:n
   {
     \bool_if:cTF { l_@@_sp #1 _upper_case_bool }
       {
         \str_if_eq:eeTF {#1} { rad }
-          {
-            \tl_set:Nn \l_@@_sp_rad_diam_letra_tl { R }
-          }
+          { \tl_set:Nn \l_@@_sp_rad_diam_letra_tl { R } }
           { \tl_set:Nn \l_@@_sp_rad_diam_letra_tl { D } }
       }
       {
         \str_if_eq:eeTF {#1} { rad }
-          {
-            \tl_set:Nn \l_@@_sp_rad_diam_letra_tl { r }
-          }
+          { \tl_set:Nn \l_@@_sp_rad_diam_letra_tl { r } }
           { \tl_set:Nn \l_@@_sp_rad_diam_letra_tl { d } }
-      }
-    \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
-      {
-        \tl_set:Ne \l_@@_sp_rad_diam_print_tl
-          {
-            \l_@@_sp_rad_diam_letra_tl
-          }
-      }
-      {
-        \tl_set:Ne \l_@@_sp_rad_diam_print_tl
-          {
-            \l_@@_sp_rad_diam_letra_tl
-            _ {
-                \str_use:c { l_@@_sp #1 _sub_index_str }
-              }
-          }
-      }
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
-      {
-        \tl_set:Nn \l_@@_sp_rad_diam_intent_arg_tl { _- }
-      }
-      {
-        \tl_clear:N \l_@@_sp_rad_diam_intent_arg_tl
-        \str_if_empty:cT { l_@@_sp #1 _sub_index_str }
-          {
-            \bool_if:cT { l_@@_sp #1 _concept_bool }
-              {
-                \tl_if_empty:cT { l_@@_sp #1 _read_arg_tl }
-                  {
-                    \str_if_eq:eeT
-                      { \str_use:c { l_@@_sp #1 _mode_str } } { mathcat }
-                      {
-                        \str_if_eq:eeTF {#1} { rad }
-                          {
-                            \tl_set:Nn \l_@@_sp_rad_diam_intent_arg_tl { radius:nofix }
-                          }
-                          {
-                            \tl_set:Nn \l_@@_sp_rad_diam_intent_arg_tl { diameter:nofix }
-                          }
-                      }
-                  }
-              }
-          }
-        \tl_if_empty:NT \l_@@_sp_rad_diam_intent_arg_tl
-          {
-            \bool_if:cTF { l_@@_sp #1 _concept_bool }
-              {
-                \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
-                  {
-                    \str_if_eq:eeTF {#1} { rad }
-                      { \tl_set:Nn \l_@@_sp_rad_diam_word_tl { radio } }
-                      { \tl_set:Nn \l_@@_sp_rad_diam_word_tl { diámetro } }
-                  }
-                  {
-                    \tl_set:Ne \l_@@_sp_rad_diam_word_tl
-                      {
-                        \tl_use:c { l_@@_sp #1 _read_arg_tl }
-                      }
-                   }
-              }
-              {
-                \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
-                  {
-                    \str_if_eq:eeTF {#1} { rad }
-                      { \tl_set:Nn \l_@@_sp_rad_diam_word_tl { erre } }
-                      { \tl_set:Nn \l_@@_sp_rad_diam_word_tl { de } }
-                  }
-                  {
-                    \tl_set:Ne \l_@@_sp_rad_diam_word_tl
-                      {
-                        \tl_use:c { l_@@_sp #1 _read_arg_tl }
-                      }
-                  }
-              }
-            \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
-              {
-                \tl_set:Ne \l_@@_sp_rad_diam_intent_arg_tl
-                  {
-                    _ \l_@@_sp_rad_diam_word_tl - :prefix }
-                  }
-              {
-                \tl_set:Ne \l_@@_sp_rad_diam_intent_arg_tl
-                  {
-                    _ \l_@@_sp_rad_diam_word_tl -
-                    \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub- }
-                    \str_use:c { l_@@_sp #1 _sub_index_str }
-                    :prefix
-                  }
-              }
-          }
       }
     \@@_invisible_sep:
     \str_if_eq:eeT {#1} { diam }
       {
         \bool_if:NT \l_@@_spdiam_print_sym_bool
+          { \MathMLintent { :silent } { ⌀ } }
+      }
+    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+      {
+        \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
           {
-            \MathMLintent { :silent } { \diameter }
+            \@@_luafun_wrap_mrow_intent_arg:nn
+              { } { intent = "_-" }
+            { \l_@@_sp_rad_diam_letra_tl }
+          }
+          {
+            \MathMLintent { _- }
+              {
+                \@@_luafun_inner_sep:
+                \l_@@_sp_rad_diam_letra_tl
+                \c_math_subscript_token
+                  {
+                    \MathMLintent { :silent }
+                      { \str_use:c { l_@@_sp #1 _sub_index_str } }
+                  }
+              }
           }
       }
-    \@@_luafun_wrap_mrow_intent_arg:nn
-      { } { intent = "\l_@@_sp_rad_diam_intent_arg_tl" }
-    { \l_@@_sp_rad_diam_print_tl }
+      {
+        \bool_if:cTF { l_@@_sp #1 _concept_bool }
+          {
+            \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
+              {
+                \str_if_eq:eeTF {#1} { rad }
+                  { \tl_set:Nn \l_@@_sp_rad_diam_word_tl { radio } }
+                  { \tl_set:Nn \l_@@_sp_rad_diam_word_tl { diámetro } }
+              }
+              { \tl_set:Ne \l_@@_sp_rad_diam_word_tl { \tl_use:c { l_@@_sp #1 _read_arg_tl } } }
+            \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
+              {
+                \@@_luafun_wrap_mrow_intent_arg:nn
+                  { } { intent = "_ \l_@@_sp_rad_diam_word_tl - :prefix" }
+                { \l_@@_sp_rad_diam_letra_tl }
+              }
+              {
+                \str_if_eq:eeTF
+                  { \str_use:c { l_@@_sp #1 _mode_str } } { school }
+                  {
+                    \MathMLintent
+                      {
+                        _ \l_@@_sp_rad_diam_word_tl -
+                        \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub- }
+                        \str_use:c { l_@@_sp #1 _sub_index_str }
+                        :prefix
+                      }
+                      {
+                        \@@_luafun_inner_sep:
+                        \l_@@_sp_rad_diam_letra_tl
+                        \c_math_subscript_token
+                          {
+                            \MathMLintent { :silent }
+                              { \str_use:c { l_@@_sp #1 _sub_index_str } }
+                          }
+                      }
+                  }
+                  {
+                    \@@_luafun_wrap_mrow_intent_arg:nn
+                      { } { intent = "_ \l_@@_sp_rad_diam_word_tl - :prefix" }
+                    { \l_@@_sp_rad_diam_letra_tl }
+                    \c_math_subscript_token
+                      { \str_use:c { l_@@_sp #1 _sub_index_str } }
+                  }
+              }
+          }
+          {
+            \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
+              {
+                \str_if_eq:eeTF
+                  { \str_use:c { l_@@_sp #1 _mode_str } } { school }
+                  {
+                    \@@_luafun_wrap_mrow_intent_arg:nn
+                      { } { intent = "_ \l_@@_sp_rad_diam_letra_tl - :prefix" }
+                    { \l_@@_sp_rad_diam_letra_tl }
+                  }
+                  { \l_@@_sp_rad_diam_letra_tl }
+              }
+              {
+                \str_if_eq:eeTF
+                  { \str_use:c { l_@@_sp #1 _mode_str } } { school }
+                  {
+                    \MathMLintent
+                      {
+                        _ \l_@@_sp_rad_diam_letra_tl -
+                        \bool_if:cT { l_@@_sp #1 _read_sub_bool } { sub- }
+                        \str_use:c { l_@@_sp #1 _sub_index_str }
+                        :prefix
+                      }
+                      {
+                        \@@_luafun_inner_sep:
+                        \l_@@_sp_rad_diam_letra_tl
+                        \c_math_subscript_token
+                          {
+                            \MathMLintent { :silent }
+                              { \str_use:c { l_@@_sp #1 _sub_index_str } }
+                          }
+                      }
+                  }
+                  {
+                    \l_@@_sp_rad_diam_letra_tl
+                    \c_math_subscript_token
+                      { \str_use:c { l_@@_sp #1 _sub_index_str } }
+                  }
+              }
+          }
+      }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -12365,11 +12402,11 @@ end, "shekel_fallback_patch")
 %   than pairing with a group.
 %    \begin{macrocode}
 \bool_new:N \l_@@_spcirc_has_arg_bool
-\tl_new:N \l_@@_spcirc_intent_tl
-\tl_new:N \l_@@_spcirc_intent_arg_tl
-\tl_new:N \l_@@_spcirc_connector_tl
-\tl_new:N \l_@@_spcirc_connector_arg_tl
-\tl_new:N \l_@@_spcirc_radio_arg_tl
+\tl_new:N   \l_@@_spcirc_intent_tl
+\tl_new:N   \l_@@_spcirc_intent_arg_tl
+\tl_new:N   \l_@@_spcirc_connector_tl
+\tl_new:N   \l_@@_spcirc_connector_arg_tl
+\tl_new:N   \l_@@_spcirc_radio_arg_tl
 %    \end{macrocode}
 % \end{variable}
 %
