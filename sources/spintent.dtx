@@ -9197,8 +9197,16 @@ end, "shekel_fallback_patch")
 %   The |kv| string is |arg="pt", intent="_-"| when \mykey{silent-cmd} is
 %   |true|; otherwise, for |read-cmd=school| it is |arg="pt", intent="_body-"|
 %   (literal spelling); for |read-cmd=mathcat| it is |arg="pt"| alone.
-%   A single call to \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| applies it,
-%   with \myhlc|\l_@@_spPont_intent_arg_tl| as the concept |intent|.
+%
+%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|, a native
+%   |\MathMLintent| wraps the base (tagged |arg="pt"| through
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|) and the subscript
+%   (silenced) together, with \myhlc|\l_@@_spPoint_intent_arg_tl| as
+%   its intent — the shared queue only ever covers the base of an
+%   |<msub>|. Otherwise, a single call to
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| applies the |kv| string
+%   to the whole \myhlc|\l_@@_geo_luaset_print_tl|, with
+%   \myhlc|\l_@@_spPoint_intent_arg_tl| as the concept |intent|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_mathml:
   {
@@ -9217,10 +9225,24 @@ end, "shekel_fallback_patch")
             \tl_set:Nn \l_@@_spPoint_kv_tl { arg = "pt" }
           }
       }
-    \@@_luafun_wrap_mrow_intent_arg:nn
-      { \l_@@_spPoint_intent_arg_tl }
-      { \l_@@_spPoint_kv_tl }
-    { \l_@@_geo_luaset_print_tl }
+    \str_if_eq:VnTF \l_@@_geo_luaset_tipo_str { sub }
+      {
+        \MathMLintent { \l_@@_spPoint_intent_arg_tl }
+          {
+            \@@_luafun_inner_sep:
+            \@@_luafun_wrap_mrow_intent_arg:nn
+              { } { \l_@@_spPoint_kv_tl }
+            { \l_@@_geo_luaset_letra_str }
+            \c_math_subscript_token
+              { \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str } }
+          }
+      }
+      {
+        \@@_luafun_wrap_mrow_intent_arg:nn
+          { \l_@@_spPoint_intent_arg_tl }
+          { \l_@@_spPoint_kv_tl }
+        { \l_@@_geo_luaset_print_tl }
+      }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -9257,7 +9279,15 @@ end, "shekel_fallback_patch")
 %
 % \subsection{The function \cs[no-index]{@@_mathmlarg_point:nnn}}\label{fun:mathmlarg_point}
 %
-% \begin{macro}[int]{\@@_mathmlarg_point:nnn, \@@_mathmlarg_point:nnV}
+% \begin{macro}[int]
+%   {
+%     \@@_mathmlarg_point:nnn,
+%     \@@_mathmlarg_point:nnV,
+%     \l_@@_mathmlarg_point_ref_tl,
+%     \l_@@_mathmlarg_point_mode_str,
+%     \l_@@_mathmlarg_point_kv_tl,
+%     \l_@@_mathmlarg_point_silent_bool,
+%   }
 %   Annotates one point (|#3|) with |arg| and, when applicable, a literal
 %   |intent|, without wrapping it in its own |<mrow>|. |#1| is the
 %   reference name (|arg="#1"|); |#2| is the calling command's name,
@@ -9265,6 +9295,23 @@ end, "shekel_fallback_patch")
 %   variables. Same |kv| logic as \myhlc|\@@_spPoint_mathml:|. Concept
 %   |intent| is passed empty on purpose: the caller applies it once,
 %   externally, via a native |\MathMLintent|.
+%
+%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub| (a genuine
+%   subscript, not a prime), the letter alone
+%   (\myhlc|\l_@@_geo_luaset_letra_str|) is wrapped through
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| — the shared queue only
+%   ever claims the base of an |<msub>|, never its own subscript
+%   (confirmed with |\spPoint{A_{1}}\spPoint{B}|: the visual subscript
+%   was left bare, and a later command's own queue entry landed on it
+%   instead of its intended target) — and the visual subscript
+%   (\myhlc|\l_@@_geo_luaset_sub_str|) is appended separately, as a
+%   real |\c_math_subscript_token|, silenced with a native
+%   |\MathMLintent|: it is already spoken as part of the combined
+%   literal on the base, so reading it again natively would repeat it.
+%   Otherwise (no subscript, or a prime — which is not a genuine
+%   |<msub>| at all), the combined
+%   \myhlc|\l_@@_geo_luaset_print_tl| is wrapped as a whole, exactly
+%   as before.
 %    \begin{macrocode}
 \tl_new:N   \l_@@_mathmlarg_point_ref_tl
 \str_new:N  \l_@@_mathmlarg_point_mode_str
@@ -9292,10 +9339,23 @@ end, "shekel_fallback_patch")
             \tl_set:Ne \l_@@_mathmlarg_point_kv_tl { arg = "\l_@@_mathmlarg_point_ref_tl" }
           }
       }
-    \@@_luafun_wrap_mrow_intent_arg:nn
-      {  } % debe ir vacío
-      { \l_@@_mathmlarg_point_kv_tl }
-    { \l_@@_geo_luaset_print_tl }
+    \str_if_eq:VnTF \l_@@_geo_luaset_tipo_str { sub }
+      {
+        \@@_luafun_wrap_mrow_intent_arg:nn
+          {  } % debe ir vacío
+          { \l_@@_mathmlarg_point_kv_tl }
+        { \l_@@_geo_luaset_letra_str }
+        \c_math_subscript_token
+          {
+            \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str }
+          }
+      }
+      {
+        \@@_luafun_wrap_mrow_intent_arg:nn
+          {  } % debe ir vacío
+          { \l_@@_mathmlarg_point_kv_tl }
+        { \l_@@_geo_luaset_print_tl }
+      }
   }
 \cs_generate_variant:Nn \@@_mathmlarg_point:nnn { nnV }
 %    \end{macrocode}
