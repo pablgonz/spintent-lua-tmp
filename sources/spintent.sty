@@ -2570,6 +2570,9 @@
 \str_new:N   \l__spintent_geo_luaset_letra_word_str
 \str_new:N   \l__spintent_geo_luaset_sub_spoken_str
 \str_new:N   \l__spintent_geo_luaset_nombre_es_num_str
+\str_new:N   \l__spintent_geo_luaset_letra_str
+\str_new:N   \l__spintent_geo_luaset_sub_str
+\str_new:N   \l__spintent_geo_luaset_tipo_str
 \str_new:N \l__spintent_spPoint_mode_str
 \tl_new:N  \l__spintent_spPoint_prefix_tl
 \tl_new:N  \l__spintent_spPoint_intent_arg_tl
@@ -2658,10 +2661,24 @@
             \tl_set:Nn \l__spintent_spPoint_kv_tl { arg = "pt" }
           }
       }
-    \__spintent_luafun_wrap_mrow_intent_arg:nn
-      { \l__spintent_spPoint_intent_arg_tl }
-      { \l__spintent_spPoint_kv_tl }
-    { \l__spintent_geo_luaset_print_tl }
+    \str_if_eq:VnTF \l__spintent_geo_luaset_tipo_str { sub }
+      {
+        \MathMLintent { \l__spintent_spPoint_intent_arg_tl }
+          {
+            \__spintent_luafun_inner_sep:
+            \__spintent_luafun_wrap_mrow_intent_arg:nn
+              { } { \l__spintent_spPoint_kv_tl }
+            { \l__spintent_geo_luaset_letra_str }
+            \c_math_subscript_token
+              { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
+          }
+      }
+      {
+        \__spintent_luafun_wrap_mrow_intent_arg:nn
+          { \l__spintent_spPoint_intent_arg_tl }
+          { \l__spintent_spPoint_kv_tl }
+        { \l__spintent_geo_luaset_print_tl }
+      }
   }
 \cs_new_protected:Nn \__spintent_spPoint_exec:nn
   {
@@ -2704,10 +2721,23 @@
             \tl_set:Ne \l__spintent_mathmlarg_point_kv_tl { arg = "\l__spintent_mathmlarg_point_ref_tl" }
           }
       }
-    \__spintent_luafun_wrap_mrow_intent_arg:nn
-      {  } % debe ir vacío
-      { \l__spintent_mathmlarg_point_kv_tl }
-    { \l__spintent_geo_luaset_print_tl }
+    \str_if_eq:VnTF \l__spintent_geo_luaset_tipo_str { sub }
+      {
+        \__spintent_luafun_wrap_mrow_intent_arg:nn
+          {  } % debe ir vacío
+          { \l__spintent_mathmlarg_point_kv_tl }
+        { \l__spintent_geo_luaset_letra_str }
+        \c_math_subscript_token
+          {
+            \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str }
+          }
+      }
+      {
+        \__spintent_luafun_wrap_mrow_intent_arg:nn
+          {  } % debe ir vacío
+          { \l__spintent_mathmlarg_point_kv_tl }
+        { \l__spintent_geo_luaset_print_tl }
+      }
   }
 \cs_generate_variant:Nn \__spintent_mathmlarg_point:nnn { nnV }
 \str_new:N \l__spintent_sprecta_mode_str
@@ -2800,10 +2830,24 @@
                 \tl_set:Nn \l__spintent_sprecta_kv_tl { arg = "pt" }
               }
           }
-        \__spintent_luafun_wrap_mrow_intent_arg:nn
-          { \l__spintent_sprecta_intent_arg_tl }
-          { \l__spintent_sprecta_kv_tl }
-        { \l__spintent_geo_luaset_print_tl }
+        \str_if_eq:VnTF \l__spintent_geo_luaset_tipo_str { sub }
+          {
+            \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
+              {
+                \__spintent_luafun_inner_sep:
+                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                  { } { \l__spintent_sprecta_kv_tl }
+                { \l__spintent_geo_luaset_letra_str }
+                \c_math_subscript_token
+                  { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
+              }
+          }
+          {
+            \__spintent_luafun_wrap_mrow_intent_arg:nn
+              { \l__spintent_sprecta_intent_arg_tl }
+              { \l__spintent_sprecta_kv_tl }
+            { \l__spintent_geo_luaset_print_tl }
+          }
       }
       {
         \seq_set_from_clist:NN \l__spintent_sprecta_pt_seq \l__spintent_geo_luaset_points_clist
@@ -4151,8 +4195,6 @@
   }
 \tl_new:N \l__spintent_sp_rad_diam_letra_tl
 \tl_new:N \l__spintent_sp_rad_diam_word_tl
-\tl_new:N \l__spintent_sp_rad_diam_print_tl
-\tl_new:N \l__spintent_sp_rad_diam_intent_arg_tl
 \clist_map_inline:nn { rad , diam }
   {
     \keys_define:nn { spintent / sp #1 }
@@ -4960,11 +5002,11 @@
 \str_new:N \l__spintent_spcoord_luaset_sep_str
 \str_new:N \l__spintent_spcoord_luaset_x_sign_str
 \str_new:N \l__spintent_spcoord_luaset_x_type_str
-\tl_new:N  \l__spintent_spcoord_luaset_x_value_str
+\str_new:N \l__spintent_spcoord_luaset_x_value_str
 \str_new:N \l__spintent_spcoord_luaset_x_has_frac_str   % "none" / "frac" / "dfrac"
 \str_new:N \l__spintent_spcoord_luaset_y_sign_str
 \str_new:N \l__spintent_spcoord_luaset_y_type_str
-\tl_new:N  \l__spintent_spcoord_luaset_y_value_str
+\str_new:N \l__spintent_spcoord_luaset_y_value_str
 \str_new:N \l__spintent_spcoord_luaset_y_has_frac_str   % "none" / "frac" / "dfrac"
 \tl_new:N  \l__spintent_spcoord_raw_arg_tl
 \str_new:N \l__spintent_spcoord_intent_str % ,;:infix

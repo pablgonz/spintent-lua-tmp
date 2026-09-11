@@ -9483,35 +9483,31 @@ end, "shekel_fallback_patch")
 %   The function \myhlc|\@@_sprecta_mathml:| branches on
 %   \myhlc|\l_@@_geo_luaset_is_name_str|.
 %
-%   For a proper name (|m|, |l|, \ldots), the logic mirrors
-%   \myhlc|\@@_spPoint_mathml:| exactly: the concept |intent| is
+%   For a proper name (|m|, |l|, \ldots), the concept |intent| is
 %   |:silent($pt)| when \mykey{silent-cmd} is |true| \emph{or}
-%   \mykey{concept} is |false|; otherwise it is |recta:prefix($pt)|,
-%   prefixed with \mykey{prefix} when given. The |kv| string, however,
-%   depends \emph{only} on \mykey{silent-cmd} — |concept=false| alone
-%   must not silence the letter itself: |arg="pt", intent="_-"| when
-%   silent; otherwise |arg="pt"| plus a literal |intent| for
-%   |read-cmd=school|, or |arg="pt"| alone for |read-cmd=mathcat|. A
-%   single call to \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| applies
-%   both.
+%   \mykey{concept} is |false|; otherwise |recta:prefix($pt)|,
+%   prefixed with \mykey{prefix} when given. The |kv| string depends
+%   only on \mykey{silent-cmd}: |arg="pt", intent="_-"| when silent;
+%   otherwise |arg="pt"| plus a literal |intent| for |read-cmd=school|,
+%   or |arg="pt"| alone for |read-cmd=mathcat|. With
+%   \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|, a native
+%   |\MathMLintent| wraps the base (tagged via
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|) and the subscript
+%   (silenced) together — the shared queue only ever covers the base
+%   of an |<msub>|. Otherwise, a single call to
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| applies the |kv| string
+%   to the whole \myhlc|\l_@@_geo_luaset_print_tl|.
 %
-%   For a list of points, \myhlc|\l_@@_geo_luaset_points_clist| (set by
-%   Lua, one raw point per element, unmerged) is split into
-%   \myhlc|\l_@@_sprecta_pt_seq| and walked once to build
-%   \myhlc|\l_@@_sprecta_refs_tl|, the comma-separated |$pt1,$pt2,...|
-%   reference list, naming each point by position. The concept |intent|
-%   is |_-:nofix(refs)| when \mykey{silent-cmd} is |true| \emph{or}
-%   \mykey{concept} is |false|; otherwise |recta:prefix(refs)|,
-%   prefixed as above. It is applied with a native |\MathMLintent|
-%   wrapping |\overleftrightarrow|, preceded by
-%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
-%   |<mrow>| does not collapse into |<math>|, |luamml| issue
-%   \href{https://github.com/latex3/luamml/issues/26}{\#26}). The
-%   sequence is walked a second time, calling
-%   \myhlc|\@@_mathmlarg_point:nnn| once per point with its |pt|$n$
-%   reference name and \mykey[sprecta]{silent-cmd}/\mykey[sprecta]{read-cmd}
-%   looked up under |sprecta|: it alone decides |arg|/literal |intent|
-%   per point, so |concept| plays no role at that level.
+%   For a list of points, \myhlc|\l_@@_geo_luaset_points_clist| is
+%   split into \myhlc|\l_@@_sprecta_pt_seq| and walked to build
+%   \myhlc|\l_@@_sprecta_refs_tl|, the |$pt1,$pt2,...| reference list.
+%   The concept |intent| is |_-:nofix(refs)| or |recta:prefix(refs)|,
+%   same conditions as above, applied with a native |\MathMLintent|
+%   wrapping |\overleftrightarrow| (|\@@_luafun_inner_sep:| first,
+%   |luamml| issue \href{https://github.com/latex3/luamml/issues/26}{\#26}).
+%   The sequence is walked again, calling
+%   \myhlc|\@@_mathmlarg_point:nnn| per point — already protected
+%   against a subscripted point.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_mathml:
   {
@@ -9549,10 +9545,24 @@ end, "shekel_fallback_patch")
                 \tl_set:Nn \l_@@_sprecta_kv_tl { arg = "pt" }
               }
           }
-        \@@_luafun_wrap_mrow_intent_arg:nn
-          { \l_@@_sprecta_intent_arg_tl }
-          { \l_@@_sprecta_kv_tl }
-        { \l_@@_geo_luaset_print_tl }
+        \str_if_eq:VnTF \l_@@_geo_luaset_tipo_str { sub }
+          {
+            \MathMLintent { \l_@@_sprecta_intent_arg_tl }
+              {
+                \@@_luafun_inner_sep:
+                \@@_luafun_wrap_mrow_intent_arg:nn
+                  { } { \l_@@_sprecta_kv_tl }
+                { \l_@@_geo_luaset_letra_str }
+                \c_math_subscript_token
+                  { \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str } }
+              }
+          }
+          {
+            \@@_luafun_wrap_mrow_intent_arg:nn
+              { \l_@@_sprecta_intent_arg_tl }
+              { \l_@@_sprecta_kv_tl }
+            { \l_@@_geo_luaset_print_tl }
+          }
       }
       {
         \seq_set_from_clist:NN \l_@@_sprecta_pt_seq \l_@@_geo_luaset_points_clist
@@ -15666,6 +15676,9 @@ local function spintent_geo_set_error_recta()
     token_set_macro("l__spintent_geo_luaset_print_tl",     "")
     token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
     token_set_macro("l__spintent_geo_luaset_points_clist", "")
+    token_set_macro("l__spintent_geo_luaset_letra_str",    "")
+    token_set_macro("l__spintent_geo_luaset_sub_str",      "")
+    token_set_macro("l__spintent_geo_luaset_tipo_str",     "")
 end
 
 register_tex_cmd("luafun_geo_parse_and_set", function(csv)
@@ -15699,6 +15712,12 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
         token_set_macro("l__spintent_geo_luaset_points_clist", "") -- nombre = 1 solo punto, no aplica
+        -- letra/sub/tipo por separado -- mismo motivo que en
+        -- luafun_geo_point_parse_and_set: permite silenciar el
+        -- subíndice VISUAL aparte de la base.
+        token_set_macro("l__spintent_geo_luaset_letra_str", nombre[1])
+        token_set_macro("l__spintent_geo_luaset_sub_str",   nombre[2] or "")
+        token_set_macro("l__spintent_geo_luaset_tipo_str",  nombre[3] or "")
         return
     end
 

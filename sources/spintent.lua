@@ -1944,6 +1944,9 @@ register_tex_cmd("luafun_geo_point_parse_and_set",
         token_set_macro("l__spintent_geo_luaset_error_str",  "true")
         token_set_macro("l__spintent_geo_luaset_intent_str", "")
         token_set_macro("l__spintent_geo_luaset_print_tl",   "")
+        token_set_macro("l__spintent_geo_luaset_letra_str",  "")
+        token_set_macro("l__spintent_geo_luaset_sub_str",    "")
+        token_set_macro("l__spintent_geo_luaset_tipo_str",   "")
         return
     end
 
@@ -1952,6 +1955,16 @@ register_tex_cmd("luafun_geo_point_parse_and_set",
                     spintent_geo_build_body_nombre(punto))
     token_set_macro("l__spintent_geo_luaset_print_tl",
                     spintent_geo_build_visual_nombre(punto))
+
+    -- letra/sub/tipo por separado -- necesario para que
+    -- \__spintent_mathmlarg_point:nnn pueda silenciar el subíndice VISUAL
+    -- aparte de la base, en vez de recibir todo pegado en una sola
+    -- cadena (donde el subíndice queda sin proteger, vulnerable a que
+    -- la cola compartida se lo robe a otro comando -- confirmado con
+    -- \spPoint{A_{1}}\spPoint{B}).
+    token_set_macro("l__spintent_geo_luaset_letra_str", punto[1])
+    token_set_macro("l__spintent_geo_luaset_sub_str",   punto[2] or "")
+    token_set_macro("l__spintent_geo_luaset_tipo_str",  punto[3] or "")
 end, { "string" })
 
 -- ------------------------------------------------------------
@@ -1966,6 +1979,9 @@ local function spintent_geo_set_error_recta()
     token_set_macro("l__spintent_geo_luaset_print_tl",     "")
     token_set_macro("l__spintent_geo_luaset_is_name_str",  "false")
     token_set_macro("l__spintent_geo_luaset_points_clist", "")
+    token_set_macro("l__spintent_geo_luaset_letra_str",    "")
+    token_set_macro("l__spintent_geo_luaset_sub_str",      "")
+    token_set_macro("l__spintent_geo_luaset_tipo_str",     "")
 end
 
 register_tex_cmd("luafun_geo_parse_and_set", function(csv)
@@ -1999,6 +2015,12 @@ register_tex_cmd("luafun_geo_parse_and_set", function(csv)
         token_set_macro("l__spintent_geo_luaset_print_tl",
                         spintent_geo_build_visual_nombre(nombre))
         token_set_macro("l__spintent_geo_luaset_points_clist", "") -- nombre = 1 solo punto, no aplica
+        -- letra/sub/tipo por separado -- mismo motivo que en
+        -- luafun_geo_point_parse_and_set: permite silenciar el
+        -- subíndice VISUAL aparte de la base.
+        token_set_macro("l__spintent_geo_luaset_letra_str", nombre[1])
+        token_set_macro("l__spintent_geo_luaset_sub_str",   nombre[2] or "")
+        token_set_macro("l__spintent_geo_luaset_tipo_str",  nombre[3] or "")
         return
     end
 
