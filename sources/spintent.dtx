@@ -203,7 +203,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-11}
+\def\filedate{2026-09-13}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4228,7 +4228,7 @@ end, "shekel_fallback_patch")
 % Now declare the \mypkg*[no-index]{spintent} package and we will add the
 % only key \mykey{mathcal} that can be passed as a package option.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-11} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-13} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -9062,6 +9062,400 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{variable}
 %
+% \subsection{The command \cs{spcoord}}\label{cmd:spcoord}
+%
+% The user command |\spcoord| typesets an ordered pair |(x,y)|, with
+% the comma (or semicolon) between them carrying its own |:infix|
+% intent, and each side wrapped with |:prefix($vp)|/|:prefix($vn)|
+% when it starts with |+|/|-|, so the sign is always read as
+% |más|/|menos| — never |positivo|/|negativo|, which is not how
+% \mynvmath{MathCAT} reads a bare sign in this position.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spcoord}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spcoord_luaset_error_str,
+%     \l_@@_spcoord_luaset_sep_str,
+%     \l_@@_spcoord_luaset_x_sign_str,
+%     \l_@@_spcoord_luaset_x_type_str,
+%     \l_@@_spcoord_luaset_x_value_str,
+%     \l_@@_spcoord_luaset_x_has_frac_str,
+%     \l_@@_spcoord_luaset_y_sign_str,
+%     \l_@@_spcoord_luaset_y_type_str,
+%     \l_@@_spcoord_luaset_y_value_str,
+%     \l_@@_spcoord_luaset_y_has_frac_str,
+%   }
+%   Set by \myhlc|\@@_luafun_spcoord_parse_and_set:n|.
+%   \myhlc|\l_@@_spcoord_luaset_sep_str| is |,| or |;|, whichever the
+%   argument actually used. For each side, \myhlc|\l_@@_spcoord_luaset_ #1 _sign_str|
+%   is |+|, |-|, or empty; \myhlc|\l_@@_spcoord_luaset_ #1 _type_str|
+%   is |number| or |raw|; \myhlc|\l_@@_spcoord_luaset_ #1 _value_str|
+%   is the value with the sign already removed;
+%   \myhlc|\l_@@_spcoord_luaset_ #1 _has_frac_str| is |none|, |frac|,
+%   or |dfrac|.
+%    \begin{macrocode}
+\str_new:N \l_@@_spcoord_luaset_error_str
+\str_new:N \l_@@_spcoord_luaset_sep_str
+\str_new:N \l_@@_spcoord_luaset_x_sign_str
+\str_new:N \l_@@_spcoord_luaset_x_type_str
+\str_new:N \l_@@_spcoord_luaset_x_value_str
+\str_new:N \l_@@_spcoord_luaset_x_has_frac_str % "none" / "frac" / "dfrac"
+\str_new:N \l_@@_spcoord_luaset_y_sign_str
+\str_new:N \l_@@_spcoord_luaset_y_type_str
+\str_new:N \l_@@_spcoord_luaset_y_value_str
+\str_new:N \l_@@_spcoord_luaset_y_has_frac_str % "none" / "frac" / "dfrac"
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spcoord_raw_arg_tl,
+%     \l_@@_spcoord_intent_str,
+%     \l_@@_spcoord_wrap_parens_l_tl,
+%     \l_@@_spcoord_wrap_parens_r_tl,
+%   }
+%   \myhlc|\l_@@_spcoord_raw_arg_tl| holds the argument exactly as
+%   given, for \mykey{silent-cmd}. \myhlc|\l_@@_spcoord_intent_str|
+%   holds the |:infix| word for the separator (|_coma:infix| or
+%   |_punto-y-coma:infix|).
+%   \myhlc|\l_@@_spcoord_wrap_parens_l_tl|/\myhlc|\l_@@_spcoord_wrap_parens_r_tl|
+%   hold the opening/closing delimiter, sized by
+%   \myhlc|\@@_spcoord_set_wrap_parens_size:|.
+%    \begin{macrocode}
+\tl_new:N  \l_@@_spcoord_raw_arg_tl
+\str_new:N \l_@@_spcoord_intent_str % ,;:infix
+\tl_new:N  \l_@@_spcoord_wrap_parens_l_tl
+\tl_new:N  \l_@@_spcoord_wrap_parens_r_tl
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spcoord}}
+%
+% \begin{macro}[int]{spcoord-invalid-arg}
+%    \begin{macrocode}
+\msg_new:nnn { spintent } { spcoord-invalid-arg }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spcoord.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spcoord}}
+%
+% \begin{macro}[int]{silent-cmd}
+%   We define the key \mykey[spcoord]{silent-cmd}.
+%    \begin{macrocode}
+\bool_new:N \l_@@_spPoint_coord_silent_cmd_bool
+\keys_define:nn { spintent / spcoord }
+  {
+    silent-cmd  .bool_set:N = \l_@@_spcoord_silent_cmd_bool,
+    silent-cmd  .initial:n  = false,
+    silent-cmd  .value_required:n = true,
+    unknown     .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spcoord }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spcoord}}
+%
+% \begin{macro}[int]{\@@_spcoord_set_wrap_parens_size:}
+%   With neither side carrying a fraction, the parentheses stay
+%   unsized. Otherwise, \myhlc|\mathstyle| picks |\Bigl|/|\Bigr| for
+%   display, |\bigl|/|\bigr| for text — same mechanism as
+%   \myhlc|\@@_spmQ_set_wrap_parens_size:|. When either side is
+%   |dfrac|, the parentheses are forced to |\Bigl|/|\Bigr| regardless
+%   of \myhlc|\mathstyle|, since |\dfrac| always renders at display
+%   height — same criterion as |print-dfrac| in |\spnQ|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcoord_set_wrap_parens_size:
+  {
+    \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \lparen }
+    \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \rparen }
+    \bool_if:nT
+      {
+        \bool_lazy_or_p:nn
+          { \bool_not_p:n { \str_if_eq_p:Vn \l_@@_spcoord_luaset_x_has_frac_str { none } } }
+          { \bool_not_p:n { \str_if_eq_p:Vn \l_@@_spcoord_luaset_y_has_frac_str { none } } }
+      }
+      {
+        \int_case:nnF { \mathstyle }
+          {
+            { 0 }
+              {
+                \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \Bigl \lparen }
+                \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \Bigr \rparen }
+              }
+            { 1 }
+              {
+                \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \Bigl \lparen }
+                \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \Bigr \rparen }
+              }
+            { 2 }
+              {
+                \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \bigl \lparen }
+                \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \bigr \rparen }
+              }
+            { 3 }
+              {
+                \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \bigl \lparen }
+                \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \bigr \rparen }
+              }
+          }
+          { }
+        \bool_if:nT
+          {
+            \bool_lazy_or_p:nn
+              { \str_if_eq_p:Vn \l_@@_spcoord_luaset_x_has_frac_str { dfrac } }
+              { \str_if_eq_p:Vn \l_@@_spcoord_luaset_y_has_frac_str { dfrac } }
+          }
+          {
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \Bigr \rparen }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcoord_value:n}
+%   With \myhlc|\l_@@_spcoord_luaset_ #1 _type_str| equal to |number|,
+%   calls |\spnum| on \myhlc|\l_@@_spcoord_luaset_ #1 _value_str|.
+%   Otherwise, typesets it as given — a |\frac|/|\dfrac| or a letter
+%   expression, untouched. Receives |x| or |y| in `|#1|'.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcoord_value:n
+  {
+    \str_if_eq:eeTF { \str_use:c { l_@@_spcoord_luaset_ #1 _type_str } } { number }
+      { \exp_args:Ne \spnum { \str_use:c { l_@@_spcoord_luaset_ #1 _value_str } } }
+      { \str_use:c { l_@@_spcoord_luaset_ #1 _value_str } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcoord_print:n}
+%   With \myhlc|\l_@@_spcoord_luaset_ #1 _sign_str| equal to |+| or
+%   |-|, wraps the sign and \myhlc|\@@_spcoord_value:n| together with
+%   |_más:prefix($vp)|/|_menos:prefix($vn)|, referencing the value
+%   through \MathMLarg — read as |más|/|menos|, never
+%   |positivo|/|negativo|. With no sign, delegates directly to
+%   \myhlc|\@@_spcoord_value:n|. Receives |x| or |y| in `|#1|'.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcoord_print:n
+  {
+    \str_case:enF { \str_use:c { l_@@_spcoord_luaset_ #1 _sign_str } }
+      {
+        { + }
+          {
+            \MathMLintent { _más:prefix ($vp) }
+              {
+                \str_use:c { l_@@_spcoord_luaset_ #1 _sign_str }
+                \MathMLarg{ vp } { \@@_spcoord_value:n { #1 } }
+              }
+          }
+        { - }
+          {
+            \MathMLintent { _menos :prefix($vn) }
+              {
+                \str_use:c { l_@@_spcoord_luaset_ #1 _sign_str }
+                \MathMLarg{ vn } { \@@_spcoord_value:n { #1 } }
+              }
+          }
+      }
+      { \@@_spcoord_value:n { #1 } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcoord_intent_infix:}
+%   Sets \myhlc|\l_@@_spcoord_intent_str| to |_coma:infix| or
+%   |_punto-y-coma:infix|, per \myhlc|\l_@@_spcoord_luaset_sep_str|,
+%   then wraps both sides — each referenced through \MathMLarg — with
+%   it, |$x|/|$y| standing for \myhlc|\@@_spcoord_print:n|'s own
+%   output.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcoord_intent_infix:
+  {
+    \str_if_eq:VnTF \l_@@_spcoord_luaset_sep_str { ; }
+      { \str_set:Nn \l_@@_spcoord_intent_str { _punto-y-coma:infix } }
+      { \str_set:Nn \l_@@_spcoord_intent_str { _coma:infix } }
+    \MathMLintent{ \l_@@_spcoord_intent_str ($x, $y)}
+      {
+        \MathMLarg{x}{ \@@_spcoord_print:n { x } }
+        \MathMLintent { :silent } { \l_@@_spcoord_luaset_sep_str }
+        \MathMLarg{y}{ \@@_spcoord_print:n { y } }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcoord_mathml:}
+%   With \mykey{silent-cmd} |true|, everything — parentheses and
+%   argument alike — is wrapped in a single |_-|, reading nothing at
+%   all: \myhlc|\l_@@_spcoord_raw_arg_tl| is typeset exactly as given,
+%   untouched by \myhlc|\@@_spcoord_print:n|/\myhlc|\@@_spcoord_intent_infix:|.
+%   Otherwise, the parentheses are silenced individually and
+%   \myhlc|\@@_spcoord_intent_infix:| provides the reading in between.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcoord_mathml:
+  {
+    \bool_if:NTF \l_@@_spcoord_silent_cmd_bool
+      {
+        \MathMLintent { _- }
+          {
+            \l_@@_spcoord_wrap_parens_l_tl
+            \l_@@_spcoord_raw_arg_tl
+            \l_@@_spcoord_wrap_parens_r_tl
+          }
+      }
+      {
+        \MathMLintent { :silent } { \l_@@_spcoord_wrap_parens_l_tl }
+          \@@_spcoord_intent_infix:
+        \MathMLintent { :silent } { \l_@@_spcoord_wrap_parens_r_tl }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcoord_exec:nn}
+%   Sets the \mymeta{keys} in `|#1|' and
+%   \myhlc|\l_@@_spcoord_raw_arg_tl| to `|#2|'. Calls
+%   \myhlc|\@@_luafun_spcoord_parse_and_set:n| either way — even with
+%   \mykey{silent-cmd} |true|, since \myhlc|\@@_spcoord_set_wrap_parens_size:|
+%   still needs \myhlc|\l_@@_spcoord_luaset_ #1 _has_frac_str| — but
+%   with \mykey{silent-cmd} |true|, forces
+%   \myhlc|\l_@@_spcoord_luaset_error_str| back to |false| rather than
+%   reporting it: the raw argument is typeset regardless of whether it
+%   parsed. Otherwise, reports |spcoord-invalid-arg| on error. Either
+%   way, sizes the parentheses, then delegates to
+%   \myhlc|\@@_spcoord_mathml:| unless there was an error.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcoord_exec:nn
+  {
+    \keys_set:nn { spintent / spcoord } {#1}
+    \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#2}
+    \bool_if:NTF \l_@@_spcoord_silent_cmd_bool
+      {
+        \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
+        \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
+      }
+      {
+        \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
+        \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
+          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
+      }
+    \@@_spcoord_set_wrap_parens_size:
+    \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
+      { \@@_spcoord_mathml: }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spcoord}
+%   The public command enforces \emph{math mode}, opens a local group,
+%   and delegates to \myhlc|\@@_spcoord_exec:nn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spcoord { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_spcoord_exec:nn {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spcoord } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The function \cs[no-index]{@@_mathmlarg_point:nnn}}\label{fun:mathmlarg_point}
+%
+% \begin{macro}[int]
+%   {
+%     \@@_mathmlarg_point:nnn,
+%     \@@_mathmlarg_point:nnV,
+%     \l_@@_mathmlarg_point_ref_tl,
+%     \l_@@_mathmlarg_point_mode_str,
+%     \l_@@_mathmlarg_point_kv_tl,
+%     \l_@@_mathmlarg_point_silent_bool,
+%   }
+%   Annotates one point (|#3|) with |arg| and, when applicable, a literal
+%   |intent|, without wrapping it in its own |<mrow>|. |#1| is the
+%   reference name (|arg="#1"|); |#2| is the calling command's name,
+%   used to look up its own \mykey{silent-cmd}/\mykey{read-cmd}
+%   variables. Same |kv| logic as \myhlc|\@@_spPoint_mathml:|. Concept
+%   |intent| is passed empty on purpose: the caller applies it once,
+%   externally, via a native |\MathMLintent|.
+%
+%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub| (a genuine
+%   subscript, not a prime), the letter alone
+%   (\myhlc|\l_@@_geo_luaset_letra_str|) is wrapped through
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| — the shared queue only
+%   ever claims the base of an |<msub>|, never its own subscript
+%   (confirmed with |\spPoint{A_{1}}\spPoint{B}|: the visual subscript
+%   was left bare, and a later command's own queue entry landed on it
+%   instead of its intended target) — and the visual subscript
+%   (\myhlc|\l_@@_geo_luaset_sub_str|) is appended separately, as a
+%   real |\c_math_subscript_token|, silenced with a native
+%   |\MathMLintent|: it is already spoken as part of the combined
+%   literal on the base, so reading it again natively would repeat it.
+%   Otherwise (no subscript, or a prime — which is not a genuine
+%   |<msub>| at all), the combined
+%   \myhlc|\l_@@_geo_luaset_print_tl| is wrapped as a whole, exactly
+%   as before.
+%    \begin{macrocode}
+\tl_new:N   \l_@@_mathmlarg_point_ref_tl
+\str_new:N  \l_@@_mathmlarg_point_mode_str
+\tl_new:N   \l_@@_mathmlarg_point_kv_tl
+\bool_new:N \l_@@_mathmlarg_point_silent_bool
+\cs_new_protected:Nn \@@_mathmlarg_point:nnn
+  {
+    \tl_set:Nn \l_@@_mathmlarg_point_ref_tl {#1}
+    \@@_luafun_geo_point_parse_and_set:n { \exp_not:n {#3} }
+    \bool_set_eq:Nc \l_@@_mathmlarg_point_silent_bool { l_@@_ #2 _silent_cmd_bool }
+    \str_set_eq:Nc  \l_@@_mathmlarg_point_mode_str  { l_@@_ #2 _mode_str }
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_mathmlarg_point_silent_bool
+      {
+        \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
+          { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_-" }
+      }
+      {
+        \str_if_eq:VnTF \l_@@_mathmlarg_point_mode_str { school }
+          {
+            \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
+              { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_ \l_@@_geo_luaset_intent_str -" }
+          }
+          {
+            \tl_set:Ne \l_@@_mathmlarg_point_kv_tl { arg = "\l_@@_mathmlarg_point_ref_tl" }
+          }
+      }
+    \str_if_eq:VnTF \l_@@_geo_luaset_tipo_str { sub }
+      {
+        \@@_luafun_wrap_mrow_intent_arg:nn
+          {  } % debe ir vacío
+          { \l_@@_mathmlarg_point_kv_tl }
+        { \l_@@_geo_luaset_letra_str }
+        \c_math_subscript_token
+          {
+            \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str }
+          }
+      }
+      {
+        \@@_luafun_wrap_mrow_intent_arg:nn
+          {  } % debe ir vacío
+          { \l_@@_mathmlarg_point_kv_tl }
+        { \l_@@_geo_luaset_print_tl }
+      }
+  }
+\cs_generate_variant:Nn \@@_mathmlarg_point:nnn { nnV }
+%    \end{macrocode}
+% \end{macro}
+%
 % \subsection{The command \cs{spPoint}}\label{cmd:spPoint}
 %
 % The user-level command |\spPoint| provides a semantic interface for
@@ -9073,6 +9467,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{variable}[int]
 %   {
+%     \l_@@_spPoint_silent_cmd_bool,
 %     \l_@@_spPoint_mode_str,
 %     \l_@@_spPoint_prefix_tl,
 %     \l_@@_spPoint_intent_arg_tl,
@@ -9081,10 +9476,11 @@ end, "shekel_fallback_patch")
 %   Internal variables holding the values set by
 %   \mykey[spPoint]{read-cmd} and \mykey[spPoint]{prefix}.
 %    \begin{macrocode}
-\str_new:N \l_@@_spPoint_mode_str
-\tl_new:N  \l_@@_spPoint_prefix_tl
-\tl_new:N  \l_@@_spPoint_intent_arg_tl
-\tl_new:N  \l_@@_spPoint_kv_tl
+\bool_new:N \l_@@_spPoint_silent_cmd_bool
+\str_new:N  \l_@@_spPoint_mode_str
+\tl_new:N   \l_@@_spPoint_prefix_tl
+\tl_new:N   \l_@@_spPoint_intent_arg_tl
+\tl_new:N   \l_@@_spPoint_kv_tl
 %    \end{macrocode}
 % \end{variable}
 %
@@ -9132,8 +9528,12 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_spPoint_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l_@@_spPoint_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
+    _silent_point       .bool_set:N = \l_@@_spPoint_silent_cmd_bool,
+    _silent_point       .value_required:n = true,
+    _silent_coord       .bool_set:N = \l_@@_spPoint_coord_silent_cmd_bool,
+    _silent_coord       .value_required:n = true,
+    silent-cmd          .meta:n = { _silent_point = #1, _silent_coord = #1 },
+    silent-cmd          .initial:n = false,
     silent-cmd          .value_required:n = true,
     concept             .bool_set:N = \l_@@_spPoint_concept_bool,
     concept             .initial:n  = true,
@@ -9274,90 +9674,6 @@ end, "shekel_fallback_patch")
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPoint } }
   }
-%    \end{macrocode}
-% \end{macro}
-%
-% \subsection{The function \cs[no-index]{@@_mathmlarg_point:nnn}}\label{fun:mathmlarg_point}
-%
-% \begin{macro}[int]
-%   {
-%     \@@_mathmlarg_point:nnn,
-%     \@@_mathmlarg_point:nnV,
-%     \l_@@_mathmlarg_point_ref_tl,
-%     \l_@@_mathmlarg_point_mode_str,
-%     \l_@@_mathmlarg_point_kv_tl,
-%     \l_@@_mathmlarg_point_silent_bool,
-%   }
-%   Annotates one point (|#3|) with |arg| and, when applicable, a literal
-%   |intent|, without wrapping it in its own |<mrow>|. |#1| is the
-%   reference name (|arg="#1"|); |#2| is the calling command's name,
-%   used to look up its own \mykey{silent-cmd}/\mykey{read-cmd}
-%   variables. Same |kv| logic as \myhlc|\@@_spPoint_mathml:|. Concept
-%   |intent| is passed empty on purpose: the caller applies it once,
-%   externally, via a native |\MathMLintent|.
-%
-%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub| (a genuine
-%   subscript, not a prime), the letter alone
-%   (\myhlc|\l_@@_geo_luaset_letra_str|) is wrapped through
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| — the shared queue only
-%   ever claims the base of an |<msub>|, never its own subscript
-%   (confirmed with |\spPoint{A_{1}}\spPoint{B}|: the visual subscript
-%   was left bare, and a later command's own queue entry landed on it
-%   instead of its intended target) — and the visual subscript
-%   (\myhlc|\l_@@_geo_luaset_sub_str|) is appended separately, as a
-%   real |\c_math_subscript_token|, silenced with a native
-%   |\MathMLintent|: it is already spoken as part of the combined
-%   literal on the base, so reading it again natively would repeat it.
-%   Otherwise (no subscript, or a prime — which is not a genuine
-%   |<msub>| at all), the combined
-%   \myhlc|\l_@@_geo_luaset_print_tl| is wrapped as a whole, exactly
-%   as before.
-%    \begin{macrocode}
-\tl_new:N   \l_@@_mathmlarg_point_ref_tl
-\str_new:N  \l_@@_mathmlarg_point_mode_str
-\tl_new:N   \l_@@_mathmlarg_point_kv_tl
-\bool_new:N \l_@@_mathmlarg_point_silent_bool
-\cs_new_protected:Nn \@@_mathmlarg_point:nnn
-  {
-    \tl_set:Nn \l_@@_mathmlarg_point_ref_tl {#1}
-    \@@_luafun_geo_point_parse_and_set:n { \exp_not:n {#3} }
-    \bool_set_eq:Nc \l_@@_mathmlarg_point_silent_bool { l_@@_ #2 _silent_cmd_bool }
-    \str_set_eq:Nc  \l_@@_mathmlarg_point_mode_str  { l_@@_ #2 _mode_str }
-    \@@_invisible_sep:
-    \bool_if:NTF \l_@@_mathmlarg_point_silent_bool
-      {
-        \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
-          { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_-" }
-      }
-      {
-        \str_if_eq:VnTF \l_@@_mathmlarg_point_mode_str { school }
-          {
-            \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
-              { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_ \l_@@_geo_luaset_intent_str -" }
-          }
-          {
-            \tl_set:Ne \l_@@_mathmlarg_point_kv_tl { arg = "\l_@@_mathmlarg_point_ref_tl" }
-          }
-      }
-    \str_if_eq:VnTF \l_@@_geo_luaset_tipo_str { sub }
-      {
-        \@@_luafun_wrap_mrow_intent_arg:nn
-          {  } % debe ir vacío
-          { \l_@@_mathmlarg_point_kv_tl }
-        { \l_@@_geo_luaset_letra_str }
-        \c_math_subscript_token
-          {
-            \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str }
-          }
-      }
-      {
-        \@@_luafun_wrap_mrow_intent_arg:nn
-          {  } % debe ir vacío
-          { \l_@@_mathmlarg_point_kv_tl }
-        { \l_@@_geo_luaset_print_tl }
-      }
-  }
-\cs_generate_variant:Nn \@@_mathmlarg_point:nnn { nnV }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -13374,314 +13690,6 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-%
-% \subsection{The command \cs{spcoord}}\label{cmd:spcoord}
-% The user command |\spcoord| typesets an ordered pair |(x,y)|, with
-% the comma (or semicolon) between them carrying its own |:infix|
-% intent, and each side wrapped with |:prefix($vp)|/|:prefix($vn)|
-% when it starts with |+|/|-|, so the sign is always read as
-% |más|/|menos| — never |positivo|/|negativo|, which is not how
-% \mynvmath{MathCAT} reads a bare sign in this position.
-%
-% \subsubsection{Definition of variables for \cs[no-index]{spcoord}}
-%
-% \begin{variable}[int]
-%   {
-%     \l_@@_spcoord_luaset_error_str,
-%     \l_@@_spcoord_luaset_sep_str,
-%     \l_@@_spcoord_luaset_x_sign_str,
-%     \l_@@_spcoord_luaset_x_type_str,
-%     \l_@@_spcoord_luaset_x_value_str,
-%     \l_@@_spcoord_luaset_x_has_frac_str,
-%     \l_@@_spcoord_luaset_y_sign_str,
-%     \l_@@_spcoord_luaset_y_type_str,
-%     \l_@@_spcoord_luaset_y_value_str,
-%     \l_@@_spcoord_luaset_y_has_frac_str,
-%   }
-%   Set by \myhlc|\@@_luafun_spcoord_parse_and_set:n|.
-%   \myhlc|\l_@@_spcoord_luaset_sep_str| is |,| or |;|, whichever the
-%   argument actually used. For each side, \myhlc|\l_@@_spcoord_luaset_ #1 _sign_str|
-%   is |+|, |-|, or empty; \myhlc|\l_@@_spcoord_luaset_ #1 _type_str|
-%   is |number| or |raw|; \myhlc|\l_@@_spcoord_luaset_ #1 _value_str|
-%   is the value with the sign already removed;
-%   \myhlc|\l_@@_spcoord_luaset_ #1 _has_frac_str| is |none|, |frac|,
-%   or |dfrac|.
-%    \begin{macrocode}
-\str_new:N \l_@@_spcoord_luaset_error_str
-\str_new:N \l_@@_spcoord_luaset_sep_str
-\str_new:N \l_@@_spcoord_luaset_x_sign_str
-\str_new:N \l_@@_spcoord_luaset_x_type_str
-\str_new:N \l_@@_spcoord_luaset_x_value_str
-\str_new:N \l_@@_spcoord_luaset_x_has_frac_str   % "none" / "frac" / "dfrac"
-\str_new:N \l_@@_spcoord_luaset_y_sign_str
-\str_new:N \l_@@_spcoord_luaset_y_type_str
-\str_new:N \l_@@_spcoord_luaset_y_value_str
-\str_new:N \l_@@_spcoord_luaset_y_has_frac_str   % "none" / "frac" / "dfrac"
-%    \end{macrocode}
-% \end{variable}
-%
-% \begin{variable}[int]
-%   {
-%     \l_@@_spcoord_raw_arg_tl,
-%     \l_@@_spcoord_intent_str,
-%     \l_@@_spcoord_wrap_parens_l_tl,
-%     \l_@@_spcoord_wrap_parens_r_tl,
-%   }
-%   \myhlc|\l_@@_spcoord_raw_arg_tl| holds the argument exactly as
-%   given, for \mykey{silent-cmd}. \myhlc|\l_@@_spcoord_intent_str|
-%   holds the |:infix| word for the separator (|_coma:infix| or
-%   |_punto-y-coma:infix|).
-%   \myhlc|\l_@@_spcoord_wrap_parens_l_tl|/\myhlc|\l_@@_spcoord_wrap_parens_r_tl|
-%   hold the opening/closing delimiter, sized by
-%   \myhlc|\@@_spcoord_set_wrap_parens_size:|.
-%    \begin{macrocode}
-\tl_new:N  \l_@@_spcoord_raw_arg_tl
-\str_new:N \l_@@_spcoord_intent_str % ,;:infix
-\tl_new:N \l_@@_spcoord_wrap_parens_l_tl
-\tl_new:N \l_@@_spcoord_wrap_parens_r_tl
-%    \end{macrocode}
-% \end{variable}
-%
-% \subsubsection{Definition of error messages for \cs[no-index]{spcoord}}
-%
-% \begin{macro}[int]{spcoord-invalid-arg}
-%    \begin{macrocode}
-\msg_new:nnn { spintent } { spcoord-invalid-arg }
-  {
-    Invalid~argument~'#1'~for~\token_to_str:N \spcoord.
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \subsubsection{Definition of keys for \cs[no-index]{spcoord}}
-%
-% \begin{macro}[int]{silent-cmd}
-%    \begin{macrocode}
-\keys_define:nn { spintent / spcoord }
-  {
-    silent-cmd  .bool_set:N = \l_@@_spcoord_silent_cmd_bool,
-    silent-cmd  .initial:n  = false,
-    silent-cmd  .value_required:n = true,
-    unknown     .code:n =
-      {
-        \str_set:Nn \l_@@_command_name_str { spcoord }
-        \@@_unknown_keys_cmd:n {#1}
-      },
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \subsubsection{Internal functions for \cs[no-index]{spcoord}}
-%
-% \begin{macro}[int]{\@@_spcoord_set_wrap_parens_size:}
-%   With neither side carrying a fraction, the parentheses stay
-%   unsized. Otherwise, \myhlc|\mathstyle| picks |\Bigl|/|\Bigr| for
-%   display, |\bigl|/|\bigr| for text — same mechanism as
-%   \myhlc|\@@_spmQ_set_wrap_parens_size:|. When either side is
-%   |dfrac|, the parentheses are forced to |\Bigl|/|\Bigr| regardless
-%   of \myhlc|\mathstyle|, since |\dfrac| always renders at display
-%   height — same criterion as |print-dfrac| in |\spnQ|.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spcoord_set_wrap_parens_size:
-  {
-    \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \lparen }
-    \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \rparen }
-    \bool_if:nT
-      {
-        \bool_lazy_or_p:nn
-          { \bool_not_p:n { \str_if_eq_p:Vn \l_@@_spcoord_luaset_x_has_frac_str { none } } }
-          { \bool_not_p:n { \str_if_eq_p:Vn \l_@@_spcoord_luaset_y_has_frac_str { none } } }
-      }
-      {
-        \int_case:nnF { \mathstyle }
-          {
-            { 0 }
-              {
-                \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \Bigl \lparen }
-                \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \Bigr \rparen }
-              }
-            { 1 }
-              {
-                \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \Bigl \lparen }
-                \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \Bigr \rparen }
-              }
-            { 2 }
-              {
-                \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \bigl \lparen }
-                \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \bigr \rparen }
-              }
-            { 3 }
-              {
-                \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \bigl \lparen }
-                \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \bigr \rparen }
-              }
-          }
-          { }
-        \bool_if:nT
-          {
-            \bool_lazy_or_p:nn
-              { \str_if_eq_p:Vn \l_@@_spcoord_luaset_x_has_frac_str { dfrac } }
-              { \str_if_eq_p:Vn \l_@@_spcoord_luaset_y_has_frac_str { dfrac } }
-          }
-          {
-            \tl_set:Nn \l_@@_spcoord_wrap_parens_l_tl { \Bigl \lparen }
-            \tl_set:Nn \l_@@_spcoord_wrap_parens_r_tl { \Bigr \rparen }
-          }
-      }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spcoord_value:n}
-%   With \myhlc|\l_@@_spcoord_luaset_ #1 _type_str| equal to |number|,
-%   calls |\spnum| on \myhlc|\l_@@_spcoord_luaset_ #1 _value_str|.
-%   Otherwise, typesets it as given — a |\frac|/|\dfrac| or a letter
-%   expression, untouched. Receives |x| or |y| in `|#1|'.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spcoord_value:n
-  {
-    \str_if_eq:eeTF { \str_use:c { l_@@_spcoord_luaset_ #1 _type_str } } { number }
-      { \exp_args:Ne \spnum { \str_use:c { l_@@_spcoord_luaset_ #1 _value_str } } }
-      { \str_use:c { l_@@_spcoord_luaset_ #1 _value_str } }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spcoord_print:n}
-%   With \myhlc|\l_@@_spcoord_luaset_ #1 _sign_str| equal to |+| or
-%   |-|, wraps the sign and \myhlc|\@@_spcoord_value:n| together with
-%   |_más:prefix($vp)|/|_menos:prefix($vn)|, referencing the value
-%   through \MathMLarg — read as |más|/|menos|, never
-%   |positivo|/|negativo|. With no sign, delegates directly to
-%   \myhlc|\@@_spcoord_value:n|. Receives |x| or |y| in `|#1|'.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spcoord_print:n
-  {
-    \str_case:enF { \str_use:c { l_@@_spcoord_luaset_ #1 _sign_str } }
-      {
-        { + }
-          {
-            \MathMLintent { _más:prefix ($vp) }
-              {
-                \str_use:c { l_@@_spcoord_luaset_ #1 _sign_str }
-                \MathMLarg{ vp } { \@@_spcoord_value:n { #1 } }
-              }
-          }
-        { - }
-          {
-            \MathMLintent { _menos :prefix($vn) }
-              {
-                \str_use:c { l_@@_spcoord_luaset_ #1 _sign_str }
-                \MathMLarg{ vn } { \@@_spcoord_value:n { #1 } }
-              }
-          }
-      }
-      { \@@_spcoord_value:n { #1 } }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spcoord_intent_infix:}
-%   Sets \myhlc|\l_@@_spcoord_intent_str| to |_coma:infix| or
-%   |_punto-y-coma:infix|, per \myhlc|\l_@@_spcoord_luaset_sep_str|,
-%   then wraps both sides — each referenced through \MathMLarg — with
-%   it, |$x|/|$y| standing for \myhlc|\@@_spcoord_print:n|'s own
-%   output.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spcoord_intent_infix:
-  {
-    \str_if_eq:VnTF \l_@@_spcoord_luaset_sep_str { ; }
-      { \str_set:Nn \l_@@_spcoord_intent_str { _punto-y-coma:infix } }
-      { \str_set:Nn \l_@@_spcoord_intent_str { _coma:infix } }
-    \MathMLintent{ \l_@@_spcoord_intent_str ($x, $y)}
-      {
-        \MathMLarg{x}{ \@@_spcoord_print:n { x } }
-        \MathMLintent { :silent } { \l_@@_spcoord_luaset_sep_str }
-        \MathMLarg{y}{ \@@_spcoord_print:n { y } }
-      }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spcoord_mathml:}
-%   With \mykey{silent-cmd} |true|, everything — parentheses and
-%   argument alike — is wrapped in a single |_-|, reading nothing at
-%   all: \myhlc|\l_@@_spcoord_raw_arg_tl| is typeset exactly as given,
-%   untouched by \myhlc|\@@_spcoord_print:n|/\myhlc|\@@_spcoord_intent_infix:|.
-%   Otherwise, the parentheses are silenced individually and
-%   \myhlc|\@@_spcoord_intent_infix:| provides the reading in between.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spcoord_mathml:
-  {
-    \bool_if:NTF \l_@@_spcoord_silent_cmd_bool
-      {
-        \MathMLintent { _- }
-          {
-            \l_@@_spcoord_wrap_parens_l_tl
-            \l_@@_spcoord_raw_arg_tl
-            \l_@@_spcoord_wrap_parens_r_tl
-          }
-      }
-      {
-        \MathMLintent { :silent } { \l_@@_spcoord_wrap_parens_l_tl }
-          \@@_spcoord_intent_infix:
-        \MathMLintent { :silent } { \l_@@_spcoord_wrap_parens_r_tl }
-      }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}[int]{\@@_spcoord_exec:nn}
-%   Sets the \mymeta{keys} in `|#1|' and
-%   \myhlc|\l_@@_spcoord_raw_arg_tl| to `|#2|'. Calls
-%   \myhlc|\@@_luafun_spcoord_parse_and_set:n| either way — even with
-%   \mykey{silent-cmd} |true|, since \myhlc|\@@_spcoord_set_wrap_parens_size:|
-%   still needs \myhlc|\l_@@_spcoord_luaset_ #1 _has_frac_str| — but
-%   with \mykey{silent-cmd} |true|, forces
-%   \myhlc|\l_@@_spcoord_luaset_error_str| back to |false| rather than
-%   reporting it: the raw argument is typeset regardless of whether it
-%   parsed. Otherwise, reports |spcoord-invalid-arg| on error. Either
-%   way, sizes the parentheses, then delegates to
-%   \myhlc|\@@_spcoord_mathml:| unless there was an error.
-%    \begin{macrocode}
-\cs_new_protected:Nn \@@_spcoord_exec:nn
-  {
-    \keys_set:nn { spintent / spcoord } {#1}
-    \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#2}
-    \bool_if:NTF \l_@@_spcoord_silent_cmd_bool
-      {
-        \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
-        \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
-      }
-      {
-        \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
-        \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
-          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
-      }
-    \@@_spcoord_set_wrap_parens_size:
-    \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
-      { \@@_spcoord_mathml: }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\spcoord}
-%   The public command enforces \emph{math mode}, opens a local group,
-%   and delegates to \myhlc|\@@_spcoord_exec:nn|.
-%    \begin{macrocode}
-\NewDocumentCommand \spcoord { O{} m }
-  {
-    \mode_if_math:TF
-      {
-        \group_begin:
-          \@@_spcoord_exec:nn {#1} {#2}
-        \group_end:
-      }
-      { \msg_error:nnn { spintent } { need-math-mode } { \spcoord } }
-  }
-%    \end{macrocode}
-% \end{macro}
-%
 % \subsection{Finish package}
 %
 % Finish package implementation.
@@ -13696,7 +13704,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-11]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-13]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
