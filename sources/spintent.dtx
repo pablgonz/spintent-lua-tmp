@@ -9516,7 +9516,6 @@ end, "shekel_fallback_patch")
 %
 % \begin{variable}[int]
 %   {
-%     \l_@@_spPoint_silent_cmd_bool,
 %     \l_@@_spPoint_mode_str,
 %     \l_@@_spPoint_prefix_tl,
 %     \l_@@_spPoint_intent_arg_tl,
@@ -9525,7 +9524,6 @@ end, "shekel_fallback_patch")
 %   Internal variables holding the values set by
 %   \mykey[spPoint]{read-cmd} and \mykey[spPoint]{prefix}.
 %    \begin{macrocode}
-\bool_new:N \l_@@_spPoint_silent_cmd_bool
 \str_new:N  \l_@@_spPoint_mode_str
 \tl_new:N   \l_@@_spPoint_prefix_tl
 \tl_new:N   \l_@@_spPoint_intent_arg_tl
@@ -9577,11 +9575,7 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_spPoint_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    _silent_point       .bool_set:N = \l_@@_spPoint_silent_cmd_bool,
-    _silent_point       .value_required:n = true,
-    _silent_coord       .bool_set:N = \l_@@_spPoint_coord_silent_cmd_bool,
-    _silent_coord       .value_required:n = true,
-    silent-cmd          .meta:n = { _silent_point = #1, _silent_coord = #1 },
+    silent-cmd          .bool_set:N = \l_@@_spPoint_silent_cmd_bool,
     silent-cmd          .initial:n = false,
     silent-cmd          .value_required:n = true,
     concept             .bool_set:N = \l_@@_spPoint_concept_bool,
@@ -9599,13 +9593,17 @@ end, "shekel_fallback_patch")
 % \subsubsection{Internal functions for \cs[no-index]{spPoint}}
 %
 % \begin{macro}[int]{\@@_spPoint_print:n}
-%   The internal function \myhlc|\@@_spPoint_print:n| process the \mymarg{argument}
-%   passed in `|#1|'. First, call the function \myhlc|\@@_luafun_geo_parse_and_set:n|
-%   to process the \mymarg{argument}, returning an \enquote{error} if the
-%   input is invalid. Then, if \mykey{silent-cmd} is |true| or \mykey{concept}
-%   is |false|, set \myhlc|\l_@@_spPont_intent_arg_tl| to |:silent($pt)|;
-%   otherwise set it to |punto:prefix($pt)|, prefixed with \mykey{prefix}
-%   when given. Finally, call \myhlc|\@@_spPoint_mathml:|.
+%   The internal function \myhlc|\@@_spPoint_print:n| processes the
+%   \mymarg{argument} passed in `|#1|'. Calls
+%   \myhlc|\@@_luafun_geo_point_parse_and_set:n|, reporting
+%   |spPoint-invalid-point| on error. If \mykey{silent-cmd} is |true|
+%   or \mykey{concept} is |false|, sets
+%   \myhlc|\l_@@_spPoint_intent_arg_tl| to |_($pt)| — forced further to
+%   |_-| when \mykey{silent-cmd} is |true| and |read-cmd| is not
+%   |school|, since \myhlc|\@@_spPoint_mathml:n| then tags through a
+%   native |\MathMLarg| that needs the concept silenced too. Otherwise
+%   sets it to |punto:prefix($pt)|, prefixed with \mykey{prefix} when
+%   given. Finally calls \myhlc|\@@_spPoint_mathml:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_print:n
   {
@@ -9622,6 +9620,13 @@ end, "shekel_fallback_patch")
       }
       {
         \tl_set:Nn \l_@@_spPoint_intent_arg_tl { _($pt) }
+        \bool_if:NT \l_@@_spPoint_silent_cmd_bool
+          {
+            \str_if_eq:VnF \l_@@_spPoint_mode_str { school }
+              {
+                \tl_set:Nn \l_@@_spPoint_intent_arg_tl { _- }
+              }
+          }
       }
       {
         \tl_set:Ne \l_@@_spPoint_intent_arg_tl
@@ -9633,153 +9638,442 @@ end, "shekel_fallback_patch")
             punto:prefix($pt)
           }
       }
-    \@@_spPoint_mathml:
+    \@@_spPoint_mathml:n { #1 }
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spPoint_mathml:}
-%   The function \myhlc|\@@_spPoint_mathml:| generates the |<mrow>| and
-%   prints \myhlc|\l_@@_geo_luaset_print_tl|. \myhlc|\@@_invisible_sep:|
-%   is called first.
-%
-%   The |kv| string is |arg="pt", intent="_-"| when \mykey{silent-cmd} is
-%   |true|; otherwise, for |read-cmd=school| it is |arg="pt", intent="_body-"|
-%   (literal spelling); for |read-cmd=mathcat| it is |arg="pt"| alone.
-%
-%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub| or |prima|,
-%   the concept is applied via a native |\MathMLintent|, separate from
-%   the point: for |school|, \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|
-%   tags the base with the |kv| string (concept empty); for |mathcat|,
-%   a native |\MathMLarg| tags the base and mark together instead.
-%   Otherwise, a single call to
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| applies the |kv| string
-%   to the whole \myhlc|\l_@@_geo_luaset_print_tl|.
+% \begin{macro}[int]{\@@_spPoint_mathml:n}
+%   The function \myhlc|\@@_spPoint_mathml:n| calls
+%   \myhlc|\@@_invisible_sep:| first, then wraps
+%   \myhlc|\@@_mathmlarg_point:nnn| — which parses `|#1|', tags it
+%   |arg="pt"|, and silences a real subscript or prime on its own —
+%   inside a native |\MathMLintent| carrying
+%   \myhlc|\l_@@_spPoint_intent_arg_tl| as the concept |intent|, with
+%   \myhlc|\@@_luafun_inner_sep:| first inside that group.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spPoint_mathml:
+\cs_new_protected:Nn \@@_spPoint_mathml:n
   {
     \@@_invisible_sep:
-    \bool_if:NTF \l_@@_spPoint_silent_cmd_bool
+    \MathMLintent { \l_@@_spPoint_intent_arg_tl }
       {
-        \tl_set:Nn \l_@@_spPoint_kv_tl { arg = "pt", intent = "_-" }
-        \str_if_eq:VnF \l_@@_spPoint_mode_str { school }
-          {
-            \tl_set:Nn \l_@@_spPoint_intent_arg_tl { _- }
-          }
-      }
-      {
-        \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
-          {
-            \tl_set:Ne \l_@@_spPoint_kv_tl
-              { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
-          }
-          {
-            \tl_set:Nn \l_@@_spPoint_kv_tl { arg = "pt" }
-          }
-      }
-    \str_case:VnF \l_@@_geo_luaset_tipo_str
-      {
-        { sub }
-          {
-            \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
-              {
-                \tl_set:Ne \l_@@_spPoint_kv_tl
-                  { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
-                \MathMLintent { \l_@@_spPoint_intent_arg_tl }
-                  {
-                    \@@_luafun_inner_sep:
-                    \@@_luafun_wrap_mrow_intent_arg:nn
-                      { } { \l_@@_spPoint_kv_tl }
-                    {
-                      \l_@@_geo_luaset_letra_str
-                      \c_math_subscript_token
-                        { \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str } }
-                    }
-                  }
-              }
-              {
-                \MathMLintent { \l_@@_spPoint_intent_arg_tl }
-                  {
-                    {
-                      \@@_luafun_inner_sep:
-                      \MathMLarg { pt }
-                        {
-                          {
-                            \l_@@_geo_luaset_letra_str
-                            \c_math_subscript_token { \l_@@_geo_luaset_sub_str }
-                          }
-                        }
-                     }
-                  }
-              }
-          }
-        { prima }
-          {
-            \str_if_eq:VnTF \l_@@_spPoint_mode_str { school }
-              {
-                \tl_set:Ne \l_@@_spPoint_kv_tl
-                  { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
-                \MathMLintent { \l_@@_spPoint_intent_arg_tl }
-                  {
-                    \@@_luafun_inner_sep:
-                    \@@_luafun_wrap_mrow_intent_arg:nn
-                      { } { \l_@@_spPoint_kv_tl }
-                    { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
-                  }
-              }
-              {
-                \MathMLintent { \l_@@_spPoint_intent_arg_tl }
-                  {
-                    {
-                      \@@_luafun_inner_sep:
-                      \MathMLarg { pt }
-                        {
-                          {
-                            \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str
-                          }
-                        }
-                     }
-                  }
-              }
-          }
-      }
-      {
-        \@@_luafun_wrap_mrow_intent_arg:nn
-          { \l_@@_spPoint_intent_arg_tl }
-          { \l_@@_spPoint_kv_tl }
-        { \l_@@_geo_luaset_print_tl }
+        \@@_luafun_inner_sep:
+        \@@_mathmlarg_point:nnn { pt } { spPoint } { #1 }
       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spPoint_exec:nn}
-%   The function \myhlc|\@@_spPoint_exec:nn| receives the optional
-%   \mymeta{keys} passed in `|#1|' and the \mymarg{argument} passed in `|#2|'
-%   delegating the rendering of the latter to \myhlc|\@@_spPoint_print:n|.
+% \begin{macro}[int]{\@@_spPoint_exec:nnn}
+%   The function \myhlc|\@@_spPoint_exec:nnn| receives the optional
+%   \mymeta{keys} in `|#1|' and the point \mymarg{argument} in `|#2|',
+%   delegating to \myhlc|\@@_spPoint_print:n|. With `|#3|' given (the
+%   optional coordinate), silences the gap between the point and the
+%   coordinate first (otherwise read as an implicit product), then temporarily aliases
+%   \myhlc|\l_@@_spcoord_silent_cmd_bool| to
+%   \myhlc|\l_@@_spPoint_silent_cmd_bool| — reverted when the
+%   calling group closes — and calls
+%   \myhlc|\@@_luafun_spcoord_parse_and_set:n| directly, reporting
+%   |spcoord-invalid-arg| on error unless silenced, then
+%   \myhlc|\@@_spcoord_set_wrap_parens_size:| and
+%   \myhlc|\@@_spcoord_mathml:| — the same rendering functions
+%   \cs[no-index]{spcoord} itself uses.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spPoint_exec:nn
+\cs_new_protected:Nn \@@_spPoint_exec:nnn
   {
     \keys_set:nn { spintent / spPoint } { #1 }
     \@@_spPoint_print:n { #2 }
+    \tl_if_novalue:nF {#3}
+      {
+        \MathMLintent { :silent } { \c_@@_invisible_sep_tl } % silencia el "por"
+        \bool_set_eq:NN \l_@@_spcoord_silent_cmd_bool \l_@@_spPoint_silent_cmd_bool
+        \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
+        \bool_if:NTF \l_@@_spPoint_coord_silent_cmd_bool
+          {
+            \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+            \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
+          }
+          {
+            \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+            \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
+              { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
+          }
+        \@@_spcoord_set_wrap_parens_size:
+        \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
+          { \@@_spcoord_mathml: }
+      }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\spPoint}
 %   The public command |\spPoint| enforces \emph{math mode}, opens a local
-%   group, and delegates execution to \myhlc|\@@_spPoint_exec:nn|.
+%   group, and delegates execution to \myhlc|\@@_spPoint_exec:nnn|.
 %    \begin{macrocode}
-\NewDocumentCommand \spPoint { O{} m }
+\NewDocumentCommand \spPoint { O{} m d() }
   {
     \mode_if_math:TF
       {
         \group_begin:
           \attribute \l_@@_scope_attr_int = 1
-          \@@_spPoint_exec:nn { #1 } { #2 }
+          \@@_spPoint_exec:nnn { #1 } { #2 } { #3 }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPoint } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spvec}}\label{cmd:spvec}
+%
+% The user command |\spvec| supports two types of notation for the
+% input \mymarg{argument}: a pair of points (with |\overrightarrow|
+% applied), or a one-letter name (with |\vec| applied instead). Both
+% notations are automatically detected by the Lua module. An optional
+% coordinate, in parentheses, may follow the \mymarg{argument}.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spvec}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spvec_mode_str,
+%     \l_@@_spvec_prefix_tl,
+%     \l_@@_spvec_intent_arg_tl,
+%     \l_@@_spvec_kv_tl,
+%     \l_@@_spvec_pt_seq,
+%     \l_@@_spvec_refs_tl,
+%     \l_@@_spvec_pt_idx_int,
+%   }
+%   The variable \myhlc|\l_@@_spvec_mode_str| stores the value set by
+%   the key \mykey[spvec]{read-cmd} and the variable
+%   \myhlc|\l_@@_spvec_prefix_tl| stores the value set by the key
+%   \mykey[spvec]{prefix}.
+%    \begin{macrocode}
+\str_new:N \l_@@_spvec_mode_str
+\tl_new:N  \l_@@_spvec_prefix_tl
+\tl_new:N  \l_@@_spvec_intent_arg_tl
+\tl_new:N  \l_@@_spvec_kv_tl
+\seq_new:N \l_@@_spvec_pt_seq
+\tl_new:N  \l_@@_spvec_refs_tl
+\int_new:N \l_@@_spvec_pt_idx_int
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spvec}}
+%
+% \begin{macro}[int]{spvec-invalid-arg}
+%   The \enquote{error} |spvec-invalid-arg| is raised when the
+%   argument fails to parse, when a one-letter name carries a prime,
+%   or when the point list is not exactly two points.
+%    \begin{macrocode}
+\msg_new:nnn { spintent } { spvec-invalid-arg }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spvec.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spvec}}
+%
+% \begin{macro}[int]{silent-cmd, concept, autofit, read-cmd, prefix, unknown}
+%   We define the \mymeta{keys} \mykey[spvec]{silent-cmd},
+%   \mykey[spvec]{concept}, \mykey[spvec]{autofit},
+%   \mykey[spvec]{read-cmd} and \mykey[spvec]{prefix}.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spvec }
+  {
+    silent-cmd    .bool_set:N = \l_@@_spvec_silent_cmd_bool,
+    silent-cmd    .initial:n = false,
+    silent-cmd    .value_required:n = true,
+    concept       .bool_set:N = \l_@@_spvec_concept_bool,
+    concept       .initial:n  = true,
+    concept       .value_required:n = true,
+    autofit       .bool_set:N = \l_@@_spvec_autofit_bool,
+    autofit       .initial:n  = false,
+    autofit       .value_required:n = true,
+    read-cmd      .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spvec_mode_str { school } }
+            {2} { \str_set:Nn \l_@@_spvec_mode_str { mathcat } }
+          }
+      },
+    read-cmd      .initial:n = school,
+    read-cmd      .value_required:n = true,
+    read-cmd / unknown .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {##1} },
+    prefix        .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spvec_prefix_tl {#1} },
+    prefix        .initial:n = { },
+    prefix        .value_required:n = true,
+    unknown       .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spvec }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spvec}}
+%
+% \begin{macro}[int]{\@@_spvec_print:n}
+%   The internal function \myhlc|\@@_spvec_print:n| processes the
+%   \mymarg{argument} passed in `|#1|'. Calls
+%   \myhlc|\@@_luafun_geo_parse_and_set:n|, reporting
+%   |spvec-invalid-arg| on error, on a proper name with
+%   \myhlc|\l_@@_geo_luaset_tipo_str| equal to |prima| (a one-letter
+%   vector cannot carry a prime), or on a point list that is not
+%   exactly two points. Otherwise calls \myhlc|\@@_spvec_mathml:n|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spvec_print:n
+  {
+    \@@_luafun_geo_parse_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnT \l_@@_geo_luaset_is_name_str { true }
+      {
+        \str_if_eq:VnT \l_@@_geo_luaset_tipo_str { prima }
+          { \str_set:Nn \l_@@_geo_luaset_error_str { true } }
+      }
+    \str_if_eq:VnT \l_@@_geo_luaset_is_name_str { false }
+      {
+        \int_compare:nT { \clist_count:N \l_@@_geo_luaset_points_clist != 2 }
+          { \str_set:Nn \l_@@_geo_luaset_error_str { true } }
+      }
+    \str_if_eq:VnTF \l_@@_geo_luaset_error_str { true }
+      { \msg_error:nne { spintent } { spvec-invalid-arg } { \exp_not:n {#1} } }
+      { \@@_spvec_mathml:n { #1 } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spvec_mathml:n}
+%   The function \myhlc|\@@_spvec_mathml:n| branches on
+%   \myhlc|\l_@@_geo_luaset_is_name_str|.
+%
+%   For a proper name (a single letter, no prime), the concept
+%   |intent| is |_($pt)| when \mykey{silent-cmd} is |true| \emph{or}
+%   \mykey{concept} is |false| — forced further to |_-| when
+%   \mykey{silent-cmd} is |true| and |read-cmd| is not |school|;
+%   otherwise |vector:prefix($pt)|. With
+%   \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|, |read-cmd=school|
+%   tags |\vec{letra}| through \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|
+%   with a literal |kv|, the subscript appended and silenced;
+%   |read-cmd=mathcat| tags |\vec{...}| through a native |\MathMLarg|
+%   instead, the subscript silenced only under \mykey{silent-cmd}.
+%   \mykey{autofit} inserts a |\vphantom{b}| inside |\vec{...}| to
+%   normalize its height. Otherwise (no subscript), the same |kv|
+%   logic wraps |\vec{print\_tl}| as a whole.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spvec_mathml:n
+  {
+    \str_if_eq:VnTF \l_@@_geo_luaset_is_name_str { true }
+      {
+        \bool_if:nTF
+          {
+            \bool_lazy_or_p:nn
+              { \l_@@_spvec_silent_cmd_bool }
+              { ! \l_@@_spvec_concept_bool }
+          }
+          {
+            \tl_set:Nn \l_@@_spvec_intent_arg_tl { _($pt) }
+            \bool_if:NT \l_@@_spvec_silent_cmd_bool
+              {
+                \str_if_eq:VnF \l_@@_spvec_mode_str { school }
+                  { \tl_set:Nn \l_@@_spvec_intent_arg_tl { _- } }
+              }
+          }
+          {
+            \tl_set:Nn \l_@@_spvec_intent_arg_tl { vector:prefix($pt) }
+          }
+        \str_case:VnF \l_@@_geo_luaset_tipo_str
+          {
+            { sub }
+              {
+                \str_if_eq:VnTF \l_@@_spvec_mode_str { school }
+                  {
+                    \bool_if:NTF \l_@@_spvec_silent_cmd_bool
+                      { \tl_set:Nn \l_@@_spvec_kv_tl { arg = "pt", intent = "_-" } }
+                      {
+                        \tl_set:Ne \l_@@_spvec_kv_tl
+                          { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
+                      }
+                    \@@_invisible_sep:
+                    \MathMLintent { \l_@@_spvec_intent_arg_tl }
+                      {
+                        \@@_luafun_inner_sep:
+                        \@@_luafun_wrap_mrow_intent_arg:nn
+                          { } { \l_@@_spvec_kv_tl }
+                        {
+                          \vec
+                            {
+                              \bool_if:NT \l_@@_spvec_autofit_bool
+                                { \vphantom{ b } }
+                              \l_@@_geo_luaset_letra_str
+                            }
+                          \c_math_subscript_token
+                            { \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str } }
+                        }
+                      }
+                  }
+                  {
+                    \@@_invisible_sep:
+                    \MathMLintent { \l_@@_spvec_intent_arg_tl }
+                      {
+                        \@@_luafun_inner_sep:
+                        \vec
+                          {
+                            \bool_if:NT \l_@@_spvec_autofit_bool
+                              { \vphantom{ b } }
+                            \MathMLarg{ pt } { \l_@@_geo_luaset_letra_str }
+                          }
+                        \bool_if:NT \l_@@_spvec_silent_cmd_bool
+                          { \c_math_subscript_token { \l_@@_geo_luaset_sub_str } }
+                      }
+                    \bool_if:NF \l_@@_spvec_silent_cmd_bool
+                      { \c_math_subscript_token { \l_@@_geo_luaset_sub_str } }
+                  }
+              }
+          }
+          {
+            \bool_if:NTF \l_@@_spvec_silent_cmd_bool
+              { \tl_set:Nn \l_@@_spvec_kv_tl { arg = "pt", intent = "_-" } }
+              {
+                \tl_set:Ne \l_@@_spvec_kv_tl
+                  { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
+              }
+            \@@_invisible_sep:
+            \MathMLintent { \l_@@_spvec_intent_arg_tl }
+              {
+                \@@_luafun_inner_sep:
+                \@@_luafun_wrap_mrow_intent_arg:nn
+                  { } { \l_@@_spvec_kv_tl }
+                {
+                  \vec
+                    {
+                      \bool_if:NT \l_@@_spvec_autofit_bool
+                        { \vphantom{ b } }
+                      \l_@@_geo_luaset_print_tl
+                    }
+                }
+              }
+          }
+      }
+%    \end{macrocode}
+%   For a pair of points, \myhlc|\l_@@_geo_luaset_points_clist| is
+%   split into \myhlc|\l_@@_spvec_pt_seq| and walked to build
+%   \myhlc|\l_@@_spvec_refs_tl|, the |$pts1,$pts2| reference list.
+%   The concept |intent| is |_(refs)| or |vector:prefix(refs)|, same
+%   conditions as above, applied with a native |\MathMLintent| wrapping
+%   |\overrightarrow|. The sequence is walked again, calling
+%   \myhlc|\@@_mathmlarg_point:nnn| once per point.
+%    \begin{macrocode}
+      {
+        \seq_set_from_clist:NN \l_@@_spvec_pt_seq \l_@@_geo_luaset_points_clist
+        \tl_clear:N \l_@@_spvec_refs_tl
+        \int_zero:N \l_@@_spvec_pt_idx_int
+        \seq_map_inline:Nn \l_@@_spvec_pt_seq
+          {
+            \int_incr:N \l_@@_spvec_pt_idx_int
+            \tl_if_empty:NF \l_@@_spvec_refs_tl
+              { \tl_put_right:Nn \l_@@_spvec_refs_tl { , } }
+            \tl_put_right:Ne \l_@@_spvec_refs_tl { $ pts \int_use:N \l_@@_spvec_pt_idx_int }
+          }
+        \bool_if:nTF
+          {
+            \bool_lazy_or_p:nn
+              { \l_@@_spvec_silent_cmd_bool }
+              { ! \l_@@_spvec_concept_bool }
+          }
+          {
+            \tl_set:Ne \l_@@_spvec_intent_arg_tl { _( \l_@@_spvec_refs_tl ) }
+          }
+          {
+            \tl_set:Ne \l_@@_spvec_intent_arg_tl
+              {
+                \tl_if_empty:NF \l_@@_spvec_prefix_tl
+                  { \tl_use:N \l_@@_spvec_prefix_tl - }
+                vector:prefix( \l_@@_spvec_refs_tl )
+              }
+          }
+        \@@_invisible_sep:
+        \MathMLintent { \l_@@_spvec_intent_arg_tl }
+          {
+            \@@_luafun_inner_sep:
+            \overrightarrow
+              {
+                \int_zero:N \l_@@_spvec_pt_idx_int
+                \seq_map_inline:Nn \l_@@_spvec_pt_seq
+                  {
+                    \int_incr:N \l_@@_spvec_pt_idx_int
+                    \@@_mathmlarg_point:nnn
+                      { pts \int_use:N \l_@@_spvec_pt_idx_int }
+                      { spvec }
+                      { ##1 }
+                  }
+              }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spvec_exec:nnn}
+%   The function \myhlc|\@@_spvec_exec:nnn| receives the optional
+%   \mymeta{keys} in `|#1|' and the \mymarg{argument} in `|#2|',
+%   delegating to \myhlc|\@@_spvec_print:n|. With `|#3|' given (the
+%   optional coordinate), aliases \myhlc|\l_@@_spcoord_silent_cmd_bool|
+%   to \myhlc|\l_@@_spvec_silent_cmd_bool| — reverted when the calling
+%   group closes — and calls
+%   \myhlc|\@@_luafun_spcoord_parse_and_set:n| directly, reporting
+%   |spcoord-invalid-arg| on error unless silenced, then
+%   \myhlc|\@@_spcoord_set_wrap_parens_size:| and
+%   \myhlc|\@@_spcoord_mathml:| — the same rendering functions
+%   \cs[no-index]{spcoord} itself uses.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spvec_exec:nnn
+  {
+    \keys_set:nn { spintent / spvec } { #1 }
+    \@@_spvec_print:n { #2 }
+    \tl_if_novalue:nF {#3}
+      {
+        \equal % notación de vector =( , )
+        \MathMLintent { :silent } { \c_@@_invisible_sep_tl } % previene lectura de intervalo
+        \bool_set_eq:NN \l_@@_spcoord_silent_cmd_bool \l_@@_spvec_silent_cmd_bool
+        \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
+        \bool_if:NTF \l_@@_spvec_silent_cmd_bool
+          {
+            \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+            \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
+          }
+          {
+            \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+            \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
+              { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
+          }
+        \@@_spcoord_set_wrap_parens_size:
+        \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
+          { \@@_spcoord_mathml: }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spvec}
+%   The public command |\spvec| enforces \emph{math mode}, opens a
+%   local group, and delegates execution to \myhlc|\@@_spvec_exec:nnn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spvec { O{} m d() }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \@@_spvec_exec:nnn { #1 } { #2 } { #3 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spvec } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -9881,14 +10175,11 @@ end, "shekel_fallback_patch")
 % \subsubsection{Internal functions for \cs[no-index]{sprecta}}
 %
 % \begin{macro}[int]{\@@_sprecta_print:n}
-%   The internal function \myhlc|\@@_sprecta_print:n| process the \mymarg{argument}
-%   passed in `|#1|'. It calls \myhlc|\@@_luafun_geo_parse_and_set:n| to
-%   process the \mymarg{argument}, returning an \enquote{error} if the
-%   input is invalid, then calls \myhlc|\@@_sprecta_mathml:|. Unlike
-%   \cs[no-index]{spPoint}, no |intent| is built here: both branches of
-%   \myhlc|\@@_sprecta_mathml:| build their own, since a proper name
-%   (|m|, |l|, \ldots) and a list of points need different amounts of
-%   it (a single |$pt| versus |$pt1,$pt2,\ldots|).
+%   The internal function \myhlc|\@@_sprecta_print:n| processes the
+%   \mymarg{argument} passed in `|#1|'. Calls
+%   \myhlc|\@@_luafun_geo_parse_and_set:n|, reporting
+%   |sprecta-invalid-points| on error, then
+%   \myhlc|\@@_sprecta_mathml:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_print:n
   {
@@ -9897,40 +10188,37 @@ end, "shekel_fallback_patch")
       {
         \msg_error:nne { spintent } { sprecta-invalid-points } { \exp_not:n {#1} }
       }
-    \@@_sprecta_mathml:
+    \@@_sprecta_mathml:n { #1 }
   }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_sprecta_mathml:}
-%   The function \myhlc|\@@_sprecta_mathml:| branches on
+% \begin{macro}[int]{\@@_sprecta_mathml:n}
+%   The function \myhlc|\@@_sprecta_mathml:n| branches on
 %   \myhlc|\l_@@_geo_luaset_is_name_str|.
 %
 %   For a proper name (|m|, |l|, \ldots), the concept |intent| is
 %   |:silent($pt)| when \mykey{silent-cmd} is |true| \emph{or}
 %   \mykey{concept} is |false|; otherwise |recta:prefix($pt)|,
-%   prefixed with \mykey{prefix} when given. The |kv| string depends
-%   only on \mykey{silent-cmd}: |arg="pt", intent="_-"| when silent;
-%   otherwise |arg="pt"| plus a literal |intent| for |read-cmd=school|,
-%   or |arg="pt"| alone for |read-cmd=mathcat|. With
-%   \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|, a native
-%   |\MathMLintent| wraps the base (tagged via
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|) and the subscript
-%   (silenced) together — the shared queue only ever covers the base
-%   of an |<msub>|. Otherwise, a single call to
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| applies the |kv| string
-%   to the whole \myhlc|\l_@@_geo_luaset_print_tl|.
+%   prefixed with \mykey{prefix} when given. With
+%   \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub| or |prima|,
+%   |read-cmd=school| tags the base through
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| with a literal |kv|,
+%   the mark appended and silenced; |read-cmd=mathcat| tags base and
+%   mark together through a native |\MathMLarg| instead. Otherwise,
+%   the same distinction applies to the combined
+%   \myhlc|\l_@@_geo_luaset_print_tl| — the shared queue for |school|,
+%   a native |\MathMLarg| for |mathcat|, never mixed.
 %
 %   For a list of points, \myhlc|\l_@@_geo_luaset_points_clist| is
 %   split into \myhlc|\l_@@_sprecta_pt_seq| and walked to build
 %   \myhlc|\l_@@_sprecta_refs_tl|, the |$pt1,$pt2,...| reference list.
-%   The concept |intent| is |_(refs)| or |recta:prefix(refs)|,
-%   same conditions as above, applied with a native |\MathMLintent|
-%   wrapping |\overleftrightarrow|. The sequence is walked again, calling
-%   \myhlc|\@@_mathmlarg_point:nnn| per point — already protected
-%   against a subscripted point.
+%   The concept |intent| is |_(refs)| or |recta:prefix(refs)|, same
+%   conditions as above, applied with a native |\MathMLintent|
+%   wrapping |\overleftrightarrow|. The sequence is walked again,
+%   calling \myhlc|\@@_mathmlarg_point:nnn| once per point.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_sprecta_mathml:
+\cs_new_protected:Nn \@@_sprecta_mathml:n
   {
     \str_if_eq:VnTF \l_@@_geo_luaset_is_name_str { true }
       {
@@ -9952,33 +10240,85 @@ end, "shekel_fallback_patch")
                 recta:prefix($pt)
               }
           }
-        \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
+        \str_case:VnF \l_@@_geo_luaset_tipo_str
           {
-            \tl_set:Nn \l_@@_sprecta_kv_tl { arg = "pt", intent = "_-" }
+            { sub }
+              {
+                \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
+                  {
+                    \tl_set:Ne \l_@@_sprecta_kv_tl
+                      { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
+                    \MathMLintent { \l_@@_sprecta_intent_arg_tl }
+                      {
+                        \@@_luafun_inner_sep:
+                        \@@_luafun_wrap_mrow_intent_arg:nn
+                          { } { \l_@@_sprecta_kv_tl }
+                        {
+                          \l_@@_geo_luaset_letra_str
+                          \c_math_subscript_token
+                            { \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str } }
+                        }
+                      }
+                  }
+                  {
+                    \MathMLintent { \l_@@_sprecta_intent_arg_tl }
+                      {
+                        {
+                          \@@_luafun_inner_sep:
+                          \exp_args:Ne \MathMLarg { pt }
+                            {
+                              {
+                                \l_@@_geo_luaset_letra_str
+                                \c_math_subscript_token { \l_@@_geo_luaset_sub_str }
+                              }
+                            }
+                        }
+                      }
+                  }
+              }
+            { prima }
+              {
+                \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
+                  {
+                    \tl_set:Ne \l_@@_sprecta_kv_tl
+                      { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
+                    \MathMLintent { \l_@@_sprecta_intent_arg_tl }
+                      {
+                        \@@_luafun_inner_sep:
+                        \@@_luafun_wrap_mrow_intent_arg:nn
+                          { } { \l_@@_sprecta_kv_tl }
+                        { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
+                      }
+                  }
+                  {
+                    \MathMLintent { \l_@@_sprecta_intent_arg_tl }
+                      {
+                        {
+                          \@@_luafun_inner_sep:
+                          \exp_args:Ne \MathMLarg { pt }
+                            {
+                              { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
+                            }
+                        }
+                      }
+                  }
+              }
           }
           {
-            \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
+            \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
               {
-                \tl_set:Ne \l_@@_sprecta_kv_tl
-                  { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
+                \tl_set:Nn \l_@@_sprecta_kv_tl { arg = "pt", intent = "_-" }
               }
               {
-                \tl_set:Nn \l_@@_sprecta_kv_tl { arg = "pt" }
+                \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
+                  {
+                    \tl_set:Ne \l_@@_sprecta_kv_tl
+                      { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
+                  }
+                  {
+                    \tl_set:Nn \l_@@_sprecta_kv_tl { arg = "pt" }
+                  }
               }
-          }
-        \str_if_eq:VnTF \l_@@_geo_luaset_tipo_str { sub }
-          {
-            \MathMLintent { \l_@@_sprecta_intent_arg_tl }
-              {
-                \@@_luafun_inner_sep:
-                \@@_luafun_wrap_mrow_intent_arg:nn
-                  { } { \l_@@_sprecta_kv_tl }
-                { \l_@@_geo_luaset_letra_str }
-                \c_math_subscript_token
-                  { \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str } }
-              }
-          }
-          {
             \@@_luafun_wrap_mrow_intent_arg:nn
               { \l_@@_sprecta_intent_arg_tl }
               { \l_@@_sprecta_kv_tl }

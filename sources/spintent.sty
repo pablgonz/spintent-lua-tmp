@@ -2835,7 +2835,6 @@
       }
   }
 \cs_generate_variant:Nn \__spintent_mathmlarg_point:nnn { nnV }
-\bool_new:N \l__spintent_spPoint_silent_cmd_bool
 \str_new:N  \l__spintent_spPoint_mode_str
 \tl_new:N   \l__spintent_spPoint_prefix_tl
 \tl_new:N   \l__spintent_spPoint_intent_arg_tl
@@ -2867,11 +2866,7 @@
       { \__spintent_sanitize_affix:Nn \l__spintent_spPoint_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    _silent_point       .bool_set:N = \l__spintent_spPoint_silent_cmd_bool,
-    _silent_point       .value_required:n = true,
-    _silent_coord       .bool_set:N = \l__spintent_spPoint_coord_silent_cmd_bool,
-    _silent_coord       .value_required:n = true,
-    silent-cmd          .meta:n = { _silent_point = #1, _silent_coord = #1 },
+    silent-cmd          .bool_set:N = \l__spintent_spPoint_silent_cmd_bool,
     silent-cmd          .initial:n = false,
     silent-cmd          .value_required:n = true,
     concept             .bool_set:N = \l__spintent_spPoint_concept_bool,
@@ -2898,6 +2893,13 @@
       }
       {
         \tl_set:Nn \l__spintent_spPoint_intent_arg_tl { _($pt) }
+        \bool_if:NT \l__spintent_spPoint_silent_cmd_bool
+          {
+            \str_if_eq:VnF \l__spintent_spPoint_mode_str { school }
+              {
+                \tl_set:Nn \l__spintent_spPoint_intent_arg_tl { _- }
+              }
+          }
       }
       {
         \tl_set:Ne \l__spintent_spPoint_intent_arg_tl
@@ -2909,117 +2911,290 @@
             punto:prefix($pt)
           }
       }
-    \__spintent_spPoint_mathml:
+    \__spintent_spPoint_mathml:n { #1 }
   }
-\cs_new_protected:Nn \__spintent_spPoint_mathml:
+\cs_new_protected:Nn \__spintent_spPoint_mathml:n
   {
     \__spintent_invisible_sep:
-    \bool_if:NTF \l__spintent_spPoint_silent_cmd_bool
+    \MathMLintent { \l__spintent_spPoint_intent_arg_tl }
       {
-        \tl_set:Nn \l__spintent_spPoint_kv_tl { arg = "pt", intent = "_-" }
-        \str_if_eq:VnF \l__spintent_spPoint_mode_str { school }
-          {
-            \tl_set:Nn \l__spintent_spPoint_intent_arg_tl { _- }
-          }
-      }
-      {
-        \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
-          {
-            \tl_set:Ne \l__spintent_spPoint_kv_tl
-              { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
-          }
-          {
-            \tl_set:Nn \l__spintent_spPoint_kv_tl { arg = "pt" }
-          }
-      }
-    \str_case:VnF \l__spintent_geo_luaset_tipo_str
-      {
-        { sub }
-          {
-            \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
-              {
-                \tl_set:Ne \l__spintent_spPoint_kv_tl
-                  { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
-                \MathMLintent { \l__spintent_spPoint_intent_arg_tl }
-                  {
-                    \__spintent_luafun_inner_sep:
-                    \__spintent_luafun_wrap_mrow_intent_arg:nn
-                      { } { \l__spintent_spPoint_kv_tl }
-                    {
-                      \l__spintent_geo_luaset_letra_str
-                      \c_math_subscript_token
-                        { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
-                    }
-                  }
-              }
-              {
-                \MathMLintent { \l__spintent_spPoint_intent_arg_tl }
-                  {
-                    {
-                      \__spintent_luafun_inner_sep:
-                      \MathMLarg { pt }
-                        {
-                          {
-                            \l__spintent_geo_luaset_letra_str
-                            \c_math_subscript_token { \l__spintent_geo_luaset_sub_str }
-                          }
-                        }
-                     }
-                  }
-              }
-          }
-        { prima }
-          {
-            \str_if_eq:VnTF \l__spintent_spPoint_mode_str { school }
-              {
-                \tl_set:Ne \l__spintent_spPoint_kv_tl
-                  { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
-                \MathMLintent { \l__spintent_spPoint_intent_arg_tl }
-                  {
-                    \__spintent_luafun_inner_sep:
-                    \__spintent_luafun_wrap_mrow_intent_arg:nn
-                      { } { \l__spintent_spPoint_kv_tl }
-                    { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
-                  }
-              }
-              {
-                \MathMLintent { \l__spintent_spPoint_intent_arg_tl }
-                  {
-                    {
-                      \__spintent_luafun_inner_sep:
-                      \MathMLarg { pt }
-                        {
-                          {
-                            \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str
-                          }
-                        }
-                     }
-                  }
-              }
-          }
-      }
-      {
-        \__spintent_luafun_wrap_mrow_intent_arg:nn
-          { \l__spintent_spPoint_intent_arg_tl }
-          { \l__spintent_spPoint_kv_tl }
-        { \l__spintent_geo_luaset_print_tl }
+        \__spintent_luafun_inner_sep:
+        \__spintent_mathmlarg_point:nnn { pt } { spPoint } { #1 }
       }
   }
-\cs_new_protected:Nn \__spintent_spPoint_exec:nn
+\cs_new_protected:Nn \__spintent_spPoint_exec:nnn
   {
     \keys_set:nn { spintent / spPoint } { #1 }
     \__spintent_spPoint_print:n { #2 }
+    \tl_if_novalue:nF {#3}
+      {
+        \MathMLintent { :silent } { \c__spintent_invisible_sep_tl } % silencia el "por"
+        \bool_set_eq:NN \l__spintent_spcoord_silent_cmd_bool \l__spintent_spPoint_silent_cmd_bool
+        \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
+        \bool_if:NTF \l__spintent_spPoint_coord_silent_cmd_bool
+          {
+            \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+            \str_set:Nn \l__spintent_spcoord_luaset_error_str { false }
+          }
+          {
+            \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+            \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
+              { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
+          }
+        \__spintent_spcoord_set_wrap_parens_size:
+        \str_if_eq:VnF \l__spintent_spcoord_luaset_error_str { true }
+          { \__spintent_spcoord_mathml: }
+      }
   }
-\NewDocumentCommand \spPoint { O{} m }
+\NewDocumentCommand \spPoint { O{} m d() }
   {
     \mode_if_math:TF
       {
         \group_begin:
           \attribute \l__spintent_scope_attr_int = 1
-          \__spintent_spPoint_exec:nn { #1 } { #2 }
+          \__spintent_spPoint_exec:nnn { #1 } { #2 } { #3 }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPoint } }
+  }
+\str_new:N \l__spintent_spvec_mode_str
+\tl_new:N  \l__spintent_spvec_prefix_tl
+\tl_new:N  \l__spintent_spvec_intent_arg_tl
+\tl_new:N  \l__spintent_spvec_kv_tl
+\seq_new:N \l__spintent_spvec_pt_seq
+\tl_new:N  \l__spintent_spvec_refs_tl
+\int_new:N \l__spintent_spvec_pt_idx_int
+\msg_new:nnn { spintent } { spvec-invalid-arg }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spvec.
+  }
+\keys_define:nn { spintent / spvec }
+  {
+    silent-cmd    .bool_set:N = \l__spintent_spvec_silent_cmd_bool,
+    silent-cmd    .initial:n = false,
+    silent-cmd    .value_required:n = true,
+    concept       .bool_set:N = \l__spintent_spvec_concept_bool,
+    concept       .initial:n  = true,
+    concept       .value_required:n = true,
+    autofit       .bool_set:N = \l__spintent_spvec_autofit_bool,
+    autofit       .initial:n  = false,
+    autofit       .value_required:n = true,
+    read-cmd      .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l__spintent_spvec_mode_str { school } }
+            {2} { \str_set:Nn \l__spintent_spvec_mode_str { mathcat } }
+          }
+      },
+    read-cmd      .initial:n = school,
+    read-cmd      .value_required:n = true,
+    read-cmd / unknown .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {##1} },
+    prefix        .code:n =
+      { \__spintent_sanitize_affix:Nn \l__spintent_spvec_prefix_tl {#1} },
+    prefix        .initial:n = { },
+    prefix        .value_required:n = true,
+    unknown       .code:n =
+      {
+        \str_set:Nn \l__spintent_command_name_str { spvec }
+        \__spintent_unknown_keys_cmd:n {#1}
+      },
+  }
+\cs_new_protected:Nn \__spintent_spvec_print:n
+  {
+    \__spintent_luafun_geo_parse_and_set:n { \exp_not:n {#1} }
+    \str_if_eq:VnT \l__spintent_geo_luaset_is_name_str { true }
+      {
+        \str_if_eq:VnT \l__spintent_geo_luaset_tipo_str { prima }
+          { \str_set:Nn \l__spintent_geo_luaset_error_str { true } }
+      }
+    \str_if_eq:VnT \l__spintent_geo_luaset_is_name_str { false }
+      {
+        \int_compare:nT { \clist_count:N \l__spintent_geo_luaset_points_clist != 2 }
+          { \str_set:Nn \l__spintent_geo_luaset_error_str { true } }
+      }
+    \str_if_eq:VnTF \l__spintent_geo_luaset_error_str { true }
+      { \msg_error:nne { spintent } { spvec-invalid-arg } { \exp_not:n {#1} } }
+      { \__spintent_spvec_mathml:n { #1 } }
+  }
+\cs_new_protected:Nn \__spintent_spvec_mathml:n
+  {
+    \str_if_eq:VnTF \l__spintent_geo_luaset_is_name_str { true }
+      {
+        \bool_if:nTF
+          {
+            \bool_lazy_or_p:nn
+              { \l__spintent_spvec_silent_cmd_bool }
+              { ! \l__spintent_spvec_concept_bool }
+          }
+          {
+            \tl_set:Nn \l__spintent_spvec_intent_arg_tl { _($pt) }
+            \bool_if:NT \l__spintent_spvec_silent_cmd_bool
+              {
+                \str_if_eq:VnF \l__spintent_spvec_mode_str { school }
+                  { \tl_set:Nn \l__spintent_spvec_intent_arg_tl { _- } }
+              }
+          }
+          {
+            \tl_set:Nn \l__spintent_spvec_intent_arg_tl { vector:prefix($pt) }
+          }
+        \str_case:VnF \l__spintent_geo_luaset_tipo_str
+          {
+            { sub }
+              {
+                \str_if_eq:VnTF \l__spintent_spvec_mode_str { school }
+                  {
+                    \bool_if:NTF \l__spintent_spvec_silent_cmd_bool
+                      { \tl_set:Nn \l__spintent_spvec_kv_tl { arg = "pt", intent = "_-" } }
+                      {
+                        \tl_set:Ne \l__spintent_spvec_kv_tl
+                          { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
+                      }
+                    \__spintent_invisible_sep:
+                    \MathMLintent { \l__spintent_spvec_intent_arg_tl }
+                      {
+                        \__spintent_luafun_inner_sep:
+                        \__spintent_luafun_wrap_mrow_intent_arg:nn
+                          { } { \l__spintent_spvec_kv_tl }
+                        {
+                          \vec
+                            {
+                              \bool_if:NT \l__spintent_spvec_autofit_bool
+                                { \vphantom{ b } }
+                              \l__spintent_geo_luaset_letra_str
+                            }
+                          \c_math_subscript_token
+                            { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
+                        }
+                      }
+                  }
+                  {
+                    \__spintent_invisible_sep:
+                    \MathMLintent { \l__spintent_spvec_intent_arg_tl }
+                      {
+                        \__spintent_luafun_inner_sep:
+                        \vec
+                          {
+                            \bool_if:NT \l__spintent_spvec_autofit_bool
+                              { \vphantom{ b } }
+                            \MathMLarg{ pt } { \l__spintent_geo_luaset_letra_str }
+                          }
+                        \bool_if:NT \l__spintent_spvec_silent_cmd_bool
+                          { \c_math_subscript_token { \l__spintent_geo_luaset_sub_str } }
+                      }
+                    \bool_if:NF \l__spintent_spvec_silent_cmd_bool
+                      { \c_math_subscript_token { \l__spintent_geo_luaset_sub_str } }
+                  }
+              }
+          }
+          {
+            \bool_if:NTF \l__spintent_spvec_silent_cmd_bool
+              { \tl_set:Nn \l__spintent_spvec_kv_tl { arg = "pt", intent = "_-" } }
+              {
+                \tl_set:Ne \l__spintent_spvec_kv_tl
+                  { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
+              }
+            \__spintent_invisible_sep:
+            \MathMLintent { \l__spintent_spvec_intent_arg_tl }
+              {
+                \__spintent_luafun_inner_sep:
+                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                  { } { \l__spintent_spvec_kv_tl }
+                {
+                  \vec
+                    {
+                      \bool_if:NT \l__spintent_spvec_autofit_bool
+                        { \vphantom{ b } }
+                      \l__spintent_geo_luaset_print_tl
+                    }
+                }
+              }
+          }
+      }
+      {
+        \seq_set_from_clist:NN \l__spintent_spvec_pt_seq \l__spintent_geo_luaset_points_clist
+        \tl_clear:N \l__spintent_spvec_refs_tl
+        \int_zero:N \l__spintent_spvec_pt_idx_int
+        \seq_map_inline:Nn \l__spintent_spvec_pt_seq
+          {
+            \int_incr:N \l__spintent_spvec_pt_idx_int
+            \tl_if_empty:NF \l__spintent_spvec_refs_tl
+              { \tl_put_right:Nn \l__spintent_spvec_refs_tl { , } }
+            \tl_put_right:Ne \l__spintent_spvec_refs_tl { $ pts \int_use:N \l__spintent_spvec_pt_idx_int }
+          }
+        \bool_if:nTF
+          {
+            \bool_lazy_or_p:nn
+              { \l__spintent_spvec_silent_cmd_bool }
+              { ! \l__spintent_spvec_concept_bool }
+          }
+          {
+            \tl_set:Ne \l__spintent_spvec_intent_arg_tl { _( \l__spintent_spvec_refs_tl ) }
+          }
+          {
+            \tl_set:Ne \l__spintent_spvec_intent_arg_tl
+              {
+                \tl_if_empty:NF \l__spintent_spvec_prefix_tl
+                  { \tl_use:N \l__spintent_spvec_prefix_tl - }
+                vector:prefix( \l__spintent_spvec_refs_tl )
+              }
+          }
+        \__spintent_invisible_sep:
+        \MathMLintent { \l__spintent_spvec_intent_arg_tl }
+          {
+            \__spintent_luafun_inner_sep:
+            \overrightarrow
+              {
+                \int_zero:N \l__spintent_spvec_pt_idx_int
+                \seq_map_inline:Nn \l__spintent_spvec_pt_seq
+                  {
+                    \int_incr:N \l__spintent_spvec_pt_idx_int
+                    \__spintent_mathmlarg_point:nnn
+                      { pts \int_use:N \l__spintent_spvec_pt_idx_int }
+                      { spvec }
+                      { ##1 }
+                  }
+              }
+          }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spvec_exec:nnn
+  {
+    \keys_set:nn { spintent / spvec } { #1 }
+    \__spintent_spvec_print:n { #2 }
+    \tl_if_novalue:nF {#3}
+      {
+        \equal % notación de vector =( , )
+        \MathMLintent { :silent } { \c__spintent_invisible_sep_tl } % previene lectura de intervalo
+        \bool_set_eq:NN \l__spintent_spcoord_silent_cmd_bool \l__spintent_spvec_silent_cmd_bool
+        \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
+        \bool_if:NTF \l__spintent_spvec_silent_cmd_bool
+          {
+            \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+            \str_set:Nn \l__spintent_spcoord_luaset_error_str { false }
+          }
+          {
+            \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+            \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
+              { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
+          }
+        \__spintent_spcoord_set_wrap_parens_size:
+        \str_if_eq:VnF \l__spintent_spcoord_luaset_error_str { true }
+          { \__spintent_spcoord_mathml: }
+      }
+  }
+\NewDocumentCommand \spvec { O{} m d() }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l__spintent_scope_attr_int = 1
+          \__spintent_spvec_exec:nnn { #1 } { #2 } { #3 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spvec } }
   }
 \str_new:N \l__spintent_sprecta_mode_str
 \tl_new:N  \l__spintent_sprecta_prefix_tl
@@ -3073,9 +3248,9 @@
       {
         \msg_error:nne { spintent } { sprecta-invalid-points } { \exp_not:n {#1} }
       }
-    \__spintent_sprecta_mathml:
+    \__spintent_sprecta_mathml:n { #1 }
   }
-\cs_new_protected:Nn \__spintent_sprecta_mathml:
+\cs_new_protected:Nn \__spintent_sprecta_mathml:n
   {
     \str_if_eq:VnTF \l__spintent_geo_luaset_is_name_str { true }
       {
@@ -3097,33 +3272,85 @@
                 recta:prefix($pt)
               }
           }
-        \bool_if:NTF \l__spintent_sprecta_silent_cmd_bool
+        \str_case:VnF \l__spintent_geo_luaset_tipo_str
           {
-            \tl_set:Nn \l__spintent_sprecta_kv_tl { arg = "pt", intent = "_-" }
+            { sub }
+              {
+                \str_if_eq:VnTF \l__spintent_sprecta_mode_str { school }
+                  {
+                    \tl_set:Ne \l__spintent_sprecta_kv_tl
+                      { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
+                    \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
+                      {
+                        \__spintent_luafun_inner_sep:
+                        \__spintent_luafun_wrap_mrow_intent_arg:nn
+                          { } { \l__spintent_sprecta_kv_tl }
+                        {
+                          \l__spintent_geo_luaset_letra_str
+                          \c_math_subscript_token
+                            { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
+                        }
+                      }
+                  }
+                  {
+                    \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
+                      {
+                        {
+                          \__spintent_luafun_inner_sep:
+                          \exp_args:Ne \MathMLarg { pt }
+                            {
+                              {
+                                \l__spintent_geo_luaset_letra_str
+                                \c_math_subscript_token { \l__spintent_geo_luaset_sub_str }
+                              }
+                            }
+                        }
+                      }
+                  }
+              }
+            { prima }
+              {
+                \str_if_eq:VnTF \l__spintent_sprecta_mode_str { school }
+                  {
+                    \tl_set:Ne \l__spintent_sprecta_kv_tl
+                      { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
+                    \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
+                      {
+                        \__spintent_luafun_inner_sep:
+                        \__spintent_luafun_wrap_mrow_intent_arg:nn
+                          { } { \l__spintent_sprecta_kv_tl }
+                        { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
+                      }
+                  }
+                  {
+                    \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
+                      {
+                        {
+                          \__spintent_luafun_inner_sep:
+                          \exp_args:Ne \MathMLarg { pt }
+                            {
+                              { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
+                            }
+                        }
+                      }
+                  }
+              }
           }
           {
-            \str_if_eq:VnTF \l__spintent_sprecta_mode_str { school }
+            \bool_if:NTF \l__spintent_sprecta_silent_cmd_bool
               {
-                \tl_set:Ne \l__spintent_sprecta_kv_tl
-                  { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
+                \tl_set:Nn \l__spintent_sprecta_kv_tl { arg = "pt", intent = "_-" }
               }
               {
-                \tl_set:Nn \l__spintent_sprecta_kv_tl { arg = "pt" }
+                \str_if_eq:VnTF \l__spintent_sprecta_mode_str { school }
+                  {
+                    \tl_set:Ne \l__spintent_sprecta_kv_tl
+                      { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
+                  }
+                  {
+                    \tl_set:Nn \l__spintent_sprecta_kv_tl { arg = "pt" }
+                  }
               }
-          }
-        \str_if_eq:VnTF \l__spintent_geo_luaset_tipo_str { sub }
-          {
-            \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
-              {
-                \__spintent_luafun_inner_sep:
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
-                  { } { \l__spintent_sprecta_kv_tl }
-                { \l__spintent_geo_luaset_letra_str }
-                \c_math_subscript_token
-                  { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
-              }
-          }
-          {
             \__spintent_luafun_wrap_mrow_intent_arg:nn
               { \l__spintent_sprecta_intent_arg_tl }
               { \l__spintent_sprecta_kv_tl }
