@@ -9373,7 +9373,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_spcoord_exec:nn {#1} {#2}
         \group_end:
       }
@@ -9775,7 +9775,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_spPoint_exec:nn { #1 } { #2 }
         \group_end:
       }
@@ -9924,11 +9924,9 @@ end, "shekel_fallback_patch")
 %   For a list of points, \myhlc|\l_@@_geo_luaset_points_clist| is
 %   split into \myhlc|\l_@@_sprecta_pt_seq| and walked to build
 %   \myhlc|\l_@@_sprecta_refs_tl|, the |$pt1,$pt2,...| reference list.
-%   The concept |intent| is |_-:nofix(refs)| or |recta:prefix(refs)|,
+%   The concept |intent| is |_(refs)| or |recta:prefix(refs)|,
 %   same conditions as above, applied with a native |\MathMLintent|
-%   wrapping |\overleftrightarrow| (|\@@_luafun_inner_sep:| first,
-%   |luamml| issue \href{https://github.com/latex3/luamml/issues/26}{\#26}).
-%   The sequence is walked again, calling
+%   wrapping |\overleftrightarrow|. The sequence is walked again, calling
 %   \myhlc|\@@_mathmlarg_point:nnn| per point — already protected
 %   against a subscripted point.
 %    \begin{macrocode}
@@ -10005,7 +10003,7 @@ end, "shekel_fallback_patch")
               { ! \l_@@_sprecta_concept_bool }
           }
           {
-            \tl_set:Ne \l_@@_sprecta_intent_arg_tl { _-:nofix( \l_@@_sprecta_refs_tl ) }
+            \tl_set:Ne \l_@@_sprecta_intent_arg_tl { _( \l_@@_sprecta_refs_tl ) }
           }
           {
             \tl_set:Ne \l_@@_sprecta_intent_arg_tl
@@ -10059,7 +10057,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_sprecta_exec:nn { #1 } { #2 }
         \group_end:
       }
@@ -10218,7 +10216,7 @@ end, "shekel_fallback_patch")
 %   build \myhlc|\l_@@_sprayo_refs_tl|, the comma-separated
 %   |$pts1,$pts2,...| reference list, naming each point by position.
 %
-%   The concept |intent| is |_-:nofix(refs)| when \mykey{silent-cmd} is
+%   The concept |intent| is |_(refs)| when \mykey{silent-cmd} is
 %   |true| \emph{or} \mykey{concept} is |false|; otherwise it is
 %   \myhlc|\l_@@_sprayo_read_sty_str|\myhlc|:prefix(refs)| — the concept
 %   word itself (|rayo| or |semirrecta|) comes from the
@@ -10226,8 +10224,7 @@ end, "shekel_fallback_patch")
 %   under two names — prefixed with \mykey{prefix} when given. It is
 %   applied with a native |\MathMLintent| wrapping |\overrightarrow|,
 %   preceded by \myhlc|\@@_luafun_inner_sep:| (a second sibling so the
-%   sole |<mrow>| does not collapse into |<math>|, |luamml| issue
-%   \href{https://github.com/latex3/luamml/issues/26}{\#26}). The
+%   sole |<mrow>| does not collapse into |<math>|). The
 %   sequence is walked a second time, calling
 %   \myhlc|\@@_mathmlarg_point:nnn| once per point with its |pts|$n$
 %   reference name and \mykey[sprayo]{silent-cmd}/\mykey[sprayo]{read-cmd}
@@ -10253,7 +10250,7 @@ end, "shekel_fallback_patch")
           { ! \l_@@_sprayo_concept_bool }
       }
       {
-        \tl_set:Ne \l_@@_sprayo_intent_arg_tl { _-:nofix( \l_@@_sprayo_refs_tl ) }
+        \tl_set:Ne \l_@@_sprayo_intent_arg_tl { _( \l_@@_sprayo_refs_tl ) }
       }
       {
         \tl_set:Ne \l_@@_sprayo_intent_arg_tl
@@ -10306,7 +10303,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_sprayo_exec:nn { #1 } { #2 }
         \group_end:
       }
@@ -10692,7 +10689,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_spside_exec:nnn { side } { #1 } { #2 }
         \group_end:
       }
@@ -10703,7 +10700,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_spside_exec:nnn { mside } { #1 } { #2 }
         \group_end:
       }
@@ -11086,7 +11083,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_spangle_exec:nnn { angle } { #1 } { #2 }
         \group_end:
       }
@@ -11097,7 +11094,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_spangle_exec:nnn { mangle } { #1 } { #2 }
         \group_end:
       }
@@ -11392,7 +11389,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_sparc_exec:nnn { arc } { #1 } { #2 }
         \group_end:
       }
@@ -11403,7 +11400,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_sparc_exec:nnn { marc } { #1 } { #2 }
         \group_end:
       }
@@ -11702,7 +11699,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \@@_spPoly_exec:nn { #1 } { #2 }
         \group_end:
       }
@@ -12333,7 +12330,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \@@_spfig_exec:nnn { Afig } { #1 } { } }
             { \@@_spfig_exec:nnn { Afig } { #1 } { #2 } }
@@ -12346,7 +12343,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \@@_spfig_exec:nnn { Pfig } { #1 } { } }
             { \@@_spfig_exec:nnn { Pfig } { #1 } { #2 } }
@@ -13231,7 +13228,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \@@_spcirc_exec:nn { #1 } { } }
             { \@@_spcirc_exec:nn { #1 } { #2 } }
@@ -13787,7 +13784,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \@@_spcircfig_exec:nnn { Acirc } { #1 } { } }
             { \@@_spcircfig_exec:nnn { Acirc } { #1 } { #2 } }
@@ -13800,7 +13797,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l_@@_scope_attr_int = 1
+          \attribute \l_@@_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \@@_spcircfig_exec:nnn { Pcirc } { #1 } { } }
             { \@@_spcircfig_exec:nnn { Pcirc } { #1 } { #2 } }

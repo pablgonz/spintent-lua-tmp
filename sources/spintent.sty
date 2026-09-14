@@ -2740,7 +2740,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_spcoord_exec:nn {#1} {#2}
         \group_end:
       }
@@ -3015,7 +3015,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_spPoint_exec:nn { #1 } { #2 }
         \group_end:
       }
@@ -3148,7 +3148,7 @@
               { ! \l__spintent_sprecta_concept_bool }
           }
           {
-            \tl_set:Ne \l__spintent_sprecta_intent_arg_tl { _-:nofix( \l__spintent_sprecta_refs_tl ) }
+            \tl_set:Ne \l__spintent_sprecta_intent_arg_tl { _( \l__spintent_sprecta_refs_tl ) }
           }
           {
             \tl_set:Ne \l__spintent_sprecta_intent_arg_tl
@@ -3187,7 +3187,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_sprecta_exec:nn { #1 } { #2 }
         \group_end:
       }
@@ -3279,7 +3279,7 @@
           { ! \l__spintent_sprayo_concept_bool }
       }
       {
-        \tl_set:Ne \l__spintent_sprayo_intent_arg_tl { _-:nofix( \l__spintent_sprayo_refs_tl ) }
+        \tl_set:Ne \l__spintent_sprayo_intent_arg_tl { _( \l__spintent_sprayo_refs_tl ) }
       }
       {
         \tl_set:Ne \l__spintent_sprayo_intent_arg_tl
@@ -3317,7 +3317,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_sprayo_exec:nn { #1 } { #2 }
         \group_end:
       }
@@ -3515,7 +3515,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_spside_exec:nnn { side } { #1 } { #2 }
         \group_end:
       }
@@ -3526,7 +3526,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_spside_exec:nnn { mside } { #1 } { #2 }
         \group_end:
       }
@@ -3748,7 +3748,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_spangle_exec:nnn { angle } { #1 } { #2 }
         \group_end:
       }
@@ -3759,7 +3759,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_spangle_exec:nnn { mangle } { #1 } { #2 }
         \group_end:
       }
@@ -3909,7 +3909,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_sparc_exec:nnn { arc } { #1 } { #2 }
         \group_end:
       }
@@ -3920,7 +3920,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_sparc_exec:nnn { marc } { #1 } { #2 }
         \group_end:
       }
@@ -4067,7 +4067,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_spPoly_exec:nn { #1 } { #2 }
         \group_end:
       }
@@ -4458,7 +4458,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \__spintent_spfig_exec:nnn { Afig } { #1 } { } }
             { \__spintent_spfig_exec:nnn { Afig } { #1 } { #2 } }
@@ -4471,7 +4471,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \__spintent_spfig_exec:nnn { Pfig } { #1 } { } }
             { \__spintent_spfig_exec:nnn { Pfig } { #1 } { #2 } }
@@ -4957,7 +4957,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \__spintent_spcirc_exec:nn { #1 } { } }
             { \__spintent_spcirc_exec:nn { #1 } { #2 } }
@@ -5272,7 +5272,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \__spintent_spcircfig_exec:nnn { Acirc } { #1 } { } }
             { \__spintent_spcircfig_exec:nnn { Acirc } { #1 } { #2 } }
@@ -5285,7 +5285,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \tex_attribute:D \l__spintent_scope_attr_int = 1
+          \attribute \l__spintent_scope_attr_int = 1
           \tl_if_novalue:nTF {#2}
             { \__spintent_spcircfig_exec:nnn { Pcirc } { #1 } { } }
             { \__spintent_spcircfig_exec:nnn { Pcirc } { #1 } { #2 } }
