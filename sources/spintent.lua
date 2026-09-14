@@ -140,15 +140,16 @@ end
 
 local spintent_sub_mlist_t = node.id("sub_mlist")
 
--- Recursa dentro de cualquier sub_mlist encontrado en .nucleus O EN
--- .sub (subíndice) -- \c_math_subscript_token pone el contenido ahí,
--- no en .nucleus, así que sin esto la cola nunca alcanza nada
--- dentro de un subíndice.
--- Reclama 'target' (la nucleus o el sub de un noad) con la siguiente
--- entrada pendiente de la cola, si todavía no tiene su propio filtro
--- instalado. Compartida por las dos ramas de spintent_try_annotate
--- (antes duplicada línea por línea entre nucleus y sub).
+-- Numero de atributo asignado por el propio kernel de LuaTeX (sin
+-- riesgo de colision con otro paquete).
+local spintent_scope_attr = luatexbase.new_attribute("spintent_scope")
+token_set_macro("l__spintent_scope_luaset_attr_str", tostring(spintent_scope_attr))
+
+-- Reclama 'target' con la siguiente entrada de la cola. Solo si
+-- tiene spintent_scope_attr=1 (tipografiado dentro de un comando
+-- de spintent) y todavia no tiene mathml_filter propio.
 local function spintent_claim_target(target, properties)
+    if node.has_attribute(target, spintent_scope_attr) ~= 1 then return end
     local existing = properties[target]
     if existing and existing.mathml_filter then return end
 
@@ -233,6 +234,17 @@ end, "spintent.wrap_mrow_intent")
 luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
     "spintent.wrap_mrow_intent", "before", "luamml.to_mathml")
 
+-- Recibe "true"/"false" desde expl3, una sola vez, justo despues de
+-- cargar el modulo -- activa/desactiva la marca sptmp="inner"/"outer"
+-- en las dos funciones fantasma, para que un script externo pueda
+-- identificarlas y quitarlas antes de generar AF (nunca se agrega
+-- nada a la salida SE real cuando la opcion esta desactivada).
+local spintent_debug_ghost = false
+
+register_tex_cmd("luafun_set_debug_ghost", function(state)
+    spintent_debug_ghost = (state == "true")
+end, { "string" })
+
 -- Reemplaza \c__spintent_invisible_sep_tl cuando se usa junto a
 -- \MathMLintent nativo (necesita un segundo hermano para no
 -- colapsar). Se auto-anota con su propio mathml_filter al
@@ -253,6 +265,7 @@ register_tex_cmd("luafun_inner_sep", function()
     local p = properties[kernel] or {}
     p.mathml_filter = function(result, core)
         result.intent = ":silent"
+        if spintent_debug_ghost then result.sptmp = "inner" end
         return result, core
     end
     properties[kernel] = p
@@ -288,6 +301,7 @@ register_tex_cmd("luafun_invisible_sep", function()
     local p = properties[kernel] or {}
     p.mathml_filter = function(result, core)
         result.intent = ":silent"
+        if spintent_debug_ghost then result.sptmp = "outer" end
         return result, core
     end
     properties[kernel] = p
