@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-13} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-15} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -3848,6 +3848,20 @@
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
       }
+    \str_if_eq:VnT \l__spintent_geo_luaset_angulo_case_str { nombre }
+      {
+        \str_if_eq:VnF \l__spintent_geo_luaset_nombre_es_num_str { true }
+          {
+            \int_compare:nT { \str_count:N \l__spintent_geo_luaset_letra_str = 1 }
+              {
+                \str_if_eq:eeF { \l__spintent_geo_luaset_letra_str } { \str_uppercase:n { \l__spintent_geo_luaset_letra_str } }
+                  {
+                    \msg_error:nnee { spintent } { sp #1 -invalid-arg }
+                      { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+                  }
+              }
+          }
+      }
     \str_if_eq:eeTF {#1} { mangle }
       {
         \tl_set:Nn \l__spintent_spangle_intent_tl { medida-del-ángulo }
@@ -3903,7 +3917,45 @@
                   { } { \l__spintent_spangle_kv_tl }
                 { \l__spintent_geo_luaset_print_tl }
               }
-              { \l__spintent_geo_luaset_print_tl }
+              {
+                \str_case:VnF \l__spintent_geo_luaset_tipo_str
+                  {
+                    { sub }
+                      {
+                        \str_if_eq:eeTF { \use:c { l__spintent_sp #1 _mode_str } } { school }
+                          {
+                            \tl_set:Ne \l__spintent_spangle_kv_tl
+                              { intent = "_ \l__spintent_geo_luaset_intent_str -" }
+                            \__spintent_luafun_wrap_mrow_intent_arg:nn
+                              { } { \l__spintent_spangle_kv_tl }
+                            {
+                              \l__spintent_geo_luaset_letra_str
+                              \c_math_subscript_token
+                                { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
+                            }
+                          }
+                          {
+                            \l__spintent_geo_luaset_letra_str
+                            \c_math_subscript_token { \l__spintent_geo_luaset_sub_str }
+                          }
+                      }
+                    { prima }
+                      {
+                        \str_if_eq:eeTF { \use:c { l__spintent_sp #1 _mode_str } } { school }
+                          {
+                            \tl_set:Ne \l__spintent_spangle_kv_tl
+                              { intent = "_ \l__spintent_geo_luaset_intent_str -" }
+                            \__spintent_luafun_wrap_mrow_intent_arg:nn
+                              { } { \l__spintent_spangle_kv_tl }
+                            { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
+                          }
+                          {
+                            \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str
+                          }
+                      }
+                  }
+                  { \l__spintent_geo_luaset_print_tl }
+              }
           }
       }
       {
@@ -3932,7 +3984,7 @@
                   }
               }
               {
-                \tl_set:Nn \l__spintent_spangle_intent_arg_tl { _- }
+                \tl_set:Ne \l__spintent_spangle_intent_arg_tl { _( \l__spintent_spangle_refs_tl ) }
               }
           }
         \bool_set_false:N \l__spintent_spangle_print_m_now_bool
@@ -4338,6 +4390,13 @@
       {
         See~the~documentation~of~##1~for~details~on~print-sym.
       }
+    \msg_new:nnnn { spintent } { sp #1 -read-arg-key }
+      {
+        read-arg~has~no~effect~with~a~single~argument~in~'##1'~\msg_line_context:.
+      }
+      {
+        See~the~documentation~of~##1~for~details~on~read-arg.
+      }
   }
 \clist_map_inline:nn { Afig , Pfig }
   {
@@ -4421,6 +4480,14 @@
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \clist_if_empty:NT \l__spintent_geo_luaset_points_clist
+      {
+        \tl_if_empty:cF { l__spintent_sp #1 _read_arg_tl }
+          {
+            \msg_error:nne { spintent } { sp #1 -read-arg-key }
+              { \c_backslash_str sp #1 }
+          }
       }
     \str_if_eq:eeTF {#1} { Afig }
       { \tl_set:Nn \l__spintent_spfig_op_tl { área } }
@@ -4527,8 +4594,8 @@
     \tl_set:Ne \l__spintent_spfig_intent_tl
       {
         \tl_if_empty:NTF \l__spintent_spfig_desc_tl
-          { \l__spintent_spfig_op_tl }
-          { \l__spintent_spfig_op_tl - \l__spintent_spfig_desc_tl }
+          { _ \l__spintent_spfig_op_tl - }
+          { _ \l__spintent_spfig_op_tl - \l__spintent_spfig_desc_tl - }
       }
     \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
       { \tl_set:Nn \l__spintent_spfig_intent_arg_tl { _- } }

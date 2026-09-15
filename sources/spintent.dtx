@@ -203,7 +203,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-13}
+\def\filedate{2026-09-15}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4228,7 +4228,7 @@ end, "shekel_fallback_patch")
 % Now declare the \mypkg*[no-index]{spintent} package and we will add the
 % only key \mykey{mathcal} that can be passed as a package option.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-13} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-15} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -9382,7 +9382,7 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsection{The function \cs[no-index]{@@_mathmlarg_point:nnn}}\label{fun:mathmlarg_point}
+% \subsection{The function \cs[no-index]{__spintent_mathmlarg_point:nnn}}\label{fun:mathmlarg_point}
 %
 % \begin{variable}[int]
 %   {
@@ -10195,28 +10195,19 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_sprecta_mathml:n}
 %   The function \myhlc|\@@_sprecta_mathml:n| branches on
-%   \myhlc|\l_@@_geo_luaset_is_name_str|.
+%   \myhlc|\l_@@_geo_luaset_is_name_str|. For a proper name (|m|,
+%   |l|, \ldots), the concept |intent| is |:silent($pt)| when
+%   \mykey{silent-cmd} is |true| \emph{or} \mykey{concept} is |false|;
+%   otherwise |recta:prefix($pt)|, prefixed with \mykey{prefix} when
+%   given.
 %
-%   For a proper name (|m|, |l|, \ldots), the concept |intent| is
-%   |:silent($pt)| when \mykey{silent-cmd} is |true| \emph{or}
-%   \mykey{concept} is |false|; otherwise |recta:prefix($pt)|,
-%   prefixed with \mykey{prefix} when given. With
-%   \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub| or |prima|,
+%   \smallskip
+%
+%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|,
 %   |read-cmd=school| tags the base through
 %   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| with a literal |kv|,
-%   the mark appended and silenced; |read-cmd=mathcat| tags base and
-%   mark together through a native |\MathMLarg| instead. Otherwise,
-%   the same distinction applies to the combined
-%   \myhlc|\l_@@_geo_luaset_print_tl| — the shared queue for |school|,
-%   a native |\MathMLarg| for |mathcat|, never mixed.
-%
-%   For a list of points, \myhlc|\l_@@_geo_luaset_points_clist| is
-%   split into \myhlc|\l_@@_sprecta_pt_seq| and walked to build
-%   \myhlc|\l_@@_sprecta_refs_tl|, the |$pt1,$pt2,...| reference list.
-%   The concept |intent| is |_(refs)| or |recta:prefix(refs)|, same
-%   conditions as above, applied with a native |\MathMLintent|
-%   wrapping |\overleftrightarrow|. The sequence is walked again,
-%   calling \myhlc|\@@_mathmlarg_point:nnn| once per point.
+%   the subscript appended and silenced; |read-cmd=mathcat| tags base
+%   and subscript together through a native |\MathMLarg| instead.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprecta_mathml:n
   {
@@ -10260,6 +10251,12 @@ end, "shekel_fallback_patch")
                         }
                       }
                   }
+%    \end{macrocode}
+%   For |read-cmd=mathcat|, the same |sub| case tags base and
+%   subscript together through a native |\MathMLarg| instead — never
+%   mixed with the shared queue, since the queue does not recognize a
+%   native |\MathMLarg| claim as already taken.
+%    \begin{macrocode}
                   {
                     \MathMLintent { \l_@@_sprecta_intent_arg_tl }
                       {
@@ -10276,6 +10273,13 @@ end, "shekel_fallback_patch")
                       }
                   }
               }
+%    \end{macrocode}
+%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |prima|, the same
+%   distinction applies: |read-cmd=school| tags the base with the
+%   literal |kv| and appends the mark, unsilenced (a prime is not
+%   spelled out on the base, so nothing to repeat); |read-cmd=mathcat|
+%   tags base and mark together through a native |\MathMLarg|.
+%    \begin{macrocode}
             { prima }
               {
                 \str_if_eq:VnTF \l_@@_sprecta_mode_str { school }
@@ -10304,6 +10308,11 @@ end, "shekel_fallback_patch")
                   }
               }
           }
+%    \end{macrocode}
+%   Otherwise (no subscript, no prime), the same |kv| logic wraps the
+%   combined \myhlc|\l_@@_geo_luaset_print_tl| as a whole — the shared
+%   queue for |school|, its own |arg| alone for |mathcat|.
+%    \begin{macrocode}
           {
             \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
               {
@@ -10325,6 +10334,15 @@ end, "shekel_fallback_patch")
             { \l_@@_geo_luaset_print_tl }
           }
       }
+%    \end{macrocode}
+%   For a list of points, \myhlc|\l_@@_geo_luaset_points_clist| is
+%   split into \myhlc|\l_@@_sprecta_pt_seq| and walked to build
+%   \myhlc|\l_@@_sprecta_refs_tl|, the |$pt1,$pt2,...| reference list.
+%   The concept |intent| is |_(refs)| or |recta:prefix(refs)|, same
+%   conditions as above, applied with a native |\MathMLintent|
+%   wrapping |\overleftrightarrow|. The sequence is walked again,
+%   calling \myhlc|\@@_mathmlarg_point:nnn| once per point.
+%    \begin{macrocode}
       {
         \seq_set_from_clist:NN \l_@@_sprecta_pt_seq \l_@@_geo_luaset_points_clist
         \tl_clear:N \l_@@_sprecta_refs_tl
@@ -11239,15 +11257,17 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spangle_process:nn}
 %   The internal function \myhlc|\@@_spangle_process:nn| receives the
 %   short name of the command (|angle| or |mangle|) in `|#1|' and the
-%   \mymarg{argument} in `|#2|'. It calls
-%   \myhlc|\@@_luafun_geo_angulo_parse_and_set:n| to process `|#2|',
-%   returning an \enquote{error} if invalid, then sets
-%   \myhlc|\l_@@_spangle_intent_tl| to |ángulo| (or
-%   |medida-del-ángulo| for |\spmangle|), suffixed with `|-recto|'
-%   when \mykey{recto} is |true|. No |intent| is built here: it
-%   depends on \myhlc|\l_@@_geo_luaset_angulo_case_str| (|tres-puntos|,
-%   |un-punto| or |nombre|), which \myhlc|\@@_spangle_mathml:n| branches
-%   on.
+%   \mymarg{argument} in `|#2|'. Calls
+%   \myhlc|\@@_luafun_geo_angulo_parse_and_set:n|, reporting
+%   |sp#1-invalid-arg| on error. For a proper name that is a single
+%   letter (not numeric), also reports the same error when that
+%   letter is lowercase — angle names take an uppercase letter,
+%   number, or Greek letter, never a lowercase Latin one; the length
+%   check keeps a Greek letter command such as |\alpha| out of this
+%   comparison. Then sets \myhlc|\l_@@_spangle_intent_tl| to |ángulo|
+%   (or |medida-del-ángulo| for |\spmangle|), suffixed with
+%   |-recto| when \mykey{recto} is |true|, and calls
+%   \myhlc|\@@_spangle_mathml:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangle_process:nn
   {
@@ -11256,6 +11276,20 @@ end, "shekel_fallback_patch")
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \str_if_eq:VnT \l_@@_geo_luaset_angulo_case_str { nombre }
+      {
+        \str_if_eq:VnF \l_@@_geo_luaset_nombre_es_num_str { true }
+          {
+            \int_compare:nT { \str_count:N \l_@@_geo_luaset_letra_str = 1 }
+              {
+                \str_if_eq:eeF { \l_@@_geo_luaset_letra_str } { \str_uppercase:n { \l_@@_geo_luaset_letra_str } }
+                  {
+                    \msg_error:nnee { spintent } { sp #1 -invalid-arg }
+                      { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+                  }
+              }
+          }
       }
     \str_if_eq:eeTF {#1} { mangle }
       {
@@ -11274,24 +11308,16 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spangle_mathml:n}
-%   For |tres-puntos|/|un-punto|, a single native \cs{MathMLintent}
-%   wraps the symbol and the points together, with
-%   \myhlc|\l_@@_spangle_intent_tl|\myhlc|:prefix(refs)| — the same
-%   shape as \myhlc|\@@_spside_mathml:n|. The earlier split into two
-%   sibling \cs{MathMLintent} calls worked around a |MathCAT| bug
-%   with several explicit |$|-references in |:prefix(...)| that only
-%   affects the demo build; the stable |NVDA|/updated Acrobat Reader
-%   combination reads this shape correctly, so the split is no longer
-%   needed and both commands now share the same structure.
+%   The function \myhlc|\@@_spangle_mathml:n| branches on
+%   \myhlc|\l_@@_geo_luaset_angulo_case_str|.
 %
-%   For |\spmangle| with \mykey{print-m} |true|, a silent
-%   |\operatorname{m}| precedes \myhlc|\@@_spangle_sym:n| inside the
-%   same |\MathMLintent|, exactly as \myhlc|\@@_spside_mathml:n| does
-%   for its own |m|.
-%
-%   |nombre| is unchanged (see below): it never references more than
-%   one thing, so it was never affected by the bug this simplifies
-%   away from.
+%   For |nombre|, the symbol (\myhlc|\@@_spangle_sym:n|) is tagged
+%   through \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| on its own,
+%   with \myhlc|\l_@@_spangle_intent_tl|\myhlc|:prefix| (no
+%   |$|-reference: |nombre| never refers to more than one thing) —
+%   |_-| when \mykey{silent-cmd} is |true| \emph{or} \mykey{concept}
+%   is |false|. With \mykey{silent-cmd} |true|, the name that follows
+%   is silenced as a whole.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangle_mathml:n
   {
@@ -11326,6 +11352,11 @@ end, "shekel_fallback_patch")
             \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = "_-" }
             { \l_@@_geo_luaset_print_tl }
           }
+%    \end{macrocode}
+%   Otherwise, a numeric name is tagged as a whole, through
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|, with a literal
+%   |intent| built from \myhlc|\l_@@_geo_luaset_intent_str|.
+%    \begin{macrocode}
           {
             \str_if_eq:VnTF \l_@@_geo_luaset_nombre_es_num_str { true }
               {
@@ -11335,9 +11366,74 @@ end, "shekel_fallback_patch")
                   { } { \l_@@_spangle_kv_tl }
                 { \l_@@_geo_luaset_print_tl }
               }
-              { \l_@@_geo_luaset_print_tl }
+%    \end{macrocode}
+%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|,
+%   |read-cmd=school| tags the letter through the same function, with
+%   a literal |intent|, and the subscript is appended and silenced;
+%   |read-cmd=mathcat| leaves both letter and subscript untouched, for
+%   \mynvmath{MathCAT} to read the whole |<msub>| natively (no |arg|
+%   is set in either case: there is no |$|-reference to resolve).
+%    \begin{macrocode}
+              {
+                \str_case:VnF \l_@@_geo_luaset_tipo_str
+                  {
+                    { sub }
+                      {
+                        \str_if_eq:eeTF { \use:c { l_@@_sp #1 _mode_str } } { school }
+                          {
+                            \tl_set:Ne \l_@@_spangle_kv_tl
+                              { intent = "_ \l_@@_geo_luaset_intent_str -" }
+                            \@@_luafun_wrap_mrow_intent_arg:nn
+                              { } { \l_@@_spangle_kv_tl }
+                            {
+                              \l_@@_geo_luaset_letra_str
+                              \c_math_subscript_token
+                                { \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str } }
+                            }
+                          }
+                          {
+                            \l_@@_geo_luaset_letra_str
+                            \c_math_subscript_token { \l_@@_geo_luaset_sub_str }
+                          }
+                      }
+%    \end{macrocode}
+%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |prima|, the
+%   prime is always read — spoken as part of the literal for
+%   |read-cmd=school|, native for |read-cmd=mathcat| — since a prime
+%   is not a repeated word to silence.
+%    \begin{macrocode}
+                    { prima }
+                      {
+                        \str_if_eq:eeTF { \use:c { l_@@_sp #1 _mode_str } } { school }
+                          {
+                            \tl_set:Ne \l_@@_spangle_kv_tl
+                              { intent = "_ \l_@@_geo_luaset_intent_str -" }
+                            \@@_luafun_wrap_mrow_intent_arg:nn
+                              { } { \l_@@_spangle_kv_tl }
+                            { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
+                          }
+                          {
+                            \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str
+                          }
+                      }
+                  }
+                  { \l_@@_geo_luaset_print_tl }
+              }
           }
       }
+%    \end{macrocode}
+%   For |tres-puntos|/|un-punto|, \myhlc|\l_@@_geo_luaset_points_clist|
+%   is split into \myhlc|\l_@@_spangle_pt_seq| and walked to build
+%   \myhlc|\l_@@_spangle_refs_tl|, the |$pt1,$pt2,...| reference list.
+%   A single native \cs{MathMLintent} wraps the symbol and the points
+%   together, with \myhlc|\l_@@_spangle_intent_tl|\myhlc|:prefix(refs)|
+%   — |_-| when \mykey{silent-cmd} is |true|, |_(refs)| when
+%   \mykey{concept} is |false| alone. For |\spmangle| with
+%   \mykey{print-m} |true|, a silent |\operatorname{m}| precedes
+%   \myhlc|\@@_spangle_sym:n| inside the same |\MathMLintent|. The
+%   sequence is walked again, calling \myhlc|\@@_mathmlarg_point:nnn|
+%   once per point.
+%    \begin{macrocode}
       {
         \seq_set_from_clist:NN \l_@@_spangle_pt_seq \l_@@_geo_luaset_points_clist
         \tl_clear:N \l_@@_spangle_refs_tl
@@ -11364,7 +11460,7 @@ end, "shekel_fallback_patch")
                   }
               }
               {
-                \tl_set:Nn \l_@@_spangle_intent_arg_tl { _- }
+                \tl_set:Ne \l_@@_spangle_intent_arg_tl { _( \l_@@_spangle_refs_tl ) }
               }
           }
         \bool_set_false:N \l_@@_spangle_print_m_now_bool
@@ -12107,10 +12203,14 @@ end, "shekel_fallback_patch")
 % \subsubsection{Definition of error messages for \cs[no-index]{spAfig}
 %   and \cs[no-index]{spPfig}}
 %
-% \begin{macro}[int]{spAfig-invalid-points, spPfig-invalid-points,
-%                    spAfig-invalid-arg, spPfig-invalid-arg,
-%                    spAfig-sym-letra-conflict, spPfig-sym-letra-conflict,
-%                    spAfig-sym-cardinality-conflict, spPfig-sym-cardinality-conflict}
+% \begin{macro}[int]
+%   {
+%     spAfig-invalid-points, spPfig-invalid-points,
+%     spAfig-invalid-arg, spPfig-invalid-arg,
+%     spAfig-sym-letra-conflict, spPfig-sym-letra-conflict,
+%     spAfig-sym-cardinality-conflict, spPfig-sym-cardinality-conflict,
+%     spAfig-read-arg-key, spPfig-read-arg-key,
+%   }
 %   All eight messages are generated by the same map, using the same
 %   |##1|/|##2| doubling convention as |\spside|/|\spmside|.
 %   |sp #1-invalid-points| is currently unused by
@@ -12150,6 +12250,13 @@ end, "shekel_fallback_patch")
       }
       {
         See~the~documentation~of~##1~for~details~on~print-sym.
+      }
+    \msg_new:nnnn { spintent } { sp #1 -read-arg-key }
+      {
+        read-arg~has~no~effect~with~a~single~argument~in~'##1'~\msg_line_context:.
+      }
+      {
+        See~the~documentation~of~##1~for~details~on~read-arg.
       }
   }
 %    \end{macrocode}
@@ -12297,8 +12404,11 @@ end, "shekel_fallback_patch")
 %   the \mymarg{argument} in `|#2|'. Calls
 %   \myhlc|\@@_luafun_geo_afig_parse_and_set:n| or
 %   \myhlc|\@@_luafun_geo_pfig_parse_and_set:n|, reports
-%   |sp#1-invalid-arg| on failure, sets \myhlc|\l_@@_spfig_op_tl| to
-%   |área|/|perímetro|, then delegates to \myhlc|\@@_spfig_mathml:n|.
+%   |sp#1-invalid-arg| on failure, and |sp#1-read-arg-key| when
+%   \mykey[spAfig,spPfig]{read-arg} is given for a bare number/letter
+%   argument (no vertices), where it has no effect. Sets
+%   \myhlc|\l_@@_spfig_op_tl| to |área|/|perímetro|, then delegates to
+%   \myhlc|\@@_spfig_mathml:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_process:nn
   {
@@ -12309,6 +12419,14 @@ end, "shekel_fallback_patch")
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-arg }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
+      }
+    \clist_if_empty:NT \l_@@_geo_luaset_points_clist
+      {
+        \tl_if_empty:cF { l_@@_sp #1 _read_arg_tl }
+          {
+            \msg_error:nne { spintent } { sp #1 -read-arg-key }
+              { \c_backslash_str sp #1 }
+          }
       }
     \str_if_eq:eeTF {#1} { Afig }
       { \tl_set:Nn \l_@@_spfig_op_tl { área } }
@@ -12321,18 +12439,14 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_spfig_build_simple:n}
 %   Handles the argument-less, table-letter and bare number/letter
-%   cases (no vertices). Builds \myhlc|\l_@@_geo_final_print_tl| and
+%   cases (no vertices). Builds \myhlc|\l_@@_geo_final_print_tl| (the
+%   visual placed under |\mathcal|'s subscript) and
 %   \myhlc|\l_@@_spfig_desc_tl| (the descriptive part, without
-%   |área|/|perímetro|). \myhlc|\l_@@_spfig_intent_tl| is
-%   \myhlc|\l_@@_spfig_op_tl|\myhlc|-|\myhlc|\l_@@_spfig_desc_tl|.
-%   \mykey{silent-cmd} overrides
-%   \myhlc|\l_@@_spfig_intent_arg_tl| with |_-|; with |silent-cmd=false|
-%   and \mykey{concept} |false|, it becomes |_|\myhlc|\l_@@_spfig_desc_tl|\myhlc|-|
-%   (the descriptive part alone, literally, without |área|/|perímetro|);
-%   with \mykey{concept} |true| it is \myhlc|\l_@@_spfig_intent_tl|.
-%   Preserves the |sym-letra-conflict| check (a table letter cannot
-%   combine with a forced \mykey{print-sym}). Receives the short
-%   command name in `|#1|'.
+%   |área|/|perímetro|). Receives the short command name in `|#1|'.
+%
+%   With an empty argument, both are cleared for |print-sym| |auto|/
+%   |none|; a forced |print-sym| instead places the symbol alone,
+%   with its own name as the description.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_build_simple:n
   {
@@ -12360,6 +12474,16 @@ end, "shekel_fallback_patch")
               }
           }
       }
+%    \end{macrocode}
+%
+%   With a bare number/letter (empty
+%   \myhlc|\l_@@_geo_luaset_letra_word_str|), the value itself becomes
+%   the visual for |print-sym| |auto|/|none|, or its own subscript
+%   under a forced symbol otherwise; the description is the spoken
+%   value, prefixed with «sub-» when \mykey{read-sub} is |true|
+%   (further prefixed with the symbol's own name for a forced
+%   |print-sym|).
+%    \begin{macrocode}
       {
         \str_if_empty:NTF \l_@@_geo_luaset_letra_word_str
           {
@@ -12405,6 +12529,15 @@ end, "shekel_fallback_patch")
                   }
               }
           }
+%    \end{macrocode}
+%
+%   With a table letter (|F|/|P|/|B|/|L|/|T|, non-empty
+%   \myhlc|\l_@@_geo_luaset_letra_word_str|), a forced |print-sym|
+%   raises |sp#1-sym-letra-conflict| — a table letter is never nested
+%   under a symbol. The visual is the value as-is; the description is
+%   its own word, connected as |\l_@@_geo_luaset_letra_conector_str|
+%   requires, with the same spoken subscript as above when present.
+%    \begin{macrocode}
           {
             \str_case:VnF \l_@@_geo_print_sym_str
               {
@@ -12430,11 +12563,22 @@ end, "shekel_fallback_patch")
               }
           }
       }
+%    \end{macrocode}
+%
+%   \myhlc|\l_@@_spfig_intent_tl| is always the |_word-| shape:
+%   |\l_@@_spfig_op_tl| alone when \myhlc|\l_@@_spfig_desc_tl| is
+%   empty, both joined by a dash otherwise. \mykey{silent-cmd}
+%   overrides \myhlc|\l_@@_spfig_intent_arg_tl| with |_-|; with
+%   |silent-cmd=false| and \mykey{concept} |false|, it becomes
+%   |_|\myhlc|\l_@@_spfig_desc_tl|\myhlc|-| (the descriptive part
+%   alone, without |área|/|perímetro|); with \mykey{concept} |true| it
+%   is \myhlc|\l_@@_spfig_intent_tl|.
+%    \begin{macrocode}
     \tl_set:Ne \l_@@_spfig_intent_tl
       {
         \tl_if_empty:NTF \l_@@_spfig_desc_tl
-          { \l_@@_spfig_op_tl }
-          { \l_@@_spfig_op_tl - \l_@@_spfig_desc_tl }
+          { _ \l_@@_spfig_op_tl - }
+          { _ \l_@@_spfig_op_tl - \l_@@_spfig_desc_tl - }
       }
     \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       { \tl_set:Nn \l_@@_spfig_intent_arg_tl { _- } }
@@ -12446,6 +12590,7 @@ end, "shekel_fallback_patch")
   }
 %    \end{macrocode}
 % \end{macro}
+%
 % \begin{macro}[int]{\@@_spfig_build_refs:}
 %   Splits \myhlc|\l_@@_geo_luaset_points_clist| into
 %   \myhlc|\l_@@_spfig_pt_seq| and walks it once to build
@@ -12600,9 +12745,7 @@ end, "shekel_fallback_patch")
 %   noad's |sub| field, not just its |nucleus|.
 %
 %   \myhlc|\@@_invisible_sep:| precedes both branches (a second
-%   sibling so the sole |<mrow>| does not collapse into |<math>|,
-%   |luamml| issue
-%   \href{https://github.com/latex3/luamml/issues/26}{\#26}).
+%   sibling so the sole |<mrow>| does not collapse into |<math>|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_mathml:n
   {
@@ -12693,6 +12836,7 @@ end, "shekel_fallback_patch")
   }
 %    \end{macrocode}
 % \end{macro}
+%
 %
 % \subsection{The commands \cs{sprad} and \cs{spdiam}}\label{cmd:sprad}
 %
@@ -13592,15 +13736,16 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spAcirc} and \cs[no-index]{spPcirc}}
 %
-% \begin{variable}[int]{
-%   \l_@@_spAcirc_mode_str, \l_@@_spPcirc_mode_str,
-%   \l_@@_spAcirc_print_sym_str, \l_@@_spPcirc_print_sym_str,
-%   \l_@@_spAcirc_read_sty_str, \l_@@_spPcirc_read_sty_str,
-%   \l_@@_spAcirc_radio_sty_str, \l_@@_spPcirc_radio_sty_str,
-%   \l_@@_spAcirc_sub_index_str, \l_@@_spPcirc_sub_index_str,
-%   \l_@@_spAcirc_prefix_tl, \l_@@_spPcirc_prefix_tl,
-%   \l_@@_spAcirc_read_arg_tl, \l_@@_spPcirc_read_arg_tl,
-% }
+% \begin{variable}[int]
+%   {
+%     \l_@@_spAcirc_mode_str, \l_@@_spPcirc_mode_str,
+%     \l_@@_spAcirc_print_sym_str, \l_@@_spPcirc_print_sym_str,
+%     \l_@@_spAcirc_read_sty_str, \l_@@_spPcirc_read_sty_str,
+%     \l_@@_spAcirc_radio_sty_str, \l_@@_spPcirc_radio_sty_str,
+%     \l_@@_spAcirc_sub_index_str, \l_@@_spPcirc_sub_index_str,
+%     \l_@@_spAcirc_prefix_tl, \l_@@_spPcirc_prefix_tl,
+%     \l_@@_spAcirc_read_arg_tl, \l_@@_spPcirc_read_arg_tl,
+%   }
 %   These variables store the value set by each corresponding key:
 %   \mykey[spAcirc,spPcirc]{read-cmd}, \mykey[spAcirc,spPcirc]{print-sym},
 %   \mykey[spAcirc,spPcirc]{read-sty}, \mykey[spAcirc,spPcirc]{radio-sty},
@@ -14162,7 +14307,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-13]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-15]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
