@@ -5487,20 +5487,11 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Internal functions for \cs[no-index]{spunit}}
 %
-% \begin{macro}[int]{\@@_spunit_format_canonical:, \@@_spunit_process_base_exp:n}
+% \begin{macro}[int]{\@@_spunit_format_canonical:}
 %   The function \myhlc|\@@_spunit_format_canonical:| handles the visual formatting
 %   of the \emph{\enquote{unit symbol}}. It specifically checks for the \emph{liter symbol}
 %   `ℓ' to print it as |\ell|, and formats all other valid \emph{\enquote{units}}
 %   in standard upright text using |\mathrm|.
-%
-%   \smallskip
-%
-%   The function \myhlc|\@@_spunit_process_base_exp:n| evaluates a \emph{\enquote{single unit}}
-%   along with its exponent. It first looks up the unit `|#1|` in the dictionary.
-%   If the \emph{\enquote{unit}} is not found, it flags it as invalid. If found, it handles the
-%   spacing and multiplication dot `|\cdot|' intents, and then renders the base
-%   unit and its exponent (either using a pre-defined compact exponent from Lua
-%   or by manually splitting the string at the `|^|' symbol).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spunit_format_canonical:
   {
@@ -5510,6 +5501,22 @@ end, "shekel_fallback_patch")
       }
       { \mathrm { \l_@@_spunit_luaset_canonical_str } }
   }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spunit_process_base_exp:n}
+%   The function \myhlc|\@@_spunit_process_base_exp:n| evaluates a
+%   \emph{\enquote{single unit}} along with its exponent, `|#1|`. It
+%   first looks up the unit in the dictionary; if not found, flags it
+%   as invalid.
+%
+%   Otherwise, unless this is the first unit in a product
+%   (\myhlc|\l_@@_spunit_is_mult_bool|), it handles the spacing and
+%   multiplication dot: |\cdot| when \mykey{print-cdot} is |true|
+%   (read as |por| when \mykey{read-cdot} is also |true|, silent
+%   otherwise), or a thin space |\,| when |print-cdot| is |false|
+%   (still read as |por| under |read-cdot|).
+%    \begin{macrocode}
 \cs_new_protected:Nn \@@_spunit_process_base_exp:n
   {
     \tl_clear:N \l_@@_spunit_exponent_tl
@@ -5533,6 +5540,11 @@ end, "shekel_fallback_patch")
                   { \, }
               }
           }
+%    \end{macrocode}
+%   Then renders the base unit and its exponent: either a pre-defined
+%   compact exponent from Lua (\myhlc|\l_@@_spunit_luaset_is_compact_str|),
+%   or by manually splitting `|#1|` at the `|^|' symbol otherwise.
+%    \begin{macrocode}
         \str_if_eq:VnTF \l_@@_spunit_luaset_is_compact_str { true }
           {
             {
@@ -6061,21 +6073,12 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spmoney_print_int:, \@@_spmoney_intent_int:}
+% \begin{macro}[int]{\@@_spmoney_print_int:}
 %   The function \myhlc|\@@_spmoney_print_int:| evaluates the presence of an
 %   explicit sign in \myhlc|\l_@@_luaset_sign_tl|. If a sign is detected, it
 %   assigns a prefix speech intent `|más|' or `|menos|' and embeds the sign
 %   and subsequent layout inside a |\MathMLintent|. If no sign is present,
 %   it routes execution based on whether subunits are enabled.
-%
-%   \smallskip
-%
-%   The function \myhlc|\@@_spmoney_intent_int:| determines the correct
-%   grammatical inflection for the currency string (singular, plural, or the
-%   prepositional `|de|' variant for exact millions). It evaluates the integer
-%   component, decimal boundaries, and zero-fills to select the appropriate
-%   string register, applying it as a postfix \mynvmath{MathML} intent over
-%   the layout rendered by \myhlc|\@@_spmoney_render_layout:|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmoney_print_int:
   {
@@ -6106,6 +6109,17 @@ end, "shekel_fallback_patch")
           }
       }
   }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spmoney_intent_int:}
+%   The function \myhlc|\@@_spmoney_intent_int:| determines the correct
+%   grammatical inflection for the currency string (singular, plural, or the
+%   prepositional `|de|' variant for exact millions). It evaluates the integer
+%   component, decimal boundaries, and zero-fills to select the appropriate
+%   string register, applying it as a postfix \mynvmath{MathML} intent over
+%   the layout rendered by \myhlc|\@@_spmoney_render_layout:|.
+%    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmoney_intent_int:
   {
     \tl_if_empty:NTF \l_@@_luaset_dec_sep_tl
@@ -9028,9 +9042,14 @@ end, "shekel_fallback_patch")
 % The commands described in this section provide a semantic interface
 % for geometric objects in Spanish mathematical contexts. They all
 % delegate parsing to \myluamod{}, sharing the variables
-% \cs{l_@@_geo_luaset_error_str}, \cs{l_@@_geo_luaset_intent_str} and
-% \cs{l_@@_geo_luaset_print_tl}, constructing a valid \mynvmath{MathCAT}
-% intent.
+% \myhlc{\l_@@_geo_luaset_error_str}, \myhlc{\l_@@_geo_luaset_intent_str},
+% \myhlc{\l_@@_geo_luaset_print_tl}, \myhlc{\l_@@_geo_luaset_letra_str},
+% \myhlc{\l_@@_geo_luaset_sub_str} and \myhlc{\l_@@_geo_luaset_tipo_str} —
+% constructing a valid \mynvmath{MathCAT} intent — and a single point
+% is always annotated through \myhlc|\@@_mathmlarg_point:nnn|. Every command
+% also activates \myhlc|\l_@@_scope_attr_int| within its own group, so
+% the shared queue never claims content typeset outside a
+% \texttt{geo} command in the same formula.
 %
 % \subsubsection{Definition of shared variables}
 %
@@ -9408,14 +9427,12 @@ end, "shekel_fallback_patch")
 %   is passed empty on purpose: the caller applies it externally, via a
 %   native |\MathMLintent|.
 %
-%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub| or |prima|,
-%   for |read-cmd=school| the letter alone is tagged through
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|, and the mark is
+%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|, for
+%   |read-cmd=school| the letter alone is tagged through
+%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|, and the subscript is
 %   appended separately, silenced. For |read-cmd=mathcat|, letter and
-%   mark are typeset together, tagged as a whole through a native
-%   |\MathMLarg|. Otherwise (no subscript, no prime), the same
-%   distinction applies to the combined |print_tl| — the shared queue
-%   for |school|, a native |\MathMLarg| for |mathcat|, never mixed.
+%   subscript are typeset together, tagged as a whole through a native
+%   |\MathMLarg|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_mathmlarg_point:nnn
   {
@@ -9453,6 +9470,14 @@ end, "shekel_fallback_patch")
                 }
               }
           }
+%    \end{macrocode}
+%
+%   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |prima|, the same
+%   distinction applies: |read-cmd=school| tags the letter with a
+%   literal |intent| and appends the mark unsilenced (a prime is not
+%   spoken on the base, so nothing to repeat); |read-cmd=mathcat| tags
+%   letter and mark together through a native |\MathMLarg|.
+%    \begin{macrocode}
         { prima }
           {
             \str_if_eq:VnTF \l_@@_mathmlarg_point_mode_str { school }
@@ -9474,6 +9499,15 @@ end, "shekel_fallback_patch")
               }
           }
       }
+%    \end{macrocode}
+%
+%   Otherwise (no subscript, no prime), the same distinction applies
+%   to the combined \myhlc|\l_@@_geo_luaset_print_tl| as a whole — the
+%   shared queue for |school| (or when \mykey{silent-cmd} is |true|),
+%   a native |\MathMLarg| for |mathcat|, never mixed within the same
+%   formula, since the queue does not recognize a native |\MathMLarg|
+%   claim as already taken.
+%    \begin{macrocode}
       {
         \bool_if:NTF \l_@@_mathmlarg_point_silent_bool
           {
@@ -10908,32 +10942,6 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_spside_pt_seq| and walks it once to build
 %   \myhlc|\l_@@_spside_refs_tl|, the comma-separated |$pts1,$pts2,...|
 %   reference list, naming each point by position.
-%
-%   The concept |intent| is |_(refs)| when \mykey{silent-cmd} is |true|;
-%   otherwise, if \mykey{read-arg} is empty, it is |_(refs)| when
-%   \mykey{concept} is |false| or
-%   \myhlc|\l_@@_spside_intent_tl|\myhlc|:prefix(refs)| when |true|; if
-%   \mykey{read-arg} is given, it is always
-%   \myhlc|\l_@@_spside_intent_tl|\myhlc|:prefix(refs)| — |concept|
-%   never silences a user-given |read-arg| (see
-%   \myhlc|\@@_spside_process:nn|). The |:prefix(...)| form is prefixed
-%   with \mykey{prefix} when given. It is applied with a native
-%   |\MathMLintent|, preceded by \myhlc|\@@_luafun_inner_sep:| (a second
-%   sibling so the sole |<mrow>| does not collapse into |<math>|,
-%   |luamml| issue \href{https://github.com/latex3/luamml/issues/26}{\#26}).
-%
-%   Inside, for |#1=side| the points are always wrapped in |\overline|;
-%   for |#1=mside|, when \mykey{print-m} is |true| a silent
-%   |\operatorname{m}| precedes the |\overline|-wrapped points; when
-%   |false|, the points are typeset bare, with no |\overline| at all —
-%   the recursive lookup in the shared |mathml_filter| callback finds
-%   each point either way, whether nested inside |\overline| or sitting
-%   directly in the |\MathMLintent| group. In every case the sequence
-%   is walked a second time, calling \myhlc|\@@_mathmlarg_point:nnn|
-%   once per point with its |pts|$n$ reference name and
-%   \mykey[spside,spmside]{silent-cmd}/\mykey[spside,spmside]{read-cmd}
-%   looked up under |sp#1|: it alone decides |arg|/literal |intent| per
-%   point, so |concept| plays no role at that level.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spside_mathml:n
   {
@@ -10947,6 +10955,18 @@ end, "shekel_fallback_patch")
           { \tl_put_right:Nn \l_@@_spside_refs_tl { , } }
         \tl_put_right:Ne \l_@@_spside_refs_tl { $ pts \int_use:N \l_@@_spside_pt_idx_int }
       }
+%    \end{macrocode}
+%
+%   The concept |intent| is |_(refs)| when \mykey{silent-cmd} is |true|;
+%   otherwise, if \mykey{read-arg} is empty, it is |_(refs)| when
+%   \mykey{concept} is |false| or
+%   \myhlc|\l_@@_spside_intent_tl|\myhlc|:prefix(refs)| when |true|; if
+%   \mykey{read-arg} is given, it is always
+%   \myhlc|\l_@@_spside_intent_tl|\myhlc|:prefix(refs)| — |concept|
+%   never silences a user-given |read-arg| (see
+%   \myhlc|\@@_spside_process:nn|). The |:prefix(...)| form is prefixed
+%   with \mykey{prefix} when given.
+%    \begin{macrocode}
     \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
         \tl_set:Ne \l_@@_spside_intent_arg_tl { _( \l_@@_spside_refs_tl ) }
@@ -10976,6 +10996,23 @@ end, "shekel_fallback_patch")
               }
           }
       }
+%    \end{macrocode}
+%   Applied with a native |\MathMLintent|, preceded by
+%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
+%   |<mrow>| does not collapse into |<math>|. Inside,
+%   for |#1=side| the points are always wrapped in |\overline|; for
+%   |#1=mside|, when \mykey{print-m} is |true| a silent
+%   |\operatorname{m}| precedes the |\overline|-wrapped points; when
+%   |false|, the points are typeset bare, with no |\overline| at all —
+%   the recursive lookup in the shared |mathml_filter| callback finds
+%   each point either way, whether nested inside |\overline| or sitting
+%   directly in the |\MathMLintent| group. In every case the sequence
+%   is walked a second time, calling \myhlc|\@@_mathmlarg_point:nnn|
+%   once per point with its |pts|$n$ reference name and
+%   \mykey[spside,spmside]{silent-cmd}/\mykey[spside,spmside]{read-cmd}
+%   looked up under |sp#1|: it alone decides |arg|/literal |intent| per
+%   point, so |concept| plays no role at that level.
+%    \begin{macrocode}
     \@@_invisible_sep: % (luamml issues #26)
     \MathMLintent { \l_@@_spside_intent_arg_tl }
       {
@@ -11727,20 +11764,6 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_sparc_pt_seq| and walks it once to build
 %   \myhlc|\l_@@_sparc_refs_tl|, the comma-separated |$pt1,$pt2,...|
 %   reference list, naming each point by position.
-%
-%   The concept |intent| is |_-| when \mykey{silent-cmd} is |true| or
-%   \mykey{concept} is |false|; otherwise
-%   \myhlc|\l_@@_sparc_intent_tl|\myhlc|:prefix(refs)|, prefixed with
-%   \mykey{prefix} when given. It is applied with a single native
-%   |\MathMLintent| wrapping \myhlc|\@@_sparc_print_arc:n| directly
-%   (same shape as \myhlc|\@@_spside_mathml:n|), preceded by
-%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
-%   |<mrow>| does not collapse into |<math>|, |luamml| issue
-%   \href{https://github.com/latex3/luamml/issues/26}{\#26}). A silent
-%   |\operatorname{m}| precedes it for |\spmarc| (always, no
-%   \mykey{print-m} key here). The sequence is walked a second time,
-%   calling \myhlc|\@@_mathmlarg_point:nnn| once per point with its
-%   |pt|$n$ reference name, looked up under |sp#1|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sparc_mathml:n
   {
@@ -11755,7 +11778,13 @@ end, "shekel_fallback_patch")
           { \tl_put_right:Nn \l_@@_sparc_refs_tl { , } }
         \tl_put_right:Ne \l_@@_sparc_refs_tl { $ pt \int_use:N \l_@@_sparc_pt_idx_int }
       }
-
+%    \end{macrocode}
+%
+%   The concept |intent| is |_-| when \mykey{silent-cmd} is |true| or
+%   \mykey{concept} is |false|; otherwise
+%   \myhlc|\l_@@_sparc_intent_tl|\myhlc|:prefix(refs)|, prefixed with
+%   \mykey{prefix} when given.
+%    \begin{macrocode}
     \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
         \tl_set:Nn \l_@@_sparc_intent_arg_tl { _- }
@@ -11774,7 +11803,18 @@ end, "shekel_fallback_patch")
             \tl_set:Nn \l_@@_sparc_intent_arg_tl { _- }
           }
       }
-
+%    \end{macrocode}
+%   It is applied with a single native |\MathMLintent| wrapping
+%   \myhlc|\@@_sparc_print_arc:n| directly (same shape as
+%   \myhlc|\@@_spside_mathml:n|), preceded by
+%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
+%   |<mrow>| does not collapse into |<math>|, |luamml| issue
+%   \href{https://github.com/latex3/luamml/issues/26}{\#26}). A silent
+%   |\operatorname{m}| precedes it for |\spmarc| (always, no
+%   \mykey{print-m} key here). The sequence is walked a second time,
+%   calling \myhlc|\@@_mathmlarg_point:nnn| once per point with its
+%   |pt|$n$ reference name, looked up under |sp#1|.
+%    \begin{macrocode}
     \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \MathMLintent { \l_@@_sparc_intent_arg_tl }
       {
@@ -12614,17 +12654,15 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spfig_build_concept_vertices:n}
-%   Handles the vertices case. \mykey{read-arg}, when given, overrides
-%   the auto-detected figure name; with \mykey{concept} |true| it is
-%   still prefixed with |área-del-|/|perímetro-del-|, with |concept|
-%   |false| it is used verbatim, and never silenced (only
-%   \mykey{silent-cmd} silences when \mykey{read-arg} is given — same
-%   convention as \myhlc|\@@_spside_process:nn|). With \mykey{read-arg}
-%   empty, \mykey{concept} controls silencing as usual. Also determines
-%   \myhlc|\l_@@_spfig_symbol_tl| (empty when none applies), preserving
-%   the |sym-cardinality-conflict| check (a forced \mykey{print-sym}
-%   must match the actual vertex count). Receives the short command
-%   name in `|#1|'. Must be called after \myhlc|\@@_spfig_build_refs:|.
+%   Handles the vertices case. Receives the short command name in
+%   `|#1|'. Must be called after \myhlc|\@@_spfig_build_refs:|.
+%
+%   \mykey{read-arg}, when given, overrides the auto-detected figure
+%   name in \myhlc|\l_@@_spfig_intent_tl|: with \mykey{concept} |true|
+%   it is still prefixed with |área-del-|/|perímetro-del-|, with
+%   |concept| |false| it is used verbatim. With \mykey{read-arg}
+%   empty, \myhlc|\l_@@_spfig_intent_tl| is simply
+%   \myhlc|\l_@@_geo_luaset_concept_str|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfig_build_concept_vertices:n
   {
@@ -12643,7 +12681,16 @@ end, "shekel_fallback_patch")
             \tl_set:Ne \l_@@_spfig_intent_tl { \tl_use:c { l_@@_sp #1 _read_arg_tl } }
           }
       }
-
+%    \end{macrocode}
+%
+%   Determines \myhlc|\l_@@_spfig_symbol_tl| (empty when none
+%   applies): for |print-sym=auto|, the symbol matching
+%   \myhlc|\l_@@_geo_luaset_poly_sym_str| (|\triangle|/
+%   |\mdlgwhtsquare|), or none when that is empty; |print-sym=none|
+%   always clears it; a forced |print-sym| requires it to match the
+%   actual vertex count, reporting |sp#1-sym-cardinality-conflict|
+%   otherwise.
+%    \begin{macrocode}
     \str_case:VnF \l_@@_geo_print_sym_str
       {
         { auto }
@@ -12667,7 +12714,19 @@ end, "shekel_fallback_patch")
               { \c_backslash_str sp #1 }
           }
       }
-
+%    \end{macrocode}
+%
+%   \mykey{silent-cmd} sets \myhlc|\l_@@_spfig_intent_arg_tl| to
+%   |_(refs)|. Otherwise, with \mykey{read-arg} empty,
+%   \mykey{concept} chooses between
+%   \myhlc|\l_@@_spfig_intent_tl|\myhlc|:prefix(refs)| (prefixed with
+%   \mykey{prefix} when given) and |_(refs)| alone; with
+%   \mykey{read-arg} given, it is always
+%   \myhlc|\l_@@_spfig_intent_tl|\myhlc|:prefix(refs)| — |read-arg|
+%   is never silenced by \mykey{concept} alone, only by
+%   \mykey{silent-cmd} (same convention as
+%   \myhlc|\@@_spside_process:nn|).
+%    \begin{macrocode}
     \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
         \tl_set:Ne \l_@@_spfig_intent_arg_tl { _( \l_@@_spfig_refs_tl ) }
@@ -12700,6 +12759,7 @@ end, "shekel_fallback_patch")
   }
 %    \end{macrocode}
 % \end{macro}
+%
 % \begin{macro}[int]{\@@_spfig_points_loop:n}
 %   Walks \myhlc|\l_@@_spfig_pt_seq| a second time, calling
 %   \myhlc|\@@_mathmlarg_point:nnn| once per vertex with its |pt|$n$
@@ -12962,33 +13022,9 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_sp_rad_diam_print:n}
 %   The function \myhlc|\@@_sp_rad_diam_print:n| sets
 %   \myhlc|\l_@@_sp_rad_diam_letra_tl| to the bare letter — |r|/|R| for
-%   |\sprad|, |d|/|D| for |\spdiam| — per \mykey{upper-case}.
-%
-%   \smallskip
-%
-%   With \mykey{silent-cmd} |true|, the intent is |_-|. Otherwise, with
-%   \mykey{concept} |true| (the default), it verbalizes
-%   |radio|/|diámetro| (\mykey{read-arg} replaces this word when
-%   given), with \mykey{sub-index}, if present, appended right after
-%   (\mykey{read-sub} choosing |sub-|\mymeta{value} or \mymeta{value}
-%   alone) — the letter itself is never read here.
-%
-%   \smallskip
-%
-%   With \mykey{concept} |false|, the letter itself is read instead —
-%   but only when \mykey{read-cmd} is |school|, built the same way
-%   from the letter. With \mykey{read-cmd} |mathcat|, the intent is
-%   left empty: \mynvmath{MathCAT} applies its own rules to the letter
-%   and its subscript, unmarked by us.
-%
-%   \smallskip
-%
-%   With \mykey{sub-index} given and a non-empty intent, the letter
-%   and the \mymeta{value} are wrapped together in one native
-%   |\MathMLintent|, subscript silenced — an unmarked |<msub>| gets
-%   \mynvmath{MathCAT}'s own narration otherwise. With the intent
-%   empty, both stay bare. Receives the short command name in `|#1|'
-%   (|rad|/|diam|).
+%   |\sprad|, |d|/|D| for |\spdiam| — per \mykey{upper-case}, and, for
+%   |\spdiam| with \mykey{print-sym} |true|, silently typesets |\diameter|
+%   first. Receives the short command name in `|#1|' (|rad/diam|).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sp_rad_diam_print:n
   {
@@ -13007,8 +13043,14 @@ end, "shekel_fallback_patch")
     \str_if_eq:eeT {#1} { diam }
       {
         \bool_if:NT \l_@@_spdiam_print_sym_bool
-          { \MathMLintent { :silent } { ⌀ } }
+          { \MathMLintent { :silent } { \diameter } }
       }
+%    \end{macrocode}
+%   With \mykey{silent-cmd} |true|, the intent is |_-| — the letter
+%   alone through the shared queue when there is no
+%   \mykey{sub-index}, or letter and subscript together in one native
+%   |\MathMLintent| (subscript silenced) when there is.
+%    \begin{macrocode}
     \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
         \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
@@ -13030,6 +13072,18 @@ end, "shekel_fallback_patch")
               }
           }
       }
+%    \end{macrocode}
+%   Otherwise, with \mykey{concept} |true| (the default), it
+%   verbalizes |radio|/|diámetro| (\mykey{read-arg} replaces this word
+%   when given), with \mykey{sub-index}, if present, appended right
+%   after (\mykey{read-sub} choosing |sub-|\mymeta{value} or
+%   \mymeta{value} alone) — the letter itself is never read here.
+%   With no \mykey{sub-index}, the shared queue tags the letter alone;
+%   with one, letter and subscript are wrapped together in one native
+%   |\MathMLintent| for |read-cmd=school| (subscript silenced,
+%   already spoken), or the shared queue tags the letter alone with
+%   the subscript left bare for |read-cmd=mathcat|.
+%    \begin{macrocode}
       {
         \bool_if:cTF { l_@@_sp #1 _concept_bool }
           {
@@ -13076,6 +13130,14 @@ end, "shekel_fallback_patch")
                   }
               }
           }
+%    \end{macrocode}
+%   With \mykey{concept} |false|, the letter itself is read instead —
+%   but only when \mykey{read-cmd} is |school|, built the same way
+%   from the letter (with \mykey{sub-index}, letter and subscript
+%   wrapped together, subscript silenced). With \mykey{read-cmd}
+%   |mathcat|, the intent is left empty: \mynvmath{MathCAT} applies
+%   its own rules to the letter and its subscript, unmarked by us.
+%    \begin{macrocode}
           {
             \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
               {
@@ -13482,28 +13544,6 @@ end, "shekel_fallback_patch")
 %   reference, through \myhlc|\@@_mathmlarg_point:nnn| — so a
 %   subscripted or primed center (e.g.\ |O_{1}|, as in the Euler
 %   circle) is never an issue.
-%
-%   \myhlc|\l_@@_spcirc_intent_arg_tl| (the symbol's word) is bare —
-%   the group it wraps has nothing to reference, only a silenced
-%   symbol — while \myhlc|\l_@@_spcirc_connector_arg_tl| (the
-%   connector word) is |:prefix($pt)|: both when \mykey{concept} is
-%   |true|, prefixed with \mykey{prefix} when given.
-%   \myhlc|\l_@@_spcirc_radio_arg_tl| — spoken directly on the |,|
-%   delimiter, replacing its own reading rather than pairing with any
-%   group — is the literal |_y-radio-|, or |_y-diámetro-| when
-%   \mykey{diameter} is |true|, read as its own phrase right before
-%   \myhlc|\@@_spcirc_radio_print:|'s independent reading follows as
-%   the next sibling.
-%
-%   \mykey{silent-cmd} |true| overrides all three with |_-| (the
-%   connector with |_($pt)| instead — the center is always read),
-%   regardless of \mykey{read-arg}. With \mykey{concept} |false| and
-%   \mykey{read-arg} empty, the same |_-|/|_($pt)| silencing applies;
-%   with \mykey{read-arg} given, none of the three is silenced instead
-%   — the connector and |y-radio|/|y-diámetro| words are fixed
-%   structural pieces, not customized by \mykey{read-arg}, but once a
-%   real word is being spoken there is nothing left to silence around
-%   it (same convention as \myhlc|\@@_spside_process:nn|).
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcirc_build_concept:
   {
@@ -13519,12 +13559,34 @@ end, "shekel_fallback_patch")
           }
       }
     \tl_set:Nn \l_@@_spcirc_connector_tl { de-centro-en }
+%    \end{macrocode}
+%
+%   \mykey{silent-cmd} |true| overrides
+%   \myhlc|\l_@@_spcirc_intent_arg_tl|/\myhlc|\l_@@_spcirc_radio_arg_tl|
+%   with |_-| and \myhlc|\l_@@_spcirc_connector_arg_tl| with |_($pt)|
+%   (the center is always read), regardless of \mykey{read-arg}.
+%    \begin{macrocode}
     \bool_if:NTF \l_@@_spcirc_silent_cmd_bool
       {
         \tl_set:Nn \l_@@_spcirc_intent_arg_tl     { _- }
         \tl_set:Ne \l_@@_spcirc_connector_arg_tl  { _( $ pt ) }
         \tl_set:Nn \l_@@_spcirc_radio_arg_tl      { _- }
       }
+%    \end{macrocode}
+%
+%   With \mykey{concept} |true|, \myhlc|\l_@@_spcirc_intent_arg_tl| is
+%   \myhlc|\l_@@_spcirc_intent_tl|\myhlc|:prefix| (bare — the group it
+%   wraps has nothing to reference, only a silenced symbol), prefixed
+%   with \mykey{prefix} when given;
+%   \myhlc|\l_@@_spcirc_connector_arg_tl| is
+%   \myhlc|\l_@@_spcirc_connector_tl|\myhlc|:prefix($pt)|; and
+%   \myhlc|\l_@@_spcirc_radio_arg_tl| — spoken directly on the |,|
+%   delimiter, replacing its own reading rather than pairing with any
+%   group — is the literal |_y-radio-|, or |_y-diámetro-| when
+%   \mykey{diameter} is |true|, read as its own phrase right before
+%   \myhlc|\@@_spcirc_radio_print:|'s independent reading follows as
+%   the next sibling.
+%    \begin{macrocode}
       {
         \bool_if:NTF \l_@@_spcirc_concept_bool
           {
@@ -13540,6 +13602,15 @@ end, "shekel_fallback_patch")
               { \tl_set:Nn \l_@@_spcirc_radio_arg_tl { _y-diámetro- } }
               { \tl_set:Nn \l_@@_spcirc_radio_arg_tl { _y-radio- } }
           }
+%    \end{macrocode}
+%   With \mykey{concept} |false| and \mykey{read-arg} empty, the same
+%   |_-|/|_($pt)| silencing applies as \mykey{silent-cmd}; with
+%   \mykey{read-arg} given, none of the three is silenced instead —
+%   the connector and |y-radio|/|y-diámetro| words are fixed
+%   structural pieces, not customized by \mykey{read-arg}, but once a
+%   real word is being spoken there is nothing left to silence around
+%   it (same convention as \myhlc|\@@_spside_process:nn|).
+%    \begin{macrocode}
           {
             \tl_if_empty:NTF \l_@@_spcirc_read_arg_tl
               {
