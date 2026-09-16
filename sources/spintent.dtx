@@ -7867,7 +7867,9 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Variables for \cs{spmcd} and \cs{spmcm}}
 % \begin{variable}[int]{
-%   \l_@@_spmcm_spmcd_luaset_error_str, \l_@@_mc_args_seq,
+%   \l_@@_spmcm_spmcd_luaset_error_str, \l_@@_mc_luaset_types_str,
+%   \l_@@_mc_luaset_all_numeric_str, \l_@@_mc_args_seq,
+%   \l_@@_mc_raw_args_seq, \l_@@_mc_types_seq
 %   \l_@@_spmcd_print_result_bool,   \l_@@_spmcm_print_result_bool,
 %   \l_@@_spmcd_read_terse_bool,     \l_@@_spmcm_read_terse_bool,
 %   \l_@@_spmcd_print_upper_bool,    \l_@@_spmcm_print_upper_bool,
@@ -7877,16 +7879,18 @@ end, "shekel_fallback_patch")
 % Internal variables generated dynamically via a comma-separated list
 % to avoid code duplication for both symmetric commands.
 %    \begin{macrocode}
-\str_new:N \l_@@_spmcm_spmcd_luaset_error_str
-\seq_new:N \l_@@_mc_args_seq
+\str_new:N   \l_@@_spmcm_spmcd_luaset_error_str
+\clist_new:N \l_@@_mc_luaset_types_clist
+\str_new:N   \l_@@_mc_luaset_all_numeric_str
+\seq_new:N   \l_@@_mc_args_seq
+\seq_new:N   \l_@@_mc_raw_args_seq
+\seq_new:N   \l_@@_mc_types_seq
+\int_new:N   \l_@@_mc_idx_int
 \clist_map_inline:nn { mcd , mcm }
   {
     \tl_new:c   { l_@@_sp #1 _luaset_ #1 _value_tl }
-    \bool_new:c { l_@@_sp #1 _print_result_bool }
     \bool_new:c { l_@@_sp #1 _read_terse_bool }
-    \bool_new:c { l_@@_sp #1 _print_upper_bool }
     \tl_new:c   { l_@@_sp #1 _prefix_tl }
-    \tl_new:c   { l_@@_sp #1 _suffix_tl }
   }
 %    \end{macrocode}
 % \end{variable}
@@ -7909,10 +7913,20 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Keys for \cs[no-index]{spmcd} and \cs[no-index]{spmcm}}
 %
-% \begin{macro}[int]{result,prefix,read-cmd, upper-case, sample-arg, silent-cmd}
+% \begin{macro}[int]
+%   {
+%     result,
+%     prefix,
+%     read-cmd,
+%     upper-case,
+%     concept,
+%     silent-cmd,
+%     unknown,
+%   }
 %   We define the shared \mymeta{keys} \mykey[spmcd,spmcm]{result},
-%   \mykey[spmcd,spmcm]{prefix}, \mykey[spmcd,spmcm]{read-cmd}, \mykey[spmcd,spmcm]{upper-case},
-%   \mykey[spmcd,spmcm]{sample-arg} and \mykey[spmcd,spmcm]{silent-cmd}.
+%   \mykey[spmcd,spmcm]{prefix}, \mykey[spmcd,spmcm]{read-cmd},
+%   \mykey[spmcd,spmcm]{upper-case}, \mykey[spmcd,spmcm]{concept} and
+%   \mykey[spmcd,spmcm]{silent-cmd}.
 %    \begin{macrocode}
 \clist_map_inline:nn { mcd , mcm }
   {
@@ -7942,9 +7956,9 @@ end, "shekel_fallback_patch")
         upper-case         .bool_set:c = { l_@@_sp #1 _print_upper_bool },
         upper-case         .initial:n  = false,
         upper-case         .value_required:n = true,
-        sample-arg         .bool_set:c = { l_@@_sp #1 _sample_arg_bool },
-        sample-arg         .initial:n  = false,
-        sample-arg         .value_required:n = true,
+        concept            .bool_set:c = { l_@@_sp #1 _concept_bool },
+        concept            .initial:n  = true,
+        concept            .value_required:n = true,
         silent-cmd         .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
         silent-cmd         .initial:n  = false,
         silent-cmd         .value_required:n = true,
@@ -7962,23 +7976,49 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_mc_process_args:nn}
 %   The function \myhlc|\@@_mc_process_args:nn| parses the operation `|#1|'
-%   and its arguments `|#2|', injecting \mynvmath{MathML} intents.
+%   and its raw argument list `|#2|'. Calls
+%   \myhlc|\@@_luafun_mc_classify_args:n|, splits `|#2|' into
+%   \myhlc|\l_@@_mc_raw_args_seq| and
+%   \myhlc|\l_@@_mc_luaset_types_clist| into
+%   \myhlc|\l_@@_mc_types_seq|, then walks the former by position,
+%   fetching the matching type from the latter through
+%   \myhlc|\seq_item:Nn|, to build \myhlc|\l_@@_mc_args_seq|: each
+%   argument wrapped through |\spnum| when its type is |number|,
+%   verbatim otherwise. Injects \mynvmath{MathML} intents around the
+%   already-formatted \myhlc|\l_@@_mc_args_seq|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_mc_process_args:nn
   {
-    \seq_set_from_clist:Nn \l_@@_mc_args_seq {#2}
+    \@@_luafun_mc_classify_args:n {#2}
+    \seq_set_from_clist:Nn \l_@@_mc_raw_args_seq {#2}
+    \seq_set_from_clist:NN \l_@@_mc_types_seq \l_@@_mc_luaset_types_clist
+    \seq_clear:N \l_@@_mc_args_seq
+    \int_zero:N \l_@@_mc_idx_int
+    \seq_map_inline:Nn \l_@@_mc_raw_args_seq
+      {
+        \int_incr:N \l_@@_mc_idx_int
+        \str_if_eq:eeTF { \seq_item:Nn \l_@@_mc_types_seq { \l_@@_mc_idx_int } } { number }
+          { \seq_put_right:Nn \l_@@_mc_args_seq { \spnum {##1} } }
+          { \seq_put_right:Nn \l_@@_mc_args_seq {##1} }
+      }
+%    \end{macrocode}
+%   Injects \mynvmath{MathML} intents around the already-formatted
+%   \myhlc|\l_@@_mc_args_seq|, exactly as before.
+%    \begin{macrocode}
     \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
         \seq_set_map:NNn \l_@@_mc_args_seq \l_@@_mc_args_seq
           { \MathMLintent { :silent } { ##1 } }
-        \MathMLintent { entre:silent } { ( }
+        \MathMLintent { _entre } { \c_@@_invisible_sep_tl }
+        \MathMLintent { :silent } { ( }
         \seq_use:Nnnn \l_@@_mc_args_seq
           { \MathMLintent { _y:silent } { , } }
           { \MathMLintent { :silent }   { , } }
           { \MathMLintent { _y:silent } { , } }
       }
       {
-        \MathMLintent { entre } { ( }
+        \MathMLintent { _entre } { \c_@@_invisible_sep_tl }
+        \MathMLintent { :silent } { ( }
         \seq_use:Nnnn \l_@@_mc_args_seq
           { \MathMLintent { _y }      { , } }
           { \MathMLintent { :silent } { , } }
@@ -7990,59 +8030,100 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spmc_process:nnnn}
-%   The internal function \myhlc|\@@_spmc_process:nnnn| serves as a shared
-%   central handler for both the |\spmcd| and |\spmcm| commands. It takes
-%   the command identifier `|#1|', its full reading string `|#2|', the local
-%   \mymeta{keys} `|#3|', and the optional values `|#4|'. It dynamically resolves
-%   variables using the identifier to build the \mynvmath{MathML} |intent| string
-%   (including any prefixes or suffixes) and prints the math operator.
-%   If values are provided in `|#4|', it calculates the result using the Lua
-%   backend. If an error occurs, it throws the |mc-invalid-arguments| error;
-%   otherwise, it processes the arguments and conditionally prints the calculated
-%   result.
+%   The internal function \myhlc|\@@_spmc_process:nnnn| is the shared
+%   handler for both |\spmcd| and |\spmcm|. Takes the short identifier
+%   in `|#1|', its full reading string in `|#2|', the local
+%   \mymeta{keys} in `|#3|', and the optional arguments in `|#4|'.
+%
+%   The operator name (through |\operatorname|, per \mykey{upper-case})
+%   is silenced with \mykey{silent-cmd} |true| — \myhlc|\@@_mc_process_args:nn|
+%   silences the arguments too, in that case — or with \mykey{concept}
+%   |false| alone, leaving the arguments untouched. With
+%   \mykey{concept} |true|, it carries the literal |intent| instead —
+%   |#1| or |#2| per \mykey{read-cmd}, prefixed with \mykey{prefix}
+%   when given.
+%
+%   With `|#4|' given, classifies it through
+%   \myhlc|\@@_luafun_mc_classify_args:n|. Only when every argument is
+%   a number does it call the Lua calculation
+%   (|calculate_|\myhlc|#1|), reporting |mc-invalid-arguments| on
+%   failure, and, when \mykey{result} is |true|, printing the computed
+%   value. \myhlc|\@@_mc_process_args:n| prints the argument list
+%   itself either way.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmc_process:nnnn
   {
     \keys_set:nn { spintent / sp #1 } { #3 }
-    \MathMLintent
+    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
-        \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
-          { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-        \bool_if:cTF { l_@@_sp #1 _read_terse_bool }
-          { #1 } { #2 }
-        \bool_if:cT { l_@@_sp #1 _silent_cmd_bool }
+        \MathMLintent { :silent }
           {
-            \tl_if_novalue:nTF {#4}
-              { :silent }
-              { \bool_if:cT { l_@@_sp #1 _sample_arg_bool } { :silent } }
+            \operatorname
+              {
+                \bool_if:cTF { l_@@_sp #1 _print_upper_bool }
+                  { \text_uppercase:n {#1} } { #1 }
+              }
           }
       }
       {
-        \operatorname
+        \bool_if:cTF { l_@@_sp #1 _concept_bool }
           {
-            \bool_if:cTF { l_@@_sp #1 _print_upper_bool }
-              { \text_uppercase:n {#1} } { #1 }
+            \MathMLintent
+              {
+                \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
+                  {
+                    \tl_use:c { l_@@_sp #1 _prefix_tl } -
+                  }
+                \bool_if:cTF { l_@@_sp #1 _read_terse_bool } { #1 :nofix} { #2 :nofix}
+              }
+              {
+                \operatorname
+                  {
+                    \bool_if:cTF { l_@@_sp #1 _print_upper_bool }
+                      { \text_uppercase:n {#1} } { #1 }
+                  }
+              }
+          }
+          {
+            \MathMLintent { :silent }
+              {
+                \operatorname
+                  {
+                    \bool_if:cTF { l_@@_sp #1 _print_upper_bool }
+                      { \text_uppercase:n {#1} } { #1 }
+                  }
+              }
           }
       }
+%    \end{macrocode}
+%   With `|#4|' given, classifies it through
+%   \myhlc|\@@_luafun_mc_classify_args:n|. Only when every argument is
+%   a number does it call the Lua calculation
+%   (|calculate_|\myhlc|#1|), reporting |mc-invalid-arguments| on
+%   failure — which should not happen, since every argument already
+%   passed classification — and, when \mykey{result} is |true|,
+%   printing the computed value. With any non-numeric argument, no
+%   calculation is attempted at all. Either way,
+%   \myhlc|\@@_mc_process_args:n| prints the argument list itself.
+%    \begin{macrocode}
     \tl_if_novalue:nF { #4 }
       {
-        \bool_if:cTF { l_@@_sp #1 _sample_arg_bool }
-          {
-            \@@_mc_process_args:nn {#1} {#4}
-          }
+        \@@_luafun_mc_classify_args:n {#4}
+        \str_if_eq:VnT \l_@@_mc_luaset_all_numeric_str { true }
           {
             \use:c { @@_luafun_calculate_ #1 :n } { #4 }
-            \str_if_eq:VnTF \l_@@_spmcm_spmcd_luaset_error_str { true }
+            \str_if_eq:VnT \l_@@_spmcm_spmcd_luaset_error_str { true }
               {
                 \msg_error:nne { spintent } { mc-invalid-arguments } { \exp_not:c { sp #1 } }
               }
+          }
+        \@@_mc_process_args:nn {#1} {#4}
+        \str_if_eq:VnT \l_@@_mc_luaset_all_numeric_str { true }
+          {
+            \bool_if:cT { l_@@_sp #1 _print_result_bool }
               {
-                \@@_mc_process_args:nn {#1} {#4}
-                \bool_if:cT { l_@@_sp #1 _print_result_bool }
-                  {
-                    \MathMLintent { es-igual-a } { = }
-                    \tl_use:c { l_@@_sp #1 _luaset_ #1 _value_tl }
-                  }
+                \MathMLintent { es-igual-a } { = }
+                \tl_use:c { l_@@_sp #1 _luaset_ #1 _value_tl }
               }
           }
       }
@@ -8088,38 +8169,49 @@ end, "shekel_fallback_patch")
 % They delegate argument validation and calculation to the Lua module \myluamod{},
 % constructing a valid \mynvmath{MathCAT} intent.
 %
-% \subsubsection{Variables for \cs{spnM} and \cs{spnD}}
+% \subsubsection{Definition of variables for \cs[no-index]{spnM} and \cs[no-index]{spnD}}
 %
-% \begin{variable}[int]{
-%   \l_@@_md_out_seq,
-%   \l_@@_spnM_luaset_result_tl,        \l_@@_spnD_luaset_result_tl,
-%   \l_@@_spnM_luaset_is_truncated_str, \l_@@_spnD_luaset_is_truncated_str,
-%   \l_@@_spnM_print_result_bool,       \l_@@_spnD_print_result_bool,
-%   \l_@@_spnM_silent_cmd_bool,         \l_@@_spnD_silent_cmd_bool,
-%   \l_@@_spnM_prefix_tl,               \l_@@_spnD_prefix_tl,
-%   \l_@@_spnM_print_result_num_tl,        \l_@@_spnD_print_result_num_tl
-% }
+% \begin{variable}[int]
+%   {
+%     \l_@@_md_out_seq,
+%     \l_@@_spnmd_luaset_is_number_str,
+%     \l_@@_spnM_luaset_result_tl,
+%     \l_@@_spnD_luaset_result_tl,
+%     \l_@@_spnM_luaset_is_truncated_str,
+%     \l_@@_spnD_luaset_is_truncated_str,
+%     \l_@@_spnM_prefix_tl,
+%     \l_@@_spnD_prefix_tl,
+%     \l_@@_spnM_print_result_num_tl,
+%     \l_@@_spnD_print_result_num_tl
+%   }
 %   Internal variables generated dynamically for multiples and divisors.
 %    \begin{macrocode}
 \seq_new:N \l_@@_md_out_seq
+\str_new:N \l_@@_spnmd_luaset_is_number_str
 \clist_map_inline:nn { nM , nD }
   {
     \tl_new:c   { l_@@_sp #1 _luaset_result_tl        }
     \str_new:c  { l_@@_sp #1 _luaset_is_truncated_str }
-    \bool_new:c { l_@@_sp #1 _print_result_bool       }
-    \bool_new:c { l_@@_sp #1 _silent_cmd_bool         }
     \tl_new:c   { l_@@_sp #1 _prefix_tl               }
-    \tl_new:c   { l_@@_sp #1 _print_result_num_tl     }
   }
 %    \end{macrocode}
 % \end{variable}
 %
+%
 % \subsubsection{Keys for \cs[no-index]{spnM} and \cs[no-index]{spnD}}
 %
-% \begin{macro}[int]{result, silent-cmd, result-num, prefix, sample-arg,}
-% We define the shared \mymeta{keys} \mykey[spnM,spnD]{result},
-% \mykey[spnM,spnD]{silent-cmd}, \mykey[spmcd,spmcm]{result-num} and
-% \mykey[spmcd,spmcm]{prefix}.
+% \begin{macro}[int]
+%   {
+%     result,
+%     silent-cmd,
+%     result-num,
+%     prefix,
+%     concept,
+%     unknown,
+%   }
+%   We define the shared \mymeta{keys} \mykey[spnM,spnD]{result},
+%   \mykey[spnM,spnD]{silent-cmd}, \mykey[spnM,spnD]{result-num},
+%   \mykey[spnM,spnD]{prefix} and \mykey[spnM,spnD]{concept}.
 %    \begin{macrocode}
 \clist_map_inline:nn { nM , nD }
   {
@@ -8137,9 +8229,9 @@ end, "shekel_fallback_patch")
           { \@@_sanitize_affix:cn { l_@@_sp #1 _prefix_tl } {##1} },
         prefix     .initial:n = ,
         prefix     .value_required:n = true,
-        sample-arg .bool_set:c = { l_@@_sp #1 _sample_arg_bool },
-        sample-arg .initial:n  = false,
-        sample-arg .value_required:n = true,
+        concept    .bool_set:c = { l_@@_sp #1 _concept_bool },
+        concept    .initial:n  = true,
+        concept    .value_required:n = true,
         unknown    .code:n =
           {
             \str_set:Nn \l_@@_command_name_str { sp #1 }
@@ -8232,7 +8324,7 @@ end, "shekel_fallback_patch")
     \use:c { @@_luafun_calcular_ #1 :nn }
       { \l_@@_luaset_part_int_tl }
       { \tl_use:c { l_@@_sp #1 _print_result_num_tl } }
-    \MathMLintent { son } { = \{ }
+    \MathMLintent { _son } { = \{ }
     \seq_set_from_clist:Ne
       \l_@@_md_out_seq { \tl_use:c { l_@@_sp #1 _luaset_result_tl } }
     \seq_use:Nnnn \l_@@_md_out_seq
@@ -8250,17 +8342,21 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spnM_spnD_exec:nnnn}
-%   The function \myhlc|\@@_spn_M_and_D_exec:nnnn| implements the multiples
-%   and divisors commands. It takes the \mymarg{argument} `|#1|' (the command name),
-%   the \mymarg{argument} `|#2|' (the mathematical symbol), the base reading
-%   \mymarg{argument} `|#3|', and the optional \mymarg{argument} `|#4|'. If no
-%   \mymarg{argument} is provided, it evaluates the key \mykey{silent-cmd}
-%   using the default token `|n|'. If an \mymarg{argument} is given, it evaluates
-%   the key \mykey{sample-arg}. If true, it processes the \mymarg{argument}
-%   directly and evaluates the key \mykey{silent-cmd}. If false, it
-%   bypasses the \emph{silent mode}, validates the \mymarg{argument} as a natural
-%   number, and evaluates the key \mykey{result} optionally
-%   calculate and append the resulting set.
+%   The function \myhlc|\@@_spnM_spnD_exec:nnnn| takes the command name
+%   in `|#1|', the symbol in `|#2|', the base reading string in `|#3|',
+%   and the optional argument in `|#4|'.
+%
+%   With `|#4|' absent, the placeholder |n| stands in for the argument.
+%   With `|#4|' given, \myhlc|\@@_luafun_spnmd_classify:n| decides
+%   whether it is wrapped through |\spnum| — and, when it is, whether
+%   \myhlc|\@@_spnM_spnD_result:n| also prints the computed set, per
+%   \mykey{result} — or left verbatim, with no result attempted.
+%
+%   Either way, \mykey{silent-cmd} silences the whole thing through
+%   \myhlc|\@@_spnM_spnD_silent:nn|; otherwise \mykey{concept} |true|
+%   carries the literal |intent| from
+%   \myhlc|\@@_spnM_spnD_intent:nn|, |false| silences only the
+%   operator symbol, leaving the argument to read normally.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spnM_spnD_exec:nnnn
   {
@@ -8269,35 +8365,57 @@ end, "shekel_fallback_patch")
         \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           { \@@_spnM_spnD_silent:nn { #2 } { n } }
           {
-            \MathMLintent
-              { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
-              { \operatorname { #2 } ( n ) }
+            \bool_if:cTF { l_@@_sp #1 _concept_bool }
+              {
+                \MathMLintent
+                  { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
+                  { \operatorname { #2 } ( n ) }
+              }
+              {
+                \MathMLintent { :silent } { \operatorname { #2 } }
+                ( n )
+              }
           }
       }
       {
-        \bool_if:cTF { l_@@_sp #1 _sample_arg_bool }
+        \@@_luafun_spnmd_classify:n { \exp_not:n { #4 } }
+        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
-            \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+            \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
+              { \@@_spnM_spnD_silent:nn { #2 } { \spnum { #4 } } }
               { \@@_spnM_spnD_silent:nn { #2 } { #4 } }
-              {
-                \MathMLintent
-                  { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
-                  { \operatorname { #2 } } ( #4 )
-              }
           }
           {
-            \@@_luafun_clean_split_and_set:n { \exp_not:n { #4 } }
-            \str_if_eq:VnTF \l_@@_luaset_has_natural_str { true }
+            \bool_if:cTF { l_@@_sp #1 _concept_bool }
               {
-                \MathMLintent
-                  { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
-                  { \operatorname { #2 } } ( #4 )
-                \bool_if:cT { l_@@_sp #1 _print_result_bool }
-                  { \@@_spnM_spnD_result:n { #1 } }
+                \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
+                  {
+                    \MathMLintent
+                      { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
+                      { \operatorname { #2 } } ( \spnum { #4 } )
+                  }
+                  {
+                    \MathMLintent
+                      { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
+                      { \operatorname { #2 } } ( #4 )
+                  }
               }
               {
-                \msg_error:nne { spintent } { md-invalid-argument } { \exp_not:c { sp #1 } }
+                \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
+                  {
+                    \MathMLintent { :silent } { \operatorname { #2 } }
+                    ( \spnum { #4 } )
+                  }
+                  {
+                    \MathMLintent { :silent } { \operatorname { #2 } }
+                    ( #4 )
+                  }
               }
+          }
+        \str_if_eq:VnT \l_@@_spnmd_luaset_is_number_str { true }
+          {
+            \bool_if:cT { l_@@_sp #1 _print_result_bool }
+              { \@@_spnM_spnD_result:n { #1 } }
           }
       }
   }
@@ -15910,6 +16028,44 @@ end, { "string" })
 
 register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
     spintent_execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcm_luaset_mcm_value_tl", spintent_lcm_algorithm)
+end, { "string" })
+
+-- Clasifica CADA argumento de la lista (sin abortar en el primero no
+-- numerico, a diferencia de spintent_execute_mcm_mcd_result) -- misma
+-- logica de chequeo, reusada tal cual.
+register_tex_cmd("luafun_mc_classify_args", function(raw_csv_list)
+    local types = {}
+    local all_numeric = true
+    for item in s_gmatch(raw_csv_list, "([^,]+)") do
+        local clean_item = spintent_trim(item)
+        local result = spintent_number_pattern:match(clean_item) or {}
+
+        local es_natural = result.integer and (not result.sign or result.sign == "")
+          and (not result.decimal or result.decimal == "") and (not result.period or result.period == "")
+          and (not result.extra or s_gsub(result.extra, "%s+", "") == "")
+
+        if es_natural then
+            types[#types + 1] = "number"
+        else
+            types[#types + 1] = "other"
+            all_numeric = false
+        end
+    end
+    token_set_macro("l__spintent_mc_luaset_types_clist", table.concat(types, ","))
+    token_set_macro("l__spintent_mc_luaset_all_numeric_str", all_numeric and "true" or "false")
+end, { "string" })
+
+-- Clasifica un solo argumento (mismo chequeo que
+-- spintent_execute_mcm_mcd_result) -- para \spnD/\spnM.
+register_tex_cmd("luafun_spnmd_classify", function(raw_arg)
+    local clean_item = spintent_trim(raw_arg)
+    local result = spintent_number_pattern:match(clean_item) or {}
+
+    local es_natural = result.integer and (not result.sign or result.sign == "")
+      and (not result.decimal or result.decimal == "") and (not result.period or result.period == "")
+      and (not result.extra or s_gsub(result.extra, "%s+", "") == "")
+
+    token_set_macro("l__spintent_spnmd_luaset_is_number_str", es_natural and "true" or "false")
 end, { "string" })
 
 -- 8. SÍSTEMA SEXAGESIMAL (\spang)
