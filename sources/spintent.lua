@@ -1532,6 +1532,44 @@ register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
     spintent_execute_mcm_mcd_result(raw_csv_list, "l__spintent_spmcm_luaset_mcm_value_tl", spintent_lcm_algorithm)
 end, { "string" })
 
+-- Clasifica CADA argumento de la lista (sin abortar en el primero no
+-- numerico, a diferencia de spintent_execute_mcm_mcd_result) -- misma
+-- logica de chequeo, reusada tal cual.
+register_tex_cmd("luafun_mc_classify_args", function(raw_csv_list)
+    local types = {}
+    local all_numeric = true
+    for item in s_gmatch(raw_csv_list, "([^,]+)") do
+        local clean_item = spintent_trim(item)
+        local result = spintent_number_pattern:match(clean_item) or {}
+
+        local es_natural = result.integer and (not result.sign or result.sign == "")
+          and (not result.decimal or result.decimal == "") and (not result.period or result.period == "")
+          and (not result.extra or s_gsub(result.extra, "%s+", "") == "")
+
+        if es_natural then
+            types[#types + 1] = "number"
+        else
+            types[#types + 1] = "other"
+            all_numeric = false
+        end
+    end
+    token_set_macro("l__spintent_mc_luaset_types_clist", table.concat(types, ","))
+    token_set_macro("l__spintent_mc_luaset_all_numeric_str", all_numeric and "true" or "false")
+end, { "string" })
+
+-- Clasifica un solo argumento (mismo chequeo que
+-- spintent_execute_mcm_mcd_result) -- para \spnD/\spnM.
+register_tex_cmd("luafun_spnmd_classify", function(raw_arg)
+    local clean_item = spintent_trim(raw_arg)
+    local result = spintent_number_pattern:match(clean_item) or {}
+
+    local es_natural = result.integer and (not result.sign or result.sign == "")
+      and (not result.decimal or result.decimal == "") and (not result.period or result.period == "")
+      and (not result.extra or s_gsub(result.extra, "%s+", "") == "")
+
+    token_set_macro("l__spintent_spnmd_luaset_is_number_str", es_natural and "true" or "false")
+end, { "string" })
+
 -- 8. SÍSTEMA SEXAGESIMAL (\spang)
 
 local spintent_angle_sexag_pattern = Ct(

@@ -192,7 +192,8 @@ end, "shekel_fallback_patch")
         spshort, spsiglo, sptime, spdate, spread, spdsym, spmsym,
         spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, spang,
         spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle,
-        sparc, spmarc, spPoly, spAfig, spPfig, spcirc, spAcirc, spPcirc, %
+        sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
+        spPcirc, spcoord, spvec, sprazon, spProp, %
       }
   }
 % Colors
@@ -640,7 +641,8 @@ end, "shekel_fallback_patch")
                     mathord, parallel, mathstyle,.choice, .code, .meta, text, textsuperscript, cs_to_str, c_zero_skip, keys_define, %
                     mode_leave_vertical, Umathchardef,mathrm, mathbf, textstyle, addfontfeatures, mdlgwhtsquare, %
                     left, right, Uleft, Uright, overleftrightarrow, overrightarrow, overline, triangle, rightangle,%
-                    rightanglesqr, operatorname, angle, measuredangle, measuredrightangle,alpha, beta, mathcal,  },%
+                    rightanglesqr, operatorname, angle, measuredangle, measuredrightangle,alpha, beta, mathcal,
+                    attribute, },%
 % Other words 5
     keywordstyle  = [5]{\bfseries\color{pkgname}},%
     keywords      = [5]{babel,spintent,libertinus-otf,sourcecodepro,fourier-otf,Erewhon-Math,hyperref,},%,
@@ -652,7 +654,8 @@ end, "shekel_fallback_patch")
     keywords      = [7]{setspintent, spnum, spunit, spnewunit, spunitalias, spmoney, spshort, spsiglo, sptime, %
                         spdate, spread, spdsym, spmsym, spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, %
                         spang, spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle, sparc, spmarc,%
-                        spPoly, spAfig, spPfig, spcirc, spAcirc, spPcirc,},%
+                        spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
+                        spProp,},%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -663,7 +666,7 @@ end, "shekel_fallback_patch")
                     pdfstartview, FitH, pdfinfo, Title, Subject, range, StylisticSet, small-caps, read-arg, píxeles, px, caudal,%
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
                     lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent-cmd, en-US, math, mathml-SE, es-CL, on, off, %
-                    setup, tagging, tagging-setup, lang, pdfversion, pdfstandard,},%
+                    setup, tagging, tagging-setup, lang, pdfversion, pdfstandard, arg, },%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
@@ -674,6 +677,9 @@ end, "shekel_fallback_patch")
 % Reserved words 11 (support)
     keywordstyle  = [11]{\color{support}},%
     keywords      = [11]{hypersetup, setmathfont,},%
+% Reserved words 12 (MathML tags)
+    keywordstyle  = [12]{\color{mathtag}},%
+    keywords      = [12]{mrow, msub, mo, mi, pre_mlist_to_hlist_filter, mathml_filter,},%
 % literate
     literate      =*{\{}{{{\color{brace}{\char`\{}}}}{1}
                     {\}}{{{\color{brace}{\char`\}}}}}{1}
@@ -690,8 +696,8 @@ end, "shekel_fallback_patch")
                     {:}{{\textcolor{signature}{:}}}{1}
                     {`}{{\textcolor{quote}{\textasciigrave}}}{1}
                     {\&}{{\textcolor{gray}{\&}}}{1}
-                    {>}{{\textcolor{module_eq}{>}}}{1}
-                    {<}{{\textcolor{module_eq}{<}}}{1}
+                    {>}{{\textcolor{mathml_var}{>}}}{1}
+                    {<}{{\textcolor{mathml_var}{<}}}{1}
                     {*}{{\textcolor{star}{*}}}{1}
                     {ua-2}{{\textcolor{keyname}{ua-2}}}{4} % UA-2
                     {!}{{\textcolor{MediumOrchid}{!}}}{1}
@@ -754,6 +760,8 @@ end, "shekel_fallback_patch")
                   {iv}{{\textcolor{keyname}{iv}}}{2}
                   {v}{{\textcolor{keyname}{v}}}{1}
                   {vi}{{\textcolor{keyname}{vi}}}{1}
+                  {>}{{\textcolor{mathtag}{>}}}{1}
+                  {<}{{\textcolor{mathtag}{<}}}{1}
   }
 % Set default \lstinline style
 \lstset{style=inline}
@@ -4427,42 +4435,130 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsection{Internal copy of the unicode invisible separator}
+% \subsection{Shared annotation mechanisms: the queue and the ghosts}
 %
-% \begin{macro}[int]{\@@_invisible_sep:, \c_@@_invisible_sep_tl}
-%   The function \myhlc|\@@_invisible_sep:| is an internal copy of the
-%   Unicode invisible separator |U-2063| that uses |\luamml_annotate:en|
-%   from the package \mypkg{luamml}\cite{luamml} and let \lstinline+<mo>...</mo>+ in
-%   the \mynvmath{MathML} structure embedded in the \texttt{PDF} output.
-% \iffalse
-%% Internal invisible separator U-2063 => <mi intent=":silent" mathvariant="normal">⁣</mi>.
-% \fi
+% Almost all commands in the \mypkg*[no-index]{spintent} package share
+% three annotation functions, the mechanism of which is defined in the
+% Lua module \myluamod{}.
+%
+% \begin{macro}[int]{\@@_luafun_wrap_mrow_intent_arg:nn}
+% The internal function \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| — called directly, with no
+% \mypkg[no-index]{expl3} wrapper — pushes one entry onto a queue: a concept
+% |intent| (`|#1|', possibly empty) and a Lua table literal |arg=|/
+% |intent=| (`|#2|'). A |pre_mlist_to_hlist_filter| callback (installed
+% once, before \mypkg{luamml}\cite{luamml}'s own) walks the formula's
+% top-level noads in order and, for each one whose nucleus or
+% subscript was typeset inside a \mypkg*[no-index]{spintent} command's own group
+% (marked via a \hologo{LuaTeX} |\attribute| activated by every command that uses
+% this queue), claims it for the next pending entry: |arg|/a literal
+% |intent| land on that leaf, and, when the concept |intent| is
+% non-empty, the leaf is wrapped in a native |<mrow>| carrying it — no
+% token, no ghost involved. Entries are consumed strictly in order;
+% any left unclaimed when the formula ends are discarded rather than
+% carried into the next one. A native |\MathMLarg|/|\MathMLintent|
+% claim is invisible to this queue: mixing the two for the same
+% content risks the queue claiming something already tagged natively,
+% or never being claimed at all.
+% \end{macro}
+%
+% The other two are \enquote{ghost} characters (an invisible |U+2063|,
+% self-tagged |:silent| through their own |mathml_filter| — so the
+% queue above never mistakes either for one of its own free targets)
+% dropped in as an extra sibling so the resulting |<mrow>| is not the
+% formula's sole top-level content, which \mypkg{luamml} would
+% otherwise promote straight to |<math intent=...>| instead of leaving
+% it nested (issue
+% \href{https://github.com/latex3/luamml/issues/26}{\#26}).
+%
+% \begin{macro}[int]{\@@_invisible_sep:}
+%   Placed once, before opening the formula's own outer
+%   |\MathMLintent| — protects the \emph{whole formula} from
+%   collapsing when that outer group is its only top-level content.
+%   Fires at most once per document: past the first call, in any
+%   command, it does nothing, since one sibling anywhere in the
+%   formula is already enough.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_invisible_sep:
   {
     \@@_luafun_invisible_sep:
   }
 %    \end{macrocode}
-%   The token list constant \myhlc|\c_@@_invisible_sep_tl| is an internal
-%   copy of the Unicode invisible separator |U-2063| using the primitive
-%   |\Umathchardef| from \hologo{LuaTeX} which leaves \lstinline+<mi>...</mi>+ in the
-%   structure \mynvmath{MathML} embedded in the output \texttt{PDF}.
+% \begin{important}*
+%   Executing this function writes the following line directly to the
+%   output file |-luamml-mathml.html|:
 % \iffalse
-%% Internal invisible separator U-2063 => <mi intent=":silent" mathvariant="normal">⁣</mi>.
+%<*example>
 % \fi
+\begin{examplecode}
+ <mi intent=":silent" mathvariant="normal">⁣</mi>
+\end{examplecode}
+% \iffalse
+%</example>
+% \fi
+% and if the package key \mykey{AFghost}|=true| is used, the output is:
+% \iffalse
+%<*example>
+% \fi
+\begin{examplecode}
+ <mi intent=":silent" mathvariant="normal" sptmp="outer">⁣</mi>
+\end{examplecode}
+% \iffalse
+%</example>
+% \fi
+% If you wish to use |math-AF| mode, you can remove the line generated by
+% \mykey{AFghost}|=true| using the Lua script |spiafcls|.
+% \end{important}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_inner_sep:}
+%   Placed just inside a native |\MathMLintent| group — protects
+%   \emph{that specific group} when it too would otherwise hold only
+%   one child. Never deduplicates: called once per such group, however
+%   many appear, nested or sibling, in the same formula.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_inner_sep:
+  {
+    \@@_luafun_inner_sep:
+  }
+%    \end{macrocode}
+% \begin{important}*
+%   Executing this function writes the following line directly to the
+%   output file |-luamml-mathml.html|:
+% \iffalse
+%<*example>
+% \fi
+\begin{examplecode}
+ <mi intent=":silent" mathvariant="normal">⁣</mi>
+\end{examplecode}
+% \iffalse
+%</example>
+% \fi
+% and if the package key \mykey{AFghost}|=true| is used, the output is:
+% \iffalse
+%<*example>
+% \fi
+\begin{examplecode}
+ <mi intent=":silent" mathvariant="normal" sptmp="inner">⁣</mi>
+\end{examplecode}
+% \iffalse
+%</example>
+% \fi
+% If you wish to use |math-AF| mode, you can remove the line generated by
+% \mykey{AFghost}|=true| using the Lua script |spiafcls|.
+% \end{important}
+% \end{macro}
+%
+% \begin{macro}[int]{\c_@@_invisible_sep_tl}
+%   A raw, untagged copy of the same |U+2063| character, via the
+%   \hologo{LuaTeX} primitive |\Umathchardef| — for use as ordinary
+%   content \emph{inside} an explicit |\MathMLintent|\mymarg{intent}
+%   call (typically |:silent|), not as a sibling on its own.
 %    \begin{macrocode}
 \hook_gput_code:nnn { begindocument } { spintent }
   {
     \Umathchardef \c_@@_invisible_sep_tl = "0 "0 "2063
   }
 %    \end{macrocode}
-% \begin{important}*
-%   Both copies are used for different purposes, the function
-%   \myhlc|\@@_invisible_sep:| will be used to force the start of a \lstinline+<mrow>+
-%   in the structure \mynvmath{MathML}, the token list constant
-%   \myhlc|\c_@@_invisible_sep_tl| will be used to inject text into the
-%   structure \mynvmath{MathML} when we use |\MathMLintent|\mymarg{text}.
-% \end{important}
 % \end{macro}
 %
 % \subsection{Normalize argument and affixes}
@@ -4525,7 +4621,7 @@ end, "shekel_fallback_patch")
 %
 % \subsection{The command \cs{setspintent}}\label{cmd:setspintent}
 %
-% The \ics*{setspintent} command is used to configure \mymeta{keys}
+% The |\setspintent| command is used to configure \mymeta{keys}
 % \emph{\enquote{globally}} for the utilities provided by \mypkg*[no-index]{spintent}.
 %
 % \subsubsection{Internal variables and error messages for \cs[no-index]{setspintent}}
@@ -4616,8 +4712,13 @@ end, "shekel_fallback_patch")
 %
 % \subsection{Handling unknown keys}\label{key:unknown-keys}
 %
-% \begin{macro}[int]{\l_@@_command_name_str, unknown-choice, cmd-key-unknown,
-%                    cmd-key-value-unknown,}
+% \begin{macro}[int]
+%   {
+%     \l_@@_command_name_str,
+%     unknown-choice,
+%     cmd-key-unknown,
+%     cmd-key-value-unknown,
+%   }
 %   We define the variable \myhlc|\l_@@_command_name_str| which will \emph{store}
 %   the \emph{\enquote{name}} of each command within the implementation along with the
 %   messages |unknown-choice| used by \mymeta{keys} that use |.choice:n| in
@@ -4656,22 +4757,28 @@ end, "shekel_fallback_patch")
   }
 %    \end{macrocode}
 % \end{macro}
-% \begin{macro}[int]{\@@_unknown_keys:n, \@@_unknown_keys:nn,}
-%   The internal functions \myhlc|\@@_unknown_keys:n| and \myhlc|\@@_unknown_keys:nn|
+% \begin{macro}[int]
+%   {
+%     \@@_unknown_keys:nn,
+%     \@@_unknown_keys:Vn,
+%     \@@_unknown_keys:n,
+%   }
+%   The internal functions \myhlc|\@@_unknown_keys:nn| and \myhlc|\@@_unknown_keys:n|
 %   used by the \mymeta{key} |unknown|.
 % \iffalse
 %% Internal fucnctions for the key |unknown|.
 % \fi
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_unknown_keys_cmd:n
-  {
-    \exp_args:NV \@@_unknown_keys_cmd:nn \l_keys_key_str {#1}
-  }
 \cs_new_protected:Nn \@@_unknown_keys_cmd:nn
   {
     \tl_if_blank:nTF {#2}
       { \msg_error:nnn { spintent } { cmd-key-unknown } {#1} }
       { \msg_error:nnnn { spintent } { cmd-key-value-unknown } {#1} {#2} }
+  }
+\cs_generate_variant:Nn \@@_unknown_keys_cmd:nn { Vn }
+\cs_new_protected:Nn \@@_unknown_keys_cmd:n
+  {
+    \@@_unknown_keys_cmd:Vn \l_keys_key_str {#1}
   }
 %    \end{macrocode}
 % \end{macro}
@@ -8278,8 +8385,8 @@ end, "shekel_fallback_patch")
 %   The internal function \myhlc|\@@_spnM_spnD_intent:nn| resolves the main
 %   reading intent string. It takes the command identifier `|#1|' (such as
 %   "nM" or "nD") and the base reading string `|#2|'. It automatically
-%   prepends the localized prefix if defined and handles specific string
-%   normalizations, such as ensuring the correct accentuation for "múltiplos".
+%   prepends the localized prefix if defined, normalizes accentuation for
+%   "múltiplos", and appends `|-de|'.
 %    \begin{macrocode}
 \cs_new:Nn \@@_spnM_spnD_intent:nn
   {
@@ -8288,6 +8395,7 @@ end, "shekel_fallback_patch")
     \str_case:nnF { #2 }
       { { multiplos } { múltiplos } }
       { #2 }
+    -de
   }
 %    \end{macrocode}
 % \end{macro}
@@ -8344,7 +8452,8 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spnM_spnD_exec:nnnn}
 %   The function \myhlc|\@@_spnM_spnD_exec:nnnn| takes the command name
 %   in `|#1|', the symbol in `|#2|', the base reading string in `|#3|',
-%   and the optional argument in `|#4|'.
+%   and the optional argument in `|#4|'. The parentheses are always
+%   silenced.
 %
 %   With `|#4|' absent, the placeholder |n| stands in for the argument.
 %   With `|#4|' given, \myhlc|\@@_luafun_spnmd_classify:n| decides
@@ -8369,12 +8478,12 @@ end, "shekel_fallback_patch")
               {
                 \MathMLintent
                   { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
-                  { \operatorname { #2 } ( n ) }
+                  { \operatorname { #2 } }
               }
-              {
-                \MathMLintent { :silent } { \operatorname { #2 } }
-                ( n )
-              }
+              { \MathMLintent { :silent } { \operatorname { #2 } } }
+            \MathMLintent { :silent } { ( }
+            n
+            \MathMLintent { :silent } { ) }
           }
       }
       {
@@ -8388,29 +8497,16 @@ end, "shekel_fallback_patch")
           {
             \bool_if:cTF { l_@@_sp #1 _concept_bool }
               {
-                \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
-                  {
-                    \MathMLintent
-                      { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
-                      { \operatorname { #2 } } ( \spnum { #4 } )
-                  }
-                  {
-                    \MathMLintent
-                      { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
-                      { \operatorname { #2 } } ( #4 )
-                  }
+                \MathMLintent
+                  { \@@_spnM_spnD_intent:nn { #1 } { #3 } }
+                  { \operatorname { #2 } }
               }
-              {
-                \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
-                  {
-                    \MathMLintent { :silent } { \operatorname { #2 } }
-                    ( \spnum { #4 } )
-                  }
-                  {
-                    \MathMLintent { :silent } { \operatorname { #2 } }
-                    ( #4 )
-                  }
-              }
+              { \MathMLintent { :silent } { \operatorname { #2 } } }
+            \MathMLintent { :silent } { ( }
+            \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
+              { \spnum { #4 } }
+              { #4 }
+            \MathMLintent { :silent } { ) }
           }
         \str_if_eq:VnT \l_@@_spnmd_luaset_is_number_str { true }
           {
@@ -8448,6 +8544,122 @@ end, "shekel_fallback_patch")
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spnD } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{sprazon}}\label{cmd:sprazon}
+%
+% The user command |\sprazon| typesets a ratio |a|:|b| as a fraction
+% (|\dfrac| or |\frac|, per \mykey{use-dfrac}), read natively — no Lua
+% parsing involved.
+%
+% \subsubsection{Definition of keys for \cs[no-index]{sprazon}}
+%
+% \begin{macro}[int]{silent-cmd, use-dfrac, unknown}
+%   We define the \mymeta{keys} \mykey[sprazon]{silent-cmd} and
+%   \mykey[sprazon]{use-dfrac}.
+%    \begin{macrocode}
+\keys_define:nn { spintent / sprazon }
+  {
+    silent-cmd .bool_set:N = \l_@@_sprazon_silent_cmd_bool,
+    silent-cmd .initial:n  = false,
+    silent-cmd .value_required:n = true,
+    use-dfrac  .bool_set:N = \l_@@_sprazon_use_dfrac_bool,
+    use-dfrac  .initial:n  = false,
+    use-dfrac  .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { sprazon }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_sprazon_exec:nnn}
+%   The function \myhlc|\@@_sprazon_exec:nnn| receives the optional
+%   \mymeta{keys} in `|#1|', the numerator in `|#2|' and the
+%   denominator in `|#3|'. Under \mykey{silent-cmd}, the whole
+%   fraction is silenced as one unit. Otherwise, numerator and
+%   denominator are each tagged through a native |\MathMLarg| (|num|/
+%   |denom|), and the outer |\MathMLintent| reads
+%   |es-a:infix($num,$denom)|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_sprazon_exec:nnn
+  {
+    \keys_set:nn { spintent / sprazon } { #1 }
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_sprazon_silent_cmd_bool
+      {
+        \MathMLintent { _- }
+          {
+            \@@_luafun_inner_sep:
+            \bool_if:NTF \l_@@_sprazon_use_dfrac_bool
+              { \dfrac { #2 } { #3 } }
+              { \frac  { #2 } { #3 } }
+          }
+      }
+      {
+        \MathMLintent { es-a:infix($num,$denom) }
+          {
+            \@@_luafun_inner_sep:
+            \bool_if:NTF \l_@@_sprazon_use_dfrac_bool
+              {
+                \dfrac { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } }
+              }
+              { \frac  { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } } }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\sprazon}
+%   The public command |\sprazon| enforces \emph{math mode} and
+%   delegates execution to \myhlc|\@@_sprazon_exec:nnn|.
+%    \begin{macrocode}
+\NewDocumentCommand \sprazon { O{} m m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_sprazon_exec:nnn { #1 } { #2 } { #3 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \sprazon } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spProp}}\label{cmd:spProp}
+%
+% The user command |\spProp| typesets a proportion |a|:|b| |=| |c|:|d|
+% as two fractions joined by |=|, reusing
+% \myhlc|\@@_sprazon_exec:nnn| directly (not the public |\sprazon|
+% command) for each ratio.
+%
+% \begin{macro}{\spProp}
+%   The public command |\spProp| enforces \emph{math mode}, and
+%   forwards the same \mymeta{keys} in `|#1|' to both ratios: |a/b|
+%   (`|#2|'/`|#3|') and |c/d| (`|#4|'/`|#5|'), joined by a native
+%   |\MathMLintent| reading |_como| over the |=| sign.
+%    \begin{macrocode}
+\NewDocumentCommand \spProp { O{} m m m m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_sprazon_exec:nnn { #1 } { #2 } { #3 }
+          \bool_if:NTF \l_@@_sprazon_silent_cmd_bool
+            {
+              \MathMLintent { :silent } { = }
+            }
+            { \MathMLintent { _como } { = } }
+          \@@_sprazon_exec:nnn { #1 } { #4 } { #5 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spProp } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -9292,7 +9504,6 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{silent-cmd}
 %   We define the key \mykey[spcoord]{silent-cmd}.
 %    \begin{macrocode}
-\bool_new:N \l_@@_spPoint_coord_silent_cmd_bool
 \keys_define:nn { spintent / spcoord }
   {
     silent-cmd  .bool_set:N = \l_@@_spcoord_silent_cmd_bool,
@@ -9578,7 +9789,7 @@ end, "shekel_fallback_patch")
               {
                 {
                   \@@_luafun_inner_sep:
-                  \exp_args:Ne \MathMLarg { \l_@@_mathmlarg_point_ref_tl }
+                  \MathMLarg { \l_@@_mathmlarg_point_ref_tl }
                     {
                       {
                         \l_@@_geo_luaset_letra_str
@@ -9609,7 +9820,7 @@ end, "shekel_fallback_patch")
               {
                 {
                   \@@_luafun_inner_sep:
-                  \exp_args:Ne \MathMLarg { \l_@@_mathmlarg_point_ref_tl }
+                  \MathMLarg { \l_@@_mathmlarg_point_ref_tl }
                     {
                       { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
                     }
@@ -9647,7 +9858,7 @@ end, "shekel_fallback_patch")
                 { \l_@@_geo_luaset_print_tl }
               }
               {
-                \exp_args:Ne \MathMLarg { \l_@@_mathmlarg_point_ref_tl }
+                \MathMLarg { \l_@@_mathmlarg_point_ref_tl }
                   { \l_@@_geo_luaset_print_tl }
               }
           }
@@ -9671,7 +9882,6 @@ end, "shekel_fallback_patch")
 %     \l_@@_spPoint_mode_str,
 %     \l_@@_spPoint_prefix_tl,
 %     \l_@@_spPoint_intent_arg_tl,
-%     \l_@@_spPoint_kv_tl,
 %   }
 %   Internal variables holding the values set by
 %   \mykey[spPoint]{read-cmd} and \mykey[spPoint]{prefix}.
@@ -9679,7 +9889,6 @@ end, "shekel_fallback_patch")
 \str_new:N  \l_@@_spPoint_mode_str
 \tl_new:N   \l_@@_spPoint_prefix_tl
 \tl_new:N   \l_@@_spPoint_intent_arg_tl
-\tl_new:N   \l_@@_spPoint_kv_tl
 %    \end{macrocode}
 % \end{variable}
 %
@@ -10414,7 +10623,7 @@ end, "shekel_fallback_patch")
                       {
                         {
                           \@@_luafun_inner_sep:
-                          \exp_args:Ne \MathMLarg { pt }
+                          \MathMLarg { pt }
                             {
                               {
                                 \l_@@_geo_luaset_letra_str
@@ -10451,7 +10660,7 @@ end, "shekel_fallback_patch")
                       {
                         {
                           \@@_luafun_inner_sep:
-                          \exp_args:Ne \MathMLarg { pt }
+                          \MathMLarg { pt }
                             {
                               { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
                             }
@@ -13636,14 +13845,14 @@ end, "shekel_fallback_patch")
   {
     \str_case:Vn \l_@@_geo_luaset_circ_radio_type_str
       {
-        { number  } { \exp_args:No \spnum { \l_@@_geo_luaset_circ_radio_raw_str } }
-        { measure } { \exp_args:No \spunit { \l_@@_geo_luaset_circ_radio_raw_str } }
+        { number  } { \exp_args:Ne \spnum { \l_@@_geo_luaset_circ_radio_raw_str } }
+        { measure } { \exp_args:Ne \spunit { \l_@@_geo_luaset_circ_radio_raw_str } }
         { label   } { \l_@@_geo_luaset_circ_radio_raw_str }
         { segment }
           {
             \str_if_eq:VnTF \l_@@_spcirc_radio_sty_str { side }
-              { \exp_args:No \spside  { \l_@@_geo_luaset_circ_radio_raw_str } }
-              { \exp_args:No \spmside { \l_@@_geo_luaset_circ_radio_raw_str } }
+              { \exp_args:Ne \spside  { \l_@@_geo_luaset_circ_radio_raw_str } }
+              { \exp_args:Ne \spmside { \l_@@_geo_luaset_circ_radio_raw_str } }
           }
       }
   }

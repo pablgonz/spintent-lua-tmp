@@ -1,7 +1,6 @@
 --[[
-   Configuration script for l3build from the spintent package
-   At the moment the possible options that can be passed on to
-   l3build are:
+   Configuration script for l3build from the spintent package.
+   At the moment the possible targets that can be passed are:
    * tag        : Update the version and date
    * doc        : Generate the documentation [-q]
    * unpack     : Unpacks the source files [-q]
@@ -74,7 +73,8 @@ uploadconfig = {
   version      = pkgversion,
   license      = "lppl1.3c",
   summary      = "Spanish parse intents",
-  description  =[[to be documented]],
+  description  =[[The ⟨spintent⟩ package provides a series of utilities for primary and secondary
+  school teachers who need to create accessible PDF documents (tagged PDF) in Spanish using LuaLaTeX.]],
   topic        = { "spanish", "macros", "list", "tagged-pdf" },
   ctanPath     = "/macros/latex/contrib/" .. ctanpkg,
   repository   = "https://github.com/pablgonz/" .. module,
