@@ -633,7 +633,8 @@ end, "shekel_fallback_patch")
     keywords      = [2]{usepackage,},%,
 % Other words 3 MathML/tagpdf
     keywordstyle  = [3]{\color{mathtag}},%
-    keywords      = [3]{MathMLintent,MathMLarg, invisibletimes, luamml_attribute, luamml_annotate, DocumentMetadata,},%,
+    keywords      = [3]{MathMLintent,MathMLarg, invisibletimes, luamml_attribute, luamml_annotate, DocumentMetadata,
+                     mrow, msub, mo, mi, pre_mlist_to_hlist_filter, mathml_filter,},%,
 % Other words 4 (LaTeX2e)
     keywordstyle  = [4]{\color{latex_cmd}},%
     keywords      = [4]{frac, dfrac, section, input, listparindent, linewidth, emph, textbf, footnote,%
@@ -670,16 +671,16 @@ end, "shekel_fallback_patch")
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
-                    intent, title, table, firstaid, on,XXI, setup,},%
+                    intent, title, table, firstaid, on,XXI, setup, mathvariant, normal, },%
 % Reserved words 10 (signature)
     keywordstyle  = [10]{\color{sigargs}},%
     keywords      = [10]{een, },%
 % Reserved words 11 (support)
     keywordstyle  = [11]{\color{support}},%
     keywords      = [11]{hypersetup, setmathfont,},%
-% Reserved words 12 (MathML tags)
-    keywordstyle  = [12]{\color{mathtag}},%
-    keywords      = [12]{mrow, msub, mo, mi, pre_mlist_to_hlist_filter, mathml_filter,},%
+% Reserved words 12 (AF ghost - MathML tags)
+    keywordstyle  = [12]{\color{other_np}},%
+    keywords      = [12]{sptmp, inner, outer, },%
 % literate
     literate      =*{\{}{{{\color{brace}{\char`\{}}}}{1}
                     {\}}{{{\color{brace}{\char`\}}}}}{1}
@@ -696,9 +697,10 @@ end, "shekel_fallback_patch")
                     {:}{{\textcolor{signature}{:}}}{1}
                     {`}{{\textcolor{quote}{\textasciigrave}}}{1}
                     {\&}{{\textcolor{gray}{\&}}}{1}
-                    {>}{{\textcolor{mathml_var}{>}}}{1}
-                    {<}{{\textcolor{mathml_var}{<}}}{1}
+                    {>}{{\textcolor{percent}{>}}}{1}
+                    {<}{{\textcolor{percent}{<}}}{1}
                     {*}{{\textcolor{star}{*}}}{1}
+                    {"}{{\textcolor{quote}{"}}}{1}
                     {ua-2}{{\textcolor{keyname}{ua-2}}}{4} % UA-2
                     {!}{{\textcolor{MediumOrchid}{!}}}{1}
                     {@}{{\textcolor{arroba}{@}}}{1}%
@@ -4577,7 +4579,7 @@ end, "shekel_fallback_patch")
 % \end{important}
 % \end{macro}
 %
-% \begin{macro}[int]{\c_@@_invisible_sep_tl}
+% \begin{macro}[int]{\c_@@_invisible_sep_int}
 %   A raw, untagged copy of the same |U+2063| character, via the
 %   \hologo{LuaTeX} primitive |\Umathchardef| — for use as ordinary
 %   content \emph{inside} an explicit |\MathMLintent|\mymarg{intent}
@@ -4585,9 +4587,14 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \hook_gput_code:nnn { begindocument } { spintent }
   {
-    \Umathchardef \c_@@_invisible_sep_tl = "0 "0 "2063
+    \Umathchardef \c_@@_invisible_sep_int = "0 "0 "2063
   }
 %    \end{macrocode}
+% \begin{important}*
+% Documented in \mypkg[no-index]{source3} on page 887 for \myhlc|\int_const:Nn|:
+% ``As stated, most constants can be defined as \myhlc|\chardef| or \myhlc|\mathchardef|
+% but that’s engine dependent.'' —so this appears to be the correct option here.
+% \end{important}
 % \end{macro}
 %
 % \subsection{Normalize argument and affixes}
@@ -7128,7 +7135,7 @@ end, "shekel_fallback_patch")
           {
             \MathMLintent { _minutos }
               {
-                \c_@@_invisible_sep_tl
+                \c_@@_invisible_sep_int
               }
           }
       }
@@ -8131,7 +8138,7 @@ end, "shekel_fallback_patch")
       {
         \seq_set_map:NNn \l_@@_mc_args_seq \l_@@_mc_args_seq
           { \MathMLintent { :silent } { ##1 } }
-        \MathMLintent { _entre } { \c_@@_invisible_sep_tl }
+        \MathMLintent { _entre } { \c_@@_invisible_sep_int }
         \MathMLintent { :silent } { ( }
         \seq_use:Nnnn \l_@@_mc_args_seq
           { \MathMLintent { _y:silent } { , } }
@@ -8139,7 +8146,7 @@ end, "shekel_fallback_patch")
           { \MathMLintent { _y:silent } { , } }
       }
       {
-        \MathMLintent { _entre } { \c_@@_invisible_sep_tl }
+        \MathMLintent { _entre } { \c_@@_invisible_sep_int }
         \MathMLintent { :silent } { ( }
         \seq_use:Nnnn \l_@@_mc_args_seq
           { \MathMLintent { _y }      { , } }
@@ -8427,7 +8434,7 @@ end, "shekel_fallback_patch")
   {
     \MathMLintent { :silent } { \operatorname { #1 } }
     \MathMLintent { :silent } { ( }
-    \MathMLintent { :silent } { \c_@@_invisible_sep_tl }
+    \MathMLintent { :silent } { \c_@@_invisible_sep_int }
     \MathMLintent { :silent } { #2 }
     \MathMLintent { :silent } { ) }
   }
@@ -9167,9 +9174,9 @@ end, "shekel_fallback_patch")
   {
     \str_case:Vn \l_@@_spmQ_join_word_str
       {
-        { entero  } { \MathMLintent { _entero  } { \c_@@_invisible_sep_tl } }
-        { enteros } { \MathMLintent { _enteros } { \c_@@_invisible_sep_tl } }
-        { y       } { \MathMLintent { _y-      } { \c_@@_invisible_sep_tl } }
+        { entero  } { \MathMLintent { _entero  } { \c_@@_invisible_sep_int } }
+        { enteros } { \MathMLintent { _enteros } { \c_@@_invisible_sep_int } }
+        { y       } { \MathMLintent { _y-      } { \c_@@_invisible_sep_int } }
       }
   }
 %    \end{macrocode}
@@ -9256,7 +9263,7 @@ end, "shekel_fallback_patch")
               }
             \MathMLintent { \l_@@_spnQ_intent_read_sign_str }
               {
-                \l_@@_luaset_sign_tl \c_@@_invisible_sep_tl %%\@@_invisible_sep:
+                \l_@@_luaset_sign_tl \c_@@_invisible_sep_int % \@@_invisible_sep:
                 \MathMLarg { e } { \@@_spmQ_print_scale_int: }
               }
           }
@@ -10061,7 +10068,7 @@ end, "shekel_fallback_patch")
     \@@_spPoint_print:n { #2 }
     \tl_if_novalue:nF {#3}
       {
-        \MathMLintent { :silent } { \c_@@_invisible_sep_tl } % silencia el "por"
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % silencia el "por"
         \bool_set_eq:NN \l_@@_spcoord_silent_cmd_bool \l_@@_spPoint_silent_cmd_bool
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
         \bool_if:NTF \l_@@_spPoint_coord_silent_cmd_bool
@@ -10415,7 +10422,7 @@ end, "shekel_fallback_patch")
     \tl_if_novalue:nF {#3}
       {
         \equal % notación de vector =( , )
-        \MathMLintent { :silent } { \c_@@_invisible_sep_tl } % previene lectura de intervalo
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % previene lectura de intervalo
         \bool_set_eq:NN \l_@@_spcoord_silent_cmd_bool \l_@@_spvec_silent_cmd_bool
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
         \bool_if:NTF \l_@@_spvec_silent_cmd_bool
