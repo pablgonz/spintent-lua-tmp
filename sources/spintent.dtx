@@ -5217,7 +5217,7 @@ end, "shekel_fallback_patch")
         \mathord { \l_@@_luaset_dec_sep_tl }
         \MathMLarg { dp }
           {
-            \@@_invisible_sep:
+            \@@_luafun_inner_sep:
             \@@_spnum_render_dec:
           }
       }
@@ -5226,13 +5226,13 @@ end, "shekel_fallback_patch")
       {
         \str_if_eq:VnTF \l_@@_luaset_dec_is_all_zeros_str { true }
           {
-            \@@_invisible_sep:
+            \@@_luafun_inner_sep:
             \@@_spnum_print_period_bar:
           }
           {
             \MathMLintent { _con:prefix($pnum) }
               {
-                \@@_invisible_sep:
+                \@@_luafun_inner_sep:
                 \MathMLarg { pnum }
                   {
                     \@@_spnum_print_period_bar:
@@ -5258,9 +5258,6 @@ end, "shekel_fallback_patch")
 %   periodic part exists. It evaluates if it should render the periodic separator
 %   directly, particularly when the number has a periodic part but lacks a standard
 %   decimal part.
-%
-%   \smallskip
-%
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spnum_print_part_dec:
   {
@@ -6256,7 +6253,7 @@ end, "shekel_fallback_patch")
               }
           }
       }
-    \@@_invisible_sep: % need for MathCAT
+    \@@_invisible_sep:
     \MathMLintent { \l_@@_spmoney_intent_money_str :postfix($n) }
       {
         \@@_spmoney_render_layout:
@@ -6365,7 +6362,7 @@ end, "shekel_fallback_patch")
       {
         \MathMLintent { \l_@@_spmoney_res_main_voice_str :postfix($n) }
           {
-            \@@_invisible_sep:
+            \@@_luafun_inner_sep:
             \MathMLarg { n } { \@@_spmoney_render_only_integer_node: }
           }
         \@@_spmoney_print_sep_con:
@@ -6373,16 +6370,9 @@ end, "shekel_fallback_patch")
         \MathMLintent {:silent } { \@@_spmoney_print_symbol: }
       }
   }
-%^^A \cs_new_protected:Nn \@@_spmoney_print_integer_continue:
-%^^A  {
-%^^A    \MathMLintent { \l_@@_spmoney_res_main_voice_str :postfix($n) }
-%^^A      {
-%^^A        \MathMLarg { n } { \@@_spmoney_render_only_integer_node: }
-%^^A      }
-%^^A  }
 \cs_new_protected:Nn \@@_spmoney_print_sep_con:
   {
-    \MathMLintent { con }
+    \MathMLintent { _con }
       {
         \mathord { \l_@@_luaset_dec_sep_tl }
       }
@@ -6391,7 +6381,7 @@ end, "shekel_fallback_patch")
   {
     \MathMLintent { \l_@@_spmoney_intent_sub_unit_str }
       {
-        \@@_invisible_sep:
+        \@@_luafun_inner_sep:
         \MathMLarg { sub }
           {
             \@@_spnum_render_dec:
@@ -6849,7 +6839,7 @@ end, "shekel_fallback_patch")
       {
         \MathMLintent { antes-de-cristo:postfix($z) }
           {
-            \@@_invisible_sep:
+            \@@_luafun_inner_sep:
             \MathMLarg { z }
               {
                 \MathMLintent { #2:number }
@@ -6862,7 +6852,7 @@ end, "shekel_fallback_patch")
       {
         \MathMLintent { después-de-cristo:postfix($z) }
           {
-            \@@_invisible_sep:
+            \@@_luafun_inner_sep:
             \MathMLarg { z }
               {
                 \MathMLintent { #2:number }
@@ -7064,7 +7054,7 @@ end, "shekel_fallback_patch")
           {
             \MathMLintent { segundos:postfix($m) }
               {
-                \@@_invisible_sep:
+                \@@_luafun_inner_sep:
                 \MathMLarg { m }
                   {
                     \text { #2 }
@@ -8412,7 +8402,7 @@ end, "shekel_fallback_patch")
   {
     \MathMLintent { :silent } { \operatorname { #1 } }
     \MathMLintent { :silent } { ( }
-    \MathMLintent { :silent } { \@@_invisible_sep: }
+    \MathMLintent { :silent } { \c_@@_invisible_sep_tl }
     \MathMLintent { :silent } { #2 }
     \MathMLintent { :silent } { ) }
   }
@@ -9241,7 +9231,7 @@ end, "shekel_fallback_patch")
               }
             \MathMLintent { \l_@@_spnQ_intent_read_sign_str }
               {
-                \l_@@_luaset_sign_tl \@@_invisible_sep:
+                \l_@@_luaset_sign_tl \c_@@_invisible_sep_tl %%\@@_invisible_sep:
                 \MathMLarg { e } { \@@_spmQ_print_scale_int: }
               }
           }
