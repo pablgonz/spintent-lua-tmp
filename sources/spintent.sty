@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-15} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-17} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -94,12 +94,12 @@
 \cs_generate_variant:Nn \seq_set_from_clist:Nn { Ne }
 \str_new:N \l__spintent_luaset_cal_fam_ok_str
 \str_new:N \l__spintent_luaset_sym_fam_ok_str
-%% Load Lua module
 \lua_load_module:n { spintent.lua }
 \bool_if:NTF \l__spintent_debug_ghost_bool
   { \__spintent_luafun_set_debug_ghost:n { true } }
   { \__spintent_luafun_set_debug_ghost:n { false } }
-\int_new:N \l__spintent_scope_attr_int
+\int_new:N  \l__spintent_scope_attr_int
+\str_new:N  \l__spintent_scope_luaset_attr_str
 \int_set:Nn \l__spintent_scope_attr_int { \l__spintent_scope_luaset_attr_str }
 \cs_generate_variant:Nn \__spintent_luafun_spunit_lookup_alias:n { V }
 \cs_generate_variant:Nn \__spintent_luafun_spmoney_lookup_data:n { V }
@@ -111,13 +111,13 @@
   }
 \msg_new:nnn { spintent } { mathcal-fallback }
   {
-    Using~classic~\token_to_str:N \mathcal \c_space_tl as~fallback~(font~not~found~or~
-    no~free~math~family~available).~\msg_line_context:
+    Using~classic~\token_to_str:N \mathcal \c_space_tl as~fallback~
+    (font~not~found~or~no~free~math~family~available).~\msg_line_context:
   }
 \msg_new:nnn { spintent } { right-angle-sqr-fallback }
   {
-    Using~\token_to_str:N \rightangle \c_space_tl as~fallback~for~the~right-angle~
-    glyph.~\msg_line_context:
+    Using~\token_to_str:N \rightangle \c_space_tl as~fallback~
+    for~the~right-angle~ glyph.~\msg_line_context:
   }
 \cs_new_protected:Nn \__spintent_mathcal:n
   {
@@ -141,12 +141,14 @@
         \rightangle
       }
   }
-%% Internal invisible separator U-2063 => <mi intent=":silent" mathvariant="normal">⁣</mi>.
 \cs_new_protected:Nn \__spintent_invisible_sep:
   {
     \__spintent_luafun_invisible_sep:
   }
-%% Internal invisible separator U-2063 => <mi intent=":silent" mathvariant="normal">⁣</mi>.
+\cs_new_protected:Nn \__spintent_inner_sep:
+  {
+    \__spintent_luafun_inner_sep:
+  }
 \hook_gput_code:nnn { begindocument } { spintent }
   {
     \Umathchardef \c__spintent_invisible_sep_tl = "0 "0 "2063
@@ -255,15 +257,16 @@
     Check~that~you~have~spelled~the~key~name~correctly.
   }
 %% Internal fucnctions for the key |unknown|.
-\cs_new_protected:Nn \__spintent_unknown_keys_cmd:n
-  {
-    \exp_args:NV \__spintent_unknown_keys_cmd:nn \l_keys_key_str {#1}
-  }
 \cs_new_protected:Nn \__spintent_unknown_keys_cmd:nn
   {
     \tl_if_blank:nTF {#2}
       { \msg_error:nnn { spintent } { cmd-key-unknown } {#1} }
       { \msg_error:nnnn { spintent } { cmd-key-value-unknown } {#1} {#2} }
+  }
+\cs_generate_variant:Nn \__spintent_unknown_keys_cmd:nn { Vn }
+\cs_new_protected:Nn \__spintent_unknown_keys_cmd:n
+  {
+    \__spintent_unknown_keys_cmd:Vn \l_keys_key_str {#1}
   }
 %% Core base variables set in Lua module spintent.lua (\__spintent_luafun_clean_split_and_set:n)
 \tl_new:N  \l__spintent_luaset_sign_tl
@@ -430,7 +433,7 @@
         \mathord { \l__spintent_luaset_dec_sep_tl }
         \MathMLarg { dp }
           {
-            \__spintent_invisible_sep:
+            \__spintent_inner_sep:
             \__spintent_spnum_render_dec:
           }
       }
@@ -439,13 +442,13 @@
       {
         \str_if_eq:VnTF \l__spintent_luaset_dec_is_all_zeros_str { true }
           {
-            \__spintent_invisible_sep:
+            \__spintent_inner_sep:
             \__spintent_spnum_print_period_bar:
           }
           {
             \MathMLintent { _con:prefix($pnum) }
               {
-                \__spintent_invisible_sep:
+                \__spintent_inner_sep:
                 \MathMLarg { pnum }
                   {
                     \__spintent_spnum_print_period_bar:
@@ -1003,7 +1006,7 @@
               }
           }
       }
-    \__spintent_invisible_sep: % need for MathCAT
+    \__spintent_invisible_sep:
     \MathMLintent { \l__spintent_spmoney_intent_money_str :postfix($n) }
       {
         \__spintent_spmoney_render_layout:
@@ -1071,7 +1074,7 @@
       {
         \MathMLintent { \l__spintent_spmoney_res_main_voice_str :postfix($n) }
           {
-            \__spintent_invisible_sep:
+            \__spintent_inner_sep:
             \MathMLarg { n } { \__spintent_spmoney_render_only_integer_node: }
           }
         \__spintent_spmoney_print_sep_con:
@@ -1081,7 +1084,7 @@
   }
 \cs_new_protected:Nn \__spintent_spmoney_print_sep_con:
   {
-    \MathMLintent { con }
+    \MathMLintent { _con }
       {
         \mathord { \l__spintent_luaset_dec_sep_tl }
       }
@@ -1090,7 +1093,7 @@
   {
     \MathMLintent { \l__spintent_spmoney_intent_sub_unit_str }
       {
-        \__spintent_invisible_sep:
+        \__spintent_inner_sep:
         \MathMLarg { sub }
           {
             \__spintent_spnum_render_dec:
@@ -1308,7 +1311,7 @@
       {
         \MathMLintent { antes-de-cristo:postfix($z) }
           {
-            \__spintent_invisible_sep:
+            \__spintent_inner_sep:
             \MathMLarg { z }
               {
                 \MathMLintent { #2:number }
@@ -1321,7 +1324,7 @@
       {
         \MathMLintent { después-de-cristo:postfix($z) }
           {
-            \__spintent_invisible_sep:
+            \__spintent_inner_sep:
             \MathMLarg { z }
               {
                 \MathMLintent { #2:number }
@@ -1433,9 +1436,9 @@
         \text { : }
         \MathMLarg { z }
           {
-            \MathMLintent { segundos:postfix($m) }
+            \MathMLintent { _segundos:postfix($m) }
               {
-                \__spintent_invisible_sep:
+                \__spintent_inner_sep:
                 \MathMLarg { m }
                   {
                     \text { #2 }
@@ -1458,7 +1461,7 @@
               { \l__spintent_sptime_luaset_seconds_str }
           }
           {
-            \__spintent_sptime_build_seconds:nn { minutos-con }
+            \__spintent_sptime_build_seconds:nn { _minutos-con }
               { \l__spintent_sptime_luaset_seconds_str }
           }
       }
@@ -1469,9 +1472,9 @@
           }
         \str_if_eq:VnT \l__spintent_sptime_luaset_is_fraction_str { false }
           {
-            \MathMLintent { minutos }
+            \MathMLintent { _minutos }
               {
-                \__spintent_invisible_sep:
+                \c__spintent_invisible_sep_tl
               }
           }
       }
@@ -2198,12 +2201,13 @@
     \str_case:nnF { #2 }
       { { multiplos } { múltiplos } }
       { #2 }
+    -de
   }
 \cs_new_protected:Nn \__spintent_spnM_spnD_silent:nn
   {
     \MathMLintent { :silent } { \operatorname { #1 } }
     \MathMLintent { :silent } { ( }
-    \MathMLintent { :silent } { \__spintent_invisible_sep: }
+    \MathMLintent { :silent } { \c__spintent_invisible_sep_tl }
     \MathMLintent { :silent } { #2 }
     \MathMLintent { :silent } { ) }
   }
@@ -2237,12 +2241,12 @@
               {
                 \MathMLintent
                   { \__spintent_spnM_spnD_intent:nn { #1 } { #3 } }
-                  { \operatorname { #2 } ( n ) }
+                  { \operatorname { #2 } }
               }
-              {
-                \MathMLintent { :silent } { \operatorname { #2 } }
-                ( n )
-              }
+              { \MathMLintent { :silent } { \operatorname { #2 } } }
+            \MathMLintent { :silent } { ( }
+            n
+            \MathMLintent { :silent } { ) }
           }
       }
       {
@@ -2256,29 +2260,16 @@
           {
             \bool_if:cTF { l__spintent_sp #1 _concept_bool }
               {
-                \str_if_eq:VnTF \l__spintent_spnmd_luaset_is_number_str { true }
-                  {
-                    \MathMLintent
-                      { \__spintent_spnM_spnD_intent:nn { #1 } { #3 } }
-                      { \operatorname { #2 } } ( \spnum { #4 } )
-                  }
-                  {
-                    \MathMLintent
-                      { \__spintent_spnM_spnD_intent:nn { #1 } { #3 } }
-                      { \operatorname { #2 } } ( #4 )
-                  }
+                \MathMLintent
+                  { \__spintent_spnM_spnD_intent:nn { #1 } { #3 } }
+                  { \operatorname { #2 } }
               }
-              {
-                \str_if_eq:VnTF \l__spintent_spnmd_luaset_is_number_str { true }
-                  {
-                    \MathMLintent { :silent } { \operatorname { #2 } }
-                    ( \spnum { #4 } )
-                  }
-                  {
-                    \MathMLintent { :silent } { \operatorname { #2 } }
-                    ( #4 )
-                  }
-              }
+              { \MathMLintent { :silent } { \operatorname { #2 } } }
+            \MathMLintent { :silent } { ( }
+            \str_if_eq:VnTF \l__spintent_spnmd_luaset_is_number_str { true }
+              { \spnum { #4 } }
+              { #4 }
+            \MathMLintent { :silent } { ) }
           }
         \str_if_eq:VnT \l__spintent_spnmd_luaset_is_number_str { true }
           {
@@ -2306,6 +2297,72 @@
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spnD } }
+  }
+\keys_define:nn { spintent / sprazon }
+  {
+    silent-cmd .bool_set:N = \l__spintent_sprazon_silent_cmd_bool,
+    silent-cmd .initial:n  = false,
+    silent-cmd .value_required:n = true,
+    use-dfrac  .bool_set:N = \l__spintent_sprazon_use_dfrac_bool,
+    use-dfrac  .initial:n  = false,
+    use-dfrac  .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l__spintent_command_name_str { sprazon }
+        \__spintent_unknown_keys_cmd:n {#1}
+      },
+  }
+\cs_new_protected:Nn \__spintent_sprazon_exec:nnn
+  {
+    \keys_set:nn { spintent / sprazon } { #1 }
+    \__spintent_invisible_sep:
+    \bool_if:NTF \l__spintent_sprazon_silent_cmd_bool
+      {
+        \MathMLintent { _- }
+          {
+            \__spintent_inner_sep:
+            \bool_if:NTF \l__spintent_sprazon_use_dfrac_bool
+              { \dfrac { #2 } { #3 } }
+              { \frac  { #2 } { #3 } }
+          }
+      }
+      {
+        \MathMLintent { es-a:infix($num,$denom) }
+          {
+            \__spintent_inner_sep:
+            \bool_if:NTF \l__spintent_sprazon_use_dfrac_bool
+              {
+                \dfrac { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } }
+              }
+              { \frac  { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } } }
+          }
+      }
+  }
+\NewDocumentCommand \sprazon { O{} m m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_sprazon_exec:nnn { #1 } { #2 } { #3 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \sprazon } }
+  }
+\NewDocumentCommand \spProp { O{} m m m m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_sprazon_exec:nnn { #1 } { #2 } { #3 }
+          \bool_if:NTF \l__spintent_sprazon_silent_cmd_bool
+            {
+              \MathMLintent { :silent } { = }
+            }
+            { \MathMLintent { _como } { = } }
+          \__spintent_sprazon_exec:nnn { #1 } { #4 } { #5 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spProp } }
   }
 \str_new:N  \l__spintent_spang_luaset_grado_str
 \str_new:N  \l__spintent_spang_luaset_minuto_str
@@ -2569,7 +2626,7 @@
               }
             \MathMLintent { \l__spintent_spnQ_intent_read_sign_str }
               {
-                \l__spintent_luaset_sign_tl \__spintent_invisible_sep:
+                \l__spintent_luaset_sign_tl \c__spintent_invisible_sep_tl %%\__spintent_invisible_sep:
                 \MathMLarg { e } { \__spintent_spmQ_print_scale_int: }
               }
           }
@@ -2819,7 +2876,7 @@
               {
                 \tl_set:Ne \l__spintent_mathmlarg_point_kv_tl
                   { arg = "\l__spintent_mathmlarg_point_ref_tl", intent = "_ \l__spintent_geo_luaset_intent_str -" }
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_luafun_mrow_intent_arg:nn
                   { } { \l__spintent_mathmlarg_point_kv_tl }
                 {
                   \l__spintent_geo_luaset_letra_str
@@ -2829,8 +2886,8 @@
               }
               {
                 {
-                  \__spintent_luafun_inner_sep:
-                  \exp_args:Ne \MathMLarg { \l__spintent_mathmlarg_point_ref_tl }
+                  \__spintent_inner_sep:
+                  \MathMLarg { \l__spintent_mathmlarg_point_ref_tl }
                     {
                       {
                         \l__spintent_geo_luaset_letra_str
@@ -2846,14 +2903,14 @@
               {
                 \tl_set:Ne \l__spintent_mathmlarg_point_kv_tl
                   { arg = "\l__spintent_mathmlarg_point_ref_tl", intent = "_ \l__spintent_geo_luaset_intent_str -" }
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_luafun_mrow_intent_arg:nn
                   { } { \l__spintent_mathmlarg_point_kv_tl }
                 { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
               }
               {
                 {
-                  \__spintent_luafun_inner_sep:
-                  \exp_args:Ne \MathMLarg { \l__spintent_mathmlarg_point_ref_tl }
+                  \__spintent_inner_sep:
+                  \MathMLarg { \l__spintent_mathmlarg_point_ref_tl }
                     {
                       { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
                     }
@@ -2866,7 +2923,7 @@
           {
             \tl_set:Ne \l__spintent_mathmlarg_point_kv_tl
               { arg = "\l__spintent_mathmlarg_point_ref_tl", intent = "_-" }
-            \__spintent_luafun_wrap_mrow_intent_arg:nn
+            \__spintent_luafun_mrow_intent_arg:nn
               {  } % debe ir vacío
               { \l__spintent_mathmlarg_point_kv_tl }
             { \l__spintent_geo_luaset_print_tl }
@@ -2876,13 +2933,13 @@
               {
                 \tl_set:Ne \l__spintent_mathmlarg_point_kv_tl
                   { arg = "\l__spintent_mathmlarg_point_ref_tl", intent = "_ \l__spintent_geo_luaset_intent_str -" }
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_luafun_mrow_intent_arg:nn
                   {  } % debe ir vacío
                   { \l__spintent_mathmlarg_point_kv_tl }
                 { \l__spintent_geo_luaset_print_tl }
               }
               {
-                \exp_args:Ne \MathMLarg { \l__spintent_mathmlarg_point_ref_tl }
+                \MathMLarg { \l__spintent_mathmlarg_point_ref_tl }
                   { \l__spintent_geo_luaset_print_tl }
               }
           }
@@ -2971,7 +3028,7 @@
     \__spintent_invisible_sep:
     \MathMLintent { \l__spintent_spPoint_intent_arg_tl }
       {
-        \__spintent_luafun_inner_sep:
+        \__spintent_inner_sep:
         \__spintent_mathmlarg_point:nnn { pt } { spPoint } { #1 }
       }
   }
@@ -3108,8 +3165,8 @@
                     \__spintent_invisible_sep:
                     \MathMLintent { \l__spintent_spvec_intent_arg_tl }
                       {
-                        \__spintent_luafun_inner_sep:
-                        \__spintent_luafun_wrap_mrow_intent_arg:nn
+                        \__spintent_inner_sep:
+                        \__spintent_luafun_mrow_intent_arg:nn
                           { } { \l__spintent_spvec_kv_tl }
                         {
                           \vec
@@ -3127,7 +3184,7 @@
                     \__spintent_invisible_sep:
                     \MathMLintent { \l__spintent_spvec_intent_arg_tl }
                       {
-                        \__spintent_luafun_inner_sep:
+                        \__spintent_inner_sep:
                         \vec
                           {
                             \bool_if:NT \l__spintent_spvec_autofit_bool
@@ -3152,8 +3209,8 @@
             \__spintent_invisible_sep:
             \MathMLintent { \l__spintent_spvec_intent_arg_tl }
               {
-                \__spintent_luafun_inner_sep:
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_inner_sep:
+                \__spintent_luafun_mrow_intent_arg:nn
                   { } { \l__spintent_spvec_kv_tl }
                 {
                   \vec
@@ -3197,7 +3254,7 @@
         \__spintent_invisible_sep:
         \MathMLintent { \l__spintent_spvec_intent_arg_tl }
           {
-            \__spintent_luafun_inner_sep:
+            \__spintent_inner_sep:
             \overrightarrow
               {
                 \int_zero:N \l__spintent_spvec_pt_idx_int
@@ -3335,8 +3392,8 @@
                       { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
                     \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
                       {
-                        \__spintent_luafun_inner_sep:
-                        \__spintent_luafun_wrap_mrow_intent_arg:nn
+                        \__spintent_inner_sep:
+                        \__spintent_luafun_mrow_intent_arg:nn
                           { } { \l__spintent_sprecta_kv_tl }
                         {
                           \l__spintent_geo_luaset_letra_str
@@ -3349,8 +3406,8 @@
                     \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
                       {
                         {
-                          \__spintent_luafun_inner_sep:
-                          \exp_args:Ne \MathMLarg { pt }
+                          \__spintent_inner_sep:
+                          \MathMLarg { pt }
                             {
                               {
                                 \l__spintent_geo_luaset_letra_str
@@ -3369,8 +3426,8 @@
                       { arg = "pt", intent = "_ \l__spintent_geo_luaset_intent_str -" }
                     \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
                       {
-                        \__spintent_luafun_inner_sep:
-                        \__spintent_luafun_wrap_mrow_intent_arg:nn
+                        \__spintent_inner_sep:
+                        \__spintent_luafun_mrow_intent_arg:nn
                           { } { \l__spintent_sprecta_kv_tl }
                         { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
                       }
@@ -3379,8 +3436,8 @@
                     \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
                       {
                         {
-                          \__spintent_luafun_inner_sep:
-                          \exp_args:Ne \MathMLarg { pt }
+                          \__spintent_inner_sep:
+                          \MathMLarg { pt }
                             {
                               { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
                             }
@@ -3404,7 +3461,7 @@
                     \tl_set:Nn \l__spintent_sprecta_kv_tl { arg = "pt" }
                   }
               }
-            \__spintent_luafun_wrap_mrow_intent_arg:nn
+            \__spintent_luafun_mrow_intent_arg:nn
               { \l__spintent_sprecta_intent_arg_tl }
               { \l__spintent_sprecta_kv_tl }
             { \l__spintent_geo_luaset_print_tl }
@@ -3441,7 +3498,7 @@
         \__spintent_invisible_sep:
         \MathMLintent { \l__spintent_sprecta_intent_arg_tl }
           {
-            \__spintent_luafun_inner_sep:
+            \__spintent_inner_sep:
             \overleftrightarrow
               {
                 \int_zero:N \l__spintent_sprecta_pt_idx_int
@@ -3572,7 +3629,7 @@
     \__spintent_invisible_sep:
     \MathMLintent { \l__spintent_sprayo_intent_arg_tl }
       {
-        \__spintent_luafun_inner_sep:
+        \__spintent_inner_sep:
         \overrightarrow
           {
             \int_zero:N \l__spintent_sprayo_pt_idx_int
@@ -3754,7 +3811,7 @@
     \__spintent_invisible_sep: % (luamml issues #26)
     \MathMLintent { \l__spintent_spside_intent_arg_tl }
       {
-        \__spintent_luafun_inner_sep:
+        \__spintent_inner_sep:
         \str_if_eq:eeTF {#1} { side }
           {
             \overline { \__spintent_spside_points_loop:n {#1} }
@@ -3762,7 +3819,7 @@
           {
             \bool_if:cTF { l__spintent_sp #1 _print_m_bool }
               {
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_luafun_mrow_intent_arg:nn
                   { } { intent = ":silent" }
                 { \operatorname { m } }
                 \overline { \__spintent_spside_points_loop:n {#1} }
@@ -3953,12 +4010,12 @@
           }
         \tl_set:Ne \l__spintent_spangle_kv_tl
           { intent = "\l__spintent_spangle_intent_arg_tl" }
-        \__spintent_luafun_wrap_mrow_intent_arg:nn
+        \__spintent_luafun_mrow_intent_arg:nn
           { } { \l__spintent_spangle_kv_tl }
         { \__spintent_spangle_sym:n {#1} }
         \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
           {
-            \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = "_-" }
+            \__spintent_luafun_mrow_intent_arg:nn { } { intent = "_-" }
             { \l__spintent_geo_luaset_print_tl }
           }
           {
@@ -3966,7 +4023,7 @@
               {
                 \tl_set:Ne \l__spintent_spangle_kv_tl
                   { intent = "_ \l__spintent_geo_luaset_intent_str -" }
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_luafun_mrow_intent_arg:nn
                   { } { \l__spintent_spangle_kv_tl }
                 { \l__spintent_geo_luaset_print_tl }
               }
@@ -3979,7 +4036,7 @@
                           {
                             \tl_set:Ne \l__spintent_spangle_kv_tl
                               { intent = "_ \l__spintent_geo_luaset_intent_str -" }
-                            \__spintent_luafun_wrap_mrow_intent_arg:nn
+                            \__spintent_luafun_mrow_intent_arg:nn
                               { } { \l__spintent_spangle_kv_tl }
                             {
                               \l__spintent_geo_luaset_letra_str
@@ -3998,7 +4055,7 @@
                           {
                             \tl_set:Ne \l__spintent_spangle_kv_tl
                               { intent = "_ \l__spintent_geo_luaset_intent_str -" }
-                            \__spintent_luafun_wrap_mrow_intent_arg:nn
+                            \__spintent_luafun_mrow_intent_arg:nn
                               { } { \l__spintent_spangle_kv_tl }
                             { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
                           }
@@ -4048,14 +4105,14 @@
           }
         \MathMLintent { \l__spintent_spangle_intent_arg_tl }
           {
-            \__spintent_luafun_inner_sep:
+            \__spintent_inner_sep:
             \bool_if:NT \l__spintent_spangle_print_m_now_bool
               {
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_luafun_mrow_intent_arg:nn
                   { } { intent = ":silent" }
                 { \operatorname { m } }
               }
-            \__spintent_luafun_wrap_mrow_intent_arg:nn
+            \__spintent_luafun_mrow_intent_arg:nn
               { } { intent = ":silent" }
             { \__spintent_spangle_sym:n {#1} }
             \int_zero:N \l__spintent_spangle_pt_idx_int
@@ -4208,10 +4265,10 @@
     \__spintent_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \MathMLintent { \l__spintent_sparc_intent_arg_tl }
       {
-        \__spintent_luafun_inner_sep:
+        \__spintent_inner_sep:
         \str_if_eq:eeT {#1} { marc }
           {
-            \__spintent_luafun_wrap_mrow_intent_arg:nn
+            \__spintent_luafun_mrow_intent_arg:nn
               { } { intent = ":silent" }
             { \operatorname { m } }
           }
@@ -4374,12 +4431,12 @@
     \__spintent_spPoly_build_concept:
     \MathMLintent { \l__spintent_spPoly_intent_arg_tl }
       {
-        \__spintent_luafun_inner_sep:
+        \__spintent_inner_sep:
         \bool_if:NT \l__spintent_spPoly_print_sym_bool
           {
             \str_if_empty:NF \l__spintent_geo_luaset_poly_sym_str
               {
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_luafun_mrow_intent_arg:nn
                   { } { intent = ":silent" }
                 { \__spintent_spPoly_sym: }
               }
@@ -4759,7 +4816,7 @@
         \__spintent_spfig_build_simple:n {#1}
         \MathMLintent { \l__spintent_spfig_intent_arg_tl }
           {
-            \__spintent_luafun_inner_sep:
+            \__spintent_inner_sep:
             \str_if_eq:eeTF {#1} { Afig } { \__spintent_mathcal:n { A } } { \__spintent_mathcal:n { P } }
             \tl_if_empty:NF \l__spintent_geo_final_print_tl
               {
@@ -4772,8 +4829,8 @@
         \__spintent_spfig_build_concept_vertices:n {#1}
         \MathMLintent { \l__spintent_spfig_intent_arg_tl }
           {
-            \__spintent_luafun_inner_sep:
-            \__spintent_luafun_wrap_mrow_intent_arg:nn
+            \__spintent_inner_sep:
+            \__spintent_luafun_mrow_intent_arg:nn
               { } { intent = ":silent" }
             {
               \str_if_eq:eeTF {#1} { Afig } { \__spintent_mathcal:n { A } } { \__spintent_mathcal:n { P } }
@@ -4782,7 +4839,7 @@
               {
                 \tl_if_empty:NF \l__spintent_spfig_symbol_tl
                   {
-                    \__spintent_luafun_wrap_mrow_intent_arg:nn
+                    \__spintent_luafun_mrow_intent_arg:nn
                       { } { intent = ":silent" }
                     { \tl_use:N \l__spintent_spfig_symbol_tl }
                   }
@@ -4900,14 +4957,14 @@
       {
         \str_if_empty:cTF { l__spintent_sp #1 _sub_index_str }
           {
-            \__spintent_luafun_wrap_mrow_intent_arg:nn
+            \__spintent_luafun_mrow_intent_arg:nn
               { } { intent = "_-" }
             { \l__spintent_sp_rad_diam_letra_tl }
           }
           {
             \MathMLintent { _- }
               {
-                \__spintent_luafun_inner_sep:
+                \__spintent_inner_sep:
                 \l__spintent_sp_rad_diam_letra_tl
                 \c_math_subscript_token
                   {
@@ -4929,7 +4986,7 @@
               { \tl_set:Ne \l__spintent_sp_rad_diam_word_tl { \tl_use:c { l__spintent_sp #1 _read_arg_tl } } }
             \str_if_empty:cTF { l__spintent_sp #1 _sub_index_str }
               {
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_luafun_mrow_intent_arg:nn
                   { } { intent = "_ \l__spintent_sp_rad_diam_word_tl - :prefix" }
                 { \l__spintent_sp_rad_diam_letra_tl }
               }
@@ -4945,7 +5002,7 @@
                         :prefix
                       }
                       {
-                        \__spintent_luafun_inner_sep:
+                        \__spintent_inner_sep:
                         \l__spintent_sp_rad_diam_letra_tl
                         \c_math_subscript_token
                           {
@@ -4955,7 +5012,7 @@
                       }
                   }
                   {
-                    \__spintent_luafun_wrap_mrow_intent_arg:nn
+                    \__spintent_luafun_mrow_intent_arg:nn
                       { } { intent = "_ \l__spintent_sp_rad_diam_word_tl - :prefix" }
                     { \l__spintent_sp_rad_diam_letra_tl }
                     \c_math_subscript_token
@@ -4969,7 +5026,7 @@
                 \str_if_eq:eeTF
                   { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
                   {
-                    \__spintent_luafun_wrap_mrow_intent_arg:nn
+                    \__spintent_luafun_mrow_intent_arg:nn
                       { } { intent = "_ \l__spintent_sp_rad_diam_letra_tl - :prefix" }
                     { \l__spintent_sp_rad_diam_letra_tl }
                   }
@@ -4987,7 +5044,7 @@
                         :prefix
                       }
                       {
-                        \__spintent_luafun_inner_sep:
+                        \__spintent_inner_sep:
                         \l__spintent_sp_rad_diam_letra_tl
                         \c_math_subscript_token
                           {
@@ -5165,14 +5222,14 @@
   {
     \str_case:Vn \l__spintent_geo_luaset_circ_radio_type_str
       {
-        { number  } { \exp_args:No \spnum { \l__spintent_geo_luaset_circ_radio_raw_str } }
-        { measure } { \exp_args:No \spunit { \l__spintent_geo_luaset_circ_radio_raw_str } }
+        { number  } { \exp_args:Ne \spnum { \l__spintent_geo_luaset_circ_radio_raw_str } }
+        { measure } { \exp_args:Ne \spunit { \l__spintent_geo_luaset_circ_radio_raw_str } }
         { label   } { \l__spintent_geo_luaset_circ_radio_raw_str }
         { segment }
           {
             \str_if_eq:VnTF \l__spintent_spcirc_radio_sty_str { side }
-              { \exp_args:No \spside  { \l__spintent_geo_luaset_circ_radio_raw_str } }
-              { \exp_args:No \spmside { \l__spintent_geo_luaset_circ_radio_raw_str } }
+              { \exp_args:Ne \spside  { \l__spintent_geo_luaset_circ_radio_raw_str } }
+              { \exp_args:Ne \spmside { \l__spintent_geo_luaset_circ_radio_raw_str } }
           }
       }
   }
@@ -5251,15 +5308,15 @@
     \__spintent_spcirc_build_concept:
     \MathMLintent { \l__spintent_spcirc_intent_arg_tl }
       {
-        \__spintent_luafun_inner_sep:
-        \__spintent_luafun_wrap_mrow_intent_arg:nn
+        \__spintent_inner_sep:
+        \__spintent_luafun_mrow_intent_arg:nn
           { } { intent = ":silent" }
         { \__spintent_spcirc_sym: }
         \str_if_empty:NF \l__spintent_spcirc_sub_index_str
           {
             \c_math_subscript_token
               {
-                \__spintent_luafun_wrap_mrow_intent_arg:nn
+                \__spintent_luafun_mrow_intent_arg:nn
                   { } { intent = ":silent" }
                 { \l__spintent_spcirc_sub_index_str }
               }
@@ -5271,17 +5328,17 @@
           {
             \MathMLintent { \l__spintent_spcirc_connector_arg_tl }
               {
-                \__spintent_luafun_inner_sep:
-                \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
+                \__spintent_inner_sep:
+                \__spintent_luafun_mrow_intent_arg:nn { } { intent = ":silent" } (
                 \__spintent_mathmlarg_point:nnV { pt } { spcirc } \l__spintent_geo_luaset_points_clist
-                \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } )
+                \__spintent_luafun_mrow_intent_arg:nn { } { intent = ":silent" } )
               }
           }
           {
             \MathMLintent { \l__spintent_spcirc_connector_arg_tl }
               {
-                \__spintent_luafun_inner_sep:
-                \__spintent_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
+                \__spintent_inner_sep:
+                \__spintent_luafun_mrow_intent_arg:nn { } { intent = ":silent" } (
                 \__spintent_mathmlarg_point:nnV { pt } { spcirc } \l__spintent_geo_luaset_points_clist
               }
             \MathMLintent { \l__spintent_spcirc_radio_arg_tl } { , }
@@ -5569,8 +5626,8 @@
     \__spintent_invisible_sep: % (luamml issues #26)
     \MathMLintent { \l__spintent_spcircfig_intent_arg_tl }
       {
-        \__spintent_luafun_inner_sep:
-        \__spintent_luafun_wrap_mrow_intent_arg:nn
+        \__spintent_inner_sep:
+        \__spintent_luafun_mrow_intent_arg:nn
           { } { intent = ":silent" }
         {
           \str_if_eq:eeTF {#1} { Acirc } { \__spintent_mathcal:n { A } } { \__spintent_mathcal:n { P } }

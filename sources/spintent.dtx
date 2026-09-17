@@ -204,7 +204,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-15}
+\def\filedate{2026-09-17}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -4233,10 +4233,11 @@ end, "shekel_fallback_patch")
       }
   }
 %    \end{macrocode}
-% Now declare the \mypkg*[no-index]{spintent} package and we will add the
-% only key \mykey{mathcal} that can be passed as a package option.
+% Now declare the \mypkg*[no-index]{spintent} package and add only two
+% keys: \mykey{mathcal} and \mykey{AFghost}, which can be passed as package
+% options.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-15} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-17} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -4250,7 +4251,6 @@ end, "shekel_fallback_patch")
   }
 \ProcessKeyOptions [ spintent ]
 %    \end{macrocode}
-%
 % We check if the requirements for running the \mypkg*[no-index]{spintent} package
 % are met; that is: |\DocumentMetadata| must be active, \hologo{LuaTeX}
 % must be running, and the \mypkg{unicode-math} or \mypkg{lua-unicode-math}
@@ -4313,17 +4313,18 @@ end, "shekel_fallback_patch")
 % \subsection{Variables for the key \texttt{mathcal} and \cs[no-index]{rightanglesqr}}
 %
 % \begin{macro}[int]
-%  {
-%    \l_@@_luaset_cal_fam_ok_str,
-%    \l_@@_luaset_sym_fam_ok_str
-%  }
-%  First, we declare the variables \myhlc|\l_@@_luaset_cal_fam_ok_str| and
-%  \myhlc|\l_@@_luaset_sym_fam_ok_str| before loading the module
-%  \myluamod{}. This is necessary because of the implementation of the
-%  functions \myhlc|\@@_luafun_classic_mathcal:nn| and
-%  \myhlc|\@@_luafun_right_angle_sqr:| within the Lua module; otherwise,
-%  \mypkg[no-index]{expl3} will complain about duplicate variable
-%  declarations.
+%   {
+%     \l_@@_luaset_cal_fam_ok_str,
+%     \l_@@_luaset_sym_fam_ok_str
+%   }
+%   First, we declare the string variable \myhlc|\l_@@_luaset_cal_fam_ok_str|
+%   used by the function \myhlc|\@@_luafun_classic_mathcal:nn| (controlled
+%   by the key \mykey{mathcal}) alongside the string variable \myhlc|\l_@@_luaset_sym_fam_ok_str|
+%   used by the function \myhlc|\@@_luafun_right_angle_sqr:| to copy |\rightanglesqr|
+%   before loading the Lua module \myluamod{}. This is necessary due to
+%   the implementation of the functions within the Lua module; otherwise,
+%   \mypkg[no-index]{expl3} would issue a warning regarding duplicate
+%   variable declarations.
 %    \begin{macrocode}
 \str_new:N \l_@@_luaset_cal_fam_ok_str
 \str_new:N \l_@@_luaset_sym_fam_ok_str
@@ -4331,29 +4332,57 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \subsection{Loading the Lua module and functions}
-% \begin{macro}[int]
-%  {
-%    \@@_luafun_spunit_lookup_alias:V,
-%    \@@_luafun_spmoney_lookup_data:V,
-%    \@@_luafun_spmQ_scale_int:Vn,
-%    \@@_luafun_clean_split_and_set:V,
-%  }
-% Now we load the Lua module \myluamod{} and generate the variants for the
-% functions \myhlc|\@@_luafun_spunit_lookup_alias:n| used by |\spunit| (\S\ref{cmd:spunit}),
-% \myhlc|\@@_luafun_spmoney_lookup_data:V| used by |\spmoney| (\S\ref{cmd:spmoney}),
-% \myhlc|\@@_luafun_spmQ_scale_int:Vn| used by |\spmQ| (\S\ref{cmd:spmQ}) and
-% \myhlc|\@@_luafun_clean_split_and_set:V| used by |\spnum| (\S\ref{cmd:spnum})
-% defined in it.
-% \iffalse
-%% Load Lua module
-% \fi
+%
+% \begin{macro}[int]{spintent.lua}
+%   Loads the Lua module \myluamod{}, where every |_luafun_| function
+%   used throughout the package is registered.
 %    \begin{macrocode}
 \lua_load_module:n { spintent.lua }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_luafun_set_debug_ghost:n}
+%   Passes \mykey{AFghost} to Lua as a plain string. When |true|, both
+%   ghost characters are marked |sptmp="outer"| or |sptmp="inner"| in the
+%   file |-luamml-mathml.html|, so an external script can identify and
+%   strip them before generating the |Associated~Files| structure for
+%   \emph{tagged} \texttt{PDF} — |math-AF| mode does not want either
+%   ghost present.
+%    \begin{macrocode}
 \bool_if:NTF \l_@@_debug_ghost_bool
   { \@@_luafun_set_debug_ghost:n { true } }
   { \@@_luafun_set_debug_ghost:n { false } }
-\int_new:N \l_@@_scope_attr_int
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\l_@@_scope_attr_int, \l_@@_scope_luaset_attr_str}
+%   A \hologo{LuaTeX} attribute number, allocated collision-free from
+%   Lua via |luatexbase.new_attribute| and exposed here as an integer.
+%   Every command that uses the shared function \myhlc|\@@_luafun_mrow_intent_arg:nn|
+%   activates it, via |\attribute| \myhlc|\l_@@_scope_attr_int| |= 1|,
+%   inside its own group — marking every node typeset within as eligible
+%   for that queue to claim. Without this mark, the queue could claim content
+%   from an unrelated command sitting in the same formula.
+%    \begin{macrocode}
+\int_new:N  \l_@@_scope_attr_int
+\str_new:N  \l_@@_scope_luaset_attr_str
 \int_set:Nn \l_@@_scope_attr_int { \l_@@_scope_luaset_attr_str }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]
+%   {
+%     \@@_luafun_spunit_lookup_alias:V,
+%     \@@_luafun_spmoney_lookup_data:V,
+%     \@@_luafun_spmQ_scale_int:Vn,
+%     \@@_luafun_clean_split_and_set:V,
+%   }
+%   Variants generated for \myhlc|\@@_luafun_spunit_lookup_alias:n|
+%   (used by |\spunit|), \myhlc|\@@_luafun_spmoney_lookup_data:n| (used
+%   by |\spmoney|), \myhlc|\@@_luafun_spmQ_scale_int:nn| (used by
+%   |\spmQ|) and \myhlc|\@@_luafun_clean_split_and_set:n| (used by
+%   |\spnum|).
+%    \begin{macrocode}
 \cs_generate_variant:Nn \@@_luafun_spunit_lookup_alias:n { V }
 \cs_generate_variant:Nn \@@_luafun_spmoney_lookup_data:n { V }
 \cs_generate_variant:Nn \@@_luafun_spmQ_scale_int:nn { Vn }
@@ -4378,13 +4407,13 @@ end, "shekel_fallback_patch")
   }
 \msg_new:nnn { spintent } { mathcal-fallback }
   {
-    Using~classic~\token_to_str:N \mathcal \c_space_tl as~fallback~(font~not~found~or~
-    no~free~math~family~available).~\msg_line_context:
+    Using~classic~\token_to_str:N \mathcal \c_space_tl as~fallback~
+    (font~not~found~or~no~free~math~family~available).~\msg_line_context:
   }
 \msg_new:nnn { spintent } { right-angle-sqr-fallback }
   {
-    Using~\token_to_str:N \rightangle \c_space_tl as~fallback~for~the~right-angle~
-    glyph.~\msg_line_context:
+    Using~\token_to_str:N \rightangle \c_space_tl as~fallback~
+    for~the~right-angle~ glyph.~\msg_line_context:
   }
 %    \end{macrocode}
 % \end{macro}
@@ -4441,8 +4470,8 @@ end, "shekel_fallback_patch")
 % three annotation functions, the mechanism of which is defined in the
 % Lua module \myluamod{}.
 %
-% \begin{macro}[int]{\@@_luafun_wrap_mrow_intent_arg:nn}
-% The internal function \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| — called directly, with no
+% \begin{macro}[int]{\@@_luafun_mrow_intent_arg:nn}
+% The internal function \myhlc|\@@_luafun_mrow_intent_arg:nn| — called directly, with no
 % \mypkg[no-index]{expl3} wrapper — pushes one entry onto a queue: a concept
 % |intent| (`|#1|', possibly empty) and a Lua table literal |arg=|/
 % |intent=| (`|#2|'). A |pre_mlist_to_hlist_filter| callback (installed
@@ -5217,7 +5246,7 @@ end, "shekel_fallback_patch")
         \mathord { \l_@@_luaset_dec_sep_tl }
         \MathMLarg { dp }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \@@_spnum_render_dec:
           }
       }
@@ -5226,13 +5255,13 @@ end, "shekel_fallback_patch")
       {
         \str_if_eq:VnTF \l_@@_luaset_dec_is_all_zeros_str { true }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \@@_spnum_print_period_bar:
           }
           {
             \MathMLintent { _con:prefix($pnum) }
               {
-                \@@_luafun_inner_sep:
+                \@@_inner_sep:
                 \MathMLarg { pnum }
                   {
                     \@@_spnum_print_period_bar:
@@ -6117,8 +6146,6 @@ end, "shekel_fallback_patch")
 %   For dollar signs `\$', it checks \myhlc|\l_@@_spmoney_dolar_math_bool| to
 %   determine whether to render it directly as a math character `\$' or
 %   wrap it inside |\text|.
-%^^A   All other \emph{\enquote{currency symbols}}
-%^^A   are safely wrapped in |\text| to ensure proper font rendering.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmoney_print_symbol:
   {
@@ -6340,8 +6367,6 @@ end, "shekel_fallback_patch")
 %
 %   \smallskip
 %
-%^^A   The function \myhlc|\@@_spmoney_print_integer_continue:| isolates the rendering
-%^^A   of the integer node with its associated main \emph{\enquote{currency}} intent.
 %   Furthermore, \myhlc|\@@_spmoney_print_sep_con:| applies the specific
 %   speech intent `|con|' to the decimal separator, while
 %   \myhlc|\@@_spmoney_print_dec_sub_unit:| binds the computed \emph{\enquote{subunit}}
@@ -6362,7 +6387,7 @@ end, "shekel_fallback_patch")
       {
         \MathMLintent { \l_@@_spmoney_res_main_voice_str :postfix($n) }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \MathMLarg { n } { \@@_spmoney_render_only_integer_node: }
           }
         \@@_spmoney_print_sep_con:
@@ -6381,7 +6406,7 @@ end, "shekel_fallback_patch")
   {
     \MathMLintent { \l_@@_spmoney_intent_sub_unit_str }
       {
-        \@@_luafun_inner_sep:
+        \@@_inner_sep:
         \MathMLarg { sub }
           {
             \@@_spnum_render_dec:
@@ -6839,7 +6864,7 @@ end, "shekel_fallback_patch")
       {
         \MathMLintent { antes-de-cristo:postfix($z) }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \MathMLarg { z }
               {
                 \MathMLintent { #2:number }
@@ -6852,7 +6877,7 @@ end, "shekel_fallback_patch")
       {
         \MathMLintent { después-de-cristo:postfix($z) }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \MathMLarg { z }
               {
                 \MathMLintent { #2:number }
@@ -7052,9 +7077,9 @@ end, "shekel_fallback_patch")
         \text { : }
         \MathMLarg { z }
           {
-            \MathMLintent { segundos:postfix($m) }
+            \MathMLintent { _segundos:postfix($m) }
               {
-                \@@_luafun_inner_sep:
+                \@@_inner_sep:
                 \MathMLarg { m }
                   {
                     \text { #2 }
@@ -7090,7 +7115,7 @@ end, "shekel_fallback_patch")
               { \l_@@_sptime_luaset_seconds_str }
           }
           {
-            \@@_sptime_build_seconds:nn { minutos-con }
+            \@@_sptime_build_seconds:nn { _minutos-con }
               { \l_@@_sptime_luaset_seconds_str }
           }
       }
@@ -7101,9 +7126,9 @@ end, "shekel_fallback_patch")
           }
         \str_if_eq:VnT \l_@@_sptime_luaset_is_fraction_str { false }
           {
-            \MathMLintent { minutos }
+            \MathMLintent { _minutos }
               {
-                \@@_invisible_sep:
+                \c_@@_invisible_sep_tl
               }
           }
       }
@@ -8584,7 +8609,7 @@ end, "shekel_fallback_patch")
       {
         \MathMLintent { _- }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \bool_if:NTF \l_@@_sprazon_use_dfrac_bool
               { \dfrac { #2 } { #3 } }
               { \frac  { #2 } { #3 } }
@@ -8593,7 +8618,7 @@ end, "shekel_fallback_patch")
       {
         \MathMLintent { es-a:infix($num,$denom) }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \bool_if:NTF \l_@@_sprazon_use_dfrac_bool
               {
                 \dfrac { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } }
@@ -9748,7 +9773,7 @@ end, "shekel_fallback_patch")
 %
 %   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|, for
 %   |read-cmd=school| the letter alone is tagged through
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|, and the subscript is
+%   \myhlc|\@@_luafun_mrow_intent_arg:nn|, and the subscript is
 %   appended separately, silenced. For |read-cmd=mathcat|, letter and
 %   subscript are typeset together, tagged as a whole through a native
 %   |\MathMLarg|.
@@ -9768,7 +9793,7 @@ end, "shekel_fallback_patch")
               {
                 \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
                   { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_ \l_@@_geo_luaset_intent_str -" }
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_luafun_mrow_intent_arg:nn
                   { } { \l_@@_mathmlarg_point_kv_tl }
                 {
                   \l_@@_geo_luaset_letra_str
@@ -9778,7 +9803,7 @@ end, "shekel_fallback_patch")
               }
               {
                 {
-                  \@@_luafun_inner_sep:
+                  \@@_inner_sep:
                   \MathMLarg { \l_@@_mathmlarg_point_ref_tl }
                     {
                       {
@@ -9803,13 +9828,13 @@ end, "shekel_fallback_patch")
               {
                 \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
                   { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_ \l_@@_geo_luaset_intent_str -" }
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_luafun_mrow_intent_arg:nn
                   { } { \l_@@_mathmlarg_point_kv_tl }
                 { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
               }
               {
                 {
-                  \@@_luafun_inner_sep:
+                  \@@_inner_sep:
                   \MathMLarg { \l_@@_mathmlarg_point_ref_tl }
                     {
                       { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
@@ -9832,7 +9857,7 @@ end, "shekel_fallback_patch")
           {
             \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
               { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_-" }
-            \@@_luafun_wrap_mrow_intent_arg:nn
+            \@@_luafun_mrow_intent_arg:nn
               {  } % debe ir vacío
               { \l_@@_mathmlarg_point_kv_tl }
             { \l_@@_geo_luaset_print_tl }
@@ -9842,7 +9867,7 @@ end, "shekel_fallback_patch")
               {
                 \tl_set:Ne \l_@@_mathmlarg_point_kv_tl
                   { arg = "\l_@@_mathmlarg_point_ref_tl", intent = "_ \l_@@_geo_luaset_intent_str -" }
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_luafun_mrow_intent_arg:nn
                   {  } % debe ir vacío
                   { \l_@@_mathmlarg_point_kv_tl }
                 { \l_@@_geo_luaset_print_tl }
@@ -10001,14 +10026,14 @@ end, "shekel_fallback_patch")
 %   |arg="pt"|, and silences a real subscript or prime on its own —
 %   inside a native |\MathMLintent| carrying
 %   \myhlc|\l_@@_spPoint_intent_arg_tl| as the concept |intent|, with
-%   \myhlc|\@@_luafun_inner_sep:| first inside that group.
+%   \myhlc|\@@_inner_sep:| first inside that group.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_mathml:n
   {
     \@@_invisible_sep:
     \MathMLintent { \l_@@_spPoint_intent_arg_tl }
       {
-        \@@_luafun_inner_sep:
+        \@@_inner_sep:
         \@@_mathmlarg_point:nnn { pt } { spPoint } { #1 }
       }
   }
@@ -10209,7 +10234,7 @@ end, "shekel_fallback_patch")
 %   \mykey{silent-cmd} is |true| and |read-cmd| is not |school|;
 %   otherwise |vector:prefix($pt)|. With
 %   \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|, |read-cmd=school|
-%   tags |\vec{letra}| through \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|
+%   tags |\vec{letra}| through \myhlc|\@@_luafun_mrow_intent_arg:nn|
 %   with a literal |kv|, the subscript appended and silenced;
 %   |read-cmd=mathcat| tags |\vec{...}| through a native |\MathMLarg|
 %   instead, the subscript silenced only under \mykey{silent-cmd}.
@@ -10253,8 +10278,8 @@ end, "shekel_fallback_patch")
                     \@@_invisible_sep:
                     \MathMLintent { \l_@@_spvec_intent_arg_tl }
                       {
-                        \@@_luafun_inner_sep:
-                        \@@_luafun_wrap_mrow_intent_arg:nn
+                        \@@_inner_sep:
+                        \@@_luafun_mrow_intent_arg:nn
                           { } { \l_@@_spvec_kv_tl }
                         {
                           \vec
@@ -10272,7 +10297,7 @@ end, "shekel_fallback_patch")
                     \@@_invisible_sep:
                     \MathMLintent { \l_@@_spvec_intent_arg_tl }
                       {
-                        \@@_luafun_inner_sep:
+                        \@@_inner_sep:
                         \vec
                           {
                             \bool_if:NT \l_@@_spvec_autofit_bool
@@ -10297,8 +10322,8 @@ end, "shekel_fallback_patch")
             \@@_invisible_sep:
             \MathMLintent { \l_@@_spvec_intent_arg_tl }
               {
-                \@@_luafun_inner_sep:
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_inner_sep:
+                \@@_luafun_mrow_intent_arg:nn
                   { } { \l_@@_spvec_kv_tl }
                 {
                   \vec
@@ -10351,7 +10376,7 @@ end, "shekel_fallback_patch")
         \@@_invisible_sep:
         \MathMLintent { \l_@@_spvec_intent_arg_tl }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \overrightarrow
               {
                 \int_zero:N \l_@@_spvec_pt_idx_int
@@ -10437,8 +10462,6 @@ end, "shekel_fallback_patch")
 % argument is a single point (without comma) or a lowercase letter, it is
 % formatted without any visual decorator. Both notations are
 % automatically detected by the Lua module.
-%^^A The shared variable \cs{l_@@_geo_luaset_is_name_str} carries the detection
-%^^A result from Lua to the rendering function.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{sprecta}}
 %
@@ -10556,7 +10579,7 @@ end, "shekel_fallback_patch")
 %
 %   With \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|,
 %   |read-cmd=school| tags the base through
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| with a literal |kv|,
+%   \myhlc|\@@_luafun_mrow_intent_arg:nn| with a literal |kv|,
 %   the subscript appended and silenced; |read-cmd=mathcat| tags base
 %   and subscript together through a native |\MathMLarg| instead.
 %    \begin{macrocode}
@@ -10592,8 +10615,8 @@ end, "shekel_fallback_patch")
                       { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
                     \MathMLintent { \l_@@_sprecta_intent_arg_tl }
                       {
-                        \@@_luafun_inner_sep:
-                        \@@_luafun_wrap_mrow_intent_arg:nn
+                        \@@_inner_sep:
+                        \@@_luafun_mrow_intent_arg:nn
                           { } { \l_@@_sprecta_kv_tl }
                         {
                           \l_@@_geo_luaset_letra_str
@@ -10612,7 +10635,7 @@ end, "shekel_fallback_patch")
                     \MathMLintent { \l_@@_sprecta_intent_arg_tl }
                       {
                         {
-                          \@@_luafun_inner_sep:
+                          \@@_inner_sep:
                           \MathMLarg { pt }
                             {
                               {
@@ -10639,8 +10662,8 @@ end, "shekel_fallback_patch")
                       { arg = "pt", intent = "_ \l_@@_geo_luaset_intent_str -" }
                     \MathMLintent { \l_@@_sprecta_intent_arg_tl }
                       {
-                        \@@_luafun_inner_sep:
-                        \@@_luafun_wrap_mrow_intent_arg:nn
+                        \@@_inner_sep:
+                        \@@_luafun_mrow_intent_arg:nn
                           { } { \l_@@_sprecta_kv_tl }
                         { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
                       }
@@ -10649,7 +10672,7 @@ end, "shekel_fallback_patch")
                     \MathMLintent { \l_@@_sprecta_intent_arg_tl }
                       {
                         {
-                          \@@_luafun_inner_sep:
+                          \@@_inner_sep:
                           \MathMLarg { pt }
                             {
                               { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
@@ -10679,7 +10702,7 @@ end, "shekel_fallback_patch")
                     \tl_set:Nn \l_@@_sprecta_kv_tl { arg = "pt" }
                   }
               }
-            \@@_luafun_wrap_mrow_intent_arg:nn
+            \@@_luafun_mrow_intent_arg:nn
               { \l_@@_sprecta_intent_arg_tl }
               { \l_@@_sprecta_kv_tl }
             { \l_@@_geo_luaset_print_tl }
@@ -10725,7 +10748,7 @@ end, "shekel_fallback_patch")
         \@@_invisible_sep:
         \MathMLintent { \l_@@_sprecta_intent_arg_tl }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \overleftrightarrow
               {
                 \int_zero:N \l_@@_sprecta_pt_idx_int
@@ -10932,7 +10955,7 @@ end, "shekel_fallback_patch")
 %   \mykey{read-sty} key, not a literal, since |\sprayo| verbalizes
 %   under two names — prefixed with \mykey{prefix} when given. It is
 %   applied with a native |\MathMLintent| wrapping |\overrightarrow|,
-%   preceded by \myhlc|\@@_luafun_inner_sep:| (a second sibling so the
+%   preceded by \myhlc|\@@_inner_sep:| (a second sibling so the
 %   sole |<mrow>| does not collapse into |<math>|). The
 %   sequence is walked a second time, calling
 %   \myhlc|\@@_mathmlarg_point:nnn| once per point with its |pts|$n$
@@ -10972,7 +10995,7 @@ end, "shekel_fallback_patch")
     \@@_invisible_sep:
     \MathMLintent { \l_@@_sprayo_intent_arg_tl }
       {
-        \@@_luafun_inner_sep:
+        \@@_inner_sep:
         \overrightarrow
           {
             \int_zero:N \l_@@_sprayo_pt_idx_int
@@ -11315,7 +11338,7 @@ end, "shekel_fallback_patch")
       }
 %    \end{macrocode}
 %   Applied with a native |\MathMLintent|, preceded by
-%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
+%   \myhlc|\@@_inner_sep:| (a second sibling so the sole
 %   |<mrow>| does not collapse into |<math>|. Inside,
 %   for |#1=side| the points are always wrapped in |\overline|; for
 %   |#1=mside|, when \mykey{print-m} is |true| a silent
@@ -11333,7 +11356,7 @@ end, "shekel_fallback_patch")
     \@@_invisible_sep: % (luamml issues #26)
     \MathMLintent { \l_@@_spside_intent_arg_tl }
       {
-        \@@_luafun_inner_sep:
+        \@@_inner_sep:
         \str_if_eq:eeTF {#1} { side }
           {
             \overline { \@@_spside_points_loop:n {#1} }
@@ -11341,7 +11364,7 @@ end, "shekel_fallback_patch")
           {
             \bool_if:cTF { l_@@_sp #1 _print_m_bool }
               {
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_luafun_mrow_intent_arg:nn
                   { } { intent = ":silent" }
                 { \operatorname { m } }
                 \overline { \@@_spside_points_loop:n {#1} }
@@ -11666,7 +11689,7 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_geo_luaset_angulo_case_str|.
 %
 %   For |nombre|, the symbol (\myhlc|\@@_spangle_sym:n|) is tagged
-%   through \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| on its own,
+%   through \myhlc|\@@_luafun_mrow_intent_arg:nn| on its own,
 %   with \myhlc|\l_@@_spangle_intent_tl|\myhlc|:prefix| (no
 %   |$|-reference: |nombre| never refers to more than one thing) —
 %   |_-| when \mykey{silent-cmd} is |true| \emph{or} \mykey{concept}
@@ -11698,17 +11721,17 @@ end, "shekel_fallback_patch")
           }
         \tl_set:Ne \l_@@_spangle_kv_tl
           { intent = "\l_@@_spangle_intent_arg_tl" }
-        \@@_luafun_wrap_mrow_intent_arg:nn
+        \@@_luafun_mrow_intent_arg:nn
           { } { \l_@@_spangle_kv_tl }
         { \@@_spangle_sym:n {#1} }
         \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
           {
-            \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = "_-" }
+            \@@_luafun_mrow_intent_arg:nn { } { intent = "_-" }
             { \l_@@_geo_luaset_print_tl }
           }
 %    \end{macrocode}
 %   Otherwise, a numeric name is tagged as a whole, through
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|, with a literal
+%   \myhlc|\@@_luafun_mrow_intent_arg:nn|, with a literal
 %   |intent| built from \myhlc|\l_@@_geo_luaset_intent_str|.
 %    \begin{macrocode}
           {
@@ -11716,7 +11739,7 @@ end, "shekel_fallback_patch")
               {
                 \tl_set:Ne \l_@@_spangle_kv_tl
                   { intent = "_ \l_@@_geo_luaset_intent_str -" }
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_luafun_mrow_intent_arg:nn
                   { } { \l_@@_spangle_kv_tl }
                 { \l_@@_geo_luaset_print_tl }
               }
@@ -11737,7 +11760,7 @@ end, "shekel_fallback_patch")
                           {
                             \tl_set:Ne \l_@@_spangle_kv_tl
                               { intent = "_ \l_@@_geo_luaset_intent_str -" }
-                            \@@_luafun_wrap_mrow_intent_arg:nn
+                            \@@_luafun_mrow_intent_arg:nn
                               { } { \l_@@_spangle_kv_tl }
                             {
                               \l_@@_geo_luaset_letra_str
@@ -11762,7 +11785,7 @@ end, "shekel_fallback_patch")
                           {
                             \tl_set:Ne \l_@@_spangle_kv_tl
                               { intent = "_ \l_@@_geo_luaset_intent_str -" }
-                            \@@_luafun_wrap_mrow_intent_arg:nn
+                            \@@_luafun_mrow_intent_arg:nn
                               { } { \l_@@_spangle_kv_tl }
                             { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
                           }
@@ -11825,14 +11848,14 @@ end, "shekel_fallback_patch")
           }
         \MathMLintent { \l_@@_spangle_intent_arg_tl }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \bool_if:NT \l_@@_spangle_print_m_now_bool
               {
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_luafun_mrow_intent_arg:nn
                   { } { intent = ":silent" }
                 { \operatorname { m } }
               }
-            \@@_luafun_wrap_mrow_intent_arg:nn
+            \@@_luafun_mrow_intent_arg:nn
               { } { intent = ":silent" }
             { \@@_spangle_sym:n {#1} }
             \int_zero:N \l_@@_spangle_pt_idx_int
@@ -12124,7 +12147,7 @@ end, "shekel_fallback_patch")
 %   It is applied with a single native |\MathMLintent| wrapping
 %   \myhlc|\@@_sparc_print_arc:n| directly (same shape as
 %   \myhlc|\@@_spside_mathml:n|), preceded by
-%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
+%   \myhlc|\@@_inner_sep:| (a second sibling so the sole
 %   |<mrow>| does not collapse into |<math>|, |luamml| issue
 %   \href{https://github.com/latex3/luamml/issues/26}{\#26}). A silent
 %   |\operatorname{m}| precedes it for |\spmarc| (always, no
@@ -12135,10 +12158,10 @@ end, "shekel_fallback_patch")
     \@@_invisible_sep: % need by MathCAT (bug in luamml issues #26)
     \MathMLintent { \l_@@_sparc_intent_arg_tl }
       {
-        \@@_luafun_inner_sep:
+        \@@_inner_sep:
         \str_if_eq:eeT {#1} { marc }
           {
-            \@@_luafun_wrap_mrow_intent_arg:nn
+            \@@_luafun_mrow_intent_arg:nn
               { } { intent = ":silent" }
             { \operatorname { m } }
           }
@@ -12434,14 +12457,14 @@ end, "shekel_fallback_patch")
 %   (\myhlc|\@@_spPoly_build_refs:|,
 %   \myhlc|\@@_spPoly_build_concept:|), then wraps everything in a
 %   single native |\MathMLintent|, preceded by
-%   \myhlc|\@@_luafun_inner_sep:| (a second sibling so the sole
+%   \myhlc|\@@_inner_sep:| (a second sibling so the sole
 %   |<mrow>| does not collapse into |<math>|, |luamml| issue
 %   \href{https://github.com/latex3/luamml/issues/26}{\#26}).
 %
 %   \mykey{print-sym} and \mykey{concept}/\mykey{silent-cmd} are
 %   independent: the former only decides whether the glyph
 %   (\myhlc|\@@_spPoly_sym:|, silenced with
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn|) is attempted — it is
+%   \myhlc|\@@_luafun_mrow_intent_arg:nn|) is attempted — it is
 %   skipped anyway when \myhlc|\l_@@_geo_luaset_poly_sym_str| is empty
 %   (no symbol defined for that vertex count, e.g.\ pentagon and
 %   above) — and never affects whether the concept word itself is
@@ -12454,12 +12477,12 @@ end, "shekel_fallback_patch")
     \@@_spPoly_build_concept:
     \MathMLintent { \l_@@_spPoly_intent_arg_tl }
       {
-        \@@_luafun_inner_sep:
+        \@@_inner_sep:
         \bool_if:NT \l_@@_spPoly_print_sym_bool
           {
             \str_if_empty:NF \l_@@_geo_luaset_poly_sym_str
               {
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_luafun_mrow_intent_arg:nn
                   { } { intent = ":silent" }
                 { \@@_spPoly_sym: }
               }
@@ -13111,7 +13134,7 @@ end, "shekel_fallback_patch")
 %   \myhlc|\@@_spfig_build_concept_vertices:n| build the reference list
 %   and the concept |intent|, applied with a single native
 %   |\MathMLintent|. Inside, \myhlc|\@@_mathcal:n|\mymarg{A \textnormal{\textcolor{lightgray}{\textbar}} P} is
-%   silenced with \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| (it would
+%   silenced with \myhlc|\@@_luafun_mrow_intent_arg:nn| (it would
 %   otherwise be claimed by the queue meant for the symbol/vertices,
 %   the same ordering issue already found and fixed for
 %   \cs[no-index]{spangle}'s own symbol); \myhlc|\l_@@_spfig_symbol_tl|
@@ -13132,7 +13155,7 @@ end, "shekel_fallback_patch")
         \@@_spfig_build_simple:n {#1}
         \MathMLintent { \l_@@_spfig_intent_arg_tl }
           {
-            \@@_luafun_inner_sep:
+            \@@_inner_sep:
             \str_if_eq:eeTF {#1} { Afig } { \@@_mathcal:n { A } } { \@@_mathcal:n { P } }
             \tl_if_empty:NF \l_@@_geo_final_print_tl
               {
@@ -13145,8 +13168,8 @@ end, "shekel_fallback_patch")
         \@@_spfig_build_concept_vertices:n {#1}
         \MathMLintent { \l_@@_spfig_intent_arg_tl }
           {
-            \@@_luafun_inner_sep:
-            \@@_luafun_wrap_mrow_intent_arg:nn
+            \@@_inner_sep:
+            \@@_luafun_mrow_intent_arg:nn
               { } { intent = ":silent" }
             {
               \str_if_eq:eeTF {#1} { Afig } { \@@_mathcal:n { A } } { \@@_mathcal:n { P } }
@@ -13155,7 +13178,7 @@ end, "shekel_fallback_patch")
               {
                 \tl_if_empty:NF \l_@@_spfig_symbol_tl
                   {
-                    \@@_luafun_wrap_mrow_intent_arg:nn
+                    \@@_luafun_mrow_intent_arg:nn
                       { } { intent = ":silent" }
                     { \tl_use:N \l_@@_spfig_symbol_tl }
                   }
@@ -13372,14 +13395,14 @@ end, "shekel_fallback_patch")
       {
         \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
           {
-            \@@_luafun_wrap_mrow_intent_arg:nn
+            \@@_luafun_mrow_intent_arg:nn
               { } { intent = "_-" }
             { \l_@@_sp_rad_diam_letra_tl }
           }
           {
             \MathMLintent { _- }
               {
-                \@@_luafun_inner_sep:
+                \@@_inner_sep:
                 \l_@@_sp_rad_diam_letra_tl
                 \c_math_subscript_token
                   {
@@ -13413,7 +13436,7 @@ end, "shekel_fallback_patch")
               { \tl_set:Ne \l_@@_sp_rad_diam_word_tl { \tl_use:c { l_@@_sp #1 _read_arg_tl } } }
             \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
               {
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_luafun_mrow_intent_arg:nn
                   { } { intent = "_ \l_@@_sp_rad_diam_word_tl - :prefix" }
                 { \l_@@_sp_rad_diam_letra_tl }
               }
@@ -13429,7 +13452,7 @@ end, "shekel_fallback_patch")
                         :prefix
                       }
                       {
-                        \@@_luafun_inner_sep:
+                        \@@_inner_sep:
                         \l_@@_sp_rad_diam_letra_tl
                         \c_math_subscript_token
                           {
@@ -13439,7 +13462,7 @@ end, "shekel_fallback_patch")
                       }
                   }
                   {
-                    \@@_luafun_wrap_mrow_intent_arg:nn
+                    \@@_luafun_mrow_intent_arg:nn
                       { } { intent = "_ \l_@@_sp_rad_diam_word_tl - :prefix" }
                     { \l_@@_sp_rad_diam_letra_tl }
                     \c_math_subscript_token
@@ -13461,7 +13484,7 @@ end, "shekel_fallback_patch")
                 \str_if_eq:eeTF
                   { \str_use:c { l_@@_sp #1 _mode_str } } { school }
                   {
-                    \@@_luafun_wrap_mrow_intent_arg:nn
+                    \@@_luafun_mrow_intent_arg:nn
                       { } { intent = "_ \l_@@_sp_rad_diam_letra_tl - :prefix" }
                     { \l_@@_sp_rad_diam_letra_tl }
                   }
@@ -13479,7 +13502,7 @@ end, "shekel_fallback_patch")
                         :prefix
                       }
                       {
-                        \@@_luafun_inner_sep:
+                        \@@_inner_sep:
                         \l_@@_sp_rad_diam_letra_tl
                         \c_math_subscript_token
                           {
@@ -14003,7 +14026,7 @@ end, "shekel_fallback_patch")
 %
 %   The symbol and, when \mykey{sub-index} is given, its subscript
 %   number are each silenced with
-%   \myhlc|\@@_luafun_wrap_mrow_intent_arg:nn| \emph{separately} — one
+%   \myhlc|\@@_luafun_mrow_intent_arg:nn| \emph{separately} — one
 %   queue entry per leaf. The two are reached differently by the
 %   shared |mathml_filter| callback's recursive lookup (the symbol via
 %   |nucleus|, the subscript via |sub|), so a single entry covering
@@ -14032,15 +14055,15 @@ end, "shekel_fallback_patch")
     \@@_spcirc_build_concept:
     \MathMLintent { \l_@@_spcirc_intent_arg_tl }
       {
-        \@@_luafun_inner_sep:
-        \@@_luafun_wrap_mrow_intent_arg:nn
+        \@@_inner_sep:
+        \@@_luafun_mrow_intent_arg:nn
           { } { intent = ":silent" }
         { \@@_spcirc_sym: }
         \str_if_empty:NF \l_@@_spcirc_sub_index_str
           {
             \c_math_subscript_token
               {
-                \@@_luafun_wrap_mrow_intent_arg:nn
+                \@@_luafun_mrow_intent_arg:nn
                   { } { intent = ":silent" }
                 { \l_@@_spcirc_sub_index_str }
               }
@@ -14052,17 +14075,17 @@ end, "shekel_fallback_patch")
           {
             \MathMLintent { \l_@@_spcirc_connector_arg_tl }
               {
-                \@@_luafun_inner_sep:
-                \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
+                \@@_inner_sep:
+                \@@_luafun_mrow_intent_arg:nn { } { intent = ":silent" } (
                 \@@_mathmlarg_point:nnV { pt } { spcirc } \l_@@_geo_luaset_points_clist
-                \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } )
+                \@@_luafun_mrow_intent_arg:nn { } { intent = ":silent" } )
               }
           }
           {
             \MathMLintent { \l_@@_spcirc_connector_arg_tl }
               {
-                \@@_luafun_inner_sep:
-                \@@_luafun_wrap_mrow_intent_arg:nn { } { intent = ":silent" } (
+                \@@_inner_sep:
+                \@@_luafun_mrow_intent_arg:nn { } { intent = ":silent" } (
                 \@@_mathmlarg_point:nnV { pt } { spcirc } \l_@@_geo_luaset_points_clist
               }
             \MathMLintent { \l_@@_spcirc_radio_arg_tl } { , }
@@ -14594,8 +14617,8 @@ end, "shekel_fallback_patch")
     \@@_invisible_sep: % (luamml issues #26)
     \MathMLintent { \l_@@_spcircfig_intent_arg_tl }
       {
-        \@@_luafun_inner_sep:
-        \@@_luafun_wrap_mrow_intent_arg:nn
+        \@@_inner_sep:
+        \@@_luafun_mrow_intent_arg:nn
           { } { intent = ":silent" }
         {
           \str_if_eq:eeTF {#1} { Acirc } { \@@_mathcal:n { A } } { \@@_mathcal:n { P } }
@@ -14695,7 +14718,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-15]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-17]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -14818,7 +14841,7 @@ local spintent_pending_mrow_intent_queue = {}
 -- El segundo argumento es una lista estilo Lua (key = val), evaluada
 -- con load(); mismo mecanismo que \luamml_annotate:en usa para su propio
 -- core=/mathml=.
-register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, kv_string)
+register_tex_cmd("luafun_mrow_intent_arg", function(concept_intent, kv_string)
     local opts = load('return {' .. kv_string .. '}')()
 
     spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {

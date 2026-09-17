@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-15]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-17]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -122,7 +122,7 @@ local spintent_pending_mrow_intent_queue = {}
 -- El segundo argumento es una lista estilo Lua (key = val), evaluada
 -- con load(); mismo mecanismo que \luamml_annotate:en usa para su propio
 -- core=/mathml=.
-register_tex_cmd("luafun_wrap_mrow_intent_arg", function(concept_intent, kv_string)
+register_tex_cmd("luafun_mrow_intent_arg", function(concept_intent, kv_string)
     local opts = load('return {' .. kv_string .. '}')()
 
     spintent_pending_mrow_intent_queue[#spintent_pending_mrow_intent_queue + 1] = {
