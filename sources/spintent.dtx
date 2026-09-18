@@ -2913,35 +2913,96 @@ end, "shekel_fallback_patch")
 % \section{Utilidades para geometría}
 %
 % El paquete \mypkg*[no-index]{spintent} provee comandos para trabajar
-% con los objetos y medidas de la \emph{geometría plana} descritos en
-% esta sección. Todos los comandos trabajan en \emph{modo matemático} y
-% comparten el mismo módulo \myluamod{} para construir la
-% verbalización correcta.
+% con \emph{geometría} descritos en esta sección. Todos los comandos
+% trabajan en \emph{modo matemático}  y reciben como \mymarg{argumento}
+% base una \emph{única} letra (mayúscula en el caso de puntos) con un
+% modificador del tipo subíndice/prima, un número o comando.
+%
+% \smallskip
+%
+% Algunos comandos reciben \mymarg{argumento} único (modo \enquote{\emph{single}})
+% o más de uno (modo \enquote{\emph{batch}}) donde opcionalmente se pueden separar
+% por comas `|,|'.
 %
 % \smallskip
 %
 % \begin{important}*
-%   Todos los comandos de esta sección aceptan como puntos solo
-%   \emph{letras mayúsculas} como base, con modificadores opcionales de
-%   subíndice `|_{...}|' o prima `|'|'. La única excepción es
-%   |\sprecta| cuando el \emph{argumento} es de la forma \mymarg{letra},
-%   que acepta \emph{letras minúsculas}. Los subíndices siempre deben
-%   escribirse de la forma correcta usando |_{...}| como |A_{...}| y
-%   nunca como |A_n| sin llaves que funciona solo por coincidencia.
+%   Las primas se debe pasar de forma directa `|'|' y los subíndices siempre
+%   deben escribirse usando llaves `|A_{...}|' y nunca sin estas `|A_n|'
+%   que funciona solo por coincidencia.   .
 % \end{important}
+%
+% \subsection*{El comando \cs[no-index]{spcoord}}\label{subsec:spcoord}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spcoord}
+%   \begin{minipage}[t]{0.4\linewidth}
+%     |\spcoord|\mymarg{abscisa\textnormal{\textcolor{red}{,}} ordenada}\par
+%     |\spcoord|\mymarg{abscisa\textnormal{\textcolor{red}{;}} ordenada}
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.55\linewidth}
+%     |\spcoord|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{abscisa\textnormal{\textcolor{red}{,}} ordenada}\par
+%     |\spcoord|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{abscisa\textnormal{\textcolor{red}{;}} ordenada}
+%   \end{minipage}
+%
+%   \medskip
+%
+%   El comando \ics*{spcoord} trabaja en \emph{modo matemático} y recibe
+%   el \emph{argumento obligatorio} \mymarg{abscisa\textnormal{\textcolor{red}{,}} ordenada}
+%   el cual se procesa internamente bajo el comando |\spnum| cuando es
+%   numérico no fraccionario.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spcoord{-3, 4}$| imprimirá `$(-3, 4)$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«menos tres coma cuatro»};
+%   |$\spcoord{x_{1},y_{1}}$| imprimirá `$(x_{1}, y_{1})$' y verbalizará
+%   \emph{«exis subíndice uno y subíndice uno»}.
+%
+%   \smallskip
+%
+% \begin{important}*
+%   El comando |\spcoord| solo acepta \emph{un separador} `\textcolor{red}{,}'
+%   o `\textcolor{red}{;}' para la abscisa y la ordenada cuando son valores
+%   numéricos no fraccionarios.
+% \end{important}
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spcoord}}
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcoord]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del \mymarg{argumento} pasado al comando sin modificar la impresión de este.
+% Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la salida
+% del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spPoint}}\label{subsec:spPoint}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spPoint}
-%   \begin{syntax}
-%     |\spPoint|\mymarg{punto}
-%     |\spPoint|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto}
-%   \end{syntax}
+%   \begin{minipage}[t]{0.4\linewidth}
+%     |\spPoint|\mymarg{punto}\par
+%     |\spPoint|\mymarg{punto}\myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada}
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.55\linewidth}
+%     |\spPoint|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto}\par
+%     |\spPoint|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto}\myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada}
+%   \end{minipage}
+%
+%   \medskip
+%
 %   El comando \ics*{spPoint} trabaja en \emph{modo matemático} y
-%   recibe el \emph{argumento obligatorio} \mymarg{punto} el cual es una \emph{única letra mayúscula}
-%   con un modificador opcional de subíndice `|_{...}|' o prima `|'|'.
+%   recibe el \emph{argumento obligatorio} \mymarg{punto} el cual es una
+%   \emph{única letra mayúscula} con un modificador opcional de subíndice
+%   `|_{...}|' o prima `|'|' y el \emph{argumento opcional delimitado por paréntesis}
+%   \myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada} el cual se
+%   procesa internamente bajo el comando |\spcoord|.
 %
 %   \smallskip
 %
@@ -2951,15 +3012,17 @@ end, "shekel_fallback_patch")
 %   \mynvmath{NVDA/MathCAT} verbalizará \emph{«punto A»};
 %   |$\spPoint{A_{1}}$| imprimirá `$A_1$' y verbalizará
 %   \emph{«punto A sub uno»}.
+%
+%   \smallskip
+%
+%   Si se proporciona el \emph{argumento opcional delimitado por paréntesis},
+%   |$\spPoint{A}(-3,4)$| imprimirá `$A(-3,4)$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«punto A menos tres coma cuatro»};
+%   |$\spPoint{A_{1}}(-3,4)$| imprimirá `$A_{1}(-3,4)$' y verbalizará
+%   \emph{«punto A sub uno menos tres coma cuatro»}.
 % \end{function}
 %
 % \smallskip
-%
-% \begin{important}*
-%   El comando |\spPoint| solo acepta \emph{un punto}. Para pares o
-%   listas de puntos (rectas, rayos, lados, ángulos, arcos, polígonos),
-%   véanse los comandos correspondientes de esta sección.
-% \end{important}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spPoint}}
 %
@@ -2979,7 +3042,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spPoint]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«punto»}. El valor de esta llave
+% \emph{antes} de verbalizar el concepto \emph{«punto»}. El valor de esta llave
 % \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
@@ -4367,7 +4430,7 @@ end, "shekel_fallback_patch")
 %   from an unrelated command sitting in the same formula.
 %    \begin{macrocode}
 \int_new:N  \l_@@_scope_attr_int
-\str_new:N  \l_@@_scope_luaset_attr_str
+%% \str_new:N  \l_@@_scope_luaset_attr_str
 \int_set:Nn \l_@@_scope_attr_int { \l_@@_scope_luaset_attr_str }
 %    \end{macrocode}
 % \end{macro}
@@ -7998,7 +8061,7 @@ end, "shekel_fallback_patch")
 % \begin{variable}[int]{
 %   \l_@@_spmcm_spmcd_luaset_error_str, \l_@@_mc_luaset_types_str,
 %   \l_@@_mc_luaset_all_numeric_str, \l_@@_mc_args_seq,
-%   \l_@@_mc_raw_args_seq, \l_@@_mc_types_seq
+%   \l_@@_mc_raw_args_seq,           \l_@@_mc_types_seq
 %   \l_@@_spmcd_print_result_bool,   \l_@@_spmcm_print_result_bool,
 %   \l_@@_spmcd_read_terse_bool,     \l_@@_spmcm_read_terse_bool,
 %   \l_@@_spmcd_print_upper_bool,    \l_@@_spmcm_print_upper_bool,
@@ -8164,17 +8227,19 @@ end, "shekel_fallback_patch")
 %   in `|#1|', its full reading string in `|#2|', the local
 %   \mymeta{keys} in `|#3|', and the optional arguments in `|#4|'.
 %
-%   The operator name (through |\operatorname|, per \mykey{upper-case})
-%   is silenced with \mykey{silent-cmd} |true| — \myhlc|\@@_mc_process_args:nn|
-%   silences the arguments too, in that case — or with \mykey{concept}
-%   |false| alone, leaving the arguments untouched. With
-%   \mykey{concept} |true|, it carries the literal |intent| instead —
-%   |#1| or |#2| per \mykey{read-cmd}, prefixed with \mykey{prefix}
-%   when given.
+%   \smallskip
 %
-%   With `|#4|' given, classifies it through
-%   \myhlc|\@@_luafun_mc_classify_args:n|. Only when every argument is
-%   a number does it call the Lua calculation
+%   The operator name (through |\operatorname|, per \mykey{upper-case})
+%   is silenced with \mykey{silent-cmd}|=true| — \myhlc|\@@_mc_process_args:nn|
+%   silences the arguments too, in that case — or with \mykey{concept}|=false|
+%   alone, leaving the arguments untouched. With \mykey{concept}|=true|,
+%   it carries the literal |intent| instead — |#1| or |#2| per \mykey{read-cmd},
+%   prefixed with \mykey{prefix} when given.
+%
+%   \smallskip
+%
+%   With `|#4|' given, classifies it through \myhlc|\@@_luafun_mc_classify_args:n|.
+%   Only when every argument is a number does it call the Lua calculation
 %   (|calculate_|\myhlc|#1|), reporting |mc-invalid-arguments| on
 %   failure, and, when \mykey{result} is |true|, printing the computed
 %   value. \myhlc|\@@_mc_process_args:n| prints the argument list
@@ -8406,9 +8471,9 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spnM_spnD_intent:nn}
 %   The internal function \myhlc|\@@_spnM_spnD_intent:nn| resolves the main
 %   reading intent string. It takes the command identifier `|#1|' (such as
-%   "nM" or "nD") and the base reading string `|#2|'. It automatically
+%   ``nM'' or ``nD'') and the base reading string `|#2|'. It automatically
 %   prepends the localized prefix if defined, normalizes accentuation for
-%   "múltiplos", and appends `|-de|'.
+%   \emph{\enquote{múltiplos}}, and appends `|-de|'.
 %    \begin{macrocode}
 \cs_new:Nn \@@_spnM_spnD_intent:nn
   {
@@ -8425,10 +8490,10 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spnM_spnD_silent:nn}
 %   The internal function \myhlc|\@@_spn_M_and_D_silent:nn| prints the atomized
 %   notation structure in full silent mode. It takes the mathematical symbol
-%   `|#1|' (such as "D" or "M") and the variable or explicit argument `|#2|'.
+%   `|#1|' (such as ``D'' or ``M'') and the variable or explicit argument `|#2|'.
 %   Every component is wrapped in a silent intent, and an invisible separator
 %   is injected between the parentheses to prevent assistive technologies from
-%   applying default contextual reading rules like "de".
+%   applying default contextual reading rules.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spnM_spnD_silent:nn
   {
@@ -8477,17 +8542,21 @@ end, "shekel_fallback_patch")
 %   and the optional argument in `|#4|'. The parentheses are always
 %   silenced.
 %
+%   \smallskip
+%
 %   With `|#4|' absent, the placeholder |n| stands in for the argument.
 %   With `|#4|' given, \myhlc|\@@_luafun_spnmd_classify:n| decides
 %   whether it is wrapped through |\spnum| — and, when it is, whether
 %   \myhlc|\@@_spnM_spnD_result:n| also prints the computed set, per
 %   \mykey{result} — or left verbatim, with no result attempted.
 %
+%   \smallskip
+%
 %   Either way, \mykey{silent-cmd} silences the whole thing through
 %   \myhlc|\@@_spnM_spnD_silent:nn|; otherwise \mykey{concept} |true|
-%   carries the literal |intent| from
-%   \myhlc|\@@_spnM_spnD_intent:nn|, |false| silences only the
-%   operator symbol, leaving the argument to read normally.
+%   carries the literal |intent| from \myhlc|\@@_spnM_spnD_intent:nn|,
+%   |false| silences only the operator symbol, leaving the argument to
+%   read normally.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spnM_spnD_exec:nnnn
   {
@@ -9466,25 +9535,24 @@ end, "shekel_fallback_patch")
 %     \l_@@_spcoord_luaset_y_value_str,
 %     \l_@@_spcoord_luaset_y_has_frac_str,
 %   }
-%   Set by \myhlc|\@@_luafun_spcoord_parse_and_set:n|.
-%   \myhlc|\l_@@_spcoord_luaset_sep_str| is |,| or |;|, whichever the
-%   argument actually used. For each side, \myhlc|\l_@@_spcoord_luaset_ #1 _sign_str|
-%   is |+|, |-|, or empty; \myhlc|\l_@@_spcoord_luaset_ #1 _type_str|
-%   is |number| or |raw|; \myhlc|\l_@@_spcoord_luaset_ #1 _value_str|
-%   is the value with the sign already removed;
-%   \myhlc|\l_@@_spcoord_luaset_ #1 _has_frac_str| is |none|, |frac|,
+%   Variables set by the function \myhlc|\@@_luafun_spcoord_parse_and_set:n|.
+%   The string variable \myhlc|\l_@@_spcoord_luaset_sep_str| is |,| or |;|, whichever the
+%   argument actually used. For the abscissa and ordinate values, the variables
+%   \myhlc|l_@@_spcoord_luaset_ #1 _sign_str| is |+|, |-|, or empty; the variables
+%   \myhlc|l_@@_spcoord_luaset_ #1 _type_str| is |number| or |raw|; the variables
+%   \myhlc|l_@@_spcoord_luaset_ #1 _value_str| is the value with the sign already removed;
+%   and the variables  \myhlc|l_@@_spcoord_luaset_ #1 _has_frac_str| is |none|, |frac|,
 %   or |dfrac|.
 %    \begin{macrocode}
 \str_new:N \l_@@_spcoord_luaset_error_str
 \str_new:N \l_@@_spcoord_luaset_sep_str
-\str_new:N \l_@@_spcoord_luaset_x_sign_str
-\str_new:N \l_@@_spcoord_luaset_x_type_str
-\str_new:N \l_@@_spcoord_luaset_x_value_str
-\str_new:N \l_@@_spcoord_luaset_x_has_frac_str % "none" / "frac" / "dfrac"
-\str_new:N \l_@@_spcoord_luaset_y_sign_str
-\str_new:N \l_@@_spcoord_luaset_y_type_str
-\str_new:N \l_@@_spcoord_luaset_y_value_str
-\str_new:N \l_@@_spcoord_luaset_y_has_frac_str % "none" / "frac" / "dfrac"
+\clist_map_inline:nn { x , y }
+  {
+    \str_new:c { l_@@_spcoord_luaset_ #1 _sign_str }
+    \str_new:c { l_@@_spcoord_luaset_ #1 _type_str }
+    \str_new:c { l_@@_spcoord_luaset_ #1 _value_str }
+    \str_new:c { l_@@_spcoord_luaset_ #1 _has_frac_str }
+  }
 %    \end{macrocode}
 % \end{variable}
 %
@@ -9495,16 +9563,14 @@ end, "shekel_fallback_patch")
 %     \l_@@_spcoord_wrap_parens_l_tl,
 %     \l_@@_spcoord_wrap_parens_r_tl,
 %   }
-%   \myhlc|\l_@@_spcoord_raw_arg_tl| holds the argument exactly as
-%   given, for \mykey{silent-cmd}. \myhlc|\l_@@_spcoord_intent_str|
-%   holds the |:infix| word for the separator (|_coma:infix| or
-%   |_punto-y-coma:infix|).
+%   The variable \myhlc|\l_@@_spcoord_raw_arg_tl| holds the \mymarg{argument} exactly as
+%   given. The variable \myhlc|\l_@@_spcoord_intent_str| holds the |:infix|
+%   word for the separator |_coma:infix| or |_punto-y-coma:infix|. The variables
 %   \myhlc|\l_@@_spcoord_wrap_parens_l_tl|/\myhlc|\l_@@_spcoord_wrap_parens_r_tl|
-%   hold the opening/closing delimiter, sized by
-%   \myhlc|\@@_spcoord_set_wrap_parens_size:|.
+%   hold the opening/closing delimiter, sized by the function \myhlc|\@@_spcoord_set_wrap_parens_size:|.
 %    \begin{macrocode}
 \tl_new:N  \l_@@_spcoord_raw_arg_tl
-\str_new:N \l_@@_spcoord_intent_str % ,;:infix
+\str_new:N \l_@@_spcoord_intent_str
 \tl_new:N  \l_@@_spcoord_wrap_parens_l_tl
 \tl_new:N  \l_@@_spcoord_wrap_parens_r_tl
 %    \end{macrocode}
@@ -9545,11 +9611,10 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spcoord_set_wrap_parens_size:}
 %   With neither side carrying a fraction, the parentheses stay
 %   unsized. Otherwise, \myhlc|\mathstyle| picks |\Bigl|/|\Bigr| for
-%   display, |\bigl|/|\bigr| for text — same mechanism as
-%   \myhlc|\@@_spmQ_set_wrap_parens_size:|. When either side is
+%   display, |\bigl|/|\bigr| for text. When either side is
 %   |dfrac|, the parentheses are forced to |\Bigl|/|\Bigr| regardless
 %   of \myhlc|\mathstyle|, since |\dfrac| always renders at display
-%   height — same criterion as |print-dfrac| in |\spnQ|.
+%   height.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcoord_set_wrap_parens_size:
   {
@@ -9602,15 +9667,18 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spcoord_value:n}
-%   With \myhlc|\l_@@_spcoord_luaset_ #1 _type_str| equal to |number|,
-%   calls |\spnum| on \myhlc|\l_@@_spcoord_luaset_ #1 _value_str|.
+%   With \myhlc|l_@@_spcoord_luaset_ #1 _type_str| equal to |number|,
+%   calls |\spnum| on \myhlc|l_@@_spcoord_luaset_ #1 _value_str|.
 %   Otherwise, typesets it as given — a |\frac|/|\dfrac| or a letter
 %   expression, untouched. Receives |x| or |y| in `|#1|'.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcoord_value:n
   {
-    \str_if_eq:eeTF { \str_use:c { l_@@_spcoord_luaset_ #1 _type_str } } { number }
-      { \exp_args:Ne \spnum { \str_use:c { l_@@_spcoord_luaset_ #1 _value_str } } }
+    \str_if_eq:eeTF
+      { \str_use:c { l_@@_spcoord_luaset_ #1 _type_str } } { number }
+      {
+        \exp_args:Ne \spnum { \str_use:c { l_@@_spcoord_luaset_ #1 _value_str } }
+      }
       { \str_use:c { l_@@_spcoord_luaset_ #1 _value_str } }
   }
 %    \end{macrocode}
@@ -9620,9 +9688,8 @@ end, "shekel_fallback_patch")
 %   With \myhlc|\l_@@_spcoord_luaset_ #1 _sign_str| equal to |+| or
 %   |-|, wraps the sign and \myhlc|\@@_spcoord_value:n| together with
 %   |_más:prefix($vp)|/|_menos:prefix($vn)|, referencing the value
-%   through \MathMLarg — read as |más|/|menos|, never
-%   |positivo|/|negativo|. With no sign, delegates directly to
-%   \myhlc|\@@_spcoord_value:n|. Receives |x| or |y| in `|#1|'.
+%   through \MathMLarg — read as |más|/|menos|. With no sign, delegates
+%   directly to \myhlc|\@@_spcoord_value:n|. Receives |x| or |y| in `|#1|'.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcoord_print:n
   {
@@ -9673,7 +9740,7 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spcoord_mathml:}
-%   With \mykey{silent-cmd} |true|, everything — parentheses and
+%   With \mykey{silent-cmd}|=true|, everything — parentheses and
 %   argument alike — is wrapped in a single |_-|, reading nothing at
 %   all: \myhlc|\l_@@_spcoord_raw_arg_tl| is typeset exactly as given,
 %   untouched by \myhlc|\@@_spcoord_print:n|/\myhlc|\@@_spcoord_intent_infix:|.
@@ -9701,16 +9768,14 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spcoord_exec:nn}
-%   Sets the \mymeta{keys} in `|#1|' and
-%   \myhlc|\l_@@_spcoord_raw_arg_tl| to `|#2|'. Calls
-%   \myhlc|\@@_luafun_spcoord_parse_and_set:n| either way — even with
-%   \mykey{silent-cmd} |true|, since \myhlc|\@@_spcoord_set_wrap_parens_size:|
+%   Sets the \mymeta{keys} in `|#1|' and \myhlc|\l_@@_spcoord_raw_arg_tl|
+%   to `|#2|'. Calls \myhlc|\@@_luafun_spcoord_parse_and_set:n| either way — even with
+%   \mykey{silent-cmd}|=true|, since \myhlc|\@@_spcoord_set_wrap_parens_size:|
 %   still needs \myhlc|\l_@@_spcoord_luaset_ #1 _has_frac_str| — but
-%   with \mykey{silent-cmd} |true|, forces
-%   \myhlc|\l_@@_spcoord_luaset_error_str| back to |false| rather than
-%   reporting it: the raw argument is typeset regardless of whether it
-%   parsed. Otherwise, reports |spcoord-invalid-arg| on error. Either
-%   way, sizes the parentheses, then delegates to
+%   with \mykey{silent-cmd}|=true|, forces \myhlc|\l_@@_spcoord_luaset_error_str|
+%   back to |false| rather than reporting it: the raw \mymarg{argument}
+%   is typeset regardless of whether it parsed. Otherwise, reports |spcoord-invalid-arg|
+%   on error. Either way, sizes the parentheses, then delegates to
 %   \myhlc|\@@_spcoord_mathml:| unless there was an error.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcoord_exec:nn
@@ -10053,14 +10118,10 @@ end, "shekel_fallback_patch")
 %   delegating to \myhlc|\@@_spPoint_print:n|. With `|#3|' given (the
 %   optional coordinate), silences the gap between the point and the
 %   coordinate first (otherwise read as an implicit product), then temporarily aliases
-%   \myhlc|\l_@@_spcoord_silent_cmd_bool| to
-%   \myhlc|\l_@@_spPoint_silent_cmd_bool| — reverted when the
-%   calling group closes — and calls
-%   \myhlc|\@@_luafun_spcoord_parse_and_set:n| directly, reporting
-%   |spcoord-invalid-arg| on error unless silenced, then
-%   \myhlc|\@@_spcoord_set_wrap_parens_size:| and
-%   \myhlc|\@@_spcoord_mathml:| — the same rendering functions
-%   \cs[no-index]{spcoord} itself uses.
+%   \myhlc|\l_@@_spcoord_silent_cmd_bool| to \myhlc|\l_@@_spPoint_silent_cmd_bool|
+%   and calls \myhlc|\@@_luafun_spcoord_parse_and_set:n| directly, reporting
+%   |spcoord-invalid-arg| on error unless silenced, then \myhlc|\@@_spcoord_set_wrap_parens_size:|
+%   and \myhlc|\@@_spcoord_mathml:|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_exec:nnn
   {
@@ -10071,7 +10132,7 @@ end, "shekel_fallback_patch")
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % silencia el "por"
         \bool_set_eq:NN \l_@@_spcoord_silent_cmd_bool \l_@@_spPoint_silent_cmd_bool
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l_@@_spPoint_coord_silent_cmd_bool
+        \bool_if:NTF \l_@@_spcoord_silent_cmd_bool
           {
             \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
             \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
@@ -12922,7 +12983,7 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_geo_luaset_letra_word_str|), a forced |print-sym|
 %   raises |sp#1-sym-letra-conflict| — a table letter is never nested
 %   under a symbol. The visual is the value as-is; the description is
-%   its own word, connected as |\l_@@_geo_luaset_letra_conector_str|
+%   its own word, connected as \myhlc|\l_@@_geo_luaset_letra_conector_str|
 %   requires, with the same spoken subscript as above when present.
 %    \begin{macrocode}
           {
@@ -12952,8 +13013,8 @@ end, "shekel_fallback_patch")
       }
 %    \end{macrocode}
 %
-%   \myhlc|\l_@@_spfig_intent_tl| is always the |_word-| shape:
-%   |\l_@@_spfig_op_tl| alone when \myhlc|\l_@@_spfig_desc_tl| is
+%   The variable \myhlc|\l_@@_spfig_intent_tl| is always the |_word-| shape:
+%   \myhlc|\l_@@_spfig_op_tl| alone when \myhlc|\l_@@_spfig_desc_tl| is
 %   empty, both joined by a dash otherwise. \mykey{silent-cmd}
 %   overrides \myhlc|\l_@@_spfig_intent_arg_tl| with |_-|; with
 %   |silent-cmd=false| and \mykey{concept} |false|, it becomes
@@ -13029,7 +13090,6 @@ end, "shekel_fallback_patch")
           }
       }
 %    \end{macrocode}
-%
 %   Determines \myhlc|\l_@@_spfig_symbol_tl| (empty when none
 %   applies): for |print-sym=auto|, the symbol matching
 %   \myhlc|\l_@@_geo_luaset_poly_sym_str| (|\triangle|/
@@ -13062,7 +13122,6 @@ end, "shekel_fallback_patch")
           }
       }
 %    \end{macrocode}
-%
 %   \mykey{silent-cmd} sets \myhlc|\l_@@_spfig_intent_arg_tl| to
 %   |_(refs)|. Otherwise, with \mykey{read-arg} empty,
 %   \mykey{concept} chooses between
@@ -13070,9 +13129,7 @@ end, "shekel_fallback_patch")
 %   \mykey{prefix} when given) and |_(refs)| alone; with
 %   \mykey{read-arg} given, it is always
 %   \myhlc|\l_@@_spfig_intent_tl|\myhlc|:prefix(refs)| — |read-arg|
-%   is never silenced by \mykey{concept} alone, only by
-%   \mykey{silent-cmd} (same convention as
-%   \myhlc|\@@_spside_process:nn|).
+%   is never silenced by \mykey{concept} alone, only by \mykey{silent-cmd}.
 %    \begin{macrocode}
     \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
@@ -17278,7 +17335,7 @@ end, { "string" })
 %<*mylhmcsty>
 % \fi
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2025-08-29}{2.0}
+\ProvidesExplPackage{mylhmc}{2026-09-18}{0.99}
   {Line-by-line macrocode reader for l3doc in Lua}
 \sys_if_engine_luatex:F
   {
@@ -17535,7 +17592,7 @@ end, { "string" })
 % \iffalse
 %<*mylhmclua>
 % \fi
--- mylhmc.lua v2.0 2025-08-29 (node.direct + Loop/Memory Micro-Optimized)
+-- mylhmc.lua v0.99 2026-09-18 (node.direct + Loop/Memory Micro-Optimized)
 -- LuaLaTeX syntax highlighter for l3doc macrocode environments
 
 local require      = require
@@ -17648,7 +17705,34 @@ local hex_chars  = S'0123456789abcdefABCDEF'
 local name_chars = alpha + S'_@'
 local var_prefix = P'\\' * S'lg'
 local name_chars_no_at = alpha + S'_'
+-- Variante que además acepta #N (uno o más '#' + un dígito, con
+-- espacios opcionales pegados a cada lado) como parte del nombre --
+-- usada solo en \l_.../\g_... (tipos 2/4), para documentación que
+-- muestra el patrón general de una familia de csnames generados
+-- dinámicamente (p.ej. \l_@@_foo_#1_bar o \l_@@_foo_ #1 _bar). El
+-- '#N' se recolorea aparte dentro del handler correspondiente; los
+-- espacios absorbidos quedan sin color especial (no importa, no
+-- tienen glifo visible).
+local name_chars_argnum = name_chars
+  + (P' ' ^ 0 * P'#' ^ 1 * digit * P' ' ^ 0)
 
+-- "Modo csname": reconoce un argumento de \myhlc que es EXACTAMENTE
+-- (de principio a fin, P(-1)) un nombre de variable l_.../g_.../
+-- l__.../g__... SIN backslash -- para documentación que se refiere al
+-- "nombre" de una csname, no a su forma de invocación. Solo se usa en
+-- el handler de \myhlc (inline), no en macrocode normal, donde un
+-- fragmento así sin \ sería casi seguro texto de comentario, no una
+-- variable real.
+local bare_varname_full =
+  S'lg' * (P'__' * name_chars_argnum ^ 1
+           + P'_' * (alpha + S'@') * name_chars_argnum ^ 0) * P(-1)
+
+-- Bloque do...end: las piezas de patrón *_names/etc. de aquí en
+-- adelante solo se usan para construir code_rules (justo debajo) --
+-- envolverlas evita que cuenten como variables locales de nivel
+-- superior del archivo (límite de Lua: 200 por función/chunk).
+local code_rules
+do
 local structure_names =
   P'NeedsTeXFormat' + P'ProvidesExplPackage' +
   P'ExplSyntaxOn' + P'ExplSyntaxOff' +
@@ -17873,7 +17957,7 @@ local fill_kw  = P'filll' + P'fill' + P'fil'
 local skip_kw  = P'minus' + P'plus'
 local num_part = digit ^ 1 * (P'.' * digit ^ 1) ^ -1
 
-local code_rules = {
+code_rules = {
   {24, P'#' ^ 1 * digit},
   {1,  P'#' ^ 1},
   {42, intent_names},
@@ -17906,8 +17990,8 @@ local code_rules = {
   {33, P'\\' * ltcmd_use_names},
   {19, P'\\' * P'c__' * name_chars ^ 1},
   {20, P'\\' * P'c_'  * (alpha + S'@') * name_chars ^ 0},
-  {2,  var_prefix * P'__' * name_chars ^ 1},
-  {4,  var_prefix * P'_' * (alpha + S'@') * name_chars ^ 0},
+  {2,  var_prefix * P'__' * name_chars_argnum ^ 1},
+  {4,  var_prefix * P'_' * (alpha + S'@') * name_chars_argnum ^ 0},
   {15, P'\\' * (alpha ^ 0 * (P'@' + P'!' + P'&' + P'*') * alpha ^ 0) ^ 1},
   {5,  P'\\' * P'__' * name_chars ^ 1 * (P':' * sig_chars ^ 0) ^ -1},
   {34, P'\\' * legacy_names},
@@ -17935,6 +18019,7 @@ local code_rules = {
   {3,  S'[]'},
   {9,  P'%' * (P(1) - S'\r\n') ^ 0 * (S'\r\n' + -1)},
 }
+end
 
 local function mylhmc_build_combined()
   local alts = nil
@@ -18393,6 +18478,54 @@ local function mylhmc_private_owner_color(chunk, fallback_color)
   if s_find(rest, current_module_name, 1, true) then return fallback_color end
   return 'other_np'
 end
+
+-- Colorea un nombre de variable (chunk de tipo 2/4) que puede contener
+-- #N embebido -- documentación de una familia de csnames generados
+-- dinámicamente, p.ej. \l_@@_foo_#1_bar. base_color ya viene decidido
+-- sobre el chunk COMPLETO (module_aware_color/private_owner_color),
+-- para no perder la detección de módulo propio/ajeno al partir el
+-- texto; cada #N se colorea aparte como 'argument'+'argnum'.
+local function mylhmc_colorize_name_with_argnum(chunk, fid, base_color)
+  local rh, rt = nil, nil
+  local pos, len = 1, #chunk
+  while pos <= len do
+    local hstart, hend, hashes, num = s_find(chunk, '(#+)(%d)', pos)
+    if not hstart then
+      local h, t = mylhmc_colored_str(s_sub(chunk, pos), base_color, fid)
+      rh, rt = mylhmc_append(rh, rt, h, t)
+      break
+    end
+    if hstart > pos then
+      local h, t = mylhmc_colored_str(s_sub(chunk, pos, hstart - 1), base_color, fid)
+      rh, rt = mylhmc_append(rh, rt, h, t)
+    end
+    local h, t = mylhmc_colored_str(hashes, 'argument', fid)
+    rh, rt = mylhmc_append(rh, rt, h, t)
+    h, t = mylhmc_colored_str(num, 'argnum', fid)
+    rh, rt = mylhmc_append(rh, rt, h, t)
+    pos = hend + 1
+  end
+  return rh, rt
+end
+
+-- Colorea el "modo csname" de \myhlc (bare_varname_full ya confirmó
+-- que text es un nombre l_.../g_.../l__.../g__... completo, sin
+-- backslash). Antepone '\' SOLO para reusar la lógica de detección de
+-- módulo propio/ajeno (private_owner_color/module_aware_color esperan
+-- ese formato) -- el backslash nunca se muestra, no se le pasa a
+-- colorize_name_with_argnum.
+local function mylhmc_render_bare_varname(text, fid)
+  local is_private = s_sub(text, 2, 3) == '__'
+  local prefixed = '\\' .. text
+  local base_color
+  if is_private then
+    base_color = mylhmc_private_owner_color(prefixed, 'privatevar')
+  else
+    base_color = mylhmc_module_aware_color(prefixed, 'publicvar')
+  end
+  return mylhmc_colorize_name_with_argnum(text, fid, base_color)
+end
+
 
 local function mylhmc_emit_with_signature(chunk, base_color, fid)
   local colon = s_find(chunk, ':', 2, true)
@@ -19290,9 +19423,9 @@ mylhmc_colorize_code = function(line, fid)
         h, tl = mylhmc_colored_str(trailing, mylhmc_module_aware_color(trailing, 'latex_cmd'), fid)
       else h, tl = nil, nil end
     elseif t == 4 then
-      h, tl = mylhmc_colored_str(chunk, mylhmc_module_aware_color(chunk, 'publicvar'), fid)
+      h, tl = mylhmc_colorize_name_with_argnum(chunk, fid, mylhmc_module_aware_color(chunk, 'publicvar'))
     elseif t == 2 then
-      h, tl = mylhmc_colored_str(chunk, mylhmc_private_owner_color(chunk, 'privatevar'), fid)
+      h, tl = mylhmc_colorize_name_with_argnum(chunk, fid, mylhmc_private_owner_color(chunk, 'privatevar'))
     elseif t == 19 then
       h, tl = mylhmc_colored_str(chunk, mylhmc_private_owner_color(chunk, 'constant'), fid)
     else
@@ -19457,6 +19590,15 @@ register_tex_cmd('inline', function()
   mylhmc_init_line_state()
   text = mylhmc_apply_at_at(text)
   local fid = f_current()
+  -- Modo csname: \myhlc|l_foo_tl| (sin backslash) -- se reconoce SOLO
+  -- si el argumento completo tiene la forma de un nombre de variable;
+  -- texto mixto ("ver l_foo_tl aqui") cae al dispatch normal.
+  if bare_varname_full:match(text) then
+    local h, t = mylhmc_render_bare_varname(text, fid)
+    if h then n_write(d_tonode(h)) end
+    font_bracket_pending = false
+    return
+  end
   local rh, rt = mylhmc_colorize_code(text, fid)
   if rh then n_write(d_tonode(rh)) end
   font_bracket_pending = false
