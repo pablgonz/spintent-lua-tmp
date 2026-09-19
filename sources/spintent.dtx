@@ -37,6 +37,8 @@
 \usepackage[top=0.5in,bottom=0.3in,left=1.70in,right=0.7in,footskip=0.2in,headheight=1cm,headsep=0.27cm]{geometry}
 % Set \parindent
 \setlength{\parindent}{0pt}
+\newlength{\mydpstrut}
+\setlength{\mydpstrut}{\dp\strutbox}
 % Only for arara... I like arara :)
 \usepackage[scale=0.85]{comfortaa}
 \definecolor{araracolor}{rgb}{0, 0.72, 0.28}
@@ -44,7 +46,7 @@
 \newcommand*\arara{\araratext{ar\kern-.03emar\kern-.03ema}}
 % Fonts
 \usepackage{luacode}
-
+% Para documentación y ejemplos
 \begin{luacode*}
 local SCALE = 0.85
 local fallback_cache = {}
@@ -204,7 +206,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-17}
+\def\filedate{2026-09-19}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -643,7 +645,7 @@ end, "shekel_fallback_patch")
                     mode_leave_vertical, Umathchardef,mathrm, mathbf, textstyle, addfontfeatures, mdlgwhtsquare, %
                     left, right, Uleft, Uright, overleftrightarrow, overrightarrow, overline, triangle, rightangle,%
                     rightanglesqr, operatorname, angle, measuredangle, measuredrightangle,alpha, beta, mathcal,
-                    attribute, },%
+                    attribute, vec, vphantom, widearc, },%
 % Other words 5
     keywordstyle  = [5]{\bfseries\color{pkgname}},%
     keywords      = [5]{babel,spintent,libertinus-otf,sourcecodepro,fourier-otf,Erewhon-Math,hyperref,},%,
@@ -1179,14 +1181,14 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spnum}
-%   \begin{minipage}[t]{0.35\linewidth}
+%   \begin{minipage}[t]{0.35\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     \cmdexamp{spnum}{número}
 %     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{\textnormal{\textcolor{red}{{+}}}número}
 %     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{\textnormal{\textcolor{red}{{-}}}número}
 %     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{,}}}número}
 %     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{.}}}número}
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{,}}}número\textnormal{\textcolor{red}{{;}}}número}
 %     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{.}}}número\textnormal{\textcolor{red}{{;}}}número}
 %     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{;}}}número}
@@ -1194,7 +1196,7 @@ end, "shekel_fallback_patch")
 %     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número \textnormal{\textcolor{red}{{E}}} exponente}
 %   \end{minipage}
 %
-%  \smallskip
+%  \medskip
 %
 %   El comando \ics*{spnum} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento obligatorio} \mymarg{número}, donde la \emph{«parte entera»}
@@ -1319,18 +1321,18 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spunit}
-%   \begin{minipage}[t]{0.35\linewidth}
+%   \begin{minipage}[t]{0.35\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     \cmdexamp{spunit}{unidad}
 %     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{unidad}
 %     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{número unidad}
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}
 %     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad}
 %     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}
 %   \end{minipage}
 %
-% \smallskip
+% \medskip
 %
 %   El comando |\spunit| trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento obligatorio} \mymarg{unidad}, el cual puede contener
@@ -2937,11 +2939,11 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spcoord}
-%   \begin{minipage}[t]{0.4\linewidth}
+%   \begin{minipage}[t]{0.4\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spcoord|\mymarg{abscisa\textnormal{\textcolor{red}{,}} ordenada}\par
 %     |\spcoord|\mymarg{abscisa\textnormal{\textcolor{red}{;}} ordenada}
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spcoord|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{abscisa\textnormal{\textcolor{red}{,}} ordenada}\par
 %     |\spcoord|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{abscisa\textnormal{\textcolor{red}{;}} ordenada}
 %   \end{minipage}
@@ -2986,11 +2988,11 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spPoint}
-%   \begin{minipage}[t]{0.4\linewidth}
+%   \begin{minipage}[t]{0.4\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spPoint|\mymarg{punto}\par
 %     |\spPoint|\mymarg{punto}\myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada}
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spPoint|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto}\par
 %     |\spPoint|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto}\myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada}
 %   \end{minipage}
@@ -2999,8 +3001,8 @@ end, "shekel_fallback_patch")
 %
 %   El comando \ics*{spPoint} trabaja en \emph{modo matemático} y
 %   recibe el \emph{argumento obligatorio} \mymarg{punto} el cual es una
-%   \emph{única letra mayúscula} con un modificador opcional de subíndice
-%   `|_{...}|' o prima `|'|' y el \emph{argumento opcional delimitado por paréntesis}
+%   \emph{única letra mayúscula} con prima `|'|' o subíndice
+%   `|_{...}|' y el \emph{argumento opcional delimitado por paréntesis}
 %   \myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada} el cual se
 %   procesa internamente bajo el comando |\spcoord|.
 %
@@ -3053,8 +3055,8 @@ end, "shekel_fallback_patch")
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % del concepto \emph{«punto»} al ejecutar el comando sin modificar la impresión
 % de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará
-% el concepto; si se establece en |false|, \mynvmath{NVDA/MathCAT} solo
-% verbalizará el \mymarg{argumento} acorde al valor establecido por
+% el concepto y el \mymarg{argumento}; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% solo verbalizará el \mymarg{argumento} acorde al valor establecido por
 % la llave \mykey{read-cmd}.
 %
 % \smallskip
@@ -3068,16 +3070,120 @@ end, "shekel_fallback_patch")
 % NO verbalizará la salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
 % sí verbalizará la salida del comando.
 %
+% \subsection*{El comando \cs[no-index]{spvec}}\label{subsec:spvec}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spvec}
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.5\mydpstrut}\small
+%     |\spvec|\mymarg{letra}\par
+%     |\spvec|\mymarg{letra}\myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada}\par
+%     |\spvec|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{letra}\myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada}
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
+%     |\spvec|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\par
+%     |\spvec|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada}\par
+%     |\spvec|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada}
+%   \end{minipage}
+%
+%   \medskip
+%
+%   El comando \ics*{spvec} trabaja en \emph{modo matemático} y recibe un
+%   \emph{argumento obligatorio} de la forma \mymarg{letra} (minúscula)
+%   o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} junto al
+%   \emph{argumento opcional delimitado por paréntesis} \myparg{abscisa\textnormal{\textcolor{red}{,}} ordenada} el cual se
+%   procesa internamente bajo el comando |\spcoord|.
+%
+%   \smallskip
+%
+%   Si el \emph{argumento} es de la forma \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   con prima(s) `|'|' o subíndice(s) `|_{...}|' opcionales se aplica
+%   |\overrightarrow| en la impresión; si el \emph{argumento} es de
+%   la forma \mymarg{letra} (minúscula) con subíndice `|_{...}|' opcional
+%   se aplica |\vec| en la impresión.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spvec{a}$| imprimirá `$\vec{a}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«vector a»};
+%   |$\spvec{AB}$| imprimirá `$\overrightarrow{AB}$' y verbalizará
+%   \emph{«vector A B»}.
+%
+%   \smallskip
+%
+%   Si se proporciona el \emph{argumento opcional delimitado por paréntesis},
+%   |$\spvec{a}(-3,4)$| imprimirá `$\vec{a}=(-3,4)$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«vector a igual a menos tres coma cuatro»};
+%   |$\spvec{AB}(-3,4)$| imprimirá `$\overrightarrow{AB}=(-3,4)$' y verbalizará
+%   \emph{«vector A B igual a menos tres coma cuatro»}.
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spvec}}
+%
+% \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
+%   mathcat}{school}[spvec]
+% \smallskip
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará el
+% argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}. Si se
+% establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras del
+% argumento sin el prefijo «mayúscula»: |$\spvec{AB}$| se verbaliza
+% \emph{«vector A B»}; si se establece en |mathcat|, \mynvmath{NVDA/MathCAT}
+% aplica sus propias reglas, que pueden incluir el prefijo «mayúscula»
+% dependiendo de la configuración del usuario.
+%
+% \smallskip
+%
+% \keyexampcmd{prefix}{prefijo}{no usado}[spvec]
+% \smallskip
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el concepto \emph{«vector»}. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{autofit}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spvec]
+% \smallskip
+% Establece si se \emph{utiliza} |\vphantom{b}| al ejecutar el comando
+% cuando se utiliza el argumento \mymarg{letra}. Si se establece en |true|,
+% se aplicara |\vphantom{b}| al inicio del argumento \mymarg{letra}; si
+% se establece en |false|, no se aplicará |\vphantom{b}|.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spvec]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«vector»} al ejecutar el comando sin modificar la impresión
+% de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará
+% el concepto y el \mymarg{argumento}; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% solo verbalizará el \mymarg{argumento} acorde al valor establecido por
+% la llave \mykey{read-cmd}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spvec]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«vector»} y del \mymarg{argumento} pasado al comando
+% sin modificar la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará la salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% sí verbalizará la salida del comando.
+%
 % \subsection*{El comando \cs[no-index]{sprecta}}\label{subsec:sprecta}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\sprecta}
-%   \begin{minipage}[t]{0.4\linewidth}
+%   \begin{minipage}[t]{0.4\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\sprecta|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\par
 %     |\sprecta|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\par
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\sprecta|\mymarg{letra}\par
 %     |\sprecta|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{letra}
 %   \end{minipage}
@@ -3085,12 +3191,13 @@ end, "shekel_fallback_patch")
 % \medskip
 %
 %   El comando \ics*{sprecta} trabaja en \emph{modo matemático} y
-%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma \mymarg{letra} o
-%   \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}. Si el \emph{argumento}
-%   es de la forma \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   recibe un \emph{argumento obligatorio} de la forma \mymarg{letra} o
+%   \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} con prima(s) `|'|'
+%   o subíndice(s) `|_{...}|' opcionales. Si el \emph{argumento} es de
+%   la forma \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
 %   se aplica |\overleftrightarrow| en la impresión; si el \emph{argumento}
-%   no contiene coma y es de la forma \mymarg{letra} (mayúscula o minúscula),
-%   se imprimirá solo la \mymarg{letra} sin aplicar |\overleftrightarrow|.
+%   es de la forma \mymarg{letra} (mayúscula o minúscula), se imprimirá solo
+%   la \mymarg{letra} sin aplicar |\overleftrightarrow|.
 %
 % \smallskip
 %
@@ -3131,8 +3238,8 @@ end, "shekel_fallback_patch")
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % del concepto \emph{«recta»} al ejecutar el comando sin modificar la impresión
 % de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará
-% el concepto; si se establece en |false|, \mynvmath{NVDA/MathCAT} solo
-% verbalizará el \mymarg{argumento} acorde al valor establecido por
+% el concepto y el \mymarg{argumento}; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% solo verbalizará el \mymarg{argumento} acorde al valor establecido por
 % la llave \mykey{read-cmd}.
 %
 % \smallskip
@@ -3156,8 +3263,9 @@ end, "shekel_fallback_patch")
 %     |\sprayo|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{syntax}
 %   El comando \ics*{sprayo} trabaja en \emph{modo matemático} y
-%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}.
-%   Representa un \emph{rayo} o \emph{semirrecta} con origen en el primer
+%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   con prima(s) `|'|' o subíndice(s) `|_{...}|' opcionales. Representa
+%   un \emph{rayo} o \emph{semirrecta} con origen en el primer
 %   punto y dirección hacia el segundo, aplicando |\overrightarrow| en la impresión.
 %
 %   \smallskip
@@ -3209,9 +3317,9 @@ end, "shekel_fallback_patch")
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % del \emph{«concepto»} establecido por la llave \mykey{read-sty} al ejecutar el
 % comando sin modificar la impresión de este. Si se establece en |true|,
-% \mynvmath{NVDA/MathCAT} verbalizará el concepto; si se establece en |false|,
-% \mynvmath{NVDA/MathCAT} solo verbalizará el \mymarg{argumento} acorde
-% al valor establecido por la llave \mykey{read-cmd}.
+% \mynvmath{NVDA/MathCAT} verbalizará el concepto y el \mymarg{argumento};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará
+% el \mymarg{argumento} acorde al valor establecido por la llave \mykey{read-cmd}.
 %
 % \smallskip
 %
@@ -3246,9 +3354,10 @@ end, "shekel_fallback_patch")
 %   \end{syntax}
 %
 %   El comando \ics*{spside} trabaja en \emph{modo matemático} y
-%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}.
-%   Representa un \emph{lado}, \emph{segmento} o \emph{trazo} determinado
-%   por dos puntos, aplicando |\overline| en la impresión.
+%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   con prima(s) `|'|' o subíndice(s) `|_{...}|' opcionales. Representa
+%   un \emph{lado}, \emph{segmento} o \emph{trazo} determinado por dos puntos,
+%   aplicando |\overline| en la impresión.
 %
 %   \smallskip
 %
@@ -3303,9 +3412,9 @@ end, "shekel_fallback_patch")
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % del \emph{«concepto»} establecido por la llave \mykey{read-sty} al ejecutar el
 % comando sin modificar la impresión de este. Si se establece en |true|,
-% \mynvmath{NVDA/MathCAT} verbalizará el concepto; si se establece en |false|,
-% \mynvmath{NVDA/MathCAT} solo verbalizará el \mymarg{argumento} acorde
-% al valor establecido por la llave \mykey{read-cmd}.
+% \mynvmath{NVDA/MathCAT} verbalizará el concepto y el \mymarg{argumento};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará
+% el \mymarg{argumento} acorde al valor establecido por la llave \mykey{read-cmd}.
 %
 % \smallskip
 %
@@ -3341,8 +3450,9 @@ end, "shekel_fallback_patch")
 %   \end{syntax}
 %
 %   El comando \ics*{spmside} trabaja en \emph{modo matemático} y
-%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}.
-%   Representa la \emph{medida} del \emph{lado}, \emph{segmento} o \emph{trazo}
+%   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   con prima(s) `|'|' o subíndice(s) `|_{...}|' opcionales. Representa
+%   la \emph{medida} del \emph{lado}, \emph{segmento} o \emph{trazo}
 %   determinado por dos puntos. La distinción entre |\spside| y |\spmside| es
 %   semántica: |\spside| representa el \emph{objeto geométrico}
 %   `$\overline{AB}$'; |\spmside| representa su \emph{medida} (un
@@ -3400,9 +3510,9 @@ end, "shekel_fallback_patch")
 % del término \emph{«medida del»} y del \emph{«concepto»} establecido por
 % la llave \mykey{read-sty} al ejecutar el comando sin modificar la impresión
 % de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará
-% el término \emph{«medida del»} antes del concepto; si se establece en |false|,
-% \mynvmath{NVDA/MathCAT} solo verbalizará el \mymarg{argumento} acorde
-% al valor establecido por la llave \mykey{read-cmd}.
+% el término \emph{«medida del»}, el concepto y el \mymarg{argumento};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará
+% el \mymarg{argumento} acorde al valor establecido por la llave \mykey{read-cmd}.
 %
 % \smallskip
 %
@@ -3447,11 +3557,11 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spangle}
-%   \begin{minipage}[t]{0.50\linewidth}
+%   \begin{minipage}[t]{0.50\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spangle|\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}\par
 %     |\spangle|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.45\linewidth}
+%   \begin{minipage}[t]{0.45\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spangle|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}\par
 %     |\spangle|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{minipage}
@@ -3459,10 +3569,11 @@ end, "shekel_fallback_patch")
 %   \medskip
 %
 %   El comando \ics*{spangle} trabaja en \emph{modo matemático} y
-%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma
-%   \mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
+%   recibe un \emph{argumento obligatorio} de la forma \mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
 %   o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
-%   aplicando |\angle| o |\rightangle| en la impresión.
+%   aplicando |\angle| o |\rightanglesqr| en la impresión. Solo los argumentos
+%   de la forma \mymarg{punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
+%   admiten prima(s) `|'|' o subíndice(s) `|_{...}|' opcionales.
 %
 % \smallskip
 %
@@ -3471,9 +3582,20 @@ end, "shekel_fallback_patch")
 %   imprimirá `$\angle A$' en la salida \texttt{PDF}  y \mynvmath{NVDA/MathCAT}
 %   verbalizará \emph{«ángulo en A»}; |$\spangle{\alpha}$| imprimirá
 %   `$\angle\alpha$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«ángulo alfa»} y |$\spangle{A, O, B}$| imprimirá
+%   verbalizará \emph{«ángulo alfa»}; |$\spangle{1}$| imprimirá
+%   `$\angle 1$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«ángulo uno»} y |$\spangle{AOB}$| imprimirá
 %   `$\angle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%    verbalizará \emph{«ángulo A O B»}.
+%   verbalizará \emph{«ángulo A O B»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%   Si no se tiene instalada la fuente matemática \texttt{NewCMath-Regular.otf}
+%   parte del paquete \mypkg[no-index]{newcomputermodern} en el sistema o
+%   no se provee una fuente matemática con soporte para |\rightanglesqr|
+%   se usará |\rightangle| en su reemplazo.
+% \end{important}
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spangle}}
@@ -3484,7 +3606,7 @@ end, "shekel_fallback_patch")
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
 % argumento \mymarg{punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
 % Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
-% del argumento sin el prefijo «mayúscula»: |$\spangle{A, O, B}$|
+% del argumento sin el prefijo «mayúscula»: |$\spangle{AOB}$|
 % se verbaliza \emph{«ángulo A O B»}; si se establece en |mathcat|,
 % \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
 % el prefijo «mayúscula» dependiendo de la configuración del usuario.
@@ -3494,8 +3616,34 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spangle]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«ángulo»}. El valor de esta
+% \emph{antes} de verbalizar el concepto \emph{«ángulo»}. El valor de esta
 % llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{recto}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spangle]
+% \smallskip
+% Establece si se \emph{usará} |\rightanglesqr| en la impresión añadiendo
+% el término \emph{«recto»} a la verbalización en \mynvmath{NVDA/MathCAT}.
+% Si se establece en |true|, |$\spangle[recto=true]{A}$| imprimirá `$\rightanglesqr A$'
+% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo recto en A»},
+% |$\spangle[recto=true]{AOB}$| imprimirá `$\rightanglesqr AOB$' en la
+% salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«ángulo recto A O B»};
+% si se establece en |false|, imprimirá usando |\angle| en la salida \texttt{PDF}
+% y \mynvmath{NVDA/MathCAT} omitirá el término \emph{«recto»}.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spangle]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«ángulo»} al ejecutar el comando sin modificar la impresión
+% de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará
+% el concepto \emph{«ángulo»} y el \mymarg{argumento}; si se establece en |false|,
+% \mynvmath{NVDA/MathCAT} solo verbalizará el \mymarg{argumento} acorde
+% al valor establecido por la llave \mykey{read-cmd}.
 %
 % \smallskip
 %
@@ -3503,34 +3651,21 @@ end, "shekel_fallback_patch")
 %   false}{false}[spangle]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del término \emph{«ángulo»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
-% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
-% SÍ lo verbalizará.
-%
-% \smallskip
-%
-% \keyexampcmd{recto}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{false}[spangle]
-% \smallskip
-% Establece si se usará |\rightangle| en la impresión añadiendo el término \emph{«recto»}
-% a la verbalización en \mynvmath{NVDA/MathCAT}. Si se establece en |true|, |$\spangle[recto=true]{A}$|
-% imprimirá `$\rightangle A$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«ángulo recto en A»}, |$\spangle[recto=true]{A, O, B}$| imprimirá
-% `$\rightangle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«ángulo recto A O B»}; si se establece en |false|,
-% imprimirá usando |\angle| en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-% omitirá el término \emph{«recto»}.
+% del concepto \emph{«ángulo»} y del \mymarg{argumento} pasado al comando
+% sin modificar la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará la salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT} sí
+% verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spmangle}}\label{subsec:spmangle}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spmangle}
-%   \begin{minipage}[t]{0.55\linewidth}
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spmangle|\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}\par
 %     |\spmangle|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.45\linewidth}
+%   \begin{minipage}[t]{0.45\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spmangle|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}\par
 %     |\spmangle|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{minipage}
@@ -3538,13 +3673,11 @@ end, "shekel_fallback_patch")
 %   \medskip
 %
 %   El comando \ics*{spmangle} trabaja en \emph{modo matemático} y
-%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma
-%   \mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
+%   recibe un \emph{argumento obligatorio} de la forma \mymarg{punto \textnormal{\textcolor{lightgray}{\textbar}} letra griega \textnormal{\textcolor{lightgray}{\textbar}} número}
 %   o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
 %   aplicando |\measuredangle| o |\measuredrightangle| en la impresión.
-%   La distinción entre |\spangle| y |\spmangle| es semántica: |\spangle|
-%   representa el \emph{objeto geométrico} `$\angle A O B$'; |\spmangle|
-%   representa su \emph{medida} (un valor en grados).
+%   Solo los argumentos de la forma \mymarg{punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
+%   admiten prima(s) `|'|' o subíndice(s) `|_{...}|' opcionales.
 %
 % \smallskip
 %
@@ -3553,9 +3686,19 @@ end, "shekel_fallback_patch")
 %   imprimirá `$\measuredangle A$' en la salida \texttt{PDF}  y \mynvmath{NVDA/MathCAT}
 %   verbalizará \emph{«medida del ángulo en A»}; |$\spmangle{\alpha}$| imprimirá
 %   `$\measuredangle\alpha$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«medida del ángulo alfa»} y |$\spmangle{A, O, B}$| imprimirá
+%   verbalizará \emph{«medida del ángulo alfa»}; |$\spmangle{1}$| imprimirá
+%   `$\measuredangle 1$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«medida del ángulo uno»} y |$\spmangle{AOB}$| imprimirá
 %   `$\measuredangle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%    verbalizará \emph{«medida del ángulo A O B»}.
+%   verbalizará \emph{«medida del ángulo A O B»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%   La distinción entre |\spangle| y |\spmangle| es semántica: |\spangle|
+%   representa el \emph{objeto geométrico} `$\angle A O B$'; |\spmangle|
+%   representa su \emph{medida} (un valor en grados).
+% \end{important}
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spmangle}}
@@ -3566,7 +3709,7 @@ end, "shekel_fallback_patch")
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
 % argumento \mymarg{punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
 % Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
-% del argumento sin el prefijo «mayúscula»: |$\spmangle{A, O, B}$|
+% del argumento sin el prefijo «mayúscula»: |$\spmangle{AOB}$|
 % se verbaliza \emph{«medida del ángulo A O B»}; si se establece en |mathcat|,
 % \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
 % el prefijo «mayúscula» dependiendo de la configuración del usuario.
@@ -3576,29 +3719,21 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spmangle]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«medida del ángulo»}. El valor
-% de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
-%
-% \smallskip
-%
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{false}[spmangle]
-% \smallskip
-% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del término \emph{«medida del ángulo»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
-% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
-% SÍ lo verbalizará.
+% \emph{antes} de verbalizar el término \emph{«medida del»} seguido por el
+% concepto \emph{«ángulo»}. El valor de esta llave \emph{siempre} debe
+% pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
 % \keyexampcmd{recto}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmangle]
 % \smallskip
-% Establece si se usará |\measuredrightangle| en la impresión añadiendo el término \emph{«recto»}
-% a la verbalización en \mynvmath{NVDA/MathCAT}. Si se establece en |true|, |$\spmangle[recto=true]{A}$|
-% imprimirá `$\measuredrightangle A$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«medida del ángulo recto en A»}, |$\spmangle[recto=true]{A, O, B}$| imprimirá
-% `$\measuredrightangle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% Establece si se \emph{usará} |\measuredrightangle| en la impresión añadiendo
+% el término \emph{«recto»} a la verbalización en \mynvmath{NVDA/MathCAT}.
+% Si se establece en |true|, |$\spmangle[recto=true]{A}$| imprimirá
+% `$\measuredrightangle A$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«medida del ángulo recto en A»}, |$\spmangle[recto=true]{AOB}$|
+% imprimirá `$\measuredrightangle AOB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«medida del ángulo recto A O B»}; si se establece en |false|,
 % imprimirá usando |\measuredangle| en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % omitirá el término \emph{«recto»}.
@@ -3608,11 +3743,35 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{print-m}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmangle]
 % \smallskip
-% Establece \emph{si se imprime} la notación visual `$\mathrm{m}$' antes del argumento.
-% Si se establece en |true|, |$\spmangle[print-m=true]{A, O, B}$| imprimirá
+% Establece \emph{si se imprime} la notación visual `$\mathrm{m}$' antes
+% del argumento pasado al comando sin modificar la verbalización de este.
+% Si se establece en |true|, |$\spmangle[print-m=true]{AOB}$| imprimirá
 % `$\operatorname{m}\angle AOB$' en la salida \texttt{PDF}, si se establece
-% en |false| imprimirá `$\measuredangle AOB$' en la salida \texttt{PDF}. En ambos casos
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del ángulo A O B»}.
+% en |false| imprimirá `$\measuredangle AOB$' en la salida \texttt{PDF}.
+% En ambos casos \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del ángulo A O B»}.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spmangle]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«medida del»} seguido por el concepto \emph{«ángulo»} al
+% ejecutar el comando sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del ángulo»} y el \mymarg{argumento};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
+% \mymarg{argumento} acorde al valor establecido por la llave \mykey{read-cmd}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spmangle]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«medida del»}, del concepto \emph{«ángulo»} y del \mymarg{argumento}
+% pasado al comando sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spang}}\label{subsec:spang}
 %
@@ -3628,11 +3787,10 @@ end, "shekel_fallback_patch")
 %   \emph{argumento obligatorio} \mymarg{grados}, \mymarg{grados \textnormal{\textcolor{red}{:}} minutos}
 %   o \mymarg{grados \textnormal{\textcolor{red}{:}} minutos
 %   \textnormal{\textcolor{red}{:}} segundos}. Los procesa internamente bajo
-%   los comandos |\spnum| y |\spunit| para imprimir y verbalizar el
-%   \emph{«ángulo sexagesimal»}. Por ejemplo, |$\spang{45:30:15}$|
-%   imprimirá `$45°30′15″$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«cuarenta y cinco grados treinta minutos quince
-%   segundos»}.
+%   los comandos |\spnum| y |\spunit| para imprimir y verbalizar. Por ejemplo,
+%   |$\spang{45:30:15}$| imprimirá `$45°30′15″$' en la salida \texttt{PDF}
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«cuarenta y cinco grados
+%   treinta minutos quince segundos»}.
 % \end{function}
 %
 % \subsection*{El comando \cs[no-index]{sparc}}\label{subsec:sparc}
@@ -3640,29 +3798,36 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\sparc}
-%   \begin{minipage}[t]{0.45\linewidth}
+%   \begin{minipage}[t]{0.45\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\sparc|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\par
 %     |\sparc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\sparc|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}\par
 %     |\sparc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{minipage}
 %
 %   \medskip
 %
-%   El comando \ics*{sparc} trabaja en \emph{modo matemático} y
-%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma
-%   \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
-%   Representa un arco determinado por dos o tres puntos aplicando |\widearc| en la impresión.
+%   El comando \ics*{sparc} trabaja en \emph{modo matemático} y recibe un
+%   \emph{argumento obligatorio} de la forma \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
+%   con prima(s) `|'|' o subíndice(s) `|_{...}|' opcionales aplicando
+%   |\widearc| en la impresión.
 %
 %   \smallskip
 %
-%   Si no se proporciona el \emph{argumento opcional}
-%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%   |$\sparc{A, B}$| imprimirá `$\widearc{AB}$' en la salida
-%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«arco A B»}.
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\sparc{AB}$| imprimirá `$\widearc{AB}$' en la salida \texttt{PDF}
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«arco A B»}.
+%
+%   \smallskip
+%
+% \begin{important}*
+%   El acento |\widearc| es propocionado por algunos paquetes como
+%   \mypkg[no-index]{fourier-otf} o \mypkg[no-index]{kpfonts-otf}, en caso
+%   de no estar disponible se utilizará una versión interna para este.
+% \end{important}
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{sparc}}
@@ -3674,7 +3839,7 @@ end, "shekel_fallback_patch")
 % argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} o
 % \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
 % Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
-% del argumento sin el prefijo «mayúscula»: |$\sparc{A, B}$|
+% del argumento sin el prefijo «mayúscula»: |$\sparc{AB}$|
 % se verbaliza \emph{«arco A B»}; si se establece en |mathcat|,
 % \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
 % el prefijo «mayúscula» dependiendo de la configuración del usuario.
@@ -3684,8 +3849,20 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[sparc]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«arco»}. El valor de esta
+% \emph{antes} de verbalizar el concepto \emph{«arco»}. El valor de esta
 % llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[sparc]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«arco»} al ejecutar el comando sin modificar la impresión
+% de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«arco»} y el \mymarg{argumento}; si se establece en |false|,
+% \mynvmath{NVDA/MathCAT} solo verbalizará el \mymarg{argumento} acorde
+% al valor establecido por la llave \mykey{read-cmd}.
 %
 % \smallskip
 %
@@ -3693,20 +3870,21 @@ end, "shekel_fallback_patch")
 %   false}{false}[sparc]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del término \emph{«arco»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
-% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
-% SÍ lo verbalizará.
+% del concepto \emph{«arco»} y del \mymarg{argumento} pasado al comando
+% sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spmarc}}\label{subsec:spmarc}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spmarc}
-%   \begin{minipage}[t]{0.45\linewidth}
+%   \begin{minipage}[t]{0.45\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spmarc|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}\par
 %     |\spmarc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spmarc|\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}\par
 %     |\spmarc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
 %   \end{minipage}
@@ -3714,19 +3892,24 @@ end, "shekel_fallback_patch")
 %   \medskip
 %
 %   El comando \ics*{spmarc} trabaja en \emph{modo matemático} y
-%   recibe un \emph{argumento obligatorio} el cual puede ser de la forma
-%   \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
-%   Representa la \emph{medida} del \emph{arco} determinado por dos
-%   o tres puntos. La distinción entre |\sparc| y |\spmarc| es semántica:
-%   |\sparc| representa el \emph{objeto geométrico} `$\widearc{AB}$';
-%   |\spmarc| representa su \emph{medida} (un valor en grados).
+%   recibe un \emph{argumento obligatorio} de la forma \mymarg{punto\textnormal{\textcolor{gray}{,}} punto}
+%   o \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}
+%   con prima(s) `|'|' o subíndice(s) `|_{...}|' opcionales colocando
+%   `$\operatorname{m}$' antes de aplicar |\widearc| en la impresión.
 %
 %   \smallskip
 %
-%   Si no se proporciona el \emph{argumento opcional}
-%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%   |$\spmarc{A, B}$| imprimirá `$\operatorname{m}\widearc{AB}$' en la salida \texttt{PDF}
-%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del arco A B»}.
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spmarc{AB}$| imprimirá `$\operatorname{m}\widearc{AB}$' en la
+%   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del arco A B»}.
+%
+%   \smallskip
+%
+% \begin{important}*
+%   La distinción entre |\sparc| y |\spmarc| es semántica:
+%   |\sparc| representa el \emph{objeto geométrico} `$\widearc{AB}$';
+%   |\spmarc| representa su \emph{medida} (un valor en grados).
+% \end{important}
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spmarc}}
@@ -3738,7 +3921,7 @@ end, "shekel_fallback_patch")
 % argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto} o
 % \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto}.
 % Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
-% del argumento sin el prefijo «mayúscula»: |$\spmarc{A, B}$|
+% del argumento sin el prefijo «mayúscula»: |$\spmarc{AB}$|
 % se verbaliza \emph{«medida del arco A B»}; si se establece en |mathcat|,
 % \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
 % el prefijo «mayúscula» dependiendo de la configuración del usuario.
@@ -3748,8 +3931,19 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spmarc]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«medida del arco»}. El valor
-% de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+% \emph{antes} de verbalizar el término \emph{«medida del»} seguido por
+% el concepto \emph{«arco»}. El valor de esta llave \emph{siempre} debe
+% pasarse entre llaves `|{ }|'.
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spmarc]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«medida del»} y el concepto \emph{«arco»} al ejecutar
+% el comando sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida del arco»} y el \mymarg{argumento};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
+% \mymarg{argumento} acorde al valor establecido por la llave \mykey{read-cmd}.
 %
 % \smallskip
 %
@@ -3757,9 +3951,10 @@ end, "shekel_fallback_patch")
 %   false}{false}[spmarc]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del término \emph{«medida del arco»}. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
-% NO verbalizará el término; si se establece en |false|, \mynvmath{NVDA/MathCAT}
-% SÍ lo verbalizará.
+% del término \emph{«medida del»}, el concepto \emph{«arco»} y el \mymarg{argumento}
+% pasado al comando sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spPoly}}\label{subsec:spPoly}
 %
@@ -3772,23 +3967,28 @@ end, "shekel_fallback_patch")
 %   \end{syntax}
 %   El comando \ics*{spPoly} trabaja en \emph{modo matemático} y
 %   recibe el \emph{argumento obligatorio} \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots},
-%   una lista de al menos tres \mymarg{puntos} separados por comas.
-%   El tipo de \emph{símbolo} en la impresión y la verbalización se
-%   determinan acorde al número de puntos en el argumento: Si son tres
-%   puntos se aplica |\triangle| y añade el término \emph{«triángulo»}
+%   una lista de al menos tres \mymarg{puntos} con prima(s) `|'|' o
+%   subíndice(s) `|_{...}|' opcionales. El \emph{símbolo} usado en la
+%   impresión se maneja por medio de la llave \mykey{print-sym} y la
+%   verbalización del concepto asociado se determinan acorde al número
+%   de puntos en el argumento y la llave \mykey{concept}.
+%
+%   \smallskip
+%
+%   Si son tres puntos se aplica |\triangle| y añade el concepto \emph{«triángulo»}
 %   a la verbalización; si son cuatro puntos se aplica |\mdlgwhtsquare|
-%   y añade el término \emph{«cuadrado»} a la verbalización; si son cinco
+%   y añade el concepto \emph{«cuadrado»} a la verbalización; si son cinco
 %   o más puntos no se aplica níngún símbolo ni se añade verbalización.
 %
 %   \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
 %   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
-%   |$\spPoly{A, B, C}$| imprimirá `$\triangle ABC$' en la salida
+%   |$\spPoly{ABC}$| imprimirá `$\triangle ABC$' en la salida
 %   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«triángulo A B C»}; |$\spPoly{A, B, C, D}$| imprimirá
+%   \emph{«triángulo A B C»}; |$\spPoly{ABCD}$| imprimirá
 %   `$\square ABCD$' y verbalizará \emph{«cuadrado A B C D»};
-%   |$\spPoly{A, B, C, D, E}$| imprimirá `$ABCDE$' y verbalizará
+%   |$\spPoly{ABCDE}$| imprimirá `$ABCDE$' y verbalizará
 %   \emph{«A B C D E»}.
 % \end{function}
 %
@@ -3800,7 +4000,7 @@ end, "shekel_fallback_patch")
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
 % argumento \mymarg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}.
 % Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
-% del argumento sin el prefijo «mayúscula»: |$\spPoly{A, B, C}$|
+% del argumento sin el prefijo «mayúscula»: |$\spPoly{ABC}$|
 % se verbaliza \emph{«triángulo A B C»}; si se establece en |mathcat|,
 % \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
 % el prefijo «mayúscula» dependiendo de la configuración del usuario.
@@ -3810,31 +4010,45 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spPoly]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el argumento o los términos \emph{«tríangulo»} y
-% \emph{«cuadrado»} establecido por la llave |print-sym|. El valor de esta
+% \emph{antes} de verbalizar el \mymarg{argumento} o los conceptos \emph{«tríangulo»} y
+% \emph{«cuadrado»} establecido por la llave \mykey{concept}. El valor de esta
 % llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spPoly]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% de los conceptos \emph{«triángulo»} y \emph{«cuadrado»} acorde al número
+% de puntos en el \mymarg{argumento} al ejecutar el comando sin modificar
+% la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«triángulo»} o \emph{«cuadrado»} y el \mymarg{argumento};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
+% \mymarg{argumento} acorde al valor establecido por la llave \mykey{read-cmd}.
 %
 % \smallskip
 %
 % \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{true}[spPoly]
 % \smallskip
-% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión
-% añadiendo el término correspondiente a la verbalización en \mynvmath{NVDA/MathCAT}.
-% Si se establece en |true|, |$\spPoly[print-sym=true]{A, B, C}$|
-% imprimirá `$\triangle ABC$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«triángulo A B C»}; si se
-% establece en |false|, imprimirá `$ABC$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} omitirá el término \emph{«triángulo»}, verbalizando
-% solo \emph{«A B C»}.
+% Establece si se \emph{usará} |\triangle| o |\mdlgwhtsquare| en la impresión
+% sin modificar la verbalización de este. Si se establece en |true|,
+% |$\spPoly[print-sym=true]{ABC}$| imprimirá `$\triangle ABC$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«triángulo A B C»};
+% |$\spPoly[print-sym=true]{ABCD}$| imprimirá `$\mdlgwhtsquare ABCD$' en
+% la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«cuadrado A B C»};
+% si se establece en |false|, solo se imprimirá el \mymarg{argumento} en
+% la salida \texttt{PDF} y la verbalización será la misma.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spPoly]
 % \smallskip
-% Alias de \mykey[spPoly]{print-sym}|=false|, incluido por consistencia
-% con el resto de los comandos de geometría plana.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% de los conceptos establecido por la llave \mykey{concept} y el \mymarg{argumento}
+% pasado al comando sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spAfig}}\label{subsec:spAfig}
 %
@@ -4302,7 +4516,7 @@ end, "shekel_fallback_patch")
 % keys: \mykey{mathcal} and \mykey{AFghost}, which can be passed as package
 % options.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-17} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-19} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -12080,10 +12294,6 @@ end, "shekel_fallback_patch")
       }
   }
 %    \end{macrocode}
-%   \begin{important}*
-%     The key \mykey{print-m} is defined for both commands for simplicity,
-%     but has no effect on |\sparc|.
-%   \end{important}
 % \end{macro}
 %
 % \subsubsection{Internal functions for \cs[no-index]{sparc} and
@@ -14782,7 +14992,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-17]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-19]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -17335,7 +17545,7 @@ end, { "string" })
 %<*mylhmcsty>
 % \fi
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2026-09-18}{0.99}
+\ProvidesExplPackage{mylhmc}{2026-09-19}{0.99}
   {Line-by-line macrocode reader for l3doc in Lua}
 \sys_if_engine_luatex:F
   {
@@ -17541,7 +17751,6 @@ end, { "string" })
   }
 \cs_set_eq:cN { xmacro@code* } \xmacro@code
 
-
 \msg_new:nnnn { mylhmc } { invalid-hex-color }
   { Invalid~color~value~'#2'~for~key~'#1':~expected~6~hex~digits~(e.g.~FF0000). }
   { The~color~was~not~changed~and~keeps~its~previous~value. }
@@ -17563,6 +17772,13 @@ end, { "string" })
     module .code:n =
       { \__mylhmc_set_module_backup:n {#1} } ,
     module .value_required:n = true ,
+    % Fallback de itálica para comentarios: true (por defecto) = siempre
+    % Latin Modern Mono Italic; false = busca primero una itálica
+    % hermana de la fuente actual (como ya hace la negrita), cayendo a
+    % Latin Modern solo si no encuentra ninguna.
+    lmmono .code:n =
+      { \__mylhmc_set_lmmono:n {#1} } ,
+    lmmono .value_required:n = true ,
   }
 
 \cs_new_protected:Npn \__mylhmc_define_color_key:nnn #1#2#3
@@ -17592,7 +17808,7 @@ end, { "string" })
 % \iffalse
 %<*mylhmclua>
 % \fi
--- mylhmc.lua v0.99 2026-09-18 (node.direct + Loop/Memory Micro-Optimized)
+-- mylhmc.lua v0.99 2026-09-19 (node.direct + Loop/Memory Micro-Optimized)
 -- LuaLaTeX syntax highlighter for l3doc macrocode environments
 
 local require      = require
@@ -17705,32 +17921,26 @@ local hex_chars  = S'0123456789abcdefABCDEF'
 local name_chars = alpha + S'_@'
 local var_prefix = P'\\' * S'lg'
 local name_chars_no_at = alpha + S'_'
--- Variante que además acepta #N (uno o más '#' + un dígito, con
--- espacios opcionales pegados a cada lado) como parte del nombre --
--- usada solo en \l_.../\g_... (tipos 2/4), para documentación que
--- muestra el patrón general de una familia de csnames generados
--- dinámicamente (p.ej. \l_@@_foo_#1_bar o \l_@@_foo_ #1 _bar). El
--- '#N' se recolorea aparte dentro del handler correspondiente; los
--- espacios absorbidos quedan sin color especial (no importa, no
--- tienen glifo visible).
+-- Acepta también #N (uno o más '#' + un dígito, con espacios
+-- opcionales a los lados) como parte del nombre -- usada en
+-- \l_.../\g_... (tipos 2/4) para documentar el patrón de una familia
+-- de csnames generadas dinámicamente (p.ej. \l_@@_foo_#1_bar). El
+-- '#N' se recolorea aparte en el handler correspondiente.
 local name_chars_argnum = name_chars
   + (P' ' ^ 0 * P'#' ^ 1 * digit * P' ' ^ 0)
 
--- "Modo csname": reconoce un argumento de \myhlc que es EXACTAMENTE
--- (de principio a fin, P(-1)) un nombre de variable l_.../g_.../
--- l__.../g__... SIN backslash -- para documentación que se refiere al
--- "nombre" de una csname, no a su forma de invocación. Solo se usa en
--- el handler de \myhlc (inline), no en macrocode normal, donde un
--- fragmento así sin \ sería casi seguro texto de comentario, no una
--- variable real.
+-- "Modo csname": un argumento de \myhlc que es EXACTAMENTE (de
+-- principio a fin) un nombre l_.../g_.../l__.../g__... sin backslash
+-- -- para referirse al "nombre" de una csname sin su forma de
+-- invocación. Solo en el handler de \myhlc; en macrocode normal un
+-- fragmento así sin \ sería casi seguro texto de comentario.
 local bare_varname_full =
   S'lg' * (P'__' * name_chars_argnum ^ 1
            + P'_' * (alpha + S'@') * name_chars_argnum ^ 0) * P(-1)
 
--- Bloque do...end: las piezas de patrón *_names/etc. de aquí en
--- adelante solo se usan para construir code_rules (justo debajo) --
--- envolverlas evita que cuenten como variables locales de nivel
--- superior del archivo (límite de Lua: 200 por función/chunk).
+-- Las piezas de patrón *_names/etc. de aquí en adelante solo sirven
+-- para construir code_rules (debajo); el do...end evita que cuenten
+-- como locales de nivel superior (límite de Lua: 200 por chunk).
 local code_rules
 do
 local structure_names =
@@ -18035,6 +18245,14 @@ local LM_LANGLE = 0x2329
 local LM_RANGLE = 0x232A
 local bold_cache, lm_cache, italic_cache = {}, {}, {}
 
+-- Controla el fallback de mylhmc_get_italic_fid (usada para comentarios):
+-- true (por defecto) = siempre Latin Modern Mono Italic, como hasta
+-- ahora; false = busca primero una itálica hermana de la fuente
+-- actual (igual que ya hace mylhmc_get_med_bold_fid para negrita),
+-- cayendo a Latin Modern solo si no encuentra ninguna. Se fija desde
+-- \setmylhmc{lmono=true|false}.
+local use_lmono_italic = true
+
 local LM_ITALIC_PATH, LM_REGULAR_PATH, LM_BOLD_PATH = nil, nil, nil
 
 local function mylhmc_ensure_lm_paths()
@@ -18106,6 +18324,26 @@ local function mylhmc_get_italic_fid(fid)
   if italic_cache[fid] then return italic_cache[fid] end
   local f = f_getfont(fid)
   if not f or not f.size then italic_cache[fid] = fid; return fid end
+  if not use_lmono_italic and f.name then
+    local base_family = s_match(f.name, '^%[?([^%-]+)') or f.name
+    local target_size = f.size
+    local max_f = f_max()
+    for i = 1, max_f do
+      local bf = f_getfont(i)
+      if bf and bf.name and bf.name ~= f.name and
+         s_find(bf.name, base_family, 1, true) then
+        local lower_name = s_lower(bf.name)
+        if s_find(lower_name, 'italic') or s_find(lower_name, 'oblique') then
+          if bf.size == target_size then
+            italic_cache[fid] = i; return i
+          end
+          local clean_path = s_match(bf.filename or bf.name, '^%[?(.-)%]?$') or (bf.filename or bf.name)
+          local new_id = mylhmc_load_font_at_size(clean_path, target_size)
+          if new_id then italic_cache[fid] = new_id; return new_id end
+        end
+      end
+    end
+  end
   mylhmc_ensure_lm_paths()
   local fallback_id = mylhmc_load_font_at_size(LM_ITALIC_PATH, f.size)
   if fallback_id then italic_cache[fid] = fallback_id; return fallback_id end
@@ -18133,6 +18371,11 @@ local function mylhmc_get_lm_fid(fid)
   if new_id then lm_cache[fid] = new_id; return new_id end
   lm_cache[fid] = fid; return fid
 end
+
+register_tex_cmd('set_lmmono', function(value)
+  use_lmono_italic = (value == 'true')
+  italic_cache = {}
+end, {'string'})
 
 local color_data, push_templates, module_user_cmds = {}, {}, {}
 
@@ -18509,11 +18752,10 @@ local function mylhmc_colorize_name_with_argnum(chunk, fid, base_color)
 end
 
 -- Colorea el "modo csname" de \myhlc (bare_varname_full ya confirmó
--- que text es un nombre l_.../g_.../l__.../g__... completo, sin
--- backslash). Antepone '\' SOLO para reusar la lógica de detección de
--- módulo propio/ajeno (private_owner_color/module_aware_color esperan
--- ese formato) -- el backslash nunca se muestra, no se le pasa a
--- colorize_name_with_argnum.
+-- que text es un nombre completo l_.../g_.../l__.../g__..., sin
+-- backslash). El '\' antepuesto es solo para reusar la detección de
+-- módulo propio/ajeno (esas funciones esperan ese formato); nunca se
+-- muestra ni se pasa a colorize_name_with_argnum.
 local function mylhmc_render_bare_varname(text, fid)
   local is_private = s_sub(text, 2, 3) == '__'
   local prefixed = '\\' .. text
@@ -19368,7 +19610,14 @@ mylhmc_colorize_code = function(line, fid)
         mathml_after_dollar = false
         rh, rt = mylhmc_colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil
       else rh, rt = mylhmc_colorize_mathml_intent(chunk, fid, rh, rt); h, tl = nil, nil end
-    elseif in_mathml_arg and t ~= 8 then h, tl = mylhmc_colored_str(chunk, 'mathml_var', fid)
+    elseif in_mathml_arg and t ~= 8 then
+      if t == 4 then
+        h, tl = mylhmc_colorize_name_with_argnum(chunk, fid, mylhmc_module_aware_color(chunk, 'publicvar'))
+      elseif t == 2 then
+        h, tl = mylhmc_colorize_name_with_argnum(chunk, fid, mylhmc_private_owner_color(chunk, 'privatevar'))
+      else
+        h, tl = mylhmc_colored_str(chunk, 'mathml_var', fid)
+      end
     elseif t == 42 then
       h, tl = mylhmc_colored_str(':', 'signature', fid); rh, rt = mylhmc_append(rh, rt, h, tl)
       local rest = s_sub(chunk, 2)

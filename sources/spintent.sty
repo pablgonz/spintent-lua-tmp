@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-17} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-19} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -99,7 +99,7 @@
   { \__spintent_luafun_set_debug_ghost:n { true } }
   { \__spintent_luafun_set_debug_ghost:n { false } }
 \int_new:N  \l__spintent_scope_attr_int
-\str_new:N  \l__spintent_scope_luaset_attr_str
+%% \str_new:N  \l_@@_scope_luaset_attr_str
 \int_set:Nn \l__spintent_scope_attr_int { \l__spintent_scope_luaset_attr_str }
 \cs_generate_variant:Nn \__spintent_luafun_spunit_lookup_alias:n { V }
 \cs_generate_variant:Nn \__spintent_luafun_spmoney_lookup_data:n { V }
@@ -151,7 +151,7 @@
   }
 \hook_gput_code:nnn { begindocument } { spintent }
   {
-    \Umathchardef \c__spintent_invisible_sep_tl = "0 "0 "2063
+    \Umathchardef \c__spintent_invisible_sep_int = "0 "0 "2063
   }
 \cs_new_protected:Nn \__spintent_collapse_hyphens:N
   {
@@ -1474,7 +1474,7 @@
           {
             \MathMLintent { _minutos }
               {
-                \c__spintent_invisible_sep_tl
+                \c__spintent_invisible_sep_int
               }
           }
       }
@@ -2047,7 +2047,7 @@
       {
         \seq_set_map:NNn \l__spintent_mc_args_seq \l__spintent_mc_args_seq
           { \MathMLintent { :silent } { ##1 } }
-        \MathMLintent { _entre } { \c__spintent_invisible_sep_tl }
+        \MathMLintent { _entre } { \c__spintent_invisible_sep_int }
         \MathMLintent { :silent } { ( }
         \seq_use:Nnnn \l__spintent_mc_args_seq
           { \MathMLintent { _y:silent } { , } }
@@ -2055,7 +2055,7 @@
           { \MathMLintent { _y:silent } { , } }
       }
       {
-        \MathMLintent { _entre } { \c__spintent_invisible_sep_tl }
+        \MathMLintent { _entre } { \c__spintent_invisible_sep_int }
         \MathMLintent { :silent } { ( }
         \seq_use:Nnnn \l__spintent_mc_args_seq
           { \MathMLintent { _y }      { , } }
@@ -2207,7 +2207,7 @@
   {
     \MathMLintent { :silent } { \operatorname { #1 } }
     \MathMLintent { :silent } { ( }
-    \MathMLintent { :silent } { \c__spintent_invisible_sep_tl }
+    \MathMLintent { :silent } { \c__spintent_invisible_sep_int }
     \MathMLintent { :silent } { #2 }
     \MathMLintent { :silent } { ) }
   }
@@ -2591,9 +2591,9 @@
   {
     \str_case:Vn \l__spintent_spmQ_join_word_str
       {
-        { entero  } { \MathMLintent { _entero  } { \c__spintent_invisible_sep_tl } }
-        { enteros } { \MathMLintent { _enteros } { \c__spintent_invisible_sep_tl } }
-        { y       } { \MathMLintent { _y-      } { \c__spintent_invisible_sep_tl } }
+        { entero  } { \MathMLintent { _entero  } { \c__spintent_invisible_sep_int } }
+        { enteros } { \MathMLintent { _enteros } { \c__spintent_invisible_sep_int } }
+        { y       } { \MathMLintent { _y-      } { \c__spintent_invisible_sep_int } }
       }
   }
 \cs_new_protected:Nn \__spintent_spmQ_print_scale_int:
@@ -2626,7 +2626,7 @@
               }
             \MathMLintent { \l__spintent_spnQ_intent_read_sign_str }
               {
-                \l__spintent_luaset_sign_tl \c__spintent_invisible_sep_tl %%\__spintent_invisible_sep:
+                \l__spintent_luaset_sign_tl \c__spintent_invisible_sep_int % \__spintent_invisible_sep:
                 \MathMLarg { e } { \__spintent_spmQ_print_scale_int: }
               }
           }
@@ -2696,16 +2696,15 @@
 \str_new:N   \l__spintent_geo_luaset_tipo_str
 \str_new:N \l__spintent_spcoord_luaset_error_str
 \str_new:N \l__spintent_spcoord_luaset_sep_str
-\str_new:N \l__spintent_spcoord_luaset_x_sign_str
-\str_new:N \l__spintent_spcoord_luaset_x_type_str
-\str_new:N \l__spintent_spcoord_luaset_x_value_str
-\str_new:N \l__spintent_spcoord_luaset_x_has_frac_str % "none" / "frac" / "dfrac"
-\str_new:N \l__spintent_spcoord_luaset_y_sign_str
-\str_new:N \l__spintent_spcoord_luaset_y_type_str
-\str_new:N \l__spintent_spcoord_luaset_y_value_str
-\str_new:N \l__spintent_spcoord_luaset_y_has_frac_str % "none" / "frac" / "dfrac"
+\clist_map_inline:nn { x , y }
+  {
+    \str_new:c { l__spintent_spcoord_luaset_ #1 _sign_str }
+    \str_new:c { l__spintent_spcoord_luaset_ #1 _type_str }
+    \str_new:c { l__spintent_spcoord_luaset_ #1 _value_str }
+    \str_new:c { l__spintent_spcoord_luaset_ #1 _has_frac_str }
+  }
 \tl_new:N  \l__spintent_spcoord_raw_arg_tl
-\str_new:N \l__spintent_spcoord_intent_str % ,;:infix
+\str_new:N \l__spintent_spcoord_intent_str
 \tl_new:N  \l__spintent_spcoord_wrap_parens_l_tl
 \tl_new:N  \l__spintent_spcoord_wrap_parens_r_tl
 \msg_new:nnn { spintent } { spcoord-invalid-arg }
@@ -2772,8 +2771,11 @@
   }
 \cs_new_protected:Nn \__spintent_spcoord_value:n
   {
-    \str_if_eq:eeTF { \str_use:c { l__spintent_spcoord_luaset_ #1 _type_str } } { number }
-      { \exp_args:Ne \spnum { \str_use:c { l__spintent_spcoord_luaset_ #1 _value_str } } }
+    \str_if_eq:eeTF
+      { \str_use:c { l__spintent_spcoord_luaset_ #1 _type_str } } { number }
+      {
+        \exp_args:Ne \spnum { \str_use:c { l__spintent_spcoord_luaset_ #1 _value_str } }
+      }
       { \str_use:c { l__spintent_spcoord_luaset_ #1 _value_str } }
   }
 \cs_new_protected:Nn \__spintent_spcoord_print:n
@@ -3038,10 +3040,10 @@
     \__spintent_spPoint_print:n { #2 }
     \tl_if_novalue:nF {#3}
       {
-        \MathMLintent { :silent } { \c__spintent_invisible_sep_tl } % silencia el "por"
+        \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % silencia el "por"
         \bool_set_eq:NN \l__spintent_spcoord_silent_cmd_bool \l__spintent_spPoint_silent_cmd_bool
         \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l__spintent_spPoint_coord_silent_cmd_bool
+        \bool_if:NTF \l__spintent_spcoord_silent_cmd_bool
           {
             \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
             \str_set:Nn \l__spintent_spcoord_luaset_error_str { false }
@@ -3277,7 +3279,7 @@
     \tl_if_novalue:nF {#3}
       {
         \equal % notación de vector =( , )
-        \MathMLintent { :silent } { \c__spintent_invisible_sep_tl } % previene lectura de intervalo
+        \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % previene lectura de intervalo
         \bool_set_eq:NN \l__spintent_spcoord_silent_cmd_bool \l__spintent_spvec_silent_cmd_bool
         \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
         \bool_if:NTF \l__spintent_spvec_silent_cmd_bool
