@@ -1765,7 +1765,7 @@ end, "shekel_fallback_patch")
 % \begin{function}{\spshort}
 %   \cmdexamp{spshort}{abreviaturas \textnormal{\textcolor{lightgray}{\textbar}} acrónimos \textnormal{\textcolor{lightgray}{\textbar}} números ordinales}
 %   \cmdexamp{spshort}[key \textnormal{\textcolor{gray}{=}} val]{abreviaturas \textnormal{\textcolor{lightgray}{\textbar}} acrónimos \textnormal{\textcolor{lightgray}{\textbar}} números ordinales}
-%   \cmdexamp{spshort}[read-arg\textnormal{\textcolor{gray}{=}}\mymarg{verbalización del argumento para \textnormal{NVDA}}]{comandos \hologo{LaTeX}}
+%   \cmdexamp{spshort}[read-arg\textnormal{\textcolor{gray}{=}}\mymarg{verbalización \textnormal{NVDA}}]{comandos \hologo{LaTeX}}
 %
 % \smallskip
 %
@@ -4055,12 +4055,21 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spAfig}
-%   \begin{syntax}
-%     |\spAfig|
-%     |\spAfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
-%     |\spAfig|\myparg{número \textnormal{\textcolor{lightgray}{\textbar}} letra \textnormal{\textcolor{lightgray}{\textbar}} letra\_\{número\}}
+%   \begin{minipage}[t]{0.45\linewidth}\vspace*{-0.15\mydpstrut}\small
+%     |\spAfig|\par
+%     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
+%     |\spAfig|\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
+%     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.15\mydpstrut}\small
+%     |\spAfig|\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
+%     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
+%     |\spAfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}\par
 %     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
-%   \end{syntax}
+%   \end{minipage}
+%
+%   \medskip
+%
 %   El comando \ics*{spAfig} trabaja en \emph{modo matemático} y
 %   recibe el \emph{argumento delimitado por paréntesis}, el cual es
 %   \emph{completamente opcional}, representando el \emph{área} de
@@ -4173,12 +4182,20 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spPfig}
-%   \begin{syntax}
-%     |\spPfig|
-%     |\spPfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
-%     |\spPfig|\myparg{número \textnormal{\textcolor{lightgray}{\textbar}} letra \textnormal{\textcolor{lightgray}{\textbar}} letra\_\{número\}}
+%   \begin{minipage}[t]{0.45\linewidth}\vspace*{-0.15\mydpstrut}\small
+%     |\spPfig|\par
+%     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
+%     |\spPfig|\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
+%     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.15\mydpstrut}\small
+%     |\spPfig|\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
+%     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
+%     |\spPfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}\par
 %     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
-%   \end{syntax}
+%   \end{minipage}
+%
+%   \medskip
 %   El comando \ics*{spPfig} trabaja en \emph{modo matemático} y
 %   recibe el \emph{argumento delimitado por paréntesis}, el cual es
 %   \emph{completamente opcional}, representando el \emph{perímetro}
