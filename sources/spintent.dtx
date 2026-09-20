@@ -206,7 +206,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-19}
+\def\filedate{2026-09-20}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -610,7 +610,7 @@ end, "shekel_fallback_patch")
 % Don't copy numbers in code example
 \newcommand*{\noaccsupp}[1]
   {
-    \__mylhmc_actual_text_begin: #1 \__mylhmc_actual_text_end:
+    \__mylhmc_luafun_actual_text_begin: #1 \__mylhmc_luafun_actual_text_end:
   }
 \ExplSyntaxOff
 
@@ -669,7 +669,7 @@ end, "shekel_fallback_patch")
                     pdfstartview, FitH, pdfinfo, Title, Subject, range, StylisticSet, small-caps, read-arg, píxeles, px, caudal,%
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
                     lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent-cmd, en-US, math, mathml-SE, es-CL, on, off, %
-                    setup, tagging, tagging-setup, lang, pdfversion, pdfstandard, arg, },%
+                    setup, tagging, tagging-setup, lang, pdfversion, pdfstandard, arg, auto, read-sub,},%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
@@ -683,7 +683,7 @@ end, "shekel_fallback_patch")
 % Reserved words 12 (AF ghost - MathML tags)
     keywordstyle  = [12]{\color{other_np}},%
     keywords      = [12]{sptmp, inner, outer, },%
-% literate
+% literate                     {`}{{\textcolor{quote}{\textasciigrave}}}{1}
     literate      =*{\{}{{{\color{brace}{\char`\{}}}}{1}
                     {\}}{{{\color{brace}{\char`\}}}}}{1}
                     {\|}{{{\color{gray}{\char`\|}}}}{1}
@@ -697,7 +697,6 @@ end, "shekel_fallback_patch")
                     {;}{{\textcolor{gray}{;}}}{1}
                     {.}{{\textcolor{signature}{.}}}{1}
                     {:}{{\textcolor{signature}{:}}}{1}
-                    {`}{{\textcolor{quote}{\textasciigrave}}}{1}
                     {\&}{{\textcolor{gray}{\&}}}{1}
                     {>}{{\textcolor{percent}{>}}}{1}
                     {<}{{\textcolor{percent}{<}}}{1}
@@ -4062,43 +4061,63 @@ end, "shekel_fallback_patch")
 %     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
 %   \end{minipage}\hfill
 %   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.15\mydpstrut}\small
-%     |\spAfig|\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
-%     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
 %     |\spAfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}\par
-%     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}\par
+%     |\spAfig|\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
+%     |\spAfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
 %   \end{minipage}
 %
 %   \medskip
 %
-%   El comando \ics*{spAfig} trabaja en \emph{modo matemático} y
-%   recibe el \emph{argumento delimitado por paréntesis}, el cual es
-%   \emph{completamente opcional}, representando el \emph{área} de
-%   una figura poligonal en la impresión aplicando |\mathcal{A}|.
-%
-%   \smallskip
-%
-%   El argumento admite tres formas: una \emph{lista de vértices}
+%   El comando \ics*{spAfig} trabaja en \emph{modo matemático} y recibe
+%   el \emph{argumento opcional delimitado por paréntesis} de la forma
+%   \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n},
 %   \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
-%   (al menos tres); un \emph{número o letra sueltos}
-%   \myparg{1}, \myparg{n}; o una \emph{letra de una tabla fija}
-%   (|F|, |P|, |B|, |L|) con subíndice numérico opcional,
-%   \myparg{F}, \myparg{F\_\{1\}}.
+%   o \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+%   aplicando |\mathcal{A}| a la impresión. El \emph{símbolo} usado en
+%   la impresión se maneja por medio de la llave \mykey{print-sym} y la
+%   verbalización del concepto asociado se determinan acorde al \myparg{argumento}
+%   y la llave \mykey{concept}.
 %
 %   \smallskip
 %
-%   Si no se proporciona el \emph{argumento opcional}
-%   \myoarg{key \textnormal{\textcolor{gray}{=}} val} ni el argumento
-%   delimitado por paréntesis, |$\spAfig$| imprimirá `$\mathcal{A}$'
-%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«área»}. Con vértices, |$\spAfig(A, B, C)$| imprimirá
-%   `$\mathcal{A}_{\triangle ABC}$' y verbalizará \emph{«área del
-%   triángulo A B C»}. Con un número o letra sueltos, |$\spAfig(1)$|
-%   imprimirá `$\mathcal{A}_1$' y verbalizará \emph{«área uno»};
-%   |$\spAfig(n)$| imprimirá `$\mathcal{A}_n$' y verbalizará
-%   \emph{«área n»}. Con una letra de la tabla, |$\spAfig(F)$|
-%   imprimirá `$\mathcal{A}_F$' y verbalizará \emph{«área de la
-%   figura»}; |$\spAfig(F_{1})$| imprimirá `$\mathcal{A}_{F_1}$' y
-%   verbalizará \emph{«área de la figura uno»}.
+%   Si se proporciona el \emph{argumento} \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n},
+%   |$\spAfig(1)$| imprimirá `$\mathcal{A}_{1}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área uno»};
+%   |$\spAfig(n)$| imprimirá `$\mathcal{A}_{n}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área ene»}.
+%
+%   \smallskip
+%
+%   Si se proporciona el \emph{argumento} \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots},
+%   |$\spAfig(ABC)$| imprimirá `$\mathcal{A}_{\triangle ABC}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del triángulo A B C»};
+%   |$\spAfig(ABCD)$| imprimirá `$\mathcal{A}_{\mdlgwhtsquare ABCD}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del cuadrado A B C D»};
+%
+%   \smallskip
+%
+%   Si se proporciona el \emph{argumento} \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}},
+%   |$\spAfig(F)$| imprimirá `$\mathcal{A}_{F}$' en la salida \texttt{PDF}
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área de la figura»};
+%   |$\spAfig(F_{1})$| imprimirá `$\mathcal{A}_{F_{1}}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área de la figura uno»}.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   ni el \emph{argumento opcional delimitado por paréntesis}, |$\spAfig$| imprimirá
+%   `$\mathcal{A}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«área»}.
+%
+%   \smallskip
+%
+% \begin{important}*
+%   El \emph{argumento} \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%   acepta prima(s) `|'|' o subíndice(s) `|_{...}|'. El \emph{argumento}
+%   \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+%   solo acepta subíndices `|_{...}|' y tiene una impresión y verbalización
+%   fija para cada letra: |F| \emph{«figura»}, |P| \emph{«polígono»},
+%   |B| \emph{«basal»}, |L| \emph{«lateral»} y |T| \emph{«total»}.
+% \end{important}
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spAfig}}
@@ -4108,7 +4127,7 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
 % argumento. Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
-% del argumento sin el prefijo «mayúscula»: |$\spAfig(A, B, C)$|
+% del argumento sin el prefijo «mayúscula»: |$\spAfig(ABC)$|
 % se verbaliza \emph{«área del triángulo A B C»}; si se establece en |mathcat|,
 % \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
 % el prefijo «mayúscula» dependiendo de la configuración del usuario.
@@ -4118,7 +4137,8 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spAfig]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«área»}. El valor de esta llave
+% \emph{antes} de verbalizar el término \emph{«área del ...»} y el concepto
+% asociado acorde al \myparg{argumento}. El valor de esta llave
 % \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
@@ -4128,31 +4148,44 @@ end, "shekel_fallback_patch")
 %   square \textnormal{\textcolor{lightgray}{\textbar}}
 %   none}{auto}[spAfig]
 % \smallskip
-% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión.
-% Con vértices, |auto| infiere el símbolo según el número de puntos
-% (tres o cuatro); |none| lo omite y \mynvmath{NVDA/MathCAT} verbaliza
-% solo los vértices sin nombrar la figura: |$\spAfig[print-sym=none](A, B, C)$|
-% imprimirá `$\mathcal{A}_{ABC}$' y verbalizará \emph{«área A B C»}.
-% Forzar |triangle|/|square| exige que coincida con el número real de
-% vértices; en caso contrario se produce un error. Con un número o
-% letra sueltos, |auto| y |none| se comportan igual (sin símbolo);
-% |triangle|/|square| anida el argumento bajo el símbolo:
-% |$\spAfig[print-sym=triangle](1)$| imprimirá
-% `$\mathcal{A}_{\triangle_1}$' y verbalizará \emph{«área del
-% triángulo uno»}. Esta llave no puede combinarse con una letra de la
-% tabla (|F|, |P|, |B|, |L|).
+% Establece si se \emph{usará} |\triangle| o |\mdlgwhtsquare| en la impresión
+% para los argumentos \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+% y \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+% pasado al comando sin modificar la verbalización de este. Si se utiliza
+% \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+% se infiere el \emph{símbolo} acorde al número de puntos; si establece en
+% \mykey{auto} se imprime y si se establece en \mykey{none} se omite:
+% |$\spAfig[print-sym=auto](ABC)$| y |$\spAfig[print-sym=none](ABC)$| imprimirán
+% `$\mathcal{A}_{\triangle ABC}$' y `$\mathcal{A}_{ABC}$' en la salida
+% \texttt{PDF} y en ambos casos \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del triángulo A B C»}
+%
+% \smallskip
+%
+% Si se utiliza \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+% los valores \mykey{auto} y \mykey{none} quedan sin efecto; si se establece en \mykey{triangle}
+% o \mykey{square} anida el argumento bajo el \emph{símbolo}:
+% |$\spAfig[print-sym=|\mykey{triangle}|](1)$| imprimirá `$\mathcal{A}_{\triangle_{1}}$'
+% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del
+% triángulo uno»}; |$\spAfig[print-sym=|\mykey{square}|](1)$| imprimirá
+% `$\mathcal{A}_{\mdlgwhtsquare_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«área del cuadrado uno»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%   Esta llave no se puede utilizar con el argumento \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}.
+% \end{important}
 %
 % \smallskip
 %
 % \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spAfig]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} antepone la palabra «sub» al
-% verbalizar el número o letra del argumento único. Si se establece en
-% |true|, |$\spAfig[read-sub=true](1)$| verbaliza \emph{«área sub
-% uno»}; si se establece en |false|, verbaliza \emph{«área uno»}. No
-% tiene efecto en la notación de vértices ni cuando el argumento es
-% una letra de la tabla sin subíndice.
+% Establece si se \emph{antepone} la palabra «sub» al verbalizar los argumentos
+% \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+% y \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+% para \mynvmath{NVDA/MathCAT}. Si se establece en |true|, |$\spAfig[read-sub=true](1)$| se verbaliza \emph{«área sub
+% uno»}; si se establece en |false|, se verbaliza \emph{«área uno»}.
 %
 % \smallskip
 %
@@ -4533,7 +4566,7 @@ end, "shekel_fallback_patch")
 % keys: \mykey{mathcal} and \mykey{AFghost}, which can be passed as package
 % options.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-19} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-20} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -4606,24 +4639,27 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsection{Variables for the key \texttt{mathcal} and \cs[no-index]{rightanglesqr}}
+% \subsection{Variables for the key \texttt{mathcal}, \cs[no-index]{rightanglesqr} and \cs[no-index]{attribute}}
 %
 % \begin{macro}[int]
 %   {
 %     \l_@@_luaset_cal_fam_ok_str,
-%     \l_@@_luaset_sym_fam_ok_str
+%     \l_@@_luaset_sym_fam_ok_str,
+%     \l_@@_luaset_scope_attr_str,
 %   }
 %   First, we declare the string variable \myhlc|\l_@@_luaset_cal_fam_ok_str|
 %   used by the function \myhlc|\@@_luafun_classic_mathcal:nn| (controlled
-%   by the key \mykey{mathcal}) alongside the string variable \myhlc|\l_@@_luaset_sym_fam_ok_str|
+%   by the key \mykey{mathcal}), the string variable \myhlc|\l_@@_luaset_sym_fam_ok_str|
 %   used by the function \myhlc|\@@_luafun_right_angle_sqr:| to copy |\rightanglesqr|
-%   before loading the Lua module \myluamod{}. This is necessary due to
-%   the implementation of the functions within the Lua module; otherwise,
-%   \mypkg[no-index]{expl3} would issue a warning regarding duplicate
-%   variable declarations.
+%   alongside the string variable \myhlc|\l_@@_luaset_scope_attr_str|
+%   used by \myhlc|\attribute| before loading the Lua module \myluamod{}.
+%   This is necessary due to the implementation of the functions within
+%   the Lua module; otherwise, \mypkg[no-index]{expl3} would issue a warning
+%   regarding duplicate variable declarations.
 %    \begin{macrocode}
 \str_new:N \l_@@_luaset_cal_fam_ok_str
 \str_new:N \l_@@_luaset_sym_fam_ok_str
+\str_new:N \l_@@_luaset_scope_attr_str
 %    \end{macrocode}
 % \end{macro}
 %
@@ -4651,7 +4687,7 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\l_@@_scope_attr_int, \l_@@_scope_luaset_attr_str}
+% \begin{macro}[int]{\l_@@_scope_attr_int}
 %   A \hologo{LuaTeX} attribute number, allocated collision-free from
 %   Lua via |luatexbase.new_attribute| and exposed here as an integer.
 %   Every command that uses the shared function \myhlc|\@@_luafun_mrow_intent_arg:nn|
@@ -4661,8 +4697,7 @@ end, "shekel_fallback_patch")
 %   from an unrelated command sitting in the same formula.
 %    \begin{macrocode}
 \int_new:N  \l_@@_scope_attr_int
-%% \str_new:N  \l_@@_scope_luaset_attr_str
-\int_set:Nn \l_@@_scope_attr_int { \l_@@_scope_luaset_attr_str }
+\int_set:Nn \l_@@_scope_attr_int { \l_@@_luaset_scope_attr_str }
 %    \end{macrocode}
 % \end{macro}
 %
@@ -15009,7 +15044,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-19]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-20]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -15153,7 +15188,7 @@ local spintent_sub_mlist_t = node.id("sub_mlist")
 -- Numero de atributo asignado por el propio kernel de LuaTeX (sin
 -- riesgo de colision con otro paquete).
 local spintent_scope_attr = luatexbase.new_attribute("spintent_scope")
-token_set_macro("l__spintent_scope_luaset_attr_str", tostring(spintent_scope_attr))
+token_set_macro("l__spintent_luaset_scope_attr_str", tostring(spintent_scope_attr))
 
 -- Reclama 'target' con la siguiente entrada de la cola. Solo si
 -- tiene spintent_scope_attr=1 (tipografiado dentro de un comando
@@ -17562,7 +17597,7 @@ end, { "string" })
 %<*mylhmcsty>
 % \fi
 \NeedsTeXFormat{LaTeX2e}[2026-11-01]
-\ProvidesExplPackage{mylhmc}{2026-09-19}{0.99}
+\ProvidesExplPackage{mylhmc}{2026-09-20}{0.99}
   {Line-by-line macrocode reader for l3doc in Lua}
 \sys_if_engine_luatex:F
   {
@@ -17575,7 +17610,7 @@ end, { "string" })
     \msg_fatal:nn { mylhmc } { l3doc-required }
   }
 \lua_load_module:n { mylhmc.lua }
-\cs_generate_variant:Nn \__mylhmc_set_color:nn { VV }
+\cs_generate_variant:Nn \__mylhmc_luafun_set_color:nn { VV }
 
 \seq_new:N \g__mylhmc_colors_export_seq
 \seq_new:N \l__mylhmc_path_seq
@@ -17615,7 +17650,7 @@ end, { "string" })
     % Export to Lua using the full path joined with '_'
     \__mylhmc_color_export_name:n { #1 }
     \color_export:nnN { mylhmc / #1 } { space-sep-rgb } \l__mylhmc_color_export_tl
-    \__mylhmc_set_color:VV \l__mylhmc_export_name_tl \l__mylhmc_color_export_tl
+    \__mylhmc_luafun_set_color:VV \l__mylhmc_export_name_tl \l__mylhmc_color_export_tl
     % Defer xcolor definition until xcolor is available
     \seq_gput_right:Nn \g__mylhmc_colors_export_seq { { #1 } { #2 } { #3 } }
   }
@@ -17688,25 +17723,25 @@ end, { "string" })
     \mode_leave_vertical:
     \group_begin:
       \ttfamily
-      \__mylhmc_inline:n {#1}
+      \__mylhmc_luafun_inline:n {#1}
     \group_end:
   }
-\cs_new_protected:Npn \__mylhmc_inline:n #1
+\cs_new_protected:Npn \__mylhmc_luafun_inline:n #1
   {
     \tl_set:Nn \l__mylhmc_verbatim_line_tl {#1}
-    \__mylhmc_inline:
+    \__mylhmc_luafun_inline:
   }
 
 \hook_gput_code:nnn { begindocument } { mylhmc }
   {
     \renewcommand \theCodelineNo
       {
-        \__mylhmc_actual_text_begin:
+        \__mylhmc_luafun_actual_text_begin:
         \group_begin:
           \color_select:n { mylhmc / guard / angle }
           \ttfamily \tiny \arabic { CodelineNo }
         \group_end:
-        \__mylhmc_actual_text_end:
+        \__mylhmc_luafun_actual_text_end:
       }
   }
 
@@ -17756,7 +17791,7 @@ end, { "string" })
 \cs_new_protected_nopar:Nn \__mylhmc_output_line:
   {
     \tex_noindent:D
-    \__mylhmc_process_line:
+    \__mylhmc_luafun_process_line:
     \tex_par:D
   }
 
@@ -17781,21 +17816,28 @@ end, { "string" })
     unknown .code:n =
       { \msg_error:nne { mylhmc } { unknown-key } { \l_keys_key_str } } ,
     provide .code:n =
-      { \clist_map_function:nN {#1} \__mylhmc_register_module_cmd:n } ,
+      { \clist_map_function:nN {#1} \__mylhmc_luafun_register_module_cmd:n } ,
     provide .value_required:n = true ,
     % Respaldo de nombre de módulo para \myhlc antes de la primera
     % guarda %<@@=modulo> real -- vive solo del lado de Lua, nunca toca
     % \g__codedoc_module_name_tl (variable global de l3doc.cls).
     module .code:n =
-      { \__mylhmc_set_module_backup:n {#1} } ,
+      { \__mylhmc_luafun_set_module_backup:n {#1} } ,
     module .value_required:n = true ,
     % Fallback de itálica para comentarios: true (por defecto) = siempre
     % Latin Modern Mono Italic; false = busca primero una itálica
     % hermana de la fuente actual (como ya hace la negrita), cayendo a
     % Latin Modern solo si no encuentra ninguna.
     lmmono .code:n =
-      { \__mylhmc_set_lmmono:n {#1} } ,
+      { \__mylhmc_luafun_set_lmmono:n {#1} } ,
     lmmono .value_required:n = true ,
+    % Palabra clave de prioridad extra para la negrita (p.ej.
+    % bold=Semibold): si coincide con una fuente hermana cargada, gana
+    % por encima de medium/semibold/bold; si no coincide con ninguna
+    % (o nunca se fija), cae al comportamiento actual sin cambios.
+    bold .code:n =
+      { \__mylhmc_luafun_set_bold_weight:n {#1} } ,
+    bold .value_required:n = true ,
   }
 
 \cs_new_protected:Npn \__mylhmc_define_color_key:nnn #1#2#3
@@ -17825,7 +17867,7 @@ end, { "string" })
 % \iffalse
 %<*mylhmclua>
 % \fi
--- mylhmc.lua v0.99 2026-09-19 (node.direct + Loop/Memory Micro-Optimized)
+-- mylhmc.lua v0.99 2026-09-20 (node.direct + Loop/Memory Micro-Optimized)
 -- LuaLaTeX syntax highlighter for l3doc macrocode environments
 
 local require      = require
@@ -17929,7 +17971,7 @@ local function register_tex_cmd(name, func, args)
   token_set_lua(name, index, 'global', 'protected')
 end
 
-register_tex_cmd('set_module_backup', function(name)
+register_tex_cmd('luafun_set_module_backup', function(name)
   module_name_backup = name or ''
 end, {'string'})
 
@@ -18267,8 +18309,15 @@ local bold_cache, lm_cache, italic_cache = {}, {}, {}
 -- ahora; false = busca primero una itálica hermana de la fuente
 -- actual (igual que ya hace mylhmc_get_med_bold_fid para negrita),
 -- cayendo a Latin Modern solo si no encuentra ninguna. Se fija desde
--- \setmylhmc{lmono=true|false}.
-local use_lmono_italic = true
+-- \setmylhmc{lmmono=true|false}.
+local use_lmmono_italic = true
+
+-- Palabra clave de prioridad extra para mylhmc_get_med_bold_fid: si no
+-- está vacía, cualquier fuente hermana cuyo nombre la contenga gana
+-- por encima de 'medium'/'semibold'/'bold' (puntaje 4, el más alto).
+-- Si no coincide con ninguna fuente cargada (o nunca se fijó), cae al
+-- comportamiento actual sin cambios. Se fija desde \setmylhmc{bold=...}.
+local bold_weight_override = ''
 
 local LM_ITALIC_PATH, LM_REGULAR_PATH, LM_BOLD_PATH = nil, nil, nil
 
@@ -18298,6 +18347,7 @@ local function mylhmc_get_med_bold_fid(fid)
   local base_family = s_match(f.name, '^%[?([^%-]+)') or f.name
   local target_size = f.size
   local best_id, best_score, best_path = nil, 0, nil
+  local override_lower = bold_weight_override ~= '' and s_lower(bold_weight_override) or nil
 
   -- Optimización: cacheamos f_max() para el for
   local max_f = f_max()
@@ -18307,7 +18357,8 @@ local function mylhmc_get_med_bold_fid(fid)
        s_find(bf.name, base_family, 1, true) then
       local lower_name = s_lower(bf.name)
       local score = 0
-      if s_find(lower_name, 'medium') then score = 3
+      if override_lower and s_find(lower_name, override_lower, 1, true) then score = 4
+      elseif s_find(lower_name, 'medium') then score = 3
       elseif s_find(lower_name, 'semibold') or s_find(lower_name, 'semi') or
              s_find(lower_name, 'demi') then score = 2
       elseif s_find(lower_name, 'bold') then score = 1
@@ -18341,7 +18392,7 @@ local function mylhmc_get_italic_fid(fid)
   if italic_cache[fid] then return italic_cache[fid] end
   local f = f_getfont(fid)
   if not f or not f.size then italic_cache[fid] = fid; return fid end
-  if not use_lmono_italic and f.name then
+  if not use_lmmono_italic and f.name then
     local base_family = s_match(f.name, '^%[?([^%-]+)') or f.name
     local target_size = f.size
     local max_f = f_max()
@@ -18389,14 +18440,19 @@ local function mylhmc_get_lm_fid(fid)
   lm_cache[fid] = fid; return fid
 end
 
-register_tex_cmd('set_lmmono', function(value)
-  use_lmono_italic = (value == 'true')
+register_tex_cmd('luafun_set_lmmono', function(value)
+  use_lmmono_italic = (value == 'true')
   italic_cache = {}
+end, {'string'})
+
+register_tex_cmd('luafun_set_bold_weight', function(value)
+  bold_weight_override = value or ''
+  bold_cache = {}
 end, {'string'})
 
 local color_data, push_templates, module_user_cmds = {}, {}, {}
 
-register_tex_cmd('register_module_cmd', function(name)
+register_tex_cmd('luafun_register_module_cmd', function(name)
   name = s_match(name, '^%s*(.-)%s*$') or name
   local clean = s_sub(name, 1, 1) == '\\' and s_sub(name, 2) or name
   -- quitar un '*' final (variante con asterisco, estilo \section*): el
@@ -18409,7 +18465,7 @@ register_tex_cmd('register_module_cmd', function(name)
   end
 end, {'string'})
 
-register_tex_cmd('set_color', function(name, spec)
+register_tex_cmd('luafun_set_color', function(name, spec)
   local r, g, b = s_match(spec, '([%d%.]+)%s+([%d%.]+)%s+([%d%.]+)')
   if r then
     local nr, ng, nb = tonumber(r), tonumber(g), tonumber(b)
@@ -19834,14 +19890,14 @@ end
 -- Reemplazo mínimo de \BeginAccSupp{ActualText={}}/\EndAccSupp{} (accsupp)
 -- vía whatsit pdf_literal directo: envuelve el número de línea en un
 -- Span PDF con ActualText vacío, para que no se copie al extraer texto.
-register_tex_cmd('actual_text_begin', function()
+register_tex_cmd('luafun_actual_text_begin', function()
   local n = d_new('whatsit', 'pdf_literal')
   d_setfield(n, 'mode', 2)
   d_setfield(n, 'data', '/Span << /ActualText () >> BDC')
   n_write(d_tonode(n))
 end, {})
 
-register_tex_cmd('actual_text_end', function()
+register_tex_cmd('luafun_actual_text_end', function()
   local n = d_new('whatsit', 'pdf_literal')
   d_setfield(n, 'mode', 2)
   d_setfield(n, 'data', 'EMC')
@@ -19849,7 +19905,7 @@ register_tex_cmd('actual_text_end', function()
   n_write(d_tonode(n))
 end, {})
 
-register_tex_cmd('inline', function()
+register_tex_cmd('luafun_inline', function()
   local text = t_get_macro('l__mylhmc_verbatim_line_tl')
   if not text or text == '' then return end
   text = s_gsub(text, '[\r\n]+$', '')
@@ -19870,7 +19926,7 @@ register_tex_cmd('inline', function()
   font_bracket_pending = false
 end, {})
 
-register_tex_cmd('process_line', function()
+register_tex_cmd('luafun_process_line', function()
   local line = t_get_macro('l__mylhmc_verbatim_line_tl')
   if not line or line == '' then return end
   line = s_gsub(line, '[\r\n]+$', '')
