@@ -4013,6 +4013,8 @@ end, "shekel_fallback_patch")
 % \emph{«cuadrado»} establecido por la llave \mykey{concept}. El valor de esta
 % llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
+% \smallskip
+%
 % \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{true}[spPoly]
 % \smallskip
@@ -4137,9 +4139,75 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spAfig]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«área del ...»} y el concepto
-% asociado acorde al \myparg{argumento}. El valor de esta llave
-% \emph{siempre} debe pasarse entre llaves `|{ }|'.
+% \emph{antes} de verbalizar el término \emph{«área del»} y el concepto
+% \emph{«nombre de la figura»} acorde al \myparg{argumento} pasado al comando.
+% El valor de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spAfig]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«área del»} y el concepto \emph{«nombre de la figura»}
+% acorde al \myparg{argumento} pasado al comando sin modificar
+% la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% verbalizará el término \emph{«área del»}, el concepto \emph{«nombre de la figura»}
+% y el \myparg{argumento}; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% solo verbalizará el \myparg{argumento} acorde al valor establecido por
+% la llave \mykey{read-cmd}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{nombre}{no usado}[spAfig]
+% \smallskip
+% Sobrescribe el término \emph{«área del»} y el concepto \emph{«nombre de la figura»}
+% cuando se utliza el argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+% que será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el comando
+% sin modificar la impresión de este. El valor de esta llave \emph{siempre}
+% debe pasarse entre llaves `|{ }|' y se debe usar en conjunto con la llave
+% \mykey{concept}. Por ejemplo: |$\spAfig[read-arg={trapecio}](ABCD)$| imprimirá
+% `$\mathcal{A}_{\square ABCD}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del trapecio A B C D»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%   Esta llave no se puede utilizar con los argumentos
+%   \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{T}} y \myparg{1
+%   \textnormal{\textcolor{lightgray}{\textbar}} 2
+%   \textnormal{\textcolor{lightgray}{\textbar}} 3
+%   \textnormal{\textcolor{lightgray}{\textbar}} \ldots
+%   \textnormal{\textcolor{lightgray}{\textbar}} n}.
+% \end{important}
+%
+% \smallskip
+%
+% \keyexampcmd*{concept\textcolor{MediumOrchid}{*}}{valor prohibido}{no usado}[spAfig]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«nombre de la figura»} acorde al \myparg{argumento} pasado
+% al comando sin modificar la impresión de este. Si se establece, \mynvmath{NVDA/MathCAT}
+% verbalizará el término \emph{«área»} y el \myparg{argumento} acorde al
+% valor establecido por la llave \mykey{read-cmd}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spAfig]
+% \smallskip
+% Establece si se \emph{antepone} la palabra «sub» al verbalizar los argumentos
+% \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+% y \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+% para \mynvmath{NVDA/MathCAT}. Si se utiliza \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+% y se establece en |true|, |$\spAfig[read-sub=true](1)$| imprimirá
+% `$\mathcal{A}_{1}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«área sub uno»}; si se establece en |false|, la impresión
+% será la misma y se verbaliza \emph{«área uno»}.
 %
 % \smallskip
 %
@@ -4173,42 +4241,33 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%   Esta llave no se puede utilizar con el argumento \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}.
+%   Esta llave no se puede utilizar con el argumento
+%   \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{T}}.
 % \end{important}
 %
 % \smallskip
 %
-% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{false}[spAfig]
-% \smallskip
-% Establece si se \emph{antepone} la palabra «sub» al verbalizar los argumentos
-% \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
-% y \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
-% para \mynvmath{NVDA/MathCAT}. Si se establece en |true|, |$\spAfig[read-sub=true](1)$| se verbaliza \emph{«área sub
-% uno»}; si se establece en |false|, se verbaliza \emph{«área uno»}.
+% Si se utiliza \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+% y se establece en |true|, |$\spAfig[read-sub=true](F_{1})$| imprimirá
+% `$\mathcal{A}_{F_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«área de la figura sub uno»}; si se establece en |false|,
+% la impresión será la misma y se verbaliza \emph{«área de la figura uno»}.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spAfig]
 % \smallskip
-% Establece si se \emph{silencia por completo} la verbalización en
-% \mynvmath{NVDA/MathCAT}, sin afectar la impresión. Si se establece
-% en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará nada; si se
-% establece en |false|, \mynvmath{NVDA/MathCAT} verbalizará
-% normalmente.
-%
-% \smallskip
-%
-% \keyexampcmd{read-arg}{nombre}{no usado}[spAfig]
-% \smallskip
-% Sobrescribe el \emph{nombre de la figura} determinado automáticamente
-% por el número de puntos en el argumento, que será verbalizado por \mynvmath{NVDA/MathCAT}
-% al ejecutar el comando sin modificar la impresión de este. El valor de
-% esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Por
-% ejemplo: |$\spAfig[read-arg={trapecio}](A, B, C, D)$| imprimirá
-% `$\mathcal{A}_{\square ABCD}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del trapecio A B C D»}.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«área del»}, el concepto \emph{«nombre de la figura»}
+% y el \mymarg{argumento} pasado al comando sin modificar la impresión de este.
+% Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la salida
+% del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará
+% la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spPfig}}\label{subsec:spPfig}
 %
@@ -4222,38 +4281,63 @@ end, "shekel_fallback_patch")
 %     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
 %   \end{minipage}\hfill
 %   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.15\mydpstrut}\small
-%     |\spPfig|\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
-%     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
 %     |\spPfig|\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}\par
-%     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}\par
+%     |\spPfig|\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}\par
+%     |\spPfig|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
 %   \end{minipage}
 %
 %   \medskip
-%   El comando \ics*{spPfig} trabaja en \emph{modo matemático} y
-%   recibe el \emph{argumento delimitado por paréntesis}, el cual es
-%   \emph{completamente opcional}, representando el \emph{perímetro}
-%   de una figura poligonal en la impresión aplicando |\mathcal{P}|.
+%
+%   El comando \ics*{spPfig} trabaja en \emph{modo matemático} y recibe
+%   el \emph{argumento opcional delimitado por paréntesis} de la forma
+%   \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n},
+%   \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%   o \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+%   aplicando |\mathcal{P}| a la impresión. El \emph{símbolo} usado en
+%   la impresión se maneja por medio de la llave \mykey{print-sym} y la
+%   verbalización del concepto asociado se determinan acorde al \myparg{argumento}
+%   y la llave \mykey{concept}.
 %
 %   \smallskip
 %
-%   El argumento admite las mismas tres formas que |\spAfig|
-%   (\S\ref{subsec:spAfig}): una \emph{lista de vértices}, un
-%   \emph{número o letra sueltos}, o una \emph{letra de la tabla fija}
-%   (|F|, |P|, |B|, |L|) con subíndice numérico opcional.
+%   Si se proporciona el \emph{argumento} \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n},
+%   |$\spPfig(1)$| imprimirá `$\mathcal{P}_{1}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro uno»};
+%   |$\spPfig(n)$| imprimirá `$\mathcal{P}_{n}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro ene»}.
 %
 %   \smallskip
 %
-%   Si no se proporciona el \emph{argumento opcional}
-%   \myoarg{key \textnormal{\textcolor{gray}{=}} val} ni el argumento
-%   delimitado por paréntesis, |$\spPfig$| imprimirá `$\mathcal{P}$'
-%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«perímetro»}. Con vértices, |$\spPfig(A, B, C)$| imprimirá
-%   `$\mathcal{P}_{\triangle ABC}$' y verbalizará \emph{«perímetro del
-%   triángulo A B C»}. Con un número o letra sueltos, |$\spPfig(2)$|
-%   imprimirá `$\mathcal{P}_2$' y verbalizará \emph{«perímetro dos»}.
-%   Con una letra de la tabla, |$\spPfig(P_{2})$| imprimirá
-%   `$\mathcal{P}_{P_2}$' y verbalizará \emph{«perímetro del polígono
-%   dos»}.
+%   Si se proporciona el \emph{argumento} \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots},
+%   |$\spPfig(ABC)$| imprimirá `$\mathcal{P}_{\triangle ABC}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del triángulo A B C»};
+%   |$\spPfig(ABCD)$| imprimirá `$\mathcal{P}_{\mdlgwhtsquare ABCD}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del cuadrado A B C D»};
+%
+%   \smallskip
+%
+%   Si se proporciona el \emph{argumento} \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}},
+%   |$\spPfig(F)$| imprimirá `$\mathcal{P}_{F}$' en la salida \texttt{PDF}
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro de la figura»};
+%   |$\spPfig(F_{1})$| imprimirá `$\mathcal{P}_{F_{1}}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro de la figura uno»}.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   ni el \emph{argumento opcional delimitado por paréntesis}, |$\spPfig$| imprimirá
+%   `$\mathcal{P}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«perímetro»}.
+%
+%   \smallskip
+%
+% \begin{important}*
+%   El \emph{argumento} \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+%   acepta prima(s) `|'|' o subíndice(s) `|_{...}|'. El \emph{argumento}
+%   \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+%   solo acepta subíndices `|_{...}|' y tiene una impresión y verbalización
+%   fija para cada letra: |F| \emph{«figura»}, |P| \emph{«polígono»},
+%   |B| \emph{«basal»}, |L| \emph{«lateral»} y |T| \emph{«total»}.
+% \end{important}
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spPfig}}
@@ -4263,7 +4347,7 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará al
 % argumento. Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza las letras
-% del argumento sin el prefijo «mayúscula»: |$\spPfig(A, B, C)$|
+% del argumento sin el prefijo «mayúscula»: |$\spPfig(ABC)$|
 % se verbaliza \emph{«perímetro del triángulo A B C»}; si se establece en |mathcat|,
 % \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
 % el prefijo «mayúscula» dependiendo de la configuración del usuario.
@@ -4273,8 +4357,75 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spPfig]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«perímetro»}. El valor de
-% esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+% \emph{antes} de verbalizar el término \emph{«perímetro del»} y el concepto
+% \emph{«nombre de la figura»} acorde al \myparg{argumento} pasado al comando.
+% El valor de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spPfig]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«perímetro del»} y el concepto \emph{«nombre de la figura»}
+% acorde al \myparg{argumento} pasado al comando sin modificar
+% la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% verbalizará el término \emph{«perímetro del»}, el concepto \emph{«nombre de la figura»}
+% y el \myparg{argumento}; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% solo verbalizará el \myparg{argumento} acorde al valor establecido por
+% la llave \mykey{read-cmd}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{nombre}{no usado}[spPfig]
+% \smallskip
+% Sobrescribe el término \emph{«perímetro del»} y el concepto \emph{«nombre de la figura»}
+% cuando se utliza el argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+% que será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el comando
+% sin modificar la impresión de este. El valor de esta llave \emph{siempre}
+% debe pasarse entre llaves `|{ }|' y se debe usar en conjunto con la llave
+% \mykey{concept}. Por ejemplo: |$\spPfig[read-arg={trapecio}](ABCD)$| imprimirá
+% `$\mathcal{P}_{\square ABCD}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del trapecio A B C D»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%   Esta llave no se puede utilizar con los argumentos
+%   \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{T}} y \myparg{1
+%   \textnormal{\textcolor{lightgray}{\textbar}} 2
+%   \textnormal{\textcolor{lightgray}{\textbar}} 3
+%   \textnormal{\textcolor{lightgray}{\textbar}} \ldots
+%   \textnormal{\textcolor{lightgray}{\textbar}} n}.
+% \end{important}
+%
+% \smallskip
+%
+% \keyexampcmd*{concept\textcolor{MediumOrchid}{*}}{valor prohibido}{no usado}[spPfig]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«nombre de la figura»} acorde al \myparg{argumento} pasado
+% al comando sin modificar la impresión de este. Si se establece, \mynvmath{NVDA/MathCAT}
+% verbalizará el término \emph{«perímetro»} y el \myparg{argumento} acorde al
+% valor establecido por la llave \mykey{read-cmd}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spPfig]
+% \smallskip
+% Establece si se \emph{antepone} la palabra «sub» al verbalizar los argumentos
+% \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+% y \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+% para \mynvmath{NVDA/MathCAT}. Si se utiliza \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+% y se establece en |true|, |$\spPfig[read-sub=true](1)$| imprimirá
+% `$\mathcal{P}_{1}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«perímetro sub uno»}; si se establece en |false|, la impresión
+% será la misma y se verbaliza \emph{«perímetro uno»}.
 %
 % \smallskip
 %
@@ -4283,40 +4434,58 @@ end, "shekel_fallback_patch")
 %   square \textnormal{\textcolor{lightgray}{\textbar}}
 %   none}{auto}[spPfig]
 % \smallskip
-% Establece si se usará |\triangle| o |\mdlgwhtsquare| en la impresión,
-% con la misma semántica que en |\spAfig| (\S\ref{subsec:spAfig}).
+% Establece si se \emph{usará} |\triangle| o |\mdlgwhtsquare| en la impresión
+% para los argumentos \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+% y \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+% pasado al comando sin modificar la verbalización de este. Si se utiliza
+% \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+% se infiere el \emph{símbolo} acorde al número de puntos; si establece en
+% \mykey{auto} se imprime y si se establece en \mykey{none} se omite:
+% |$\spPfig[print-sym=auto](ABC)$| y |$\spPfig[print-sym=none](ABC)$| imprimirán
+% `$\mathcal{P}_{\triangle ABC}$' y `$\mathcal{P}_{ABC}$' en la salida
+% \texttt{PDF} y en ambos casos \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del triángulo A B C»}
 %
 % \smallskip
 %
-% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{false}[spPfig]
+% Si se utiliza \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+% los valores \mykey{auto} y \mykey{none} quedan sin efecto; si se establece en \mykey{triangle}
+% o \mykey{square} anida el argumento bajo el \emph{símbolo}:
+% |$\spPfig[print-sym=|\mykey{triangle}|](1)$| imprimirá `$\mathcal{P}_{\triangle_{1}}$'
+% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del
+% triángulo uno»}; |$\spPfig[print-sym=|\mykey{square}|](1)$| imprimirá
+% `$\mathcal{P}_{\mdlgwhtsquare_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«perímetro del cuadrado uno»}.
+%
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} antepone la palabra «sub» al
-% verbalizar el número o letra del argumento único, con la misma
-% semántica que en |\spAfig| (\S\ref{subsec:spAfig}).
+%
+% \begin{important}*
+%   Esta llave no se puede utilizar con el argumento
+%   \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}}
+%   \textnormal{T}}.
+% \end{important}
+%
+% \smallskip
+%
+% Si se utiliza \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+% y se establece en |true|, |$\spPfig[read-sub=true](F_{1})$| imprimirá
+% `$\mathcal{P}_{F_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«perímetro de la figura sub uno»}; si se establece en |false|,
+% la impresión será la misma y se verbaliza \emph{«perímetro de la figura uno»}.
 %
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spPfig]
 % \smallskip
-% Establece si se \emph{silencia por completo} la verbalización en
-% \mynvmath{NVDA/MathCAT}, sin afectar la impresión. Si se establece
-% en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará nada; si se
-% establece en |false|, \mynvmath{NVDA/MathCAT} verbalizará
-% normalmente.
-%
-% \smallskip
-%
-% \keyexampcmd{read-arg}{nombre}{no usado}[spPfig]
-% \smallskip
-% Sobrescribe el \emph{nombre de la figura} determinado automáticamente
-% por el número de puntos en el argumento, que será verbalizado por \mynvmath{NVDA/MathCAT}
-% al ejecutar el comando sin modificar la impresión de este. El valor de
-% esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Por
-% ejemplo: |$\spPfig[read-arg={trapecio}](A, B, C, D)$| imprimirá
-% `$\mathcal{P}_{\square ABCD}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del trapecio A B C D»}.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«perímetro del»}, el concepto \emph{«nombre de la figura»}
+% y el \mymarg{argumento} pasado al comando sin modificar la impresión de este.
+% Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la salida
+% del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará
+% la salida del comando.
 %
 % \newpage
 %
@@ -8635,6 +8804,7 @@ end, "shekel_fallback_patch")
 %   {
 %     \l_@@_md_out_seq,
 %     \l_@@_spnmd_luaset_is_number_str,
+%     \l_@@_spnM_spnD_luaset_error_str,
 %     \l_@@_spnM_luaset_result_tl,
 %     \l_@@_spnD_luaset_result_tl,
 %     \l_@@_spnM_luaset_is_truncated_str,
@@ -8647,6 +8817,7 @@ end, "shekel_fallback_patch")
 %   Internal variables generated dynamically for multiples and divisors.
 %    \begin{macrocode}
 \seq_new:N \l_@@_md_out_seq
+\str_new:N \l_@@_spnM_spnD_luaset_error_str
 \str_new:N \l_@@_spnmd_luaset_is_number_str
 \clist_map_inline:nn { nM , nD }
   {
@@ -8708,7 +8879,9 @@ end, "shekel_fallback_patch")
 % Exception triggered when the argument for multiples or divisors is invalid.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { md-invalid-argument }
-  { Invalid~argument~provided~to~#1. }
+  {
+    Invalid~argument~provided~to~#1~\msg_line_context:.
+  }
   {
     The~argument~must~be~a~single~positive~integer. \\
   }
@@ -8776,7 +8949,10 @@ end, "shekel_fallback_patch")
 %   The internal function \myhlc|\@@_spn_M_and_D_result:n| handles the
 %   calculation and accessible formatting of the computed mathematical set.
 %   It takes the command identifier `|#1|'. It invokes the corresponding Lua
-%   backend calculation, maps the resulting clist into a sequence, and formats
+%   backend calculation, reporting |md-invalid-argument| if that fails —
+%   a safety net beyond \myhlc|\@@_luafun_spnmd_classify:n|'s own check,
+%   since the Lua calculation never trusted that check blindly. On
+%   success, it maps the resulting clist into a sequence, and formats
 %   the final printed output utilizing custom accessibility intents for both
 %   separators and conjunctions. It also safely manages truncation indicators.
 %    \begin{macrocode}
@@ -8785,19 +8961,25 @@ end, "shekel_fallback_patch")
     \use:c { @@_luafun_calcular_ #1 :nn }
       { \l_@@_luaset_part_int_tl }
       { \tl_use:c { l_@@_sp #1 _print_result_num_tl } }
-    \MathMLintent { _son } { = \{ }
-    \seq_set_from_clist:Ne
-      \l_@@_md_out_seq { \tl_use:c { l_@@_sp #1 _luaset_result_tl } }
-    \seq_use:Nnnn \l_@@_md_out_seq
-      { \MathMLintent { _y }      { , } }
-      { \MathMLintent { :silent } { , } }
-      { \MathMLintent { _y }      { , } }
-    \str_if_eq:vnT
-      { l_@@_sp #1 _luaset_is_truncated_str } { true }
-        {
-          \MathMLintent { :silent } { , } ~ \dots
-        }
-    \MathMLintent { :silent } { \} }
+    \str_if_eq:VnTF \l_@@_spnM_spnD_luaset_error_str { true }
+      {
+        \msg_error:nne { spintent } { md-invalid-argument } { \exp_not:c { sp #1 } }
+      }
+      {
+        \MathMLintent { _son } { = \{ }
+        \seq_set_from_clist:Ne
+          \l_@@_md_out_seq { \tl_use:c { l_@@_sp #1 _luaset_result_tl } }
+        \seq_use:Nnnn \l_@@_md_out_seq
+          { \MathMLintent { _y }      { , } }
+          { \MathMLintent { :silent } { , } }
+          { \MathMLintent { _y }      { , } }
+        \str_if_eq:vnT
+          { l_@@_sp #1 _luaset_is_truncated_str } { true }
+            {
+              \MathMLintent { :silent } { , } ~ \dots
+            }
+        \MathMLintent { :silent } { \} }
+      }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -8913,9 +9095,9 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{sprazon}}
 %
-% \begin{macro}[int]{silent-cmd, use-dfrac, unknown}
-%   We define the \mymeta{keys} \mykey[sprazon]{silent-cmd} and
-%   \mykey[sprazon]{use-dfrac}.
+% \begin{macro}[int]{silent-cmd, use-dfrac, inline, unknown}
+%   We define the \mymeta{keys} \mykey[sprazon]{silent-cmd},
+%   \mykey[sprazon]{use-dfrac} and \mykey[sprazon]{inline}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / sprazon }
   {
@@ -8925,6 +9107,9 @@ end, "shekel_fallback_patch")
     use-dfrac  .bool_set:N = \l_@@_sprazon_use_dfrac_bool,
     use-dfrac  .initial:n  = false,
     use-dfrac  .value_required:n = true,
+    inline     .bool_set:N = \l_@@_sprazon_inline_bool,
+    inline     .initial:n  = false,
+    inline     .value_required:n = true,
     unknown    .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { sprazon }
@@ -8938,10 +9123,19 @@ end, "shekel_fallback_patch")
 %   The function \myhlc|\@@_sprazon_exec:nnn| receives the optional
 %   \mymeta{keys} in `|#1|', the numerator in `|#2|' and the
 %   denominator in `|#3|'. Under \mykey{silent-cmd}, the whole
-%   fraction is silenced as one unit. Otherwise, numerator and
-%   denominator are each tagged through a native |\MathMLarg| (|num|/
-%   |denom|), and the outer |\MathMLintent| reads
-%   |es-a:infix($num,$denom)|.
+%   thing is silenced as one unit — |\frac|/|\dfrac| (per
+%   \mykey{use-dfrac}) normally, or |#2 : #3| under \mykey{inline}.
+%
+%   \smallskip
+%
+%   Otherwise, with \mykey{inline}|=false| (the default), numerator
+%   and denominator are each tagged through a native |\MathMLarg|
+%   (|num|/|denom|) inside |\frac|/|\dfrac|, and the outer
+%   |\MathMLintent| reads \myhlc|_es-a:infix($num,$denom)|. With
+%   \mykey{inline}|=true|, the same two references are tagged
+%   side by side instead — no |\frac|/|\dfrac| involved — with the
+%   |:| between them carrying the \myhlc|_es-a:infix($num,$denom)| intent
+%   on its own.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sprazon_exec:nnn
   {
@@ -8952,20 +9146,35 @@ end, "shekel_fallback_patch")
         \MathMLintent { _- }
           {
             \@@_inner_sep:
-            \bool_if:NTF \l_@@_sprazon_use_dfrac_bool
-              { \dfrac { #2 } { #3 } }
-              { \frac  { #2 } { #3 } }
+            \bool_if:NTF \l_@@_sprazon_inline_bool
+              { #2 : #3 }
+              {
+                \bool_if:NTF \l_@@_sprazon_use_dfrac_bool
+                  { \dfrac { #2 } { #3 } }
+                  { \frac  { #2 } { #3 } }
+              }
           }
       }
       {
-        \MathMLintent { es-a:infix($num,$denom) }
+        \bool_if:NTF \l_@@_sprazon_inline_bool
           {
-            \@@_inner_sep:
-            \bool_if:NTF \l_@@_sprazon_use_dfrac_bool
+            \MathMLintent { _es-a:infix($num,$denom) }
               {
-                \dfrac { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } }
+                \MathMLarg { num } { #2 }
+                :
+                \MathMLarg { denom } { #3 }
               }
-              { \frac  { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } } }
+          }
+          {
+            \MathMLintent { _es-a:infix($num,$denom) }
+              {
+                \@@_inner_sep:
+                \bool_if:NTF \l_@@_sprazon_use_dfrac_bool
+                  {
+                    \dfrac { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } }
+                  }
+                  { \frac  { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } } }
+              }
           }
       }
   }
@@ -12983,6 +13192,7 @@ end, "shekel_fallback_patch")
 %     read-sub,
 %     silent-cmd,
 %     concept,
+%     concept*,
 %     unknown,
 %   }
 %   The key \mykey[spAfig,spPfig]{print-sym} chooses the visual
@@ -13049,6 +13259,12 @@ end, "shekel_fallback_patch")
         concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
+        concept*            .meta:n =
+          {
+            concept  = false,
+            read-arg = { \str_if_eq:eeTF {#1} { Afig } { _área } { _perímetro } },
+          },
+        concept*            .value_forbidden:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l_@@_command_name_str { sp #1 }
@@ -13231,6 +13447,7 @@ end, "shekel_fallback_patch")
               {
                 \tl_set:Ne \l_@@_spfig_desc_tl
                   {
+                    del-
                     \str_if_eq:VnTF \l_@@_geo_print_sym_str { triangle }
                       { triángulo } { cuadrado }
                     -
@@ -16676,9 +16893,13 @@ local function spintent_calculate_divisors(n_val, limit)
 end
 
 local function spintent_execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
-    -- Asumimos que expl3 ya usó luafun_clean_split_and_set y garantizó que raw_n
-    -- es un número natural puro. ¡Solo convertimos y calculamos!
+    token_set_macro("l__spintent_spnM_spnD_luaset_error_str", "false")
+
     local num_n = tonumber(raw_n)
+    if not num_n then
+        token_set_macro("l__spintent_spnM_spnD_luaset_error_str", "true")
+        return
+    end
 
     local clean_limit = spintent_normalize_key(raw_limit)
     local num_limit = tonumber(clean_limit) or 0
