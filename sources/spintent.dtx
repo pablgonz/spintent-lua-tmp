@@ -2124,23 +2124,85 @@ end, "shekel_fallback_patch")
 %  (semántica) en que serán verbalizados por \mynvmath{NVDA/MathCAT}.
 % \end{important}
 %
+% \subsubsection{El comando \cs[no-index]{spnewsym}}\label{subsec:spnewsym}
+%
+% \vspace*{-0.5\baselineskip}
+%
+% \begin{function}{\spnewsym}
+%   \begin{syntax}
+%     \ics*{spnewsym}\mymarg{símbolo}\mymarg{verbalización \textnormal{NVDA}}
+%   \end{syntax}
+%   El comando \ics*{spnewsym} trabaja en \emph{modo texto} y recibe
+%   dos \emph{argumentos obligatorios}: \mymarg{símbolo} y
+%   \mymarg{verbalización \textnormal{NVDA}} que establece como
+%   \mynvmath{NVDA/MathCAT} \emph{verbalizará} ese \mymarg{símbolo} al
+%   utilizarlo con |\spread|.
+% \end{function}
+%
+% \smallskip
+%
+% El \mymarg{símbolo} no debe estar registrado. Si ya está registrado
+% se devolverá un \enquote{error} y se detendrá la compilación del
+% documento.
+%
+% \smallskip
+%
+% La declaración es «global» y se almacena en el módulo \myluamod{}.
+% Por ejemplo: |\spnewsym{\cong}{es-congruente-con}| registrará
+% `|\cong|' y cuando se utilice |$\spread{\cong}$| se imprimirá
+% `$\cong$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«es congruente con»}.
+%
 % \subsection*{El comando \cs[no-index]{spread}}\label{subsec:spread}
 %
 % \vspace*{-0.5\baselineskip}
 %
 % \begin{function}{\spread}
 %   \begin{syntax}
-%      |\spread|\mymarg{verbalización \textnormal{NVDA}}\mymarg{símbolo matemático}
+%     |\spread|\mymarg{símbolo}
+%     |\spread|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{símbolo}
 %   \end{syntax}
-%   El comando \ics*{spread} trabaja en \emph{modo matemático} y recibe
-%   dos \emph{argumentos obligatorios}: El primer \emph{argumento} \mymarg{verbalización \textnormal{NVDA}}
-%   establece la \emph{«forma»} en la cual \mynvmath{NVDA/MathCAT}
-%   verbalizará al segundo \emph{argumento} \mymarg{símbolo matemático}.
-%   Por ejemplo: |$\spread{es-paralela}{\parallel}$| imprimirá `$\parallel$'
-%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«es paralela»};
-%   |$\spread{es-paralelo}{\parallel}$| imprimirá `$\parallel$' en la
-%   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«es paralelo»}.
+%   El comando \ics*{spread} trabaja en \emph{modo matemático} y
+%   recibe el \emph{argumento obligatorio} \mymarg{símbolo}, buscando
+%   su verbalización registrada por medio de |\spnewsym|.
+%
+%   \smallskip
+%
+%   Si el \mymarg{símbolo} está registrado, |$\spread{\cong}$|
+%   imprimirá `$\cong$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará la \mymarg{verbalización \textnormal{NVDA}} establecida
+%   por |\spnewsym|.
+%
+%   \smallskip
+%
+%   Si el \mymarg{símbolo} \emph{no} está registrado y no se
+%   proporciona la llave \mykey{read-arg}, se devolverá un
+%   \enquote{error} y se detendrá la compilación del documento.
 % \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spread}}
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spread]
+% \smallskip
+% Sobrescribe, \emph{solo para esta ejecución}, la verbalización
+% registrada por |\spnewsym| para el \mymarg{símbolo} sin modificar la
+% impresión de este. No requiere que el \mymarg{símbolo} esté
+% registrado. El valor de esta llave \emph{siempre} debe pasarse entre
+% llaves `|{ }|'. Por ejemplo: |$\spread[read-arg={es-paralela-a}]{\parallel}$|
+% imprimirá `$\parallel$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«es paralela a»}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spread]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del \mymarg{símbolo} pasado al comando sin modificar la impresión de
+% este, sin necesitar que esté registrado ni pasar \mykey{read-arg}. Si
+% se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la
+% salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spusep}}\label{subsec:spusep}
 %
@@ -4211,6 +4273,14 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
+% Si se utiliza \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+% y se establece en |true|, |$\spAfig[read-sub=true](F_{1})$| imprimirá
+% `$\mathcal{A}_{F_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«área de la figura sub uno»}; si se establece en |false|,
+% la impresión será la misma y se verbaliza \emph{«área de la figura uno»}.
+%
+% \smallskip
+%
 % \keyexampcmd{print-sym}{auto \textnormal{\textcolor{lightgray}{\textbar}}
 %   triangle \textnormal{\textcolor{lightgray}{\textbar}}
 %   square \textnormal{\textcolor{lightgray}{\textbar}}
@@ -4248,14 +4318,6 @@ end, "shekel_fallback_patch")
 %   \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}}
 %   \textnormal{T}}.
 % \end{important}
-%
-% \smallskip
-%
-% Si se utiliza \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
-% y se establece en |true|, |$\spAfig[read-sub=true](F_{1})$| imprimirá
-% `$\mathcal{A}_{F_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«área de la figura sub uno»}; si se establece en |false|,
-% la impresión será la misma y se verbaliza \emph{«área de la figura uno»}.
 %
 % \smallskip
 %
@@ -4427,6 +4489,15 @@ end, "shekel_fallback_patch")
 % verbalizará \emph{«perímetro sub uno»}; si se establece en |false|, la impresión
 % será la misma y se verbaliza \emph{«perímetro uno»}.
 %
+%
+% \smallskip
+%
+% Si se utiliza \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
+% y se establece en |true|, |$\spPfig[read-sub=true](F_{1})$| imprimirá
+% `$\mathcal{P}_{F_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«perímetro de la figura sub uno»}; si se establece en |false|,
+% la impresión será la misma y se verbaliza \emph{«perímetro de la figura uno»}.
+%
 % \smallskip
 %
 % \keyexampcmd{print-sym}{auto \textnormal{\textcolor{lightgray}{\textbar}}
@@ -4469,14 +4540,6 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% Si se utiliza \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
-% y se establece en |true|, |$\spPfig[read-sub=true](F_{1})$| imprimirá
-% `$\mathcal{P}_{F_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«perímetro de la figura sub uno»}; si se establece en |false|,
-% la impresión será la misma y se verbaliza \emph{«perímetro de la figura uno»}.
-%
-% \smallskip
-%
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spPfig]
 % \smallskip
@@ -4486,6 +4549,450 @@ end, "shekel_fallback_patch")
 % Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la salida
 % del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará
 % la salida del comando.
+%
+% \subsection*{Los comandos \cs[no-index]{sprad} y \cs[no-index]{spdiam}}\label{subsec:sprad}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\sprad, \spdiam}
+%   \begin{syntax}
+%     |\sprad|
+%     |\sprad|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%     |\spdiam|
+%     |\spdiam|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   \end{syntax}
+%   Los comandos \ics*{sprad} y \ics*{spdiam} trabajan en \emph{modo
+%   matemático} y no reciben ningún argumento: imprimen y verbalizan la
+%   letra `r'/`d' (o `R'/`D', según \mykey{upper-case}) que representa
+%   el radio o el diámetro de una circunferencia.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\sprad$| imprimirá `$r$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«radio»}; |$\spdiam$| imprimirá `$d$' en la
+%   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«diámetro»}.
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{sprad} y \cs[no-index]{spdiam}}
+%
+% \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
+%   mathcat}{school}[sprad]
+% \smallskip
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
+% la letra cuando \mykey{concept} es |false|. Si se establece en
+% |school|, \mynvmath{NVDA/MathCAT} verbaliza la letra deletreada; si se
+% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
+% reglas.
+%
+% \smallskip
+%
+% \keyexampcmd{upper-case}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[sprad]
+% \smallskip
+% Establece si se imprime la letra en mayúscula sin modificar la
+% verbalización de este. Si se establece en |true|, |$\sprad[upper-case=true]$|
+% imprimirá `$R$' en la salida \texttt{PDF}; |$\spdiam[upper-case=true]$|
+% imprimirá `$D$'. En ambos casos la verbalización no cambia.
+%
+% \smallskip
+%
+% \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[sprad]
+% \smallskip
+% Establece si se \emph{usará} |\diameter| antes de la letra en la
+% impresión sin modificar la verbalización de este. Si se establece en
+% |true|, |$\spdiam[print-sym=true]$| imprimirá `$\diameter d$' en la
+% salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«diámetro»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%   La llave \mykey{print-sym} no tiene ningún efecto en \ics{sprad}.
+% \end{important}
+%
+% \smallskip
+%
+% \keyexampcmd{sub-index}{subíndice}{no usado}[sprad]
+% \smallskip
+% Establece un \emph{subíndice} sobre la letra. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[sprad]
+% \smallskip
+% Establece si se \emph{antepone} la palabra «sub» al verbalizar el
+% \mykey{sub-index} para \mynvmath{NVDA/MathCAT}. Si se establece en
+% |true|, |$\sprad[sub-index={1},read-sub=true]$| imprimirá `$r_1$' en
+% la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«radio sub uno»}; si se establece en |false|, se verbaliza
+% \emph{«radio uno»}.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[sprad]
+% \smallskip
+% Establece si \mynvmath{NVDA/MathCAT} verbaliza \emph{«radio»} (o
+% \emph{«diámetro»}) en lugar de la letra misma. Si se establece en
+% |true|, |$\sprad$| se verbaliza \emph{«radio»}; si se establece en
+% |false|, se verbaliza la letra acorde al valor establecido por la
+% llave \mykey{read-cmd}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[sprad]
+% \smallskip
+% Sobrescribe \emph{«radio»} (o \emph{«diámetro»}) que será verbalizado
+% por \mynvmath{NVDA/MathCAT} al ejecutar el comando sin modificar la
+% impresión de este. El valor de esta llave \emph{siempre} debe
+% pasarse entre llaves `|{ }|' y se debe usar en conjunto con la llave
+% \mykey{concept}. Por ejemplo: |$\sprad[read-arg={medida del radio}]$|
+% imprimirá `$r$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«medida del radio»}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[sprad]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% de \emph{«radio»} (o \emph{«diámetro»}) y de la letra al ejecutar el
+% comando sin modificar la impresión de este. Si se establece en
+% |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando;
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la
+% salida del comando.
+%
+% \subsection*{El comando \cs[no-index]{spcirc}}\label{subsec:spcirc}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spcirc}
+%   \begin{syntax}
+%     |\spcirc|
+%     |\spcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%     |\spcirc|\myparg{centro}
+%     |\spcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{centro}
+%     |\spcirc|\myparg{centro\textnormal{\textcolor{gray}{,}} radio}
+%     |\spcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{centro\textnormal{\textcolor{gray}{,}} radio}
+%   \end{syntax}
+%   El comando \ics*{spcirc} trabaja en \emph{modo matemático} y recibe
+%   el \emph{argumento opcional delimitado por paréntesis} de la forma
+%   \myparg{centro} o \myparg{centro\textnormal{\textcolor{gray}{,}} radio}.
+%   El \emph{radio} es opcional y su forma decide qué comando lo
+%   imprime y verbaliza: un número usa |\spnum|, una medida usa
+%   |\spunit|, y un segmento de dos letras usa |\spside| o |\spmside|
+%   según la llave \mykey{radio-sty}.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   ni el \emph{argumento opcional delimitado por paréntesis}, |$\spcirc$|
+%   imprimirá `$\bigodot$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«circunferencia»}.
+%
+%   \smallskip
+%
+%   Si se proporciona el \emph{argumento} \myparg{centro}, |$\spcirc(O)$|
+%   imprimirá `$\bigodot(O)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«circunferencia de centro en O»}.
+%
+%   \smallskip
+%
+%   Si se proporciona el \emph{argumento} \myparg{centro\textnormal{\textcolor{gray}{,}} radio},
+%   |$\spcirc(O,3)$| imprimirá `$\bigodot(O,3)$' en la salida \texttt{PDF}
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«circunferencia de centro
+%   en O, y radio tres»}.
+%
+% \begin{important}*
+%   El \emph{centro} acepta prima(s) `|'|' o subíndice(s) `|_{...}|'.
+% \end{important}
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spcirc}}
+%
+% \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
+%   mathcat}{school}[spcirc]
+% \smallskip
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
+% el centro. Si se establece en |school|, \mynvmath{NVDA/MathCAT} verbaliza
+% la letra del centro sin el prefijo «mayúscula»; si se establece en
+% |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden
+% incluir el prefijo «mayúscula» dependiendo de la configuración del
+% usuario.
+%
+% \smallskip
+%
+% \keyexampcmd{prefix}{prefijo}{no usado}[spcirc]
+% \smallskip
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el \emph{«concepto»} establecido por la
+% llave \mykey{read-sty}. El valor de esta llave \emph{siempre} debe
+% pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{print-sym}{usual \textnormal{\textcolor{lightgray}{\textbar}}
+%   odot}{odot}[spcirc]
+% \smallskip
+% Establece si se \emph{usará} |\bigodot| o la letra `C' en la
+% impresión sin modificar la verbalización de este.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sty}{circun \textnormal{\textcolor{lightgray}{\textbar}}
+%   circle}{circun}[spcirc]
+% \smallskip
+% Establece el \emph{concepto} que verbalizará \mynvmath{NVDA/MathCAT}
+% al ejecutar el comando sin modificar la impresión de este. Si se
+% utiliza |$\spcirc[read-sty=circun](O)$|, \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«circunferencia de centro en O»}; si se utiliza
+% |$\spcirc[read-sty=circle](O)$|, \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«círculo de centro en O»}.
+%
+% \smallskip
+%
+% \keyexampcmd{diameter}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcirc]
+% \smallskip
+% Establece si el \emph{radio} se verbaliza como \emph{«radio»} o como
+% \emph{«diámetro»}. Solo tiene efecto cuando se proporciona un radio.
+% Si se establece en |true|, |$\spcirc[diameter=true](O,3)$| se
+% verbaliza \emph{«circunferencia de centro en O, y diámetro tres»}; si
+% se establece en |false|, se verbaliza \emph{«...y radio tres»}.
+%
+% \smallskip
+%
+% \keyexampcmd{radio-sty}{side \textnormal{\textcolor{lightgray}{\textbar}}
+%   mside}{mside}[spcirc]
+% \smallskip
+% Establece, cuando el radio es un segmento de dos letras, si se usa
+% |\spside| (|side|) o |\spmside| (|mside|) para imprimirlo y
+% verbalizarlo.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spcirc]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del \emph{«concepto»} establecido por la llave \mykey{read-sty} al
+% ejecutar el comando sin modificar la impresión de este. Si se
+% establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará el concepto y
+% el centro; si se establece en |false|, \mynvmath{NVDA/MathCAT} solo
+% verbalizará el centro acorde al valor establecido por la llave
+% \mykey{read-cmd}. Si \mykey{read-arg} tiene un valor, se verbaliza
+% ese valor en lugar del concepto.
+%
+% \smallskip
+%
+% \keyexampcmd{sub-index}{subíndice}{no usado}[spcirc]
+% \smallskip
+% Establece un \emph{subíndice} sobre el símbolo. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcirc]
+% \smallskip
+% Establece si se \emph{antepone} la palabra «sub» al verbalizar el
+% \mykey{sub-index} para \mynvmath{NVDA/MathCAT}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spcirc]
+% \smallskip
+% Sobrescribe el \emph{concepto} establecido por la llave \mykey{read-sty}
+% que será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el
+% comando sin modificar la impresión de este. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcirc]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del \emph{«concepto»} establecido por la llave \mykey{read-sty}, del
+% centro y del radio pasados al comando sin modificar la impresión de
+% este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará
+% la salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% sí verbalizará la salida del comando.
+%
+% \smallskip
+%
+% \begin{important}*
+%   Las llaves \mykey{spside} y \mykey{spmside} reenvían sus valores
+%   directamente a \ics{spside} y \ics{spmside}, respectivamente,
+%   cuando el radio es un segmento de dos letras.
+% \end{important}
+%
+% \subsection*{El comando \cs[no-index]{spAcirc}}\label{subsec:spAcirc}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spAcirc}
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.5\mydpstrut}\small
+%     |\spAcirc|\par
+%     |\spAcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
+%     |\spAcirc|\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.45\linewidth}\vspace*{-0.5\mydpstrut}\small
+%     |\spAcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
+%     |\spAcirc|\myparg{centro}\par
+%     |\spAcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{centro}
+%   \end{minipage}
+%
+%   \medskip
+%
+%   El comando \ics*{spAcirc} trabaja en \emph{modo matemático} y
+%   recibe el \emph{argumento opcional delimitado por paréntesis} de la
+%   forma \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
+%   o \myparg{centro}, aplicando |\mathcal{A}| a la impresión.
+%
+%   \smallskip
+%
+%   Si se proporciona el \emph{argumento} \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n},
+%   |$\spAcirc(1)$| imprimirá `$\mathcal{A}_{1}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área de la
+%   circunferencia uno»}.
+%
+%   \smallskip
+%
+%   Si se proporciona el \emph{argumento} \myparg{centro},
+%   |$\spAcirc(O)$| imprimirá `$\mathcal{A}_{\bigodot(O)}$' en la
+%   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área
+%   de la circunferencia con centro en O»}.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   ni el \emph{argumento opcional delimitado por paréntesis},
+%   |$\spAcirc$| imprimirá `$\mathcal{A}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«área de la
+%   circunferencia»}.
+%
+%   \smallskip
+%
+% \begin{important}*
+%   El \emph{argumento} \myparg{centro} acepta prima(s) `|'|' o
+%   subíndice(s) `|_{...}|' y no acepta un radio, una coma `|,|' en el
+%   argumento siempre produce un error.
+% \end{important}
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spAcirc}}
+%
+% \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
+%   mathcat}{school}[spAcirc]
+% \smallskip
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
+% al argumento. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
+% verbaliza las letras del argumento sin el prefijo «mayúscula»; si se
+% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
+% reglas, que pueden incluir el prefijo «mayúscula» dependiendo de la
+% configuración del usuario.
+%
+% \smallskip
+%
+% \keyexampcmd{prefix}{prefijo}{no usado}[spAcirc]
+% \smallskip
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el término \emph{«área de la»} seguido por
+% el \emph{«concepto»} establecido por la llave \mykey{read-sty}. El
+% valor de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{print-sym}{usual \textnormal{\textcolor{lightgray}{\textbar}}
+%   odot}{odot}[spAcirc]
+% \smallskip
+% Establece si se \emph{usará} |\bigodot| o la letra `C' en la impresión
+% sin modificar la verbalización del comando. Si se establece en |usual|,
+% |$\spAcirc[print-sym=usual](O)$| imprimirá `$\mathcal{A}_{C(O)}$' en
+% la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«área de la circunferencia con centro en O»}; si se establece en
+% |odot|, |$\spAcirc[print-sym=odot](O)$| imprimirá `$\mathcal{A}_{\bigodot(O)}$'
+% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«área de la circunferencia con centro en O»}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sty}{circun \textnormal{\textcolor{lightgray}{\textbar}}
+%   circle}{circun}[spAcirc]
+% \smallskip
+% Establece el \emph{concepto} que verbalizará \mynvmath{NVDA/MathCAT}
+% después de verbalizar el término \emph{«área de la»} al ejecutar el
+% comando sin modificar la impresión de este. Si se utiliza
+% |$\spAcirc[read-sty=circun](O)$|, \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«área de la circunferencia con centro en O»}; si se utiliza
+% |$\spAcirc[read-sty=circle](O)$|, \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«área del círculo con centro en O»}. Solo tiene efecto cuando
+% \mykey{read-arg} no se proporciona.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spAcirc]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«área de la»} y del \emph{«concepto»} establecido
+% por la llave \mykey{read-sty} al ejecutar el comando sin modificar la
+% impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% verbalizará el término, el concepto y el \myparg{argumento}; si se
+% establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
+% \myparg{argumento} (y, si corresponde, el centro) acorde al valor
+% establecido por la llave \mykey{read-cmd}.
+%
+% \smallskip
+%
+% \keyexampcmd{sub-index}{subíndice}{no usado}[spAcirc]
+% \smallskip
+% Establece un \emph{subíndice} sobre el símbolo. Solo tiene efecto
+% cuando se proporciona el \emph{argumento} \myparg{centro}. El valor
+% de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spAcirc]
+% \smallskip
+% Establece si se \emph{antepone} la palabra «sub» al verbalizar el
+% argumento \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}.
+% Si se establece en |true|, |$\spAcirc[read-sub=true](1)$| se
+% verbaliza \emph{«área de la circunferencia sub uno»}; si se establece
+% en |false|, se verbaliza \emph{«área de la circunferencia uno»}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spAcirc]
+% \smallskip
+% Sobrescribe el \emph{concepto} establecido por la llave \mykey{read-sty}
+% que será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el
+% comando sin modificar la impresión de este. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|' y funciona con
+% cualquier forma del argumento. El artículo sigue siempre
+% \mykey{read-sty}, incluso cuando \mykey{read-arg} reemplaza el
+% concepto. Por ejemplo: |$\spAcirc[read-arg={esfera}](O)$| imprimirá
+% `$\mathcal{A}_{\bigodot(O)}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«área de la esfera con
+% centro en O»}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spAcirc]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del término \emph{«área de la»}, del concepto establecido por la
+% llave \mykey{read-sty} y del \myparg{argumento} pasado al comando sin
+% modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se
+% establece en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la
+% salida del comando.
 %
 % \newpage
 %
@@ -7959,49 +8466,129 @@ end, "shekel_fallback_patch")
 % of mathematical symbols for situations in which it is necessary to
 % specify gender or plurality in Spanish.
 %
-% \begin{macro}[int]{spread-empty-args}
-%   The error message |spread-empty-args| is raised when |\spread|
-%   receives an empty or blank \mymarg{argument}.
+% \begin{macro}[int]{spnewsym-empty-args, spnewsym-duplicate, spread-unknown-sym}
+%   The \enquote{error} |spnewsym-empty-args| is raised when
+%   |\spnewsym| receives an empty or blank symbol or reading. The
+%   \enquote{error} |spnewsym-duplicate| is raised when it registers a
+%   symbol already in the dictionary. The \enquote{error}
+%   |spread-unknown-sym| is raised when |\spread| is given a symbol
+%   that is neither registered nor accompanied by \mykey{read-arg}.
 %    \begin{macrocode}
-\msg_new:nnnn { spintent } { spread-empty-args }
-  { Empty~argument~in~\token_to_str:N \spread. }
-  { \token_to_str:N \spread~requires~two~non-empty~arguments. }
+\msg_new:nnnn { spintent } { spnewsym-empty-args }
+  {
+    Empty~argument~in~\token_to_str:N \spnewsym.
+  }
+  {
+    \token_to_str:N \spnewsym~requires~two~non-empty~arguments.
+  }
+\msg_new:nnnn { spintent } { spnewsym-duplicate }
+  {
+    The~symbol~'#1'~is~already~defined!
+  }
+  {
+    You~cannot~redefine~with~\token_to_str:N \spnewsym.
+  }
+\msg_new:nnnn { spintent } { spread-empty-sym }
+  {
+    Empty~symbol~argument~in~\token_to_str:N \spread.
+  }
+  {
+    \token_to_str:N \spread~requires~a~non-empty~symbol.
+  }
+\msg_new:nnnn { spintent } { spread-unknown-sym }
+  {
+    The~symbol~'#1'~is~not~registered~and~no~'read-arg'~was~given.
+  }
+  {
+    Register~it~first~with~\token_to_str:N \spnewsym,~or~pass~'read-arg'.
+  }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{variable}[int]{\l_@@_spread_intent_tl}
-%   The variable \myhlc|\l_@@_spread_intent_tl| stores the sanitized semantic
-%   reading \mymarg{argument} for symbol to be injected into the |\MathMLintent|.
+% \begin{variable}[int]
+%   {
+%     \l_@@_spread_luaset_status_str,
+%     \l_@@_spread_luaset_reading_str,
+%     \l_@@_spread_read_arg_tl,
+%   }
+%   \myhlc|\l_@@_spread_luaset_status_str| and
+%   \myhlc|\l_@@_spread_luaset_reading_str| are set by
+%   \myhlc|\@@_luafun_spread_new_sym:nn|/
+%   \myhlc|\@@_luafun_spread_lookup_sym:n|.
+%   \myhlc|\l_@@_spread_read_arg_tl| stores \mykey{read-arg}.
 %    \begin{macrocode}
-\tl_new:N \l_@@_spread_intent_tl
+\str_new:N \l_@@_spread_luaset_status_str
+\str_new:N \l_@@_spread_luaset_reading_str
+\tl_new:N  \l_@@_spread_read_arg_tl
 %    \end{macrocode}
 % \end{variable}
 %
+% \begin{macro}[int]{read-arg, silent-cmd, unknown}
+%   We define the \mymeta{keys} \mykey[spread]{read-arg} and
+%   \mykey[spread]{silent-cmd}.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spread }
+  {
+    read-arg    .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spread_read_arg_tl {#1} },
+    read-arg    .initial:n = ,
+    read-arg    .value_required:n = true,
+    silent-cmd  .bool_set:N = \l_@@_spread_silent_cmd_bool,
+    silent-cmd  .initial:n  = false,
+    silent-cmd  .value_required:n = true,
+    unknown     .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spread }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}[int]{\@@_spread_exec:nn}
-%   The function \myhlc|\@@_spread_exec:nn| implements the core logic for |\spread|.
-%   It verifies that neither \mymarg{argument} is empty or blank. If valid,
-%   it evaluates the \emph{reading} \mymarg{argument} `|#1|' using
-%   \myhlc|\@@_sanitize_affix:Nn| and embeds it via |\MathMLintent| into the
-%   \emph{math symbol} `|#2|'.
+%   The function \myhlc|\@@_spread_exec:nn| receives the optional
+%   \mymeta{keys} in `|#1|' and the \mymarg{symbol} in `|#2|'. With
+%   \mykey{silent-cmd} |true|, the symbol is typeset with a |:silent|
+%   |intent|, nothing else evaluated. Otherwise, with \mykey{read-arg}
+%   given, it is used directly, overriding any registered reading for
+%   this call alone. With \mykey{read-arg} empty, calls
+%   \myhlc|\@@_luafun_spread_lookup_sym:n|, using the registered
+%   reading when found, reporting |spread-unknown-sym| otherwise.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spread_exec:nn
   {
-    \bool_lazy_or:nnTF { \tl_if_blank_p:n { #1 } } { \tl_if_blank_p:n { #2 } }
-      { \msg_error:nn { spintent } { spread-empty-args } }
+    \keys_set:nn { spintent / spread } { #1 }
+    \tl_if_blank:nTF { #2 }
+      { \msg_error:nn { spintent } { spread-empty-sym } }
       {
-        \@@_sanitize_affix:Nn \l_@@_spread_intent_tl { #1 }
-        \MathMLintent { \l_@@_spread_intent_tl } { #2 }
+        \bool_if:NTF \l_@@_spread_silent_cmd_bool
+          { \MathMLintent { :silent } { #2 } }
+          {
+            \tl_if_empty:NTF \l_@@_spread_read_arg_tl
+              {
+                \@@_luafun_spread_lookup_sym:n { \exp_not:n {#2} }
+                \str_if_eq:VnTF \l_@@_spread_luaset_status_str { found }
+                  {
+                    \MathMLintent { \l_@@_spread_luaset_reading_str } { #2 }
+                  }
+                  {
+                    \msg_error:nne { spintent } { spread-unknown-sym } { \exp_not:n {#2} }
+                  }
+              }
+              {
+                \MathMLintent { \l_@@_spread_read_arg_tl } { #2 }
+              }
+          }
       }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\spread}
-%   The command |\spread| assigns a custom semantic \emph{reading} `|#1|' to
-%   any mathematical \emph{symbol} `|#2|'. It enforces math mode and passes execution
-%   to \myhlc|\@@_spread_exec:nn|.
+%   The public command |\spread| enforces \emph{math mode}, opens a
+%   local group, and delegates execution to \myhlc|\@@_spread_exec:nn|.
 %    \begin{macrocode}
-\NewDocumentCommand \spread { m m }
+\NewDocumentCommand \spread { O{} m }
   {
     \mode_if_math:TF
       {
@@ -8010,6 +8597,33 @@ end, "shekel_fallback_patch")
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spread } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spnewsym}
+%   The public command |\spnewsym| registers a new symbol/reading
+%   pair. It passes the symbol `|#1|' and its reading `|#2|' to Lua via
+%   \myhlc|\@@_luafun_spread_new_sym:nn|, reporting
+%   |spnewsym-duplicate| when the symbol is already registered.
+%    \begin{macrocode}
+\NewDocumentCommand \spnewsym { m m }
+  {
+    \mode_if_math:TF
+      {
+        \msg_error:nnn { spintent } { need-text-mode } { \spnewsym }
+      }
+      {
+        \bool_lazy_or:nnTF { \tl_if_blank_p:n { #1 } } { \tl_if_blank_p:n { #2 } }
+          { \msg_error:nn { spintent } { spnewsym-empty-args } }
+          {
+            \@@_luafun_spread_new_sym:nn { \exp_not:n {#1} } { #2 }
+            \str_if_eq:VnT \l_@@_spread_luaset_status_str { duplicate }
+              {
+                \msg_error:nnn { spintent } { spnewsym-duplicate } { #1 }
+              }
+          }
+      }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -17808,6 +18422,29 @@ register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spcoord_luaset_y_type_str",     y_type)
     token_set_macro("l__spintent_spcoord_luaset_y_value_str",    y_value)
     token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", y_has_frac)
+end, { "string" })
+
+-- Diccionario simbolo -> lectura para \spread/\spnewsym
+
+local spintent_spread_dict = {}
+
+register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
+    if spintent_spread_dict[sym] then
+        token_set_macro("l__spintent_spread_luaset_status_str", "duplicate")
+    else
+        spintent_spread_dict[sym] = reading
+        token_set_macro("l__spintent_spread_luaset_status_str", "ok")
+    end
+end, { "string", "string" })
+
+register_tex_cmd("luafun_spread_lookup_sym", function(sym)
+    local reading = spintent_spread_dict[sym]
+    if reading then
+        token_set_macro("l__spintent_spread_luaset_status_str", "found")
+        token_set_macro("l__spintent_spread_luaset_reading_str", reading)
+    else
+        token_set_macro("l__spintent_spread_luaset_status_str", "notfound")
+    end
 end, { "string" })
 % \iffalse
 %</spintentlua>
