@@ -35,8 +35,8 @@ tdslocations  = {
   "tex/lualatex/spintent/spintent.lua",
   "doc/lualatex/spintent/spintent.pdf",
   "doc/lualatex/spintent/README.md",
-  "source/lulaatex/spintent/spintent.dtx",
-  "source/lulaatex/spintent/spintent.ins"
+  "source/lualatex/spintent/spintent.dtx",
+  "source/lualatex/spintent/spintent.ins"
 }
 
 -- Unpacking files from spintent.ins
@@ -113,14 +113,51 @@ local function read_file(filepath)
   return content
 end
 
--- Update function with smart check (avoids redundant rewrites)
+-- Update function with smart check (avoids redundant rewrites) --
+-- revisa PRIMERO si el archivo ya tiene el tag/fecha correctos antes
+-- de tocar el contenido; si coincide, no ejecuta ningun gsub.
 function update_tag(file, content, tagname, tagdate)
   tagname = pkgversion
   tagdate = pkgdate
 
+  -- ¿Este archivo ya esta al dia?
+  local already_ok = nil
+
+  if string.match(file, "spintent%.dtx$") then
+    local fver = string.match(content, "\\def\\fileversion{%s*v?(.-)%s*}")
+    local fdate = string.match(content, "\\def\\filedate{%s*(.-)%s*}")
+    local pkgd, pkgv = string.match(content, "\\ProvidesExplPackage%s*{spintent}%s*{(.-)}%s*{(.-)}")
+    local ltxr = string.match(content, "\\NeedsTeXFormat%s*{LaTeX2e}%s*%[(%d%d%d%d%-%d%d%-%d%d)%]")
+    local luav, luad = string.match(content, "%-%s*v(%d+%.%d+%a*)%s*%[(%d%d%d%d%-%d%d%-%d%d)%]")
+    already_ok = (fver == tagname and fdate == tagdate and pkgv == tagname
+      and pkgd == tagdate and ltxr == ltxrelease and luav == tagname and luad == tagdate)
+
+  elseif string.match(file, "spintent%.sty$") then
+    local pkgd, pkgv = string.match(content, "\\ProvidesExplPackage%s*{spintent}%s*{(.-)}%s*{(.-)}")
+    local ltxr = string.match(content, "\\NeedsTeXFormat%s*{LaTeX2e}%s*%[(%d%d%d%d%-%d%d%-%d%d)%]")
+    already_ok = (pkgv == tagname and pkgd == tagdate and ltxr == ltxrelease)
+
+  elseif string.match(file, "spintent%.lua$") then
+    local luav, luad = string.match(content, "%-%s*v(%d+%.%d+%a*)%s*%[(%d%d%d%d%-%d%d%-%d%d)%]")
+    already_ok = (luav == tagname and luad == tagdate)
+
+  elseif string.match(file, "CTANREADME%.md$") then
+    local m_readmev, m_readmed = string.match(content, "Release%s+(v%d+%.%d+%a*)%s+\\%[(%d%d%d%d%-%d%d%-%d%d)\\%]")
+    already_ok = (m_readmev == "v" .. tagname and m_readmed == tagdate)
+
+  elseif string.match(file, "ctan%.ann$") then
+    local annv = string.match(content, "v%d+%.%d+%a*")
+    already_ok = (annv == "v" .. tagname)
+  end
+
+  if already_ok then
+    print("** " .. file .. " is already up to date")
+    return content
+  end
+
   local original_content = content
 
-  -- 1. Substitutions in spintent.dtx
+  -- Substitutions in spintent.dtx
   if string.match(file, "spintent%.dtx$") then
     content = string.gsub(content, "\\def\\fileversion{%s*v?.-%s*}", "\\def\\fileversion{v" .. tagname .. "}")
     content = string.gsub(content, "\\def\\filedate{%s*.-%s*}", "\\def\\filedate{" .. tagdate .. "}")
@@ -129,33 +166,28 @@ function update_tag(file, content, tagname, tagdate)
     content = string.gsub(content, "(%-%s*v)%d+%.%d+%a*%s*%[%d%d%d%d%-%d%d%-%d%d%]", "%1" .. tagname .. " [" .. tagdate .. "]")
   end
 
-  -- 2. Substitutions in spintent.sty
+  -- Substitutions in spintent.sty
   if string.match(file, "spintent%.sty$") then
     content = string.gsub(content, "(\\ProvidesExplPackage%s*{spintent}%s*){[^}]+}%s*{[^}]+}", "%1{" .. tagdate .. "} {" .. tagname .. "}")
     content = string.gsub(content, "(\\NeedsTeXFormat{LaTeX2e})%[%d%d%d%d%-%d%d%-%d%d%]", "%1[" .. ltxrelease .. "]")
   end
 
-  -- 3. Substitutions in spintent.lua
+  -- Substitutions in spintent.lua
   if string.match(file, "spintent%.lua$") then
     content = string.gsub(content, "(%-%s*v)%d+%.%d+%a*%s*%[%d%d%d%d%-%d%d%-%d%d%]", "%1" .. tagname .. " [" .. tagdate .. "]")
   end
 
-  -- 4. Substitutions in CTANREADME.md
+  -- Substitutions in CTANREADME.md
   if string.match(file, "CTANREADME%.md$") then
     content = string.gsub(content, "Release v%d+%.%d+%a*%s*\\%[%d%d%d%d%-%d%d%-%d%d\\%]", "Release v" .. tagname .. " \\[" .. tagdate .. "\\]")
   end
 
-  -- 5. Substitutions in ctan.ann
+  -- Substitutions in ctan.ann
   if string.match(file, "ctan%.ann$") then
     content = string.gsub(content, "v%d+%.%d+%a*", "v" .. tagname)
   end
 
-  -- Feedback inteligente según los cambios reales
-  if content == original_content then
-    print("** " .. file .. " is already up to date")
-  else
-    print("** " .. file .. " has been tagged with version " .. tagname .. " and date " .. tagdate)
-  end
+  print("** " .. file .. " has been tagged with version " .. tagname .. " and date " .. tagdate)
 
   return content
 end
@@ -257,39 +289,48 @@ function docinit_hook()
 end
 --]]
 
--- Helper function to generate an isolated build environment
+-- Helper function to generate an isolated build environment --
+local function system_temp_dir()
+  local is_windows = package.config:sub(1, 1) == "\\"
+  if is_windows then
+    return os.getenv("TEMP") or os.getenv("TMP") or "C:\\Windows\\Temp"
+  else
+    return os.getenv("TMPDIR") or "/tmp"
+  end
+end
+
 local function make_tmp_dir()
   -- Unified tag verification before unpacking
   if not check_all_tags() then
     error("** Error!!: Tag verification failed before preparing environment")
   end
 
-  -- Safe basename extraction (cross-platform, never returns nil)
-  local function basename(path)
-    return path:match("([^/\\]+)$") or path
-  end
-
+  local sep = package.config:sub(1, 1)
+  local base = system_temp_dir()
   local tmpname = os.tmpname()
-  tmpdir = basename(tmpname) -- Global variable consumed by custom targets
+  local unique = tmpname:match("([^/\\]+)$") or tostring(os.time())
+  os.remove(tmpname) -- os.tmpname() a veces crea el archivo vacio; no hace falta
+
+  tmpdir = base .. sep .. "spintent-build-" .. unique -- Global variable consumed by custom targets
 
   -- Create temporary directory
   local errorlevel = mkdir(tmpdir)
   if errorlevel ~= 0 then
-    error("** Error!!: Could not create temporary directory ./" .. tmpdir)
+    error("** Error!!: Could not create temporary directory " .. tmpdir)
   else
-    os_message("Creating temporary directory ./" .. tmpdir)
+    os_message("Creating temporary directory " .. tmpdir)
   end
 
   -- Copy source files (.dtx and .ins)
   errorlevel = cp("*.dtx", sourcefiledir, tmpdir) + cp("*.ins", sourcefiledir, tmpdir)
   if errorlevel ~= 0 then
-    error("** Error!!: Failed to copy source files to ./" .. tmpdir)
+    error("** Error!!: Failed to copy source files to " .. tmpdir)
   else
-    os_message("Copying spintent.dtx and spintent.ins to ./" .. tmpdir)
+    os_message("Copying spintent.dtx and spintent.ins to " .. tmpdir)
   end
 
   -- Unpack source files
-  os_message("Unpacking source files in ./" .. tmpdir)
+  os_message("Unpacking source files in " .. tmpdir)
   local file = jobname("spintent.ins")
   errorlevel = run(tmpdir, "luatex -interaction=batchmode " .. file .. ".ins > " .. os_null)
   if errorlevel ~= 0 then
