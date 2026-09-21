@@ -21,7 +21,7 @@
 -- General package identification
 module     = "spintent"
 pkgversion = "0.99"
-pkgdate    = "2026-09-20"
+pkgdate    = "2026-09-21"
 ltxrelease = "2026-11-01"
 
 -- Configuration of files for build and installation
@@ -45,7 +45,15 @@ unpackopts  = "--interaction=batchmode"
 unpackexe   = "luatex"
 
 -- Typesetting spintent documentation step by step :)
-typesetfiles  = {"spintent.dtx"}
+
+function docinit_hook()
+  local errorlevel = (cp("*mylhmc.lua", sourcefiledir, typesetdir) + cp("*mylhmc.sty", sourcefiledir, typesetdir))
+  if errorlevel ~= 0 then
+    error("** Error!!: Can't copy mylhmc.lua and mylhmc.lua files from "..sourcefiledir.." to "..typesetdir)
+    return errorlevel
+  end
+  return 0
+end
 
 function typeset(file)
   print("** Running: arara "..file..".dtx")
@@ -276,18 +284,6 @@ if options["target"] == "tagcheck" then
     os.exit(1)
   end
 end
-
-
---[[
-function docinit_hook()
-  local errorlevel = (cp("*.tex", unpackdir, typesetdir) + cp("*.sty", unpackdir, typesetdir))
-  if errorlevel ~= 0 then
-    error("** Error!!: Can't copy .tex and .sty files from "..unpackdir.." to "..typesetdir)
-    return errorlevel
-  end
-  return 0
-end
---]]
 
 -- Helper function to generate an isolated build environment --
 local function system_temp_dir()

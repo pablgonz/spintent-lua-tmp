@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-20]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-21]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -143,7 +143,7 @@ local spintent_sub_mlist_t = node.id("sub_mlist")
 -- Numero de atributo asignado por el propio kernel de LuaTeX (sin
 -- riesgo de colision con otro paquete).
 local spintent_scope_attr = luatexbase.new_attribute("spintent_scope")
-token_set_macro("l__spintent_scope_luaset_attr_str", tostring(spintent_scope_attr))
+token_set_macro("l__spintent_luaset_scope_attr_str", tostring(spintent_scope_attr))
 
 -- Reclama 'target' con la siguiente entrada de la cola. Solo si
 -- tiene spintent_scope_attr=1 (tipografiado dentro de un comando
@@ -1630,9 +1630,13 @@ local function spintent_calculate_divisors(n_val, limit)
 end
 
 local function spintent_execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
-    -- Asumimos que expl3 ya usó luafun_clean_split_and_set y garantizó que raw_n
-    -- es un número natural puro. ¡Solo convertimos y calculamos!
+    token_set_macro("l__spintent_spnM_spnD_luaset_error_str", "false")
+
     local num_n = tonumber(raw_n)
+    if not num_n then
+        token_set_macro("l__spintent_spnM_spnD_luaset_error_str", "true")
+        return
+    end
 
     local clean_limit = spintent_normalize_key(raw_limit)
     local num_limit = tonumber(clean_limit) or 0
@@ -2541,4 +2545,27 @@ register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spcoord_luaset_y_type_str",     y_type)
     token_set_macro("l__spintent_spcoord_luaset_y_value_str",    y_value)
     token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", y_has_frac)
+end, { "string" })
+
+-- Diccionario simbolo -> lectura para \spread/\spnewsym
+
+local spintent_spread_dict = {}
+
+register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
+    if spintent_spread_dict[sym] then
+        token_set_macro("l__spintent_spread_luaset_status_str", "duplicate")
+    else
+        spintent_spread_dict[sym] = reading
+        token_set_macro("l__spintent_spread_luaset_status_str", "ok")
+    end
+end, { "string", "string" })
+
+register_tex_cmd("luafun_spread_lookup_sym", function(sym)
+    local reading = spintent_spread_dict[sym]
+    if reading then
+        token_set_macro("l__spintent_spread_luaset_status_str", "found")
+        token_set_macro("l__spintent_spread_luaset_reading_str", reading)
+    else
+        token_set_macro("l__spintent_spread_luaset_status_str", "notfound")
+    end
 end, { "string" })

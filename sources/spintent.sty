@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-20} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-21} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -94,13 +94,13 @@
 \cs_generate_variant:Nn \seq_set_from_clist:Nn { Ne }
 \str_new:N \l__spintent_luaset_cal_fam_ok_str
 \str_new:N \l__spintent_luaset_sym_fam_ok_str
+\str_new:N \l__spintent_luaset_scope_attr_str
 \lua_load_module:n { spintent.lua }
 \bool_if:NTF \l__spintent_debug_ghost_bool
   { \__spintent_luafun_set_debug_ghost:n { true } }
   { \__spintent_luafun_set_debug_ghost:n { false } }
 \int_new:N  \l__spintent_scope_attr_int
-%% \str_new:N  \l_@@_scope_luaset_attr_str
-\int_set:Nn \l__spintent_scope_attr_int { \l__spintent_scope_luaset_attr_str }
+\int_set:Nn \l__spintent_scope_attr_int { \l__spintent_luaset_scope_attr_str }
 \cs_generate_variant:Nn \__spintent_luafun_spunit_lookup_alias:n { V }
 \cs_generate_variant:Nn \__spintent_luafun_spmoney_lookup_data:n { V }
 \cs_generate_variant:Nn \__spintent_luafun_spmQ_scale_int:nn { Vn }
@@ -1655,20 +1655,79 @@
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spusep } }
   }
-\msg_new:nnnn { spintent } { spread-empty-args }
-  { Empty~argument~in~\token_to_str:N \spread. }
-  { \token_to_str:N \spread~requires~two~non-empty~arguments. }
-\tl_new:N \l__spintent_spread_intent_tl
+\msg_new:nnnn { spintent } { spnewsym-empty-args }
+  {
+    Empty~argument~in~\token_to_str:N \spnewsym.
+  }
+  {
+    \token_to_str:N \spnewsym~requires~two~non-empty~arguments.
+  }
+\msg_new:nnnn { spintent } { spnewsym-duplicate }
+  {
+    The~symbol~'#1'~is~already~defined!
+  }
+  {
+    You~cannot~redefine~with~\token_to_str:N \spnewsym.
+  }
+\msg_new:nnnn { spintent } { spread-empty-sym }
+  {
+    Empty~symbol~argument~in~\token_to_str:N \spread.
+  }
+  {
+    \token_to_str:N \spread~requires~a~non-empty~symbol.
+  }
+\msg_new:nnnn { spintent } { spread-unknown-sym }
+  {
+    The~symbol~'#1'~is~not~registered~and~no~'read-arg'~was~given.
+  }
+  {
+    Register~it~first~with~\token_to_str:N \spnewsym,~or~pass~'read-arg'.
+  }
+\str_new:N \l__spintent_spread_luaset_status_str
+\str_new:N \l__spintent_spread_luaset_reading_str
+\tl_new:N  \l__spintent_spread_read_arg_tl
+\keys_define:nn { spintent / spread }
+  {
+    read-arg    .code:n =
+      { \__spintent_sanitize_affix:Nn \l__spintent_spread_read_arg_tl {#1} },
+    read-arg    .initial:n = ,
+    read-arg    .value_required:n = true,
+    silent-cmd  .bool_set:N = \l__spintent_spread_silent_cmd_bool,
+    silent-cmd  .initial:n  = false,
+    silent-cmd  .value_required:n = true,
+    unknown     .code:n =
+      {
+        \str_set:Nn \l__spintent_command_name_str { spread }
+        \__spintent_unknown_keys_cmd:n {#1}
+      },
+  }
 \cs_new_protected:Nn \__spintent_spread_exec:nn
   {
-    \bool_lazy_or:nnTF { \tl_if_blank_p:n { #1 } } { \tl_if_blank_p:n { #2 } }
-      { \msg_error:nn { spintent } { spread-empty-args } }
+    \keys_set:nn { spintent / spread } { #1 }
+    \tl_if_blank:nTF { #2 }
+      { \msg_error:nn { spintent } { spread-empty-sym } }
       {
-        \__spintent_sanitize_affix:Nn \l__spintent_spread_intent_tl { #1 }
-        \MathMLintent { \l__spintent_spread_intent_tl } { #2 }
+        \bool_if:NTF \l__spintent_spread_silent_cmd_bool
+          { \MathMLintent { :silent } { #2 } }
+          {
+            \tl_if_empty:NTF \l__spintent_spread_read_arg_tl
+              {
+                \__spintent_luafun_spread_lookup_sym:n { \exp_not:n {#2} }
+                \str_if_eq:VnTF \l__spintent_spread_luaset_status_str { found }
+                  {
+                    \MathMLintent { \l__spintent_spread_luaset_reading_str } { #2 }
+                  }
+                  {
+                    \msg_error:nne { spintent } { spread-unknown-sym } { \exp_not:n {#2} }
+                  }
+              }
+              {
+                \MathMLintent { \l__spintent_spread_read_arg_tl } { #2 }
+              }
+          }
       }
   }
-\NewDocumentCommand \spread { m m }
+\NewDocumentCommand \spread { O{} m }
   {
     \mode_if_math:TF
       {
@@ -1677,6 +1736,24 @@
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spread } }
+  }
+\NewDocumentCommand \spnewsym { m m }
+  {
+    \mode_if_math:TF
+      {
+        \msg_error:nnn { spintent } { need-text-mode } { \spnewsym }
+      }
+      {
+        \bool_lazy_or:nnTF { \tl_if_blank_p:n { #1 } } { \tl_if_blank_p:n { #2 } }
+          { \msg_error:nn { spintent } { spnewsym-empty-args } }
+          {
+            \__spintent_luafun_spread_new_sym:nn { \exp_not:n {#1} } { #2 }
+            \str_if_eq:VnT \l__spintent_spread_luaset_status_str { duplicate }
+              {
+                \msg_error:nnn { spintent } { spnewsym-duplicate } { #1 }
+              }
+          }
+      }
   }
 \tl_new:N \l__spintent_spdsym_read_sym_tl
 \tl_new:N \l__spintent_spdsym_symbol_tl
@@ -2151,6 +2228,7 @@
       { \msg_error:nnn { spintent } { need-math-mode } { \spmcm } }
   }
 \seq_new:N \l__spintent_md_out_seq
+\str_new:N \l__spintent_spnM_spnD_luaset_error_str
 \str_new:N \l__spintent_spnmd_luaset_is_number_str
 \clist_map_inline:nn { nM , nD }
   {
@@ -2185,7 +2263,9 @@
       }
   }
 \msg_new:nnnn { spintent } { md-invalid-argument }
-  { Invalid~argument~provided~to~#1. }
+  {
+    Invalid~argument~provided~to~#1~\msg_line_context:.
+  }
   {
     The~argument~must~be~a~single~positive~integer. \\
   }
@@ -2216,19 +2296,25 @@
     \use:c { __spintent_luafun_calcular_ #1 :nn }
       { \l__spintent_luaset_part_int_tl }
       { \tl_use:c { l__spintent_sp #1 _print_result_num_tl } }
-    \MathMLintent { _son } { = \{ }
-    \seq_set_from_clist:Ne
-      \l__spintent_md_out_seq { \tl_use:c { l__spintent_sp #1 _luaset_result_tl } }
-    \seq_use:Nnnn \l__spintent_md_out_seq
-      { \MathMLintent { _y }      { , } }
-      { \MathMLintent { :silent } { , } }
-      { \MathMLintent { _y }      { , } }
-    \str_if_eq:vnT
-      { l__spintent_sp #1 _luaset_is_truncated_str } { true }
-        {
-          \MathMLintent { :silent } { , } ~ \dots
-        }
-    \MathMLintent { :silent } { \} }
+    \str_if_eq:VnTF \l__spintent_spnM_spnD_luaset_error_str { true }
+      {
+        \msg_error:nne { spintent } { md-invalid-argument } { \exp_not:c { sp #1 } }
+      }
+      {
+        \MathMLintent { _son } { = \{ }
+        \seq_set_from_clist:Ne
+          \l__spintent_md_out_seq { \tl_use:c { l__spintent_sp #1 _luaset_result_tl } }
+        \seq_use:Nnnn \l__spintent_md_out_seq
+          { \MathMLintent { _y }      { , } }
+          { \MathMLintent { :silent } { , } }
+          { \MathMLintent { _y }      { , } }
+        \str_if_eq:vnT
+          { l__spintent_sp #1 _luaset_is_truncated_str } { true }
+            {
+              \MathMLintent { :silent } { , } ~ \dots
+            }
+        \MathMLintent { :silent } { \} }
+      }
   }
 \cs_new_protected:Nn \__spintent_spnM_spnD_exec:nnnn
   {
@@ -2306,6 +2392,9 @@
     use-dfrac  .bool_set:N = \l__spintent_sprazon_use_dfrac_bool,
     use-dfrac  .initial:n  = false,
     use-dfrac  .value_required:n = true,
+    inline     .bool_set:N = \l__spintent_sprazon_inline_bool,
+    inline     .initial:n  = false,
+    inline     .value_required:n = true,
     unknown    .code:n =
       {
         \str_set:Nn \l__spintent_command_name_str { sprazon }
@@ -2321,20 +2410,35 @@
         \MathMLintent { _- }
           {
             \__spintent_inner_sep:
-            \bool_if:NTF \l__spintent_sprazon_use_dfrac_bool
-              { \dfrac { #2 } { #3 } }
-              { \frac  { #2 } { #3 } }
+            \bool_if:NTF \l__spintent_sprazon_inline_bool
+              { #2 : #3 }
+              {
+                \bool_if:NTF \l__spintent_sprazon_use_dfrac_bool
+                  { \dfrac { #2 } { #3 } }
+                  { \frac  { #2 } { #3 } }
+              }
           }
       }
       {
-        \MathMLintent { es-a:infix($num,$denom) }
+        \bool_if:NTF \l__spintent_sprazon_inline_bool
           {
-            \__spintent_inner_sep:
-            \bool_if:NTF \l__spintent_sprazon_use_dfrac_bool
+            \MathMLintent { _es-a:infix($num,$denom) }
               {
-                \dfrac { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } }
+                \MathMLarg { num } { #2 }
+                :
+                \MathMLarg { denom } { #3 }
               }
-              { \frac  { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } } }
+          }
+          {
+            \MathMLintent { _es-a:infix($num,$denom) }
+              {
+                \__spintent_inner_sep:
+                \bool_if:NTF \l__spintent_sprazon_use_dfrac_bool
+                  {
+                    \dfrac { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } }
+                  }
+                  { \frac  { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } } }
+              }
           }
       }
   }
@@ -4557,6 +4661,12 @@
         concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
+        concept*            .meta:n =
+          {
+            concept  = false,
+            read-arg = { \str_if_eq:eeTF {#1} { Afig } { _área } { _perímetro } },
+          },
+        concept*            .value_forbidden:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l__spintent_command_name_str { sp #1 }
@@ -4668,6 +4778,7 @@
               {
                 \tl_set:Ne \l__spintent_spfig_desc_tl
                   {
+                    del-
                     \str_if_eq:VnTF \l__spintent_geo_print_sym_str { triangle }
                       { triángulo } { cuadrado }
                     -
