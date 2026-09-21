@@ -4690,14 +4690,14 @@ end, "shekel_fallback_patch")
 %
 %   El comando \ics*{spcirc} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento opcional delimitado por paréntesis} de la forma
-%   \myparg{centro} o \myparg{centro\textnormal{\textcolor{red}{,}} radio}.
-%   El \emph{radio} es opcional y debe pasarse obligatoriamente junto al
-%   argumento \myparg{centro} separado por una coma `\textcolor{red}{,}' obligatoria.
+%   \myparg{centro} o \myparg{centro\textnormal{\textcolor{red}{,}} radio},
+%   donde \mymeta{radio} es opcional y debe pasarse junto al argumento
+%   \myparg{centro} separado por una coma `\textcolor{red}{,}' obligatoria.
 % \end{function}
 %
 % \smallskip
 %
-% La forma en la que se procesa el \emph{radio} junto a su impresión y
+% La forma en la que se procesa el \mymeta{radio} junto a su impresión y
 % verbalización se establece de manera interna: Si es un \mymeta{número}
 % se usa |\spnum|; si es una \mymeta{medida} se usa |\spunit| y si es
 % un segmento \mymeta{punto punto} se usa |\spside| o |\spmside| acorde
@@ -4719,7 +4719,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% Si se proporciona el \emph{argumento} \myparg{centro\textnormal{\textcolor{gray}{,}} radio},
+% Si se proporciona el \emph{argumento} \myparg{centro\textnormal{\textcolor{red}{,}} radio},
 % |$\spcirc(O,3)$| imprimirá `$\bigodot(O,3)$' en la salida \texttt{PDF}
 % y \mynvmath{NVDA/MathCAT} verbalizará \emph{«circunferencia de centro
 % en O y radio tres»}.
@@ -4737,10 +4737,16 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
 % el argumento \myparg{centro}. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza la letra del argumento \myparg{centro} sin el prefijo «mayúscula»;
+% verbaliza el argumento \myparg{centro} sin el prefijo «mayúscula»;
 % si se establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
 % reglas, que pueden incluir el prefijo «mayúscula» dependiendo de la
 % configuración del usuario.
+%
+% \smallskip
+%
+% \begin{important}*
+%   Esta llave no tiene efecto sobre el argumento \mymeta{radio}.
+% \end{important}
 %
 % \smallskip
 %
@@ -4756,7 +4762,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{print-sym}{usual \textnormal{\textcolor{lightgray}{\textbar}}
 %   odot}{odot}[spcirc]
 % \smallskip
-% Establece si se \emph{usará} |\bigodot| o la letra `C' en la impresión
+% Establece si se \emph{usará} |\bigodot| o la letra `$C$' en la impresión
 % del comando sin modificar la verbalización de este. Si se establece en
 % \mykey{usual}, |$\spcirc[print-sym=|\mykey{usual}|](O)$| imprimirá `$C(O)$'
 % en la salida \texttt{PDF}; si se establece en \mykey{odot}, |$\spcirc[print-sym=|\mykey{odot}|](O)$|
@@ -4779,7 +4785,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{diameter}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spcirc]
 % \smallskip
-% Establece \emph{como} se verbaliza el argumento \emph{radio} al ejecutar
+% Establece \emph{como} se verbaliza el argumento \mymeta{radio} al ejecutar
 % el comando sin modificar la impresión de este. Si se establece en |true|,
 % |$\spcirc[diameter=true](O, 3)$|, \mynvmath{NVDA/MathCAT} verbalizará
 % \emph{«circunferencia de centro en O y diámetro tres»}; si se establece
@@ -4791,7 +4797,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{radio-sty}{side \textnormal{\textcolor{lightgray}{\textbar}}
 %   mside}{mside}[spcirc]
 % \smallskip
-% Establece el \emph{comando} que procesa internamente al argumento \emph{radio}
+% Establece el \emph{comando} que procesa internamente el argumento \mymeta{radio}
 % cuando tiene la forma \mymeta{punto punto}. Si se establece en \mykey{side}
 % se usará |\spside|\mymarg{punto punto}, |$\spcirc[radio-sty=side](O, AB)$|
 % imprimirá `$\bigodot(O, \overline{AB})$' en la salida \texttt{PDF} y
@@ -4809,18 +4815,23 @@ end, "shekel_fallback_patch")
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % del \emph{«concepto»} establecido por la llave \mykey{read-sty} al
 % ejecutar el comando sin modificar la impresión de este. Si se
-% establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará el concepto y
-% el centro; si se establece en |false|, \mynvmath{NVDA/MathCAT} solo
-% verbalizará el centro acorde al valor establecido por la llave
-% \mykey{read-cmd}. Si \mykey{read-arg} tiene un valor, se verbaliza
-% ese valor en lugar del concepto.
+% establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará el \emph{«concepto»} y
+% el argumento \myparg{centro} o \myparg{centro\textnormal{\textcolor{red}{,}} radio};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
+% argumento \myparg{centro} o \myparg{centro\textnormal{\textcolor{red}{,}} radio}
+% acorde al valor establecido por la llave \mykey{read-cmd}.
+%^^A Si \mykey{read-arg} tiene un valor, se verbaliza
+%^^A ese valor en lugar del concepto.
 %
 % \smallskip
 %
 % \keyexampcmd{sub-index}{subíndice}{no usado}[spcirc]
 % \smallskip
-% Establece un \emph{subíndice} sobre el símbolo. El valor de esta
-% llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+% Establece un \emph{subíndice} sobre |\bigodot| o la letra `$C$' establecido
+% por la llave \mykey{print-sym}. El valor de esta llave \emph{siempre} debe pasarse
+% entre llaves `|{ }|'. Por ejemplo: |$\spcirc[sub-index={1},radio-sty=mside](O, AB)$|
+% imprimirá `$\bigodot_{1}(O, AB)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«circunferencia uno de centro en O y radio medida del lado A B»}.
 %
 % \smallskip
 %
@@ -4828,7 +4839,7 @@ end, "shekel_fallback_patch")
 %   false}{false}[spcirc]
 % \smallskip
 % Establece si se \emph{antepone} la palabra «sub» al verbalizar el
-% \mykey{sub-index} para \mynvmath{NVDA/MathCAT}.
+% valor establecido por la llave \mykey{sub-index}. para \mynvmath{NVDA/MathCAT}.
 %
 % \smallskip
 %
@@ -4846,16 +4857,16 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % del \emph{«concepto»} establecido por la llave \mykey{read-sty}, del
-% centro y del radio pasados al comando sin modificar la impresión de
-% este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará
-% la salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
-% sí verbalizará la salida del comando.
+% argumento \myparg{centro} o \myparg{centro\textnormal{\textcolor{red}{,}} radio}
+% pasados al comando sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
 % \smallskip
 %
 % \begin{important}*
 %   Las llaves \mykey{spside} y \mykey{spmside} reenvían sus valores
-%   directamente a \ics{spside} y \ics{spmside}, respectivamente,
+%   directamente a |\spside| y |\spmside|, respectivamente,
 %   cuando el radio es un segmento de dos letras.
 % \end{important}
 %
