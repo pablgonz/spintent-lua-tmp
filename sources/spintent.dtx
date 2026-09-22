@@ -669,7 +669,7 @@ end, "shekel_fallback_patch")
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
                     lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent-cmd, en-US, math, mathml-SE, es-CL, on, off, %
                     setup, tagging, tagging-setup, lang, pdfversion, pdfstandard, arg, auto, read-sub, radio-sty, diameter, %
-                    circun, circle, side, mside, usual, },%
+                    circun, circle, side, mside, usual, sub-index, },%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
@@ -4767,7 +4767,8 @@ end, "shekel_fallback_patch")
 % Establece si se \emph{usará} |\bigodot| o la letra `$C$' en la impresión
 % del comando sin modificar la verbalización de este. Si se establece en
 % \mykey{usual}, |$\spcirc[print-sym=|\mykey{usual}|](O)$| imprimirá `$C(O)$'
-% en la salida \texttt{PDF}; si se establece en \mykey{odot}, |$\spcirc[print-sym=|\mykey{odot}|](O)$|
+% en la salida \texttt{PDF}; si se establece en \mykey{odot},
+% \lstinline[language=spintent-doc,emph={[4]{odot}},emphstyle={[4]\color{keyname}}]|$\spcirc[print-sym=odot](O)$|
 % imprimirá `$\bigodot(O)$' en la salida \texttt{PDF}.
 %
 % \smallskip
@@ -4840,8 +4841,11 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spcirc]
 % \smallskip
-% Establece si se \emph{antepone} la palabra «sub» al verbalizar el
-% valor establecido por la llave \mykey{sub-index}. para \mynvmath{NVDA/MathCAT}.
+% Antepone la palabra \emph{sub} al verbalizar el subíndice establecido por
+% la llave \mykey{sub-index} al ejecutar el comando sin modificar la
+% impresión de este. Si se establece en |true|, |$\spcirc[sub-index={1},read-sub=true](O)$|
+% se verbalizará \emph{«circunferencia sub uno de centro en O} en \mynvmath{NVDA/MathCAT};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«circunferencia uno de centro en O}.
 %
 % \smallskip
 %
@@ -4850,7 +4854,9 @@ end, "shekel_fallback_patch")
 % Sobrescribe el \emph{concepto} establecido por la llave \mykey{read-sty}
 % que será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el
 % comando sin modificar la impresión de este. El valor de esta llave
-% \emph{siempre} debe pasarse entre llaves `|{ }|'.
+% \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo: |$\spcirc[read-arg={disco}](O)$|
+% imprimirá `$\bigodot(O)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«disco de centro en O»}.
 %
 % \smallskip
 %
