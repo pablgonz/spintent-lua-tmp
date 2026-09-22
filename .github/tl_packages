@@ -1,6 +1,5 @@
 # Required to build
 l3build
-pdftex
 luatex
 lualibs
 luatexbase
@@ -15,8 +14,6 @@ l3experimental
 luaotfload
 arara
 makeindex
-tikzducks
-colorprofiles
 latex-lab
 tagpdf
 bookmark
@@ -26,7 +23,6 @@ xcolor
 microtype
 amsmath
 tools
-bibtex
 # For doc and test/examples
 carlito
 newcomputermodern
@@ -42,19 +38,18 @@ anonymouspro
 alphalph
 amsfonts
 attachfile2
-atveryend
-auxhook
-babel
+# atveryend
+# auxhook
+# babel
 babel-english
 babel-spanish
 bigintcalc
-bitset
-cm
+# bitset
+# cm
 colortbl
 comfortaa
 csquotes
 ctablestack
-duckuments
 enumitem
 etexcmds
 etoolbox
@@ -89,7 +84,7 @@ lm-math
 ltxcmds
 lualatex-math
 unicode-math
-mwe
+#mwe
 psnfss
 refcount
 rerunfilecheck
