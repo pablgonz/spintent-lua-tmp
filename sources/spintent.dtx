@@ -4302,11 +4302,12 @@ end, "shekel_fallback_patch")
 % Si se utiliza \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
 % los valores \mykey{auto} y \mykey{none} quedan sin efecto; si se establece en \mykey{triangle}
 % o \mykey{square} anida el argumento bajo el \emph{símbolo}:
-% |$\spAfig[print-sym=|\mykey{triangle}|](1)$| imprimirá `$\mathcal{A}_{\triangle_{1}}$'
-% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del
-% triángulo uno»}; |$\spAfig[print-sym=|\mykey{square}|](1)$| imprimirá
-% `$\mathcal{A}_{\mdlgwhtsquare_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«área del cuadrado uno»}.
+% \lstinline[language=spintent-doc,emph={[4]{triangle}},emphstyle={[4]\color{keyname}}]|$\spAfig[print-sym=triangle](1)$|
+% imprimirá `$\mathcal{A}_{\triangle_{1}}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del triángulo uno»};
+% \lstinline[language=spintent-doc,emph={[4]{square}},emphstyle={[4]\color{keyname}}]|$\spAfig[print-sym=square](1)$|
+% imprimirá `$\mathcal{A}_{\mdlgwhtsquare_{1}}$' en la salida \texttt{PDF}
+% y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del cuadrado uno»}.
 %
 % \smallskip
 %
@@ -4521,11 +4522,12 @@ end, "shekel_fallback_patch")
 % Si se utiliza \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
 % los valores \mykey{auto} y \mykey{none} quedan sin efecto; si se establece en \mykey{triangle}
 % o \mykey{square} anida el argumento bajo el \emph{símbolo}:
-% |$\spPfig[print-sym=|\mykey{triangle}|](1)$| imprimirá `$\mathcal{P}_{\triangle_{1}}$'
-% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del
-% triángulo uno»}; |$\spPfig[print-sym=|\mykey{square}|](1)$| imprimirá
-% `$\mathcal{P}_{\mdlgwhtsquare_{1}}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«perímetro del cuadrado uno»}.
+% \lstinline[language=spintent-doc,emph={[4]{triangle}},emphstyle={[4]\color{keyname}}]|$\spPfig[print-sym=triangle](1)$|
+% imprimirá `$\mathcal{P}_{\triangle_{1}}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del triángulo uno»};
+% \lstinline[language=spintent-doc,emph={[4]{square}},emphstyle={[4]\color{keyname}}]|$\spPfig[print-sym=square](1)$|
+% imprimirá `$\mathcal{P}_{\mdlgwhtsquare_{1}}$' en la salida \texttt{PDF}
+% y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del cuadrado uno»}.
 %
 % \smallskip
 %
@@ -4557,10 +4559,10 @@ end, "shekel_fallback_patch")
 % \begin{function}{\sprad, \spdiam}
 %   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.15\mydpstrut}\small
 %     |\sprad|\par
-%     |\sprad|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%     |\spdiam|
 %   \end{minipage}\hfill
 %   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.15\mydpstrut}\small
-%     |\spdiam|\par
+%     |\sprad|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
 %     |\spdiam|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
 %   \end{minipage}
 %
