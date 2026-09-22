@@ -669,7 +669,7 @@ end, "shekel_fallback_patch")
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
                     lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent-cmd, en-US, math, mathml-SE, es-CL, on, off, %
                     setup, tagging, tagging-setup, lang, pdfversion, pdfstandard, arg, auto, read-sub, radio-sty, diameter, %
-                    circun, circle, side, mside, usual, sub-index, },%
+                    circun, circle, side, mside, usual, sub-index, odot, },%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
@@ -4679,12 +4679,12 @@ end, "shekel_fallback_patch")
 % \begin{function}{\spcirc}
 %   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.15\mydpstrut}\small
 %     |\spcirc|\par
-%     |\spcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
-%     |\spcirc|\myparg{centro}
+%     |\spcirc|\myparg{centro}\par
+%     |\spcirc|\myparg{centro\textnormal{\textcolor{red}{,}} radio}
 %   \end{minipage}\hfill
 %   \begin{minipage}[t]{0.45\linewidth}\vspace*{-0.15\mydpstrut}\small
+%     |\spcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
 %     |\spcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{centro}\par
-%     |\spcirc|\myparg{centro\textnormal{\textcolor{red}{,}} radio}\par
 %     |\spcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{centro\textnormal{\textcolor{red}{,}} radio}
 %   \end{minipage}
 %
@@ -4729,10 +4729,17 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%   El argumento \myparg{centro} acepta prima `|'|' o subíndice `|_{...}|'.
+%   El argumento \myparg{centro} y el argumento \mymeta{radio} cuando tiene
+%   la forma \mymeta{punto punto} aceptan prima `|'|' o subíndice `|_{...}|'.
 % \end{important}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spcirc}}
+%
+% El comando |\spcirc| posee las \mymeta{meta-keys} \mykey[spcirc]{spside}
+% pasada al comando |\spside| (v.\,pág.\,\pageref{subsec:spside}) y \mykey[spcirc]{spmside}
+% pasada al comando |\spmside| (v.\,pág.\,\pageref{subsec:spmside}).
+%
+% \smallskip
 %
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spcirc]
@@ -4747,7 +4754,8 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%   Esta llave no tiene efecto sobre el argumento \mymeta{radio}.
+%   Esta llave tiene efecto sobre el argumento \mymeta{radio} cuando tiene
+%   la forma \mymeta{punto punto}.
 % \end{important}
 %
 % \smallskip
@@ -4778,10 +4786,10 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece el \emph{concepto} que verbalizará \mynvmath{NVDA/MathCAT}
 % al ejecutar el comando sin modificar la impresión de este. Si se
-% establece en \mykey{circun}, |$\spcirc[read-sty=circun](O)$|, \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«circunferencia de centro en O»}; si se establece en
-% \mykey{circle}, |$\spcirc[read-sty=circle](O)$|, \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«círculo de centro en O»}.
+% establece en \mykey{circun}, |$\spcirc[read-sty=circun](O)$| se verbalizará
+% \emph{«circunferencia de centro en O»} en \mynvmath{NVDA/MathCAT}; si
+% se establece en \mykey{circle}, |$\spcirc[read-sty=circle](O)$| se verbalizará
+% \emph{«círculo de centro en O»} en  \mynvmath{NVDA/MathCAT}.
 %
 % \smallskip
 %
@@ -4790,10 +4798,10 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece \emph{como} se verbaliza el argumento \mymeta{radio} al ejecutar
 % el comando sin modificar la impresión de este. Si se establece en |true|,
-% |$\spcirc[diameter=true](O, 3)$|, \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«circunferencia de centro en O y diámetro tres»}; si se establece
-% en |false|, |$\spcirc[diameter=false](O, 3)$|, \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«circunferencia de centro en O y radio tres»}.
+% |$\spcirc[diameter=true](O, 3)$| se verbalizará \emph{«circunferencia de centro en O y diámetro tres»}
+% en \mynvmath{NVDA/MathCAT}; si se establece en |false|, |$\spcirc[diameter=false](O, 3)$|
+% se verbalizará \emph{«circunferencia de centro en O y radio tres»} en
+% \mynvmath{NVDA/MathCAT}.
 %
 % \smallskip
 %
@@ -4809,6 +4817,14 @@ end, "shekel_fallback_patch")
 % |$\spcirc[radio-sty=mside](O, AB)$| imprimirá `$\bigodot(O, AB)$' en la
 % salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«circunferencia
 % de centro en O y radio medida del lado A B»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%   Las \mymeta{meta-keys} \mykey[spcirc]{spside} y \mykey[spcirc]{spmside}
+%   permiten modificar la impresión y verbalización del argumento \mymeta{radio}
+%   cuando tiene la forma \mymeta{punto punto}.
+% \end{important}
 %
 % \smallskip
 %
@@ -4844,8 +4860,8 @@ end, "shekel_fallback_patch")
 % Antepone la palabra \emph{sub} al verbalizar el subíndice establecido por
 % la llave \mykey{sub-index} al ejecutar el comando sin modificar la
 % impresión de este. Si se establece en |true|, |$\spcirc[sub-index={1},read-sub=true](O)$|
-% se verbalizará \emph{«circunferencia sub uno de centro en O} en \mynvmath{NVDA/MathCAT};
-% si se establece en |false|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«circunferencia uno de centro en O}.
+% se verbalizará \emph{«circunferencia sub uno de centro en O»} en \mynvmath{NVDA/MathCAT};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«circunferencia uno de centro en O»}.
 %
 % \smallskip
 %
@@ -4870,14 +4886,6 @@ end, "shekel_fallback_patch")
 % \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
 % en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
-% \smallskip
-%
-% \begin{important}*
-%   Las llaves \mykey{spside} y \mykey{spmside} reenvían sus valores
-%   directamente a |\spside| y |\spmside|, respectivamente,
-%   cuando el radio es un segmento de dos letras.
-% \end{important}
-%
 % \subsection*{El comando \cs[no-index]{spAcirc}}\label{subsec:spAcirc}
 %
 % \vspace*{-\baselineskip}
@@ -4885,28 +4893,29 @@ end, "shekel_fallback_patch")
 % \begin{function}{\spAcirc}
 %   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spAcirc|\par
-%     |\spAcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
-%     |\spAcirc|\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
+%     |\spAcirc|\myparg{centro}\par
+%     |\spAcirc|\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
 %   \end{minipage}\hfill
 %   \begin{minipage}[t]{0.45\linewidth}\vspace*{-0.5\mydpstrut}\small
-%     |\spAcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}\par
-%     |\spAcirc|\myparg{centro}\par
-%     |\spAcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{centro}
+%     |\spAcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
+%     |\spAcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{centro}\par
+%     |\spAcirc|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
 %   \end{minipage}
 %
 %   \medskip
 %
 %   El comando \ics*{spAcirc} trabaja en \emph{modo matemático} y
 %   recibe el \emph{argumento opcional delimitado por paréntesis} de la
-%   forma \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
-%   o \myparg{centro}, aplicando |\mathcal{A}| a la impresión.
+%   forma \myparg{centro} o \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n},
+%   aplicando |\mathcal{A}| a la impresión.
+% \end{function}
 %
 %   \smallskip
 %
-%   Si se proporciona el \emph{argumento} \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n},
-%   |$\spAcirc(1)$| imprimirá `$\mathcal{A}_{1}$' en la salida
-%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área de la
-%   circunferencia uno»}.
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   ni el \emph{argumento opcional delimitado por paréntesis}, |$\spAcirc$|
+%   imprimirá `$\mathcal{A}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+%   verbalizará \emph{«área de la circunferencia»}.
 %
 %   \smallskip
 %
@@ -4917,20 +4926,17 @@ end, "shekel_fallback_patch")
 %
 %   \smallskip
 %
-%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
-%   ni el \emph{argumento opcional delimitado por paréntesis},
-%   |$\spAcirc$| imprimirá `$\mathcal{A}$' en la salida \texttt{PDF} y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«área de la
-%   circunferencia»}.
+%   Si se proporciona el \emph{argumento} \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n},
+%   |$\spAcirc(1)$| imprimirá `$\mathcal{A}_{\bigodot_{1}}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área de la circunferencia uno»}.
 %
 %   \smallskip
 %
 % \begin{important}*
-%   El \emph{argumento} \myparg{centro} acepta prima(s) `|'|' o
-%   subíndice(s) `|_{...}|' y no acepta un radio, una coma `|,|' en el
-%   argumento siempre produce un error.
+%   El \emph{argumento} \myparg{centro} acepta prima `|'|' o
+%   subíndice `|_{...}|' y no acepta un \mymeta{radio}. Una coma `|,|'
+%   en el argumento siempre produce un ``error''.
 % \end{important}
-% \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spAcirc}}
 %
@@ -4938,8 +4944,8 @@ end, "shekel_fallback_patch")
 %   mathcat}{school}[spAcirc]
 % \smallskip
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
-% al argumento. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
-% verbaliza las letras del argumento sin el prefijo «mayúscula»; si se
+% el argumento \myparg{centro}. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
+% verbaliza el argumento \myparg{centro} sin el prefijo «mayúscula»; si se
 % establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
 % reglas, que pueden incluir el prefijo «mayúscula» dependiendo de la
 % configuración del usuario.
@@ -4949,7 +4955,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spAcirc]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el término \emph{«área de la»} seguido por
+% \emph{antes} de verbalizar el término \emph{«área de \dots»} seguido por
 % el \emph{«concepto»} establecido por la llave \mykey{read-sty}. El
 % valor de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
@@ -4958,14 +4964,11 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{print-sym}{usual \textnormal{\textcolor{lightgray}{\textbar}}
 %   odot}{odot}[spAcirc]
 % \smallskip
-% Establece si se \emph{usará} |\bigodot| o la letra `C' en la impresión
-% sin modificar la verbalización del comando. Si se establece en |usual|,
-% |$\spAcirc[print-sym=usual](O)$| imprimirá `$\mathcal{A}_{C(O)}$' en
-% la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«área de la circunferencia con centro en O»}; si se establece en
-% |odot|, |$\spAcirc[print-sym=odot](O)$| imprimirá `$\mathcal{A}_{\bigodot(O)}$'
-% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«área de la circunferencia con centro en O»}.
+% Establece si se \emph{usará} |\bigodot| o la letra `$C$' en la impresión
+% del comando sin modificar la verbalización de este. Si se establece en |usual|,
+% |$\spAcirc[print-sym=usual](O)$| imprimirá `$\mathcal{A}_{C(O)}$'
+% en la salida \texttt{PDF}; si se establece en \mykey{odot}, |$\spAcirc[print-sym=odot](O)$|
+% imprimirá `$\mathcal{A}_{\bigodot(O)}$' en la salida \texttt{PDF}.
 %
 % \smallskip
 %
@@ -4974,12 +4977,10 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece el \emph{concepto} que verbalizará \mynvmath{NVDA/MathCAT}
 % después de verbalizar el término \emph{«área de la»} al ejecutar el
-% comando sin modificar la impresión de este. Si se utiliza
-% |$\spAcirc[read-sty=circun](O)$|, \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«área de la circunferencia con centro en O»}; si se utiliza
-% |$\spAcirc[read-sty=circle](O)$|, \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«área del círculo con centro en O»}. Solo tiene efecto cuando
-% \mykey{read-arg} no se proporciona.
+% comando sin modificar la impresión de este. Si se establece en |circun|,
+% |$\spAcirc[read-sty=circun](O)$| se verbalizará \emph{«área de la circunferencia con centro en O»}
+% en \mynvmath{NVDA/MathCAT}; si se establece en |circle|, |$\spAcirc[read-sty=circle](O)$|
+% se verbalizará \emph{«área del círculo con centro en O»} en \mynvmath{NVDA/MathCAT}.
 %
 % \smallskip
 %
@@ -4987,13 +4988,12 @@ end, "shekel_fallback_patch")
 %   false}{true}[spAcirc]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del término \emph{«área de la»} y del \emph{«concepto»} establecido
+% del término \emph{«área de \dots»} y del \emph{«concepto»} establecido
 % por la llave \mykey{read-sty} al ejecutar el comando sin modificar la
 % impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
 % verbalizará el término, el concepto y el \myparg{argumento}; si se
 % establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
-% \myparg{argumento} (y, si corresponde, el centro) acorde al valor
-% establecido por la llave \mykey{read-cmd}.
+% \myparg{argumento} acorde al valor establecido por la llave \mykey{read-cmd}.
 %
 % \smallskip
 %
@@ -14898,8 +14898,18 @@ end, "shekel_fallback_patch")
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l_@@_spcirc_mode_str { school  } }
-            {2} { \str_set:Nn \l_@@_spcirc_mode_str { mathcat } }
+            {1}
+              {
+                \str_set:Nn \l_@@_spcirc_mode_str { school }
+                \keys_set:nn { spintent / spside  } { read-cmd = school }
+                \keys_set:nn { spintent / spmside } { read-cmd = school }
+              }
+            {2}
+              {
+                \str_set:Nn \l_@@_spcirc_mode_str { mathcat }
+                \keys_set:nn { spintent / spside  } { read-cmd = mathcat }
+                \keys_set:nn { spintent / spmside } { read-cmd = mathcat }
+              }
           }
       },
     read-cmd     .initial:n = school,
