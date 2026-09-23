@@ -177,7 +177,9 @@ end, "shekel_fallback_patch")
       {
         \index{#1\actualchar#2|HP}
       }
-      { \index[userdoc]{#1\actualchar#2|HP} }
+      {
+        \index[userdoc]{#1\actualchar#2|HP}
+      }
   }
 % Now, after imakeidx opens the write stream for the index file, we copy
 % the reference to \@indexfile:
@@ -308,7 +310,6 @@ end, "shekel_fallback_patch")
 \cs_new_protected:Npn \userdoc_meta_angle:n #1
   {
     \group_begin:
-      %%\fontfamily{lmr}\selectfont
       \fontfamily{lmrotf}\selectfont
       \textcolor{\l_userdoc_meta_anglecolor_tl}{#1}
     \group_end:
@@ -374,7 +375,7 @@ end, "shekel_fallback_patch")
       \textcolor { gray } { \small \textsf{default}:~ \emph{#4} } \par
       \IfValueT {#5}
         {
-          \__mydoc_sort_index:nn { Keys }
+          \__mydoc_sort_index:nn {Keys}
             {
               Keys~for~ \texttt { \textbackslash #5 } ~ provide~by~ \pkglogo :> \texttt {#2}
             }
@@ -391,7 +392,7 @@ end, "shekel_fallback_patch")
         {
           \clist_map_inline:nn {#1}
             {
-              \__mydoc_sort_index:nn {Keys} {Keys~for~\texttt{\textbackslash{}##1}~provide~by~\pkglogo :>\texttt{#2}}
+              \__mydoc_sort_index:nn {Keys} {Keys~for~\texttt{\textbackslash ##1}~provide~by~\pkglogo :> \texttt {#2}}
             }
         }
     \group_end:
@@ -3486,7 +3487,7 @@ end, "shekel_fallback_patch")
 %
 % \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spside]
 % \smallskip
-% Sobrescribe el \emph{concepto} establecido por la llave \mykey[spside]{read-sty}
+% Sobrescribe el \emph{concepto} establecido por la llave \mykey{read-sty}
 % que será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el comando
 % sin modificar la impresión de este. El valor de esta llave \emph{siempre}
 % debe pasarse entre llaves `|{ }|'. Por ejemplo: |$\spside[read-arg={hipotenusa}]{AB}$|
@@ -3584,7 +3585,7 @@ end, "shekel_fallback_patch")
 %
 % \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spmside]
 % \smallskip
-% Sobrescribe el \emph{concepto} establecido por la llave \mykey[spside]{read-sty}
+% Sobrescribe el \emph{concepto} establecido por la llave \mykey{read-sty}
 % que será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el comando
 % sin modificar la impresión de este. El valor de esta llave \emph{siempre}
 % debe pasarse entre llaves `|{ }|' y se debe usar en conjunto con la llave
