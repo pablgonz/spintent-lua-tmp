@@ -2113,8 +2113,8 @@ end, "shekel_fallback_patch")
 %
 % \section{Utilidades para símbolos}
 %
-% El paquete \mypkg*[no-index]{spintent} provee tres comandos |\spread|, |\spdsym|
-% y |\spmsym| para trabajar con \emph{«símbolos matemáticos»} descritos
+% El paquete \mypkg*[no-index]{spintent} provee cuatro comandos |\spnewsym|,
+% |\spread|, |\spdsym| y |\spmsym| para trabajar con \emph{«símbolos matemáticos»} descritos
 % en esta sección. Están pensandos desde el punto de vista docente, para
 % situaciones donde la lectura de un \emph{«símbolo»} (acorde al contexto)
 % es relevante.
@@ -2133,24 +2133,20 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spnewsym}
 %   \begin{syntax}
-%     \ics*{spnewsym}\mymarg{símbolo}\mymarg{verbalización \textnormal{NVDA}}
+%     |\spnewsym|\mymarg{símbolo}\mymarg{verbalización \textnormal{NVDA}}
 %   \end{syntax}
 %   El comando \ics*{spnewsym} trabaja en \emph{modo texto} y recibe
-%   dos \emph{argumentos obligatorios}: \mymarg{símbolo} y
-%   \mymarg{verbalización \textnormal{NVDA}} que establece como
-%   \mynvmath{NVDA/MathCAT} \emph{verbalizará} ese \mymarg{símbolo} al
-%   utilizarlo con |\spread|.
+%   dos \emph{argumentos obligatorios}: \mymarg{símbolo} y \mymarg{verbalización \textnormal{NVDA}}
+%   los cuales se almacenan de forma interna para ser utilizados como
+%   como \mymarg{argumento} en |\spread|. Solo se establece como \mynvmath{NVDA/MathCAT}
+%   verbalizará el \mymarg{símbolo} al utilizarlo con |\spread| sin modificar la impresión de este.
 % \end{function}
 %
 % \smallskip
 %
-% El \mymarg{símbolo} no debe estar registrado. Si ya está registrado
+% El argumento \mymarg{símbolo} no debe estar registrado. Si ya está registrado
 % se devolverá un \enquote{error} y se detendrá la compilación del
-% documento.
-%
-% \smallskip
-%
-% La declaración es «global» y se almacena en el módulo \myluamod{}.
+% documento. La declaración es «global» y se almacena en el módulo \myluamod{}.
 % Por ejemplo: |\spnewsym{\cong}{es-congruente-con}| registrará
 % `|\cong|' y cuando se utilice |$\spread{\cong}$| se imprimirá
 % `$\cong$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
@@ -2164,34 +2160,35 @@ end, "shekel_fallback_patch")
 %   \begin{syntax}
 %     |\spread|\mymarg{símbolo}
 %     |\spread|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{símbolo}
+%     |\spread|\myoarg{read-arg\textnormal{\textcolor{gray}{=}}\mymarg{verbalización \textnormal{NVDA}}}\mymarg{comandos \textnormal{\hologo{LaTeX}}}
 %   \end{syntax}
 %   El comando \ics*{spread} trabaja en \emph{modo matemático} y
-%   recibe el \emph{argumento obligatorio} \mymarg{símbolo}, buscando
-%   su verbalización registrada por medio de |\spnewsym|.
-%
-%   \smallskip
-%
-%   Si el \mymarg{símbolo} está registrado, |$\spread{\cong}$|
-%   imprimirá `$\cong$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará la \mymarg{verbalización \textnormal{NVDA}} establecida
-%   por |\spnewsym|.
-%
-%   \smallskip
-%
-%   Si el \mymarg{símbolo} \emph{no} está registrado y no se
-%   proporciona la llave \mykey{read-arg}, se devolverá un
-%   \enquote{error} y se detendrá la compilación del documento.
+%   recibe el \emph{argumento obligatorio} de la forma \mymarg{símbolo} previamente
+%   registrado por el comando |\spnewsym| o \mymarg{comandos \textnormal{\hologo{LaTeX}}}
+%   para ser usado junto a la llave \mykey{read-arg}.
 % \end{function}
+%
+% \smallskip
+%
+% Si el argumento es \mymarg{símbolo}, |$\spread{\cong}$| imprimirá
+% `$\cong$' en la salida \texttt{PDF} y el argumento \mymarg{verbalización \textnormal{NVDA}}
+% establecido al registrar \mymarg{símbolo} con |\spnewsym| se verbalizará
+% en \mynvmath{NVDA/MathCAT}.
+%
+% \smallskip
+%
+% Si el argumento es \mymarg{comandos \textnormal{\hologo{LaTeX}}} y no
+% se establece la llave \mykey{read-arg} se devolverá un \enquote{error}
+% y se detendrá la compilación del documento.
 %
 % \subsubsection*{Llaves para \cs[no-index]{spread}}
 %
 % \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spread]
 % \smallskip
-% Sobrescribe, \emph{solo para esta ejecución}, la verbalización
-% registrada por |\spnewsym| para el \mymarg{símbolo} sin modificar la
-% impresión de este. No requiere que el \mymarg{símbolo} esté
-% registrado. El valor de esta llave \emph{siempre} debe pasarse entre
-% llaves `|{ }|'. Por ejemplo: |$\spread[read-arg={es-paralela-a}]{\parallel}$|
+% Establece la \emph{verbalización} del argumento \mymarg{comandos \textnormal{\hologo{LaTeX}}}.
+% El valor de esta llave \emph{siempre}  debe pasarse entre llaves `|{ }|'
+% y sobrescribe la verbalización del \mymarg{símbolo} si está registrado
+% previamente. Por ejemplo: |$\spread[read-arg={es-paralela-a}]{\parallel}$|
 % imprimirá `$\parallel$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«es paralela a»}.
 %
@@ -2201,11 +2198,21 @@ end, "shekel_fallback_patch")
 %   false}{false}[spread]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del \mymarg{símbolo} pasado al comando sin modificar la impresión de
-% este, sin necesitar que esté registrado ni pasar \mykey{read-arg}. Si
+% del argumento \mymarg{símbolo} o \mymarg{comandos \textnormal{\hologo{LaTeX}}}
+% pasado al comando sin modificar la impresión de este. Si
 % se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la
 % salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
 % sí verbalizará la salida del comando.
+%
+% \smallskip
+%
+% \begin{important}*
+%  Al utilizar |silent-cmd| no es necesario que el argumento
+%  \mymarg{símbolo} esté registrado o usar la llave |read-arg| con
+%  \mymarg{comandos \textnormal{\hologo{LaTeX}}}. Dependiendo de que
+%  contenga \mymarg{argumento} puede que |silent-cmd| no sea suficiente,
+%  en ese caso utilice |read-arg={_-}|.
+% \end{important}
 %
 % \subsection*{El comando \cs[no-index]{spusep}}\label{subsec:spusep}
 %
@@ -16373,9 +16380,7 @@ luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
 
 -- Recibe "true"/"false" desde expl3, una sola vez, justo despues de
 -- cargar el modulo -- activa/desactiva la marca sptmp="inner"/"outer"
--- en las dos funciones fantasma, para que un script externo pueda
--- identificarlas y quitarlas antes de generar AF (nunca se agrega
--- nada a la salida SE real cuando la opcion esta desactivada).
+-- en las dos funciones fantasma.
 local spintent_debug_ghost = false
 
 register_tex_cmd("luafun_set_debug_ghost", function(state)
@@ -16410,7 +16415,7 @@ register_tex_cmd("luafun_inner_sep", function()
     node.write(noad)
 end, {})
 
--- \__spintent_invisible_sep: (fantasma exterior, <mo intent=":silent">).
+-- \__spintent_invisible_sep: (fantasma exterior, <mi intent=":silent">).
 -- Necesario cuando el resultado anotado es el único elemento de
 -- nivel superior de la fórmula: sin un segundo hermano, to_math
 -- renombra el <mrow> resultante directamente a <math intent=...>
@@ -16544,8 +16549,7 @@ end
 register_tex_cmd("luafun_right_angle_sqr", spintent_right_angle_sqr, {})
 
 -- Se llama desde \AtBeginDocument en spintent.sty, no al cargar el modulo
--- asi el orden de \usepackage ya no importa, y si de verdad no hay fuente
--- matematica cargada, degrada con un aviso en vez de un crash.
+-- Si no hay fuente matematica cargada, degrada con un aviso..
 local function spintent_init_math_fallbacks()
     spintent_cal_fam = spintent_find_free_family()
     spintent_cal_fam_ok = spintent_cal_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_cal_fam)
@@ -16594,7 +16598,6 @@ local spintent_number_pattern = Ct(
     * P(-1)
 )
 
--- Optimización: uso exclusivo de longitud de bytes (#) y s_sub para dígitos (O(1) vs O(N))
 local function spintent_rae_format_digits(str_num, reverse)
     if not str_num or str_num == "" then return "" end
 
@@ -16620,8 +16623,6 @@ local function spintent_rae_format_digits(str_num, reverse)
     return t_concat(chunks, "\\,")
 end
 
--- Patrón de una sola pasada: reemplaza el loop de N gsub por un único
--- recorrido LPeg que elimina cualquier separador matemático o espacio.
 local spintent_strip_math_spaces = Cs((spintent_discard_space + P(1)) ^ 0)
 
 register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
@@ -17536,7 +17537,7 @@ register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
     local p1_len = #p1
     local p3_len = #p3
 
-    -- Lógica 1: Detección del Año
+    -- Detección del Año
     if p1_len == 4 and p3_len <= 2 then
         year, month, day = p1, p2, p3
     elseif p3_len == 4 and p1_len <= 2 then
@@ -17549,13 +17550,13 @@ register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
 
     local num_y, num_m, num_d = tonumber(year), tonumber(month), tonumber(day)
 
-    -- Lógica 2: Validación de calendario real
+    -- Validación de calendario real
     if not (num_y and num_m and num_d) or not spintent_is_valid_date(num_d, num_m, num_y) then
         token_set_macro("l__spintent_spdate_luaset_error_str", "true")
         return
     end
 
-    -- Lógica 3: Reglas de renderizado visual
+    -- Reglas de renderizado visual
     local output_str
     if p1_len == 4 and sep == "/" then
         -- Único caso a corregir: YYYY/MM/DD se invierte a DD/MM/YYYY
@@ -17670,8 +17671,7 @@ register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
 end, { "string" })
 
 -- Clasifica CADA argumento de la lista (sin abortar en el primero no
--- numerico, a diferencia de spintent_execute_mcm_mcd_result) -- misma
--- logica de chequeo, reusada tal cual.
+-- numerico, a diferencia de spintent_execute_mcm_mcd_result)
 register_tex_cmd("luafun_mc_classify_args", function(raw_csv_list)
     local types = {}
     local all_numeric = true
@@ -17803,6 +17803,30 @@ register_tex_cmd("luafun_calcular_nD", function(raw_n, raw_limit)
     spintent_execute_spnM_spnD_result(raw_n, raw_limit, false)
 end, { "string", "string" })
 
+-- Diccionario simbolo -> lectura para \spread/\spnewsym
+
+local spintent_spread_dict = {}
+
+register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
+    if spintent_spread_dict[sym] then
+        token_set_macro("l__spintent_spread_luaset_status_str", "duplicate")
+    else
+        spintent_spread_dict[sym] = reading
+        token_set_macro("l__spintent_spread_luaset_status_str", "ok")
+    end
+end, { "string", "string" })
+
+register_tex_cmd("luafun_spread_lookup_sym", function(sym)
+    local reading = spintent_spread_dict[sym]
+    if reading then
+        token_set_macro("l__spintent_spread_luaset_status_str", "found")
+        token_set_macro("l__spintent_spread_luaset_reading_str", reading)
+    else
+        token_set_macro("l__spintent_spread_luaset_status_str", "notfound")
+    end
+end, { "string" })
+
+
 -- 10. NÚMEROS MIXTOS, code for \spmQ (see https://tex.stackexchange.com/q/764828)
 
 local spintent_font_cache         = {}
@@ -17861,9 +17885,6 @@ local function spintent_build_submlist_noad(str)
     return noad
 end
 
--- Movida a nivel de módulo: no captura nada específico de una llamada a
--- \spmQ (dt/cmd son parámetros explícitos, no upvalues), así que crear
--- un closure nuevo por invocación era trabajo evitable.
 local function spintent_medir_frac(dt, cmd)
     spintent_measuring = true
     tex.runtoks(function()
@@ -18682,29 +18703,6 @@ register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spcoord_luaset_y_type_str",     y_type)
     token_set_macro("l__spintent_spcoord_luaset_y_value_str",    y_value)
     token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", y_has_frac)
-end, { "string" })
-
--- Diccionario simbolo -> lectura para \spread/\spnewsym
-
-local spintent_spread_dict = {}
-
-register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
-    if spintent_spread_dict[sym] then
-        token_set_macro("l__spintent_spread_luaset_status_str", "duplicate")
-    else
-        spintent_spread_dict[sym] = reading
-        token_set_macro("l__spintent_spread_luaset_status_str", "ok")
-    end
-end, { "string", "string" })
-
-register_tex_cmd("luafun_spread_lookup_sym", function(sym)
-    local reading = spintent_spread_dict[sym]
-    if reading then
-        token_set_macro("l__spintent_spread_luaset_status_str", "found")
-        token_set_macro("l__spintent_spread_luaset_reading_str", reading)
-    else
-        token_set_macro("l__spintent_spread_luaset_status_str", "notfound")
-    end
 end, { "string" })
 % \iffalse
 %</spintentlua>

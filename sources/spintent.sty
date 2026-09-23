@@ -5224,8 +5224,18 @@
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l__spintent_spcirc_mode_str { school  } }
-            {2} { \str_set:Nn \l__spintent_spcirc_mode_str { mathcat } }
+            {1}
+              {
+                \str_set:Nn \l__spintent_spcirc_mode_str { school }
+                \keys_set:nn { spintent / spside  } { read-cmd = school }
+                \keys_set:nn { spintent / spmside } { read-cmd = school }
+              }
+            {2}
+              {
+                \str_set:Nn \l__spintent_spcirc_mode_str { mathcat }
+                \keys_set:nn { spintent / spside  } { read-cmd = mathcat }
+                \keys_set:nn { spintent / spmside } { read-cmd = mathcat }
+              }
           }
       },
     read-cmd     .initial:n = school,

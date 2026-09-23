@@ -236,9 +236,7 @@ luatexbase.declare_callback_rule("pre_mlist_to_hlist_filter",
 
 -- Recibe "true"/"false" desde expl3, una sola vez, justo despues de
 -- cargar el modulo -- activa/desactiva la marca sptmp="inner"/"outer"
--- en las dos funciones fantasma, para que un script externo pueda
--- identificarlas y quitarlas antes de generar AF (nunca se agrega
--- nada a la salida SE real cuando la opcion esta desactivada).
+-- en las dos funciones fantasma.
 local spintent_debug_ghost = false
 
 register_tex_cmd("luafun_set_debug_ghost", function(state)
@@ -273,7 +271,7 @@ register_tex_cmd("luafun_inner_sep", function()
     node.write(noad)
 end, {})
 
--- \__spintent_invisible_sep: (fantasma exterior, <mo intent=":silent">).
+-- \__spintent_invisible_sep: (fantasma exterior, <mi intent=":silent">).
 -- Necesario cuando el resultado anotado es el único elemento de
 -- nivel superior de la fórmula: sin un segundo hermano, to_math
 -- renombra el <mrow> resultante directamente a <math intent=...>
@@ -407,8 +405,7 @@ end
 register_tex_cmd("luafun_right_angle_sqr", spintent_right_angle_sqr, {})
 
 -- Se llama desde \AtBeginDocument en spintent.sty, no al cargar el modulo
--- asi el orden de \usepackage ya no importa, y si de verdad no hay fuente
--- matematica cargada, degrada con un aviso en vez de un crash.
+-- Si no hay fuente matematica cargada, degrada con un aviso..
 local function spintent_init_math_fallbacks()
     spintent_cal_fam = spintent_find_free_family()
     spintent_cal_fam_ok = spintent_cal_fam and spintent_load_family("NewCMMath-Regular.otf", "", spintent_cal_fam)
@@ -457,7 +454,6 @@ local spintent_number_pattern = Ct(
     * P(-1)
 )
 
--- Optimización: uso exclusivo de longitud de bytes (#) y s_sub para dígitos (O(1) vs O(N))
 local function spintent_rae_format_digits(str_num, reverse)
     if not str_num or str_num == "" then return "" end
 
@@ -483,8 +479,6 @@ local function spintent_rae_format_digits(str_num, reverse)
     return t_concat(chunks, "\\,")
 end
 
--- Patrón de una sola pasada: reemplaza el loop de N gsub por un único
--- recorrido LPeg que elimina cualquier separador matemático o espacio.
 local spintent_strip_math_spaces = Cs((spintent_discard_space + P(1)) ^ 0)
 
 register_tex_cmd("luafun_clean_split_and_set", function(raw_string)
@@ -1399,7 +1393,7 @@ register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
     local p1_len = #p1
     local p3_len = #p3
 
-    -- Lógica 1: Detección del Año
+    -- Detección del Año
     if p1_len == 4 and p3_len <= 2 then
         year, month, day = p1, p2, p3
     elseif p3_len == 4 and p1_len <= 2 then
@@ -1412,13 +1406,13 @@ register_tex_cmd("luafun_spdate_parse", function(raw_date_input)
 
     local num_y, num_m, num_d = tonumber(year), tonumber(month), tonumber(day)
 
-    -- Lógica 2: Validación de calendario real
+    -- Validación de calendario real
     if not (num_y and num_m and num_d) or not spintent_is_valid_date(num_d, num_m, num_y) then
         token_set_macro("l__spintent_spdate_luaset_error_str", "true")
         return
     end
 
-    -- Lógica 3: Reglas de renderizado visual
+    -- Reglas de renderizado visual
     local output_str
     if p1_len == 4 and sep == "/" then
         -- Único caso a corregir: YYYY/MM/DD se invierte a DD/MM/YYYY
@@ -1533,8 +1527,7 @@ register_tex_cmd("luafun_calculate_mcm", function(raw_csv_list)
 end, { "string" })
 
 -- Clasifica CADA argumento de la lista (sin abortar en el primero no
--- numerico, a diferencia de spintent_execute_mcm_mcd_result) -- misma
--- logica de chequeo, reusada tal cual.
+-- numerico, a diferencia de spintent_execute_mcm_mcd_result)
 register_tex_cmd("luafun_mc_classify_args", function(raw_csv_list)
     local types = {}
     local all_numeric = true
@@ -1666,6 +1659,29 @@ register_tex_cmd("luafun_calcular_nD", function(raw_n, raw_limit)
     spintent_execute_spnM_spnD_result(raw_n, raw_limit, false)
 end, { "string", "string" })
 
+-- Diccionario simbolo -> lectura para \spread/\spnewsym
+
+local spintent_spread_dict = {}
+
+register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
+    if spintent_spread_dict[sym] then
+        token_set_macro("l__spintent_spread_luaset_status_str", "duplicate")
+    else
+        spintent_spread_dict[sym] = reading
+        token_set_macro("l__spintent_spread_luaset_status_str", "ok")
+    end
+end, { "string", "string" })
+
+register_tex_cmd("luafun_spread_lookup_sym", function(sym)
+    local reading = spintent_spread_dict[sym]
+    if reading then
+        token_set_macro("l__spintent_spread_luaset_status_str", "found")
+        token_set_macro("l__spintent_spread_luaset_reading_str", reading)
+    else
+        token_set_macro("l__spintent_spread_luaset_status_str", "notfound")
+    end
+end, { "string" })
+
 -- 10. NÚMEROS MIXTOS, code for \spmQ (see https://tex.stackexchange.com/q/764828)
 
 local spintent_font_cache         = {}
@@ -1724,9 +1740,6 @@ local function spintent_build_submlist_noad(str)
     return noad
 end
 
--- Movida a nivel de módulo: no captura nada específico de una llamada a
--- \spmQ (dt/cmd son parámetros explícitos, no upvalues), así que crear
--- un closure nuevo por invocación era trabajo evitable.
 local function spintent_medir_frac(dt, cmd)
     spintent_measuring = true
     tex.runtoks(function()
@@ -2545,27 +2558,4 @@ register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spcoord_luaset_y_type_str",     y_type)
     token_set_macro("l__spintent_spcoord_luaset_y_value_str",    y_value)
     token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", y_has_frac)
-end, { "string" })
-
--- Diccionario simbolo -> lectura para \spread/\spnewsym
-
-local spintent_spread_dict = {}
-
-register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
-    if spintent_spread_dict[sym] then
-        token_set_macro("l__spintent_spread_luaset_status_str", "duplicate")
-    else
-        spintent_spread_dict[sym] = reading
-        token_set_macro("l__spintent_spread_luaset_status_str", "ok")
-    end
-end, { "string", "string" })
-
-register_tex_cmd("luafun_spread_lookup_sym", function(sym)
-    local reading = spintent_spread_dict[sym]
-    if reading then
-        token_set_macro("l__spintent_spread_luaset_status_str", "found")
-        token_set_macro("l__spintent_spread_luaset_reading_str", reading)
-    else
-        token_set_macro("l__spintent_spread_luaset_status_str", "notfound")
-    end
 end, { "string" })
