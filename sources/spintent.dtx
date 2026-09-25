@@ -196,7 +196,7 @@ end, "shekel_fallback_patch")
         spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, spang,
         spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle,
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
-        spPcirc, spcoord, spvec, sprazon, spProp, spnewsym, %
+        spPcirc, spcoord, spvec, sprazon, spProp, spnewread, %
       }
   }
 % Colors
@@ -660,7 +660,7 @@ end, "shekel_fallback_patch")
                         spdate, spread, spdsym, spmsym, spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, %
                         spang, spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle, sparc, spmarc,%
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
-                        spProp, spnewsym, },%
+                        spProp, spnewread, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -1588,38 +1588,44 @@ end, "shekel_fallback_patch")
 % \vspace*{-0.5\baselineskip}
 %
 % \begin{function}{\spmoney}
-%   \begin{syntax}
-%     \cmdexamp{spmoney}{cifra}
-%     \cmdexamp{spmoney}{cifra moneda}
-%     \cmdexamp{spmoney}[key \textnormal{\textcolor{gray}{=}} val]{cifra moneda}
-%   \end{syntax}
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.5\mydpstrut}\small
+%     |\spmoney|\mymarg{cifra}\par
+%     |\spmoney|\mymarg{cifra símbolo moneda}\par
+%     |\spmoney|\mymarg{cifra alias moneda}
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.5\mydpstrut}\small
+%     |\spmoney|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{cifra}\par
+%     |\spmoney|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{cifra símbolo moneda}\par
+%     |\spmoney|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{cifra alias moneda}
+%   \end{minipage}
+%
+%   \medskip
+%
 %   El comando \ics*{spmoney} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento obligatorio} \mymarg{cifra} que contiene la
-%   \emph{«cifra numérica»} positiva o negativa la se cual procesa internamente
-%   por el comando |\spnum| al inicio del \mymarg{argumento} acompañada
-%   de un \emph{«símbolo de moneda»} o \emph{«alias de moneda»} opcional
-%   descritos en \S\ref{subsec:arg-spmoney}.
+%   \emph{«cifra numérica»} positiva o negativa la cual se procesa internamente
+%   por el comando |\spnum| acompañada de \emph{«símbolo moneda»} o
+%   \emph{«alias moneda»} opcionales descritos en \S\ref{subsec:arg-spmoney}.
 %
 %   \smallskip
 %
-%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
-%   y se ejecuta |$\spmoney{500}$| se imprimirá `$\$500$' en la salida
-%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«quinientos pesos»}.
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spmoney{500}$| imprimirá `$\$500$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«quinientos pesos»}.
 % \end{function}
 %
 % \smallskip
 %
-% \begin{important}*
-%  El comportamiento de |\spmoney| depende de como se pase el \emph{argumento obligatorio}
-%  que tiene prioridad por sobre los valores por defecto. Por ejemplo:
+%  El comportamiento de |\spmoney| depende de como se pase \emph{«símbolo moneda»} o
+%  \emph{«alias moneda»} en el \emph{argumento obligatorio} donde tienen
+%  prioridad por sobre los valores por defecto. Por ejemplo:
 %  |$\spmoney{500 dolares}$| imprimirá `$\$500$' en la salida \texttt{PDF}
 %  y \mynvmath{NVDA/MathCAT} verbalizará \emph{«quinientos dolares»}
 %  aunque la moneda por defecto sean pesos.
-% \end{important}
 %
 % \smallskip
 %
-% Si se pasa un \emph{«alias de moneda»} del tipo \texttt{ISO} (código de divisas)
+% Si se pasa un \emph{«alias moneda»} del tipo \texttt{ISO} (código de divisas)
 % como |CLP| o |USD| (mayúsculas) se modifica la verbalización en \mynvmath{NVDA/MathCAT}
 % agregando el país y se ajusta la salida \texttt{PDF} al estandar \texttt{ISO}. Por ejemplo:
 % |$\spmoney{500 CLP}$| imprimirá `$\mathrm{CLP}500$' en la salida \texttt{PDF}
@@ -1627,7 +1633,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% Si se pasa un \emph{«alias de moneda»} del tipo \texttt{ISO} (código de divisas)
+% Si se pasa un \emph{«alias moneda»} del tipo \texttt{ISO} (código de divisas)
 % como |clp| o |usd| (minúsculas) se modifica la verbalización en \mynvmath{NVDA/MathCAT}
 % agregando el país, pero, NO se modifica la salida \texttt{PDF} imprimiendo
 % el \emph{«símbolo de moneda»} correspondiente. Por ejemplo: |$\spmoney{500 clp}$|
@@ -1636,15 +1642,15 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% Pasar de manera directa en el \emph{argumento obligatorio} un \emph{«símbolo de moneda»}
+% Pasar de manera directa en el \emph{argumento obligatorio} un \emph{«símbolo moneda»}
 % como `$\mathcolor{red}{\mathdollar}$', `$\mathcolor{red}{\euro}$', `$\mathcolor{red}{\mathsterling}$'
-% o un \emph{«alias de moneda»} como |peso|, |euro| o |libra| produce
+% o un \emph{«alias moneda»} como |peso|, |euro| o |libra| produce
 % la salida \texttt{PDF} y verbalización estándar esperada para \mynvmath{NVDA/MathCAT}.
 %
 % \smallskip
 %
 % \begin{important}*
-%  La posición del \emph{«símbolo de moneda»} a la izquierda o a la derecha
+%  La posición del \emph{«símbolo moneda»} a la izquierda o a la derecha
 %  de la \emph{«cifra numérica»} y la verbalización para \mynvmath{NVDA/MathCAT}
 %  se manejan desde el módulo Lua \myluamod{} y no se proveen llaves para
 %  modificar este comportamiento.
@@ -1653,9 +1659,9 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%  El \emph{«símbolo de moneda»} es tomado de la fuente tipográfica definida
+%  El \emph{«símbolo moneda»} es tomado de la fuente tipográfica definida
 %  para el \emph{modo matemático} al momento de ejecutar el comando, se
-%  debe tener presente en caso de querer usar un \emph{«símbolo de moneda»}
+%  debe tener presente en caso de querer usar un \emph{«símbolo moneda»}
 %  poco habitual que esté soportada por \mypkg*[no-index]{spintent}. El \mymarg{argumento}
 %  puede contener espacios matemáticos validos, pero, NO puede contener
 %  comandos con o sin argumentos como |\textstyle|, |\mathrm{#1}| o
@@ -1674,10 +1680,10 @@ end, "shekel_fallback_patch")
 %
 % \keyexampcmd{currency}{moneda \textnormal{\textcolor{lightgray}{\textbar}} alias}{peso}[spmoney]
 % \smallskip
-% Establece el \emph{símbolo de moneda} por defecto que se imprimirá en la
+% Establece el \emph{símbolo moneda} por defecto que se imprimirá en la
 % salida \texttt{PDF} y cómo lo verbalizará \mynvmath{NVDA/MathCAT} cuando
 % SOLO se pasa una \emph{«cifra numérica»} como \mymarg{argumento} al comando |\spmoney|.
-% El \emph{«símbolo de moneda»} o el \emph{«alias de moneda»} pasado a esta
+% El \emph{«símbolo moneda»} o el \emph{«alias moneda»} pasado a esta
 % llave debe ser alguno de los descritos en \S\ref{subsec:arg-spmoney}.
 %
 % \smallskip
@@ -1695,15 +1701,16 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{dolar-math}{true \textnormal{\textcolor{lightgray}{\textbar}} false}{true}[spmoney]
 % \smallskip
 % Establece si el \emph{símbolo} `|$|' se imprimirá en \emph{modo texto}
-% o en \emph{modo matemático}. Si se establece en |true|, se usará la fuente tipográfica definida para
-% el \emph{modo matemático} en curso para imprimir `|$|' en la salida \texttt{PDF};
-% si se establece en |false|, se usará la la fuente tipográfica definida
-% para el \emph{modo texto}  para imprimir `|$|' en la salida \texttt{PDF}.
+% o en \emph{modo matemático}. Si se establece en |true|, se usará la
+% fuente tipográfica definida para el \emph{modo matemático} en curso
+% para imprimir `|$|' en la salida \texttt{PDF}; si se establece en |false|,
+% se usará la la fuente tipográfica definida para el \emph{modo texto}
+% para imprimir `|$|' en la salida \texttt{PDF}.
 %
 % \subsubsection{Monedas y alias para \cs[no-index]{spmoney}}\label{subsec:arg-spmoney}
 %
-% Resumen de los \mymarg{símbolos de moneda} y \mymarg{alias de moneda} soportados
-% como \mymarg{argumento} para |\spmoney|.
+% Resumen de los \emph{«símbolos moneda»} y \emph{«alias moneda»} soportados
+% en el \mymarg{argumento} de |\spmoney|.
 %
 % \begin{table}[htpb]
 %   \centering
@@ -1760,31 +1767,35 @@ end, "shekel_fallback_patch")
 %   \end{tabular}
 % \end{table}
 %
+% \newpage
+%
 % \subsection{El comando \cs[no-index]{spshort}}\label{sec:spshort}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spshort}
-%   \cmdexamp{spshort}{abreviaturas \textnormal{\textcolor{lightgray}{\textbar}} acrónimos \textnormal{\textcolor{lightgray}{\textbar}} números ordinales}
-%   \cmdexamp{spshort}[key \textnormal{\textcolor{gray}{=}} val]{abreviaturas \textnormal{\textcolor{lightgray}{\textbar}} acrónimos \textnormal{\textcolor{lightgray}{\textbar}} números ordinales}
-%   \cmdexamp{spshort}[read-arg\textnormal{\textcolor{gray}{=}}\mymarg{verbalización \textnormal{NVDA}}]{comandos \hologo{LaTeX}}
+%   \begin{syntax}
+%     |\spshort|\mymarg{abreviaturas \textnormal{\textcolor{lightgray}{\textbar}} acrónimos \textnormal{\textcolor{lightgray}{\textbar}} números ordinales}
+%     |\spshort|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{abreviaturas \textnormal{\textcolor{lightgray}{\textbar}} acrónimos \textnormal{\textcolor{lightgray}{\textbar}} números ordinales}
+%     |\spshort|\myoarg{read-arg\textnormal{\textcolor{gray}{=}}\mymarg{verbalización \textnormal{NVDA}}}\mymarg{comandos \textnormal{\hologo{LaTeX}}}
+%   \end{syntax}
 %
 % \smallskip
 %
 %   El comando \ics*{spshort} trabaja \emph{solo en modo texto} y recibe
 %   \emph{un argumento obligatorio} del tipo \mymarg{abreviaturas}, \mymarg{acrónimos} o \mymarg{números ordinales}
 %   descritos en \S\ref{subsec:arg-spshort}.
-%
-%   \smallskip
-%
-%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
-%   y se ejecuta |\spshort{dr.a}| se imprimirá `Dr.\textsuperscript{a}' en la salida
-%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«doctora»};
-%   si se ejecuta |\spshort{onu}| se imprimirá `ONU' en la salida \texttt{PDF}
-%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«organización de las naciones unidas»}
-%   y si se ejecuta |\spshort{mineduc}| se imprimirá `Mineduc' en la salida \texttt{PDF}
-%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«ministerio de educación»}.
 % \end{function}
+%
+% \smallskip
+%
+% Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+% y se ejecuta |\spshort{dr.a}| se imprimirá `Dr.\textsuperscript{a}' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«doctora»};
+% si se ejecuta |\spshort{onu}| se imprimirá `ONU' en la salida \texttt{PDF}
+% y \mynvmath{NVDA/MathCAT} verbalizará \emph{«organización de las naciones unidas»}
+% y si se ejecuta |\spshort{mineduc}| se imprimirá `Mineduc' en la salida \texttt{PDF}
+% y \mynvmath{NVDA/MathCAT} verbalizará \emph{«ministerio de educación»}.
 %
 % \smallskip
 %
@@ -2113,7 +2124,7 @@ end, "shekel_fallback_patch")
 %
 % \section{Utilidades para símbolos}
 %
-% El paquete \mypkg*[no-index]{spintent} provee cuatro comandos |\spnewsym|,
+% El paquete \mypkg*[no-index]{spintent} provee cuatro comandos |\spnewread|,
 % |\spread|, |\spdsym| y |\spmsym| para trabajar con \emph{«símbolos matemáticos»} descritos
 % en esta sección. Están pensandos desde el punto de vista docente, para
 % situaciones donde la lectura de un \emph{«símbolo»} (acorde al contexto)
@@ -2127,15 +2138,15 @@ end, "shekel_fallback_patch")
 %  (semántica) en que serán verbalizados por \mynvmath{NVDA/MathCAT}.
 % \end{important}
 %
-% \subsection*{El comando \cs[no-index]{spnewsym}}\label{subsec:spnewsym}
+% \subsection*{El comando \cs[no-index]{spnewread}}\label{subsec:spnewread}
 %
 % \vspace*{-0.5\baselineskip}
 %
-% \begin{function}{\spnewsym}
+% \begin{function}{\spnewread}
 %   \begin{syntax}
-%     |\spnewsym|\mymarg{símbolo}\mymarg{verbalización \textnormal{NVDA}}
+%     |\spnewread|\mymarg{símbolo}\mymarg{verbalización \textnormal{NVDA}}
 %   \end{syntax}
-%   El comando \ics*{spnewsym} trabaja en \emph{modo texto} y recibe
+%   El comando \ics*{spnewread} trabaja en \emph{modo texto} y recibe
 %   dos \emph{argumentos obligatorios}: \mymarg{símbolo} y \mymarg{verbalización \textnormal{NVDA}}
 %   los cuales se almacenan de forma interna para ser utilizados como
 %   como \mymarg{argumento} en |\spread|. Solo se establece como \mynvmath{NVDA/MathCAT}
@@ -2147,7 +2158,7 @@ end, "shekel_fallback_patch")
 % El argumento \mymarg{símbolo} no debe estar registrado. Si ya está registrado
 % se devolverá un \enquote{error} y se detendrá la compilación del
 % documento. La declaración es «global» y se almacena en el módulo \myluamod{}.
-% Por ejemplo: |\spnewsym{\cong}{es-congruente-con}| registrará
+% Por ejemplo: |\spnewread{\cong}{es-congruente-con}| registrará
 % `|\cong|' y cuando se utilice |$\spread{\cong}$| se imprimirá
 % `$\cong$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«es congruente con»}.
@@ -2164,7 +2175,7 @@ end, "shekel_fallback_patch")
 %   \end{syntax}
 %   El comando \ics*{spread} trabaja en \emph{modo matemático} y
 %   recibe el \emph{argumento obligatorio} de la forma \mymarg{símbolo} previamente
-%   registrado por el comando |\spnewsym| o \mymarg{comandos \textnormal{\hologo{LaTeX}}}
+%   registrado por el comando |\spnewread| o \mymarg{comandos \textnormal{\hologo{LaTeX}}}
 %   para ser usado junto a la llave \mykey{read-arg}.
 % \end{function}
 %
@@ -2172,7 +2183,7 @@ end, "shekel_fallback_patch")
 %
 % Si el argumento es \mymarg{símbolo}, |$\spread{\cong}$| imprimirá
 % `$\cong$' en la salida \texttt{PDF} y el argumento \mymarg{verbalización \textnormal{NVDA}}
-% establecido al registrar \mymarg{símbolo} con |\spnewsym| se verbalizará
+% establecido al registrar \mymarg{símbolo} con |\spnewread| se verbalizará
 % en \mynvmath{NVDA/MathCAT}.
 %
 % \smallskip
@@ -2220,23 +2231,25 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spusep}
 %   \begin{syntax}
-%     |\spusep|\mymarg{separador}
-%     |\spusep|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{separador}
+%     |\spusep|\mymarg{\normalfont\ttfamily\textbackslash\{\textcolor{lightgray}{\textbar}[\textcolor{lightgray}{\textbar}(\textcolor{lightgray}{\textbar})\textcolor{lightgray}{\textbar}]\textcolor{lightgray}{\textbar}\textbackslash\}}
+%     |\spusep|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{\normalfont\ttfamily\textbackslash\{\textcolor{lightgray}{\textbar}[\textcolor{lightgray}{\textbar}(\textcolor{lightgray}{\textbar})\textcolor{lightgray}{\textbar}]\textcolor{lightgray}{\textbar}\textbackslash\}}
 %   \end{syntax}
 %   El comando \ics*{spusep} trabaja en \emph{modo matemático} y recibe el
-%   \emph{argumento obligatorio} \mymarg{separador}, el cual debe ser uno de
-%   los \emph{«delimitadores»} soportados: `|(|', `|)|', `|[|', `|]|',
-%   `|\{|' o `|\}|'. Imprime el \emph{delimitador} indicado con el tamaño
-%   establecido por la llave \mykey[spusep]{size} y controla si
-%   \mynvmath{NVDA/MathCAT} lo verbaliza o no mediante la llave
-%   \mykey[spusep]{silent}.
+%   \emph{argumento obligatorio} \mymarg{\normalfont\ttfamily\textbackslash\{\textcolor{lightgray}{\textbar}[\textcolor{lightgray}{\textbar}(\textcolor{lightgray}{\textbar})\textcolor{lightgray}{\textbar}]\textcolor{lightgray}{\textbar}\textbackslash\}},
+%   el cual debe ser \emph{«solo uno»} de los paréntesis soportados: `\texttt{\textcolor{keyname}{(}}',
+%   `\texttt{\textcolor{keyname}{)}}', `\texttt{\textcolor{keyname}{[}}', `\texttt{\textcolor{keyname}{]}}',
+%   `\texttt{\textcolor{keyname}{\textbackslash\{}}' o `\texttt{\textcolor{keyname}{\textbackslash\}}}'.
 %
+%^^A   Imprime el \emph{paréntesis} pasado en el argumento
+%^^A   en el tamaño establecido por la llave \mykey{size} y se verbaliza acorde
+%^^A   a las reglas propias de \mynvmath{NVDA/MathCAT}.
+%^^A
 %   \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
-%   \myoarg{key \textnormal{\textcolor{gray}{=}} val}, |$\spusep{(}$|
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val}, \myhlc|$\spusep{(}$|
 %   imprimirá `$($' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«paréntesis izquierdo»}.
+%   verbalizará \emph{«abrir paréntesis»} acorde a su propia heurística.
 % \end{function}
 %
 % \smallskip
@@ -2259,27 +2272,25 @@ end, "shekel_fallback_patch")
 %   bigg \textnormal{\textcolor{lightgray}{\textbar}}
 %   Bigg}{none}[spusep]
 % \smallskip
-% Establece el \emph{tamaño} del \mymarg{delimitador} que se imprimirá en
-% la salida \texttt{PDF}. Los valores corresponden a los cuatro tamaños
-% fijos provistos por \hologo{LaTeX}: si se establece en |none|, el
-% \mymarg{delimitador} se imprime en el tamaño por defecto del modo
-% matemático en curso; si se establece en |big|, se usa |\bigl|/|\bigr|;
-% si se establece en |Big|, se usa |\Bigl|/|\Bigr|; si se establece en
-% |bigg|, se usa |\biggl|/|\biggr|; y si se establece en |Bigg|, se usa
-% |\Biggl|/|\Biggr|. El tamaño se aplica automáticamente en el lado
-% correcto (izquierdo o derecho) según el \mymarg{delimitador} pasado.
+% Establece el \emph{tamaño del paréntesis} pasado como \mymarg{argumento}
+% que se imprimirá en la salida \texttt{PDF} al ejecutar el comando sin modificar
+% la verbalización de este. Si se establece en \mykey{none}, se imprime el \mymarg{argumento}
+% en el tamaño por defecto del modo matemático en curso; si se establece en \mykey{big},
+% se usa |\bigl|/|\bigr| antes del \mymarg{argumento}; si se establece en \mykey{Big},
+% se usa |\Bigl|/|\Bigr| antes del \mymarg{argumento}; si se establece en
+% \mykey{bigg}, se usa |\biggl|/|\biggr| antes del \mymarg{argumento}; y
+% si se establece en \mykey{Bigg}, se usa |\Biggl|/|\Biggr| antes del \mymarg{argumento}.
 %
 % \smallskip
 %
 % \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spusep]
 % \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} \emph{verbalizará} el
-% \mymarg{delimitador} impreso por |\spusep|. Si se establece en |true|,
-% el \mymarg{delimitador} se marcará con el \emph{intent} |:silent| y
-% \mynvmath{NVDA/MathCAT} \emph{no} lo verbalizará; si se establece en
-% |false|, \mynvmath{NVDA/MathCAT} verbalizará el \mymarg{delimitador}
-% de forma normal.
+% Establece si se \emph{silencia} en \mynvmath{NVDA/MathCAT} la verbalización
+% del \mymarg{argumento} pasado al comando sin modificar la impresión de este.
+% Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la
+% salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spdsym}}\label{subsec:spdsym}
 %
@@ -3369,7 +3380,7 @@ end, "shekel_fallback_patch")
 %   semirrecta}{rayo}[sprayo]
 % \smallskip
 % Establece el \emph{concepto} que verbalizará \mynvmath{NVDA/MathCAT}
-% el ejecutar el comando sin modificar la impresión de este. Si se utiliza
+% al ejecutar el comando sin modificar la impresión de este. Si se utiliza
 % |$\sprayo[read-sty=rayo]{AB}$|, \mynvmath{NVDA/MathCAT} verbalizará
 % \emph{«rayo A B»}; si se utiliza |$\sprayo[read-sty=semirrecta]{AB}$|,
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«semirrecta A B»}.
@@ -3462,7 +3473,7 @@ end, "shekel_fallback_patch")
 %   trazo}{lado}[spside]
 % \smallskip
 % Establece el \emph{concepto} que verbalizará \mynvmath{NVDA/MathCAT}
-% el ejecutar el comando sin modificar la impresión de este. Si se utiliza
+% al ejecutar el comando sin modificar la impresión de este. Si se utiliza
 % |$\spside[read-sty=lado]{AB}$|, \mynvmath{NVDA/MathCAT} verbalizará
 % \emph{«lado A B»}; si se utiliza |$\spside[read-sty=segmento]{AB}$|,
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«segmento A B»} y si se utiliza
@@ -8723,27 +8734,27 @@ end, "shekel_fallback_patch")
 % of mathematical symbols for situations in which it is necessary to
 % specify gender or plurality in Spanish.
 %
-% \begin{macro}[int]{spnewsym-empty-args, spnewsym-duplicate, spread-unknown-sym}
-%   The \enquote{error} |spnewsym-empty-args| is raised when
-%   |\spnewsym| receives an empty or blank symbol or reading. The
-%   \enquote{error} |spnewsym-duplicate| is raised when it registers a
+% \begin{macro}[int]{spnewread-empty-args, spnewread-duplicate, spread-unknown-sym}
+%   The \enquote{error} |spnewread-empty-args| is raised when
+%   |\spnewread| receives an empty or blank symbol or reading. The
+%   \enquote{error} |spnewread-duplicate| is raised when it registers a
 %   symbol already in the dictionary. The \enquote{error}
 %   |spread-unknown-sym| is raised when |\spread| is given a symbol
 %   that is neither registered nor accompanied by \mykey{read-arg}.
 %    \begin{macrocode}
-\msg_new:nnnn { spintent } { spnewsym-empty-args }
+\msg_new:nnnn { spintent } { spnewread-empty-args }
   {
-    Empty~argument~in~\token_to_str:N \spnewsym.
+    Empty~argument~in~\token_to_str:N \spnewread.
   }
   {
-    \token_to_str:N \spnewsym~requires~two~non-empty~arguments.
+    \token_to_str:N \spnewread~requires~two~non-empty~arguments.
   }
-\msg_new:nnnn { spintent } { spnewsym-duplicate }
+\msg_new:nnnn { spintent } { spnewread-duplicate }
   {
     The~symbol~'#1'~is~already~defined!
   }
   {
-    You~cannot~redefine~with~\token_to_str:N \spnewsym.
+    You~cannot~redefine~with~\token_to_str:N \spnewread.
   }
 \msg_new:nnnn { spintent } { spread-empty-sym }
   {
@@ -8757,7 +8768,7 @@ end, "shekel_fallback_patch")
     The~symbol~'#1'~is~not~registered~and~no~'read-arg'~was~given.
   }
   {
-    Register~it~first~with~\token_to_str:N \spnewsym,~or~pass~'read-arg'.
+    Register~it~first~with~\token_to_str:N \spnewread,~or~pass~'read-arg'.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -8770,8 +8781,8 @@ end, "shekel_fallback_patch")
 %   }
 %   \myhlc|\l_@@_spread_luaset_status_str| and
 %   \myhlc|\l_@@_spread_luaset_reading_str| are set by
-%   \myhlc|\@@_luafun_spread_new_sym:nn|/
-%   \myhlc|\@@_luafun_spread_lookup_sym:n|.
+%   \myhlc|\@@_luafun_spread_new:nn|/
+%   \myhlc|\@@_luafun_spread_lookup:n|.
 %   \myhlc|\l_@@_spread_read_arg_tl| stores \mykey{read-arg}.
 %    \begin{macrocode}
 \str_new:N \l_@@_spread_luaset_status_str
@@ -8809,7 +8820,7 @@ end, "shekel_fallback_patch")
 %   |intent|, nothing else evaluated. Otherwise, with \mykey{read-arg}
 %   given, it is used directly, overriding any registered reading for
 %   this call alone. With \mykey{read-arg} empty, calls
-%   \myhlc|\@@_luafun_spread_lookup_sym:n|, using the registered
+%   \myhlc|\@@_luafun_spread_lookup:n|, using the registered
 %   reading when found, reporting |spread-unknown-sym| otherwise.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spread_exec:nn
@@ -8818,12 +8829,15 @@ end, "shekel_fallback_patch")
     \tl_if_blank:nTF { #2 }
       { \msg_error:nn { spintent } { spread-empty-sym } }
       {
+        \@@_invisible_sep:
         \bool_if:NTF \l_@@_spread_silent_cmd_bool
-          { \MathMLintent { :silent } { #2 } }
+          {
+            \MathMLintent { :silent } { #2 }
+          }
           {
             \tl_if_empty:NTF \l_@@_spread_read_arg_tl
               {
-                \@@_luafun_spread_lookup_sym:n { \exp_not:n {#2} }
+                \@@_luafun_spread_lookup:n { \exp_not:n {#2} }
                 \str_if_eq:VnTF \l_@@_spread_luaset_status_str { found }
                   {
                     \MathMLintent { \l_@@_spread_luaset_reading_str } { #2 }
@@ -8858,26 +8872,26 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\spnewsym}
-%   The public command |\spnewsym| registers a new symbol/reading
+% \begin{macro}{\spnewread}
+%   The public command |\spnewread| registers a new symbol/reading
 %   pair. It passes the symbol `|#1|' and its reading `|#2|' to Lua via
-%   \myhlc|\@@_luafun_spread_new_sym:nn|, reporting
-%   |spnewsym-duplicate| when the symbol is already registered.
+%   \myhlc|\@@_luafun_spread_new:nn|, reporting
+%   |spnewread-duplicate| when the symbol is already registered.
 %    \begin{macrocode}
-\NewDocumentCommand \spnewsym { m m }
+\NewDocumentCommand \spnewread { m m }
   {
     \mode_if_math:TF
       {
-        \msg_error:nnn { spintent } { need-text-mode } { \spnewsym }
+        \msg_error:nnn { spintent } { need-text-mode } { \spnewread }
       }
       {
         \bool_lazy_or:nnTF { \tl_if_blank_p:n { #1 } } { \tl_if_blank_p:n { #2 } }
-          { \msg_error:nn { spintent } { spnewsym-empty-args } }
+          { \msg_error:nn { spintent } { spnewread-empty-args } }
           {
-            \@@_luafun_spread_new_sym:nn { \exp_not:n {#1} } { #2 }
+            \@@_luafun_spread_new:nn { \exp_not:n {#1} } { #2 }
             \str_if_eq:VnT \l_@@_spread_luaset_status_str { duplicate }
               {
-                \msg_error:nnn { spintent } { spnewsym-duplicate } { #1 }
+                \msg_error:nnn { spintent } { spnewread-duplicate } { #1 }
               }
           }
       }
@@ -17803,11 +17817,11 @@ register_tex_cmd("luafun_calcular_nD", function(raw_n, raw_limit)
     spintent_execute_spnM_spnD_result(raw_n, raw_limit, false)
 end, { "string", "string" })
 
--- Diccionario simbolo -> lectura para \spread/\spnewsym
+-- Diccionario simbolo/comando -> lectura para \spnewread/\spread
 
 local spintent_spread_dict = {}
 
-register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
+register_tex_cmd("luafun_spread_new", function(sym, reading)
     if spintent_spread_dict[sym] then
         token_set_macro("l__spintent_spread_luaset_status_str", "duplicate")
     else
@@ -17816,7 +17830,7 @@ register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
     end
 end, { "string", "string" })
 
-register_tex_cmd("luafun_spread_lookup_sym", function(sym)
+register_tex_cmd("luafun_spread_lookup", function(sym)
     local reading = spintent_spread_dict[sym]
     if reading then
         token_set_macro("l__spintent_spread_luaset_status_str", "found")
