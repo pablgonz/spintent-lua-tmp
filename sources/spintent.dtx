@@ -1712,62 +1712,67 @@ end, "shekel_fallback_patch")
 % Resumen de los \emph{«símbolos moneda»} y \emph{«alias moneda»} soportados
 % en el \mymarg{argumento} de |\spmoney|.
 %
-% \begin{table}[htpb]
-%   \centering
-%   \label{tab:spmoney-divisas}
-%   \begin{tabular}{c p{2.75cm} l c l}
-%     \toprule
-%     \textbf{Entrada} & \textbf{Alias} & \textbf{Nombre} & \textbf{Salida} & \textbf{NVDA/MathCAT} \\
-%     \midrule
-%     \texttt{\$}   & \texttt{peso}, \texttt{pesos}                                       & peso          & \$ & \emph{«peso / pesos»} \\
-%     \texttt{€}    & \texttt{euro}, \texttt{euros}                                       & euro          & €  & \emph{«euro / euros»} \\
-%     \texttt{£}    & \texttt{libra}, \texttt{libras}                                     & libra         & £  & \emph{«libra / libras»} \\
-%     \texttt{¥}    & \texttt{yen}, \texttt{yenes}                                        & yen           & ¥  & \emph{«yen / yenes»} \\
-%     \texttt{¥}    & \texttt{yuan}, \texttt{yuanes}                                      & yuan          & ¥  & \emph{«yuan / yuanes»} \\
-%     \texttt{₩}    & \texttt{won}, \texttt{wons}                                         & won           & \texttt{₩}  & \emph{«won / wons»} \\
-%     \texttt{₪}    & \texttt{shekel}, \texttt{shekels}, \texttt{sequel}, \texttt{sequeles} & séquel      & ₪  & \emph{«séquel / séqueles»} \\
-%     \texttt{₹}    & \texttt{rupia}, \texttt{rupias}                                     & rupia         & ₹  & \emph{«rupia / rupias»} \\
-%     \texttt{₽}    & \texttt{rublo}, \texttt{rublos}                                     & rublo         & \texttt{₽}  & \emph{«rublo / rublos»} \\
-%     \texttt{₺}    & \texttt{lira}, \texttt{liras}                                       & lira          & \texttt{₺}  & \emph{«lira / liras»} \\
-%     \texttt{₴}    & \texttt{grivna}, \texttt{grivnas}                                   & grivna        & \texttt{₴}  & \emph{«grivna / grivnas»} \\
-%     \texttt{¢}    & \texttt{centavo}, \texttt{centavos}                                 & centavo       & ¢  & \emph{«centavo / centavos»} \\
-%     \midrule
-%     \multicolumn{5}{c}{\textbf{Divisas en formato ISO (Mayúsculas)}} \\
-%     \midrule
-%     \texttt{CLP}  & ---                                                                 & peso chileno  & \texttt{CLP} & \emph{«peso chileno / pesos chilenos»} \\
-%     \texttt{MXN}  & ---                                                                 & peso mexicano & \texttt{MXN} & \emph{«peso mexicano / pesos mexicanos»} \\
-%     \texttt{USD}  & ---                                                                 & dólar         & \texttt{USD} & \emph{«dólar estadounidense / dólares estadounidenses»} \\
-%     \texttt{EUR}  & ---                                                                 & euro          & \texttt{EUR} & \emph{«euro / euros»} \\
-%     \texttt{GBP}  & ---                                                                 & libra         & \texttt{GBP} & \emph{«libra / libras»} \\
-%     \texttt{JPY}  & ---                                                                 & yen           & \texttt{JPY} & \emph{«yen / yenes»} \\
-%     \texttt{CNY}  & ---                                                                 & yuan          & \texttt{CNY} & \emph{«yuan / yuanes»} \\
-%     \texttt{KRW}  & ---                                                                 & won           & \texttt{KRW} & \emph{«won / wons»} \\
-%     \texttt{ILS}  & ---                                                                 & séquel        & \texttt{ILS} & \emph{«séquel / séqueles»} \\
-%     \texttt{INR}  & ---                                                                 & rupia         & \texttt{INR} & \emph{«rupia / rupias»} \\
-%     \texttt{RUB}  & ---                                                                 & rublo         & \texttt{RUB} & \emph{«rublo / rublos»} \\
-%     \texttt{TRY}  & ---                                                                 & lira          & \texttt{TRY} & \emph{«lira / liras»} \\
-%     \texttt{UAH}  & ---                                                                 & grivna        & \texttt{UAH} & \emph{«grivna / grivnas»} \\
-%     \midrule
-%     \multicolumn{5}{c}{\textbf{Códigos ISO en minúsculas}} \\
-%     \midrule
-%     \texttt{clp}  & ---                                                                 & peso chileno  & \$ & \emph{«peso chileno / pesos chilenos»} \\
-%     \texttt{mxn}  & ---                                                                 & peso mexicano & \$ & \emph{«peso mexicano / pesos mexicanos»} \\
-%     \texttt{usd}  & \texttt{dolar}, \texttt{dolares}                                    & dólar         & \$ & \emph{«dólar estadounidense / dólares estadounidenses»} \\
-%     \texttt{eur}  & ---                                                                 & euro          & €  & \emph{«euro / euros»} \\
-%     \texttt{gbp}  & ---                                                                 & libra         & £  & \emph{«libra / libras»} \\
-%     \texttt{jpy}  & ---                                                                 & yen           & ¥  & \emph{«yen / yenes»} \\
-%     \texttt{cny}  & ---                                                                 & yuan          & ¥  & \emph{«yuan / yuanes»} \\
-%     \texttt{krw}  & ---                                                                 & won           & \texttt{₩} & \emph{«won / wons»} \\
-%     \texttt{ils}  & ---                                                                 & séquel        & ₪  & \emph{«séquel / séqueles»} \\
-%     \texttt{inr}  & ---                                                                 & rupia         & ₹  & \emph{«rupia / rupias»} \\
-%     \texttt{rub}  & ---                                                                 & rublo         & \texttt{₽} & \emph{«rublo / rublos»} \\
-%     \texttt{try}  & ---                                                                 & lira          & \texttt{₺} & \emph{«lira / liras»} \\
-%     \texttt{uah}  & ---                                                                 & grivna        & \texttt{₴} & \emph{«grivna / grivnas»} \\
-%     \bottomrule
-%   \end{tabular}
-% \end{table}
-%
-% \newpage
+% \begin{longtable}{c p{2.75cm} l c l}
+%   \label{tab:spmoney-divisas} \\
+%   \toprule
+%   \textbf{Entrada} & \textbf{Alias} & \textbf{Nombre} & \textbf{Salida} & \textbf{NVDA/MathCAT} \\
+%   \midrule
+%   \endfirsthead
+%   \multicolumn{5}{c}{\tablename\ \thetable\ -- Continuación de la página anterior} \\
+%   \toprule
+%   \textbf{Entrada} & \textbf{Alias} & \textbf{Nombre} & \textbf{Salida} & \textbf{NVDA/MathCAT} \\
+%   \midrule
+%   \endhead
+%   \midrule
+%   \multicolumn{5}{r}{Continúa en la siguiente página...} \\
+%   \endfoot
+%   \bottomrule
+%   \endlastfoot
+%   \texttt{\$} & \texttt{peso}, \texttt{pesos} & peso & \$ & \emph{«peso / pesos»} \\
+%   \texttt{€} & \texttt{euro}, \texttt{euros} & euro & € & \emph{«euro / euros»} \\
+%   \texttt{£} & \texttt{libra}, \texttt{libras} & libra & £ & \emph{«libra / libras»} \\
+%   \texttt{¥} & \texttt{yen}, \texttt{yenes} & yen & ¥ & \emph{«yen / yenes»} \\
+%   \texttt{¥} & \texttt{yuan}, \texttt{yuanes} & yuan & ¥ & \emph{«yuan / yuanes»} \\
+%   \texttt{₩} & \texttt{won}, \texttt{wons} & won & \texttt{₩} & \emph{«won / wons»} \\
+%   \texttt{₪} & \texttt{shekel}, \texttt{shekels}, \texttt{sequel}, \texttt{sequeles} & séquel & ₪ & \emph{«séquel / séqueles»} \\
+%   \texttt{₹} & \texttt{rupia}, \texttt{rupias} & rupia & ₹ & \emph{«rupia / rupias»} \\
+%   \texttt{₽} & \texttt{rublo}, \texttt{rublos} & rublo & \texttt{₽} & \emph{«rublo / rublos»} \\
+%   \texttt{₺} & \texttt{lira}, \texttt{liras} & lira & \texttt{₺} & \emph{«lira / liras»} \\
+%   \texttt{₴} & \texttt{grivna}, \texttt{grivnas} & grivna & \texttt{₴} & \emph{«grivna / grivnas»} \\
+%   \texttt{¢} & \texttt{centavo}, \texttt{centavos} & centavo & ¢ & \emph{«centavo / centavos»} \\
+%   \midrule
+%   \multicolumn{5}{c}{\textbf{Divisas en formato ISO (Mayúsculas)}} \\
+%   \midrule
+%   \texttt{CLP} & --- & peso chileno & \texttt{CLP} & \emph{«peso chileno / pesos chilenos»} \\
+%   \texttt{MXN} & --- & peso mexicano & \texttt{MXN} & \emph{«peso mexicano / pesos mexicanos»} \\
+%   \texttt{USD} & --- & dólar & \texttt{USD} & \emph{«dólar estadounidense / dólares estadounidenses»} \\
+%   \texttt{EUR} & --- & euro & \texttt{EUR} & \emph{«euro / euros»} \\
+%   \texttt{GBP} & --- & libra & \texttt{GBP} & \emph{«libra / libras»} \\
+%   \texttt{JPY} & --- & yen & \texttt{JPY} & \emph{«yen / yenes»} \\
+%   \texttt{CNY} & --- & yuan & \texttt{CNY} & \emph{«yuan / yuanes»} \\
+%   \texttt{KRW} & --- & won & \texttt{KRW} & \emph{«won / wons»} \\
+%   \texttt{ILS} & --- & séquel & \texttt{ILS} & \emph{«séquel / séqueles»} \\
+%   \texttt{INR} & --- & rupia & \texttt{INR} & \emph{«rupia / rupias»} \\
+%   \texttt{RUB} & --- & rublo & \texttt{RUB} & \emph{«rublo / rublos»} \\
+%   \texttt{TRY} & --- & lira & \texttt{TRY} & \emph{«lira / liras»} \\
+%   \texttt{UAH} & --- & grivna & \texttt{UAH} & \emph{«grivna / grivnas»} \\
+%   \midrule
+%   \multicolumn{5}{c}{\textbf{Códigos ISO en minúsculas}} \\
+%   \midrule
+%   \texttt{clp} & --- & peso chileno & \$ & \emph{«peso chileno / pesos chilenos»} \\
+%   \texttt{mxn} & --- & peso mexicano & \$ & \emph{«peso mexicano / pesos mexicanos»} \\
+%   \texttt{usd} & \texttt{dolar}, \texttt{dolares} & dólar & \$ & \emph{«dólar estadounidense / dólares estadounidenses»} \\
+%   \texttt{eur} & --- & euro & € & \emph{«euro / euros»} \\
+%   \texttt{gbp} & --- & libra & £ & \emph{«libra / libras»} \\
+%   \texttt{jpy} & --- & yen & ¥ & \emph{«yen / yenes»} \\
+%   \texttt{cny} & --- & yuan & ¥ & \emph{«yuan / yuanes»} \\
+%   \texttt{krw} & --- & won & \texttt{₩} & \emph{«won / wons»} \\
+%   \texttt{ils} & --- & séquel & ₪ & \emph{«séquel / séqueles»} \\
+%   \texttt{inr} & --- & rupia & ₹ & \emph{«rupia / rupias»} \\
+%   \texttt{rub} & --- & rublo & \texttt{₽} & \emph{«rublo / rublos»} \\
+%   \texttt{try} & --- & lira & \texttt{₺} & \emph{«lira / liras»} \\
+%   \texttt{uah} & --- & grivna & \texttt{₴} & \emph{«grivna / grivnas»} \\
+% \end{longtable}
 %
 % \subsection{El comando \cs[no-index]{spshort}}\label{sec:spshort}
 %
