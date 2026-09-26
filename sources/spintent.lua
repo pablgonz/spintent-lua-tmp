@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-21]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-25]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -1659,11 +1659,11 @@ register_tex_cmd("luafun_calcular_nD", function(raw_n, raw_limit)
     spintent_execute_spnM_spnD_result(raw_n, raw_limit, false)
 end, { "string", "string" })
 
--- Diccionario simbolo -> lectura para \spread/\spnewsym
+-- Diccionario simbolo/comando -> lectura para \spnewread/\spread
 
 local spintent_spread_dict = {}
 
-register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
+register_tex_cmd("luafun_spread_new", function(sym, reading)
     if spintent_spread_dict[sym] then
         token_set_macro("l__spintent_spread_luaset_status_str", "duplicate")
     else
@@ -1672,7 +1672,7 @@ register_tex_cmd("luafun_spread_new_sym", function(sym, reading)
     end
 end, { "string", "string" })
 
-register_tex_cmd("luafun_spread_lookup_sym", function(sym)
+register_tex_cmd("luafun_spread_lookup", function(sym)
     local reading = spintent_spread_dict[sym]
     if reading then
         token_set_macro("l__spintent_spread_luaset_status_str", "found")

@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-21} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-25} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -1655,19 +1655,19 @@
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spusep } }
   }
-\msg_new:nnnn { spintent } { spnewsym-empty-args }
+\msg_new:nnnn { spintent } { spnewread-empty-args }
   {
-    Empty~argument~in~\token_to_str:N \spnewsym.
+    Empty~argument~in~\token_to_str:N \spnewread.
   }
   {
-    \token_to_str:N \spnewsym~requires~two~non-empty~arguments.
+    \token_to_str:N \spnewread~requires~two~non-empty~arguments.
   }
-\msg_new:nnnn { spintent } { spnewsym-duplicate }
+\msg_new:nnnn { spintent } { spnewread-duplicate }
   {
     The~symbol~'#1'~is~already~defined!
   }
   {
-    You~cannot~redefine~with~\token_to_str:N \spnewsym.
+    You~cannot~redefine~with~\token_to_str:N \spnewread.
   }
 \msg_new:nnnn { spintent } { spread-empty-sym }
   {
@@ -1681,7 +1681,7 @@
     The~symbol~'#1'~is~not~registered~and~no~'read-arg'~was~given.
   }
   {
-    Register~it~first~with~\token_to_str:N \spnewsym,~or~pass~'read-arg'.
+    Register~it~first~with~\token_to_str:N \spnewread,~or~pass~'read-arg'.
   }
 \str_new:N \l__spintent_spread_luaset_status_str
 \str_new:N \l__spintent_spread_luaset_reading_str
@@ -1707,12 +1707,15 @@
     \tl_if_blank:nTF { #2 }
       { \msg_error:nn { spintent } { spread-empty-sym } }
       {
+        \__spintent_invisible_sep:
         \bool_if:NTF \l__spintent_spread_silent_cmd_bool
-          { \MathMLintent { :silent } { #2 } }
+          {
+            \MathMLintent { :silent } { #2 }
+          }
           {
             \tl_if_empty:NTF \l__spintent_spread_read_arg_tl
               {
-                \__spintent_luafun_spread_lookup_sym:n { \exp_not:n {#2} }
+                \__spintent_luafun_spread_lookup:n { \exp_not:n {#2} }
                 \str_if_eq:VnTF \l__spintent_spread_luaset_status_str { found }
                   {
                     \MathMLintent { \l__spintent_spread_luaset_reading_str } { #2 }
@@ -1737,20 +1740,20 @@
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spread } }
   }
-\NewDocumentCommand \spnewsym { m m }
+\NewDocumentCommand \spnewread { m m }
   {
     \mode_if_math:TF
       {
-        \msg_error:nnn { spintent } { need-text-mode } { \spnewsym }
+        \msg_error:nnn { spintent } { need-text-mode } { \spnewread }
       }
       {
         \bool_lazy_or:nnTF { \tl_if_blank_p:n { #1 } } { \tl_if_blank_p:n { #2 } }
-          { \msg_error:nn { spintent } { spnewsym-empty-args } }
+          { \msg_error:nn { spintent } { spnewread-empty-args } }
           {
-            \__spintent_luafun_spread_new_sym:nn { \exp_not:n {#1} } { #2 }
+            \__spintent_luafun_spread_new:nn { \exp_not:n {#1} } { #2 }
             \str_if_eq:VnT \l__spintent_spread_luaset_status_str { duplicate }
               {
-                \msg_error:nnn { spintent } { spnewsym-duplicate } { #1 }
+                \msg_error:nnn { spintent } { spnewread-duplicate } { #1 }
               }
           }
       }

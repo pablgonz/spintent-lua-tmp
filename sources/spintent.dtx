@@ -207,7 +207,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-21}
+\def\filedate{2026-09-25}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -236,19 +236,19 @@ end, "shekel_fallback_patch")
 % Custom \meta[...]{...}, \marg[...]{...} and \oarg[...]{...} with color
 \NewDocumentCommand{\mymeta}{O{}m}
   {
-    \userdoc_meta_generic:Nnn \userdoc_meta:n { #1 } { #2 }
+    \__mydoc_meta_generic:Nnn \__mydoc_meta:n { #1 } { #2 }
   }
 \NewDocumentCommand{\mymarg}{O{}m}
   {
-    \userdoc_meta_generic:Nnn \userdoc_marg:n { #1 } { #2 }
+    \__mydoc_meta_generic:Nnn \__mydoc_marg:n { #1 } { #2 }
   }
 \NewDocumentCommand{\myoarg}{O{}m}
   {
-    \userdoc_meta_generic:Nnn \userdoc_oarg:n { #1 } { #2 }
+    \__mydoc_meta_generic:Nnn \__mydoc_oarg:n { #1 } { #2 }
   }
 \NewDocumentCommand{\myparg}{O{}m}
   {
-    \userdoc_meta_generic:Nnn \userdoc_parg:n { #1 } { #2 }
+    \__mydoc_meta_generic:Nnn \__mydoc_parg:n { #1 } { #2 }
   }
 % Variables and keys
 \tl_new:N \l_userdoc_meta_font_tl
@@ -270,86 +270,60 @@ end, "shekel_fallback_patch")
     pbc .initial:n    = gray,
   }
 % Internal commands
-\cs_new_protected:Npn \userdoc_meta_generic:Nnn #1 #2 #3
+\cs_new_protected:Npn \__mydoc_meta_generic:Nnn #1 #2 #3
   {
     \group_begin:
       \keys_set:nn { userdoc / mymeta } { #2 }
       \color{ \l_userdoc_meta_color_tl }
       \l_userdoc_meta_font_tl
-      #1 { #3 } % #1 is \userdoc_meta:n, \userdoc_marg:n or \userdoc_oarg:n
+      #1 { #3 } % #1 is \__mydoc_meta:n, \__mydoc_marg:n or \__mydoc_oarg:n
     \group_end:
   }
-\cs_new_protected:Npn \userdoc_meta:n #1
+\cs_new_protected:Npn \__mydoc_meta:n #1
   {
-    \userdoc_meta_angle:n { \textlangle }
-    \userdoc_meta_meta:n { #1 }
-    \userdoc_meta_angle:n { \textrangle }
+    \__mydoc_meta_angle:n { \textlangle }
+    \__mydoc_meta_meta:n { #1 }
+    \__mydoc_meta_angle:n { \textrangle }
   }
-\cs_new_protected:Npn \userdoc_marg:n #1
+\cs_new_protected:Npn \__mydoc_marg:n #1
   {
-    \userdoc_meta_brace:n { \textbraceleft }
-    \userdoc_meta:n { #1 }
-    \userdoc_meta_brace:n { \textbraceright }
+    \__mydoc_meta_brace:n { \textbraceleft }
+    \__mydoc_meta:n { #1 }
+    \__mydoc_meta_brace:n { \textbraceright }
   }
-\cs_new_protected:Npn \userdoc_oarg:n #1
+\cs_new_protected:Npn \__mydoc_oarg:n #1
   {
-    \userdoc_meta_brack:n { [ }
-    \userdoc_meta:n { #1 }
-    \userdoc_meta_brack:n { ] }
+    \__mydoc_meta_brack:n { [ }
+    \__mydoc_meta:n { #1 }
+    \__mydoc_meta_brack:n { ] }
   }
-\cs_new_protected:Npn \userdoc_parg:n #1
+\cs_new_protected:Npn \__mydoc_parg:n #1
   {
-    \userdoc_meta_brace:n { ( }
-    \userdoc_meta:n { #1 }
-    \userdoc_meta_brace:n { ) }
+    \__mydoc_meta_brace:n { ( }
+    \__mydoc_meta:n { #1 }
+    \__mydoc_meta_brace:n { ) }
   }
-\cs_new_protected:Npn \userdoc_meta_meta:n #1
+\cs_new_protected:Npn \__mydoc_meta_meta:n #1
   {
     \textnormal{\textit{#1}}
   }
-\cs_new_protected:Npn \userdoc_meta_angle:n #1
+\cs_new_protected:Npn \__mydoc_meta_angle:n #1
   {
     \group_begin:
       \fontfamily{lmrotf}\selectfont
       \textcolor{\l_userdoc_meta_anglecolor_tl}{#1}
     \group_end:
   }
-\cs_new_protected:Npn \userdoc_meta_brace:n #1
+\cs_new_protected:Npn \__mydoc_meta_brace:n #1
   {
     \group_begin:
       \color{\l_userdoc_meta_bracecolor_tl}
         #1
     \group_end:
   }
-\cs_new_protected:Npn \userdoc_meta_brack:n #1
+\cs_new_protected:Npn \__mydoc_meta_brack:n #1
   {
     \textcolor{\l_userdoc_meta_brackcolor_tl}{#1}
-  }
-% \cmdexamp{o m o m o}
-\tl_new:N \l_tempd_tl
-\NewDocumentCommand \cmdexamp { o m o m o }
-  {
-    \group_begin:
-    \small\ttfamily
-    \textcolor{module_name}{\textbackslash#2}
-    \IfValueT{#1}{ \textcolor{MediumOrchid}{#1} }
-    \IfValueT{#3}
-      {
-        % \textnormal{\ttfamily } or \c{texttt}\cB\{  \cE\}
-        \tl_set:Nn \l_tempd_tl { #3 }
-        % \regex_replace_once:nnN { (\*) } { \c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} } \l_tempd_tl
-        \regex_replace_once:nnN { (\*) } { \c{texttt}\cB\{\c{textcolor}\cB\{MediumOrchid\cE\}\cB\{\1\cE\} \cE\} } \l_tempd_tl
-        \myoarg[type=tt,sbc=gray,ac=lightgray,cf=keyname]{\tl_use:N \l_tempd_tl}
-      }
-    \IfValueTF{#5}
-      {
-        \mymeta[ac=gray,type=tt,cf=MediumOrchid]{#5}%
-        \mymeta[type=tt,ac=gray,cf=keyname]{#4}
-        \mymeta[ac=gray,type=tt,cf=MediumOrchid]{#5}%
-      }
-      { \mymarg[type=tt,cbc=gray,ac=lightgray,cf=keyname]{#4} }
-    \par
-    \group_end:
   }
 % \keyexampcmd{s m m m o}
 \NewDocumentCommand \keyexampcmd { s m m m o }
@@ -1184,18 +1158,18 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spnum}
 %   \begin{minipage}[t]{0.35\linewidth}\vspace*{-0.5\mydpstrut}\small
-%     \cmdexamp{spnum}{número}
-%     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{\textnormal{\textcolor{red}{{+}}}número}
-%     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{\textnormal{\textcolor{red}{{-}}}número}
-%     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{,}}}número}
-%     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{.}}}número}
+%     |\spnum|\mymarg{número}\par
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{\textnormal{\textcolor{red}{{+}}}número}\par
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{\textnormal{\textcolor{red}{{-}}}número}\par
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{,}}}número}\par
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{.}}}número}
 %   \end{minipage}\hfill
 %   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
-%     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{,}}}número\textnormal{\textcolor{red}{{;}}}número}
-%     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{.}}}número\textnormal{\textcolor{red}{{;}}}número}
-%     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número\textnormal{\textcolor{red}{{;}}}número}
-%     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número \textnormal{\textcolor{red}{{e}}} exponente}
-%     \cmdexamp{spnum}[key \textnormal{\textcolor{gray}{=}} val]{número \textnormal{\textcolor{red}{{E}}} exponente}
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{,}}}número\textnormal{\textcolor{red}{{;}}}número}\par
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{.}}}número\textnormal{\textcolor{red}{{;}}}número}\par
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{;}}}número}\par
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número \textnormal{\textcolor{red}{{e}}} exponente}\par
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número \textnormal{\textcolor{red}{{E}}} exponente}
 %   \end{minipage}
 %
 %  \medskip
@@ -1324,14 +1298,14 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spunit}
 %   \begin{minipage}[t]{0.35\linewidth}\vspace*{-0.5\mydpstrut}\small
-%     \cmdexamp{spunit}{unidad}
-%     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{unidad}
-%     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{número unidad}
+%     |\spunit|\mymarg{unidad}\par
+%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{unidad}\par
+%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad}
 %   \end{minipage}\hfill
 %   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
-%     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}
-%     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad}
-%     \cmdexamp{spunit}[key \textnormal{\textcolor{gray}{=}} val]{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}
+%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}\par
+%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad}\par
+%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}
 %   \end{minipage}
 %
 % \medskip
@@ -2031,8 +2005,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spsiglo}
 %   \begin{syntax}
-%     \cmdexamp{spsiglo}{siglo}
-%     \cmdexamp{spsiglo}[key \textnormal{\textcolor{gray}{=}} val]{siglo}
+%     |\spsiglo|\mymarg{siglo} \qquad\qquad |\spsiglo|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{siglo}
 %   \end{syntax}
 %   El comando \ics*{spsiglo} trabaja en \emph{modo texto} y en \emph{modo matemático},
 %   recibe el \emph{argumento obligatorio} \mymarg{siglo}, el cual puede
@@ -2070,41 +2043,39 @@ end, "shekel_fallback_patch")
 % si se establece en |none|, |\spsiglo[print-era=none]{XXI}| imprimirá `\textsc{xi}'
 % en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veintiuno»}.
 %
+% \bigskip
+%
 % \subsection*{El comando \cs[no-index]{sptime}}\label{subsec:sptime}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\sptime}
 %   \begin{syntax}
-%     \cmdexamp{sptime}{horas \textnormal{\textcolor{red}{:}} minutos}
-%     \cmdexamp{sptime}{horas \textnormal{\textcolor{red}{:}} minutos \textnormal{\textcolor{red}{:}} segundos}
+%     |\sptime|\mymarg{horas \textnormal{\textcolor{red}{:}} minutos} \qquad\qquad |\sptime|\mymarg{horas \textnormal{\textcolor{red}{:}} minutos \textnormal{\textcolor{red}{:}} segundos}
 %   \end{syntax}
-%   El comando \ics*{sptime} trabaja en \emph{modo matemático}
-%   y recibe el \emph{argumento obligatorio} \mymarg{horas \textnormal{\textcolor{red}{:}} minutos}
+%   El comando \ics*{sptime} trabaja en \emph{modo matemático} y recibe
+%   el \emph{argumento obligatorio} \mymarg{horas \textnormal{\textcolor{red}{:}} minutos}
 %   o \mymarg{horas \textnormal{\textcolor{red}{:}} minutos \textnormal{\textcolor{red}{:}} segundos}.
-%   Por ejemplo: |$\sptime{23:45}$| imprimirá `23:45' en \emph{modo texto} la salida \texttt{PDF}
-%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«las veintitrés y cuarenta y cinco minutos»}.
+%   Por ejemplo: |$\sptime{23:45}$| imprimirá en \emph{«modo texto»} la
+%   salida \texttt{PDF} `23:45' y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«las veintitrés y cuarenta y cinco minutos»}.
 % \end{function}
+%
+% \bigskip
 %
 % \subsection*{El comando \cs[no-index]{spdate}}\label{subsec:spdate}
 %
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spdate}
-%   \begin{minipage}[t]{0.35\linewidth}
-%     \cmdexamp{spdate}{\textnormal{DD\textcolor{red}{/}%
-%       MM\textcolor{red}{/}YYYY}}
-%     \cmdexamp{spdate}{\textnormal{YYYY\textcolor{red}{/}%
-%       MM\textcolor{red}{/}DD}}
-%   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}
-%     \cmdexamp{spdate}{\textnormal{DD\textcolor{red}{-}%
-%       MM\textcolor{red}{-}YYYY}}
-%     \cmdexamp{spdate}{\textnormal{YYYY\textcolor{red}{-}%
-%       MM\textcolor{red}{-}DD}}
+%   \begin{minipage}[t]{\linewidth}\vspace*{-0.25\mydpstrut}\small
+%     |\spdate|\mymarg{\textnormal{DD\textcolor{red}{/}MM\textcolor{red}{/}YYYY}}\hfill
+%     |\spdate|\mymarg{\textnormal{YYYY\textcolor{red}{/}MM\textcolor{red}{/}DD}}\hfill
+%     |\spdate|\mymarg{\textnormal{YYYY\textcolor{red}{-}MM\textcolor{red}{-}DD}}\hfill
+%     |\spdate|\mymarg{\textnormal{DD\textcolor{red}{-}MM\textcolor{red}{-}YYYY}}
 %   \end{minipage}
 %
-% \smallskip
+% \medskip
 %
 %   El comando \ics*{spdate} trabaja en \emph{modo matemático}
 %   y recibe el \emph{argumento} obligatorio
@@ -2112,7 +2083,7 @@ end, "shekel_fallback_patch")
 %   \mymarg{\textnormal{DD\textcolor{red}{-}MM\textcolor{red}{-}YYYY}} o
 %   \mymarg{\textnormal{YYYY\textcolor{red}{-}MM\textcolor{red}{-}DD}}.
 %   Por ejemplo: |$\spdate{1981-01-02}$| y |$\spdate{02/01/1981}$|
-%   imprimirán en \emph{modo texto} la salida \texttt{PDF} `1981-01-02'
+%   imprimirán en \emph{«modo texto»} la salida \texttt{PDF} `1981-01-02'
 %   y `02/01/1981' respectivamente y en ambos casos, \mynvmath{NVDA/MathCAT}
 %   verbalizará \emph{«dos de enero de mil novecientos ochenta y uno»}.
 % \end{function}
@@ -2174,8 +2145,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spread}
 %   \begin{syntax}
-%     |\spread|\mymarg{símbolo}
-%     |\spread|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{símbolo}
+%     |\spread|\mymarg{símbolo} \qquad\qquad  |\spread|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{símbolo} \par
 %     |\spread|\myoarg{read-arg\textnormal{\textcolor{gray}{=}}\mymarg{verbalización \textnormal{NVDA}}}\mymarg{comandos \textnormal{\hologo{LaTeX}}}
 %   \end{syntax}
 %   El comando \ics*{spread} trabaja en \emph{modo matemático} y
@@ -2236,8 +2206,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spusep}
 %   \begin{syntax}
-%     |\spusep|\mymarg{\normalfont\ttfamily\textbackslash\{\textcolor{lightgray}{\textbar}[\textcolor{lightgray}{\textbar}(\textcolor{lightgray}{\textbar})\textcolor{lightgray}{\textbar}]\textcolor{lightgray}{\textbar}\textbackslash\}}
-%     |\spusep|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{\normalfont\ttfamily\textbackslash\{\textcolor{lightgray}{\textbar}[\textcolor{lightgray}{\textbar}(\textcolor{lightgray}{\textbar})\textcolor{lightgray}{\textbar}]\textcolor{lightgray}{\textbar}\textbackslash\}}
+%     |\spusep|\mymarg{\normalfont\ttfamily\textbackslash\{\textcolor{lightgray}{\textbar}[\textcolor{lightgray}{\textbar}(\textcolor{lightgray}{\textbar})\textcolor{lightgray}{\textbar}]\textcolor{lightgray}{\textbar}\textbackslash\}} \qquad\qquad  |\spusep|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{\normalfont\ttfamily\textbackslash\{\textcolor{lightgray}{\textbar}[\textcolor{lightgray}{\textbar}(\textcolor{lightgray}{\textbar})\textcolor{lightgray}{\textbar}]\textcolor{lightgray}{\textbar}\textbackslash\}}
 %   \end{syntax}
 %   El comando \ics*{spusep} trabaja en \emph{modo matemático} y recibe el
 %   \emph{argumento obligatorio} \mymarg{\normalfont\ttfamily\textbackslash\{\textcolor{lightgray}{\textbar}[\textcolor{lightgray}{\textbar}(\textcolor{lightgray}{\textbar})\textcolor{lightgray}{\textbar}]\textcolor{lightgray}{\textbar}\textbackslash\}},
@@ -2245,10 +2214,6 @@ end, "shekel_fallback_patch")
 %   `\texttt{\textcolor{keyname}{)}}', `\texttt{\textcolor{keyname}{[}}', `\texttt{\textcolor{keyname}{]}}',
 %   `\texttt{\textcolor{keyname}{\textbackslash\{}}' o `\texttt{\textcolor{keyname}{\textbackslash\}}}'.
 %
-%^^A   Imprime el \emph{paréntesis} pasado en el argumento
-%^^A   en el tamaño establecido por la llave \mykey{size} y se verbaliza acorde
-%^^A   a las reglas propias de \mynvmath{NVDA/MathCAT}.
-%^^A
 %   \smallskip
 %
 %   Si no se proporciona el \emph{argumento opcional}
@@ -2303,8 +2268,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spdsym}
 %   \begin{syntax}
-%    |\spdsym|
-%    |\spdsym|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%    |\spdsym| \qquad\qquad |\spdsym|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
 %   \end{syntax}
 %   El comando \ics*{spdsym} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
@@ -2362,8 +2326,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spmsym}
 %   \begin{syntax}
-%     |\spmsym|
-%     |\spmsym|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%     |\spmsym| \qquad\qquad |\spmsym|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
 %   \end{syntax}
 %   El comando \ics*{spmsym} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
@@ -2434,8 +2397,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spdiv}
 %   \begin{syntax}
-%     |\spdiv|\mymarg{dividendo}\mymarg{divisor}
-%     |\spdiv|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{dividendo}\mymarg{divisor}
+%     |\spdiv|\mymarg{dividendo}\mymarg{divisor} \qquad\qquad |\spdiv|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{dividendo}\mymarg{divisor}
 %   \end{syntax}
 %   El comando \ics*{spdiv} trabaja en \emph{modo matemático} y recibe
 %   dos \emph{argumentos obligatorios} \mymarg{dividendo} y \mymarg{divisor}.
@@ -2479,8 +2441,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spmul}
 %   \begin{syntax}
-%     |\spmul|\mymarg{factor}\mymarg{factor}
-%     |\spmul|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{factor}\mymarg{factor}
+%     |\spmul|\mymarg{factor}\mymarg{factor} \qquad\qquad |\spmul|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{factor}\mymarg{factor}
 %   \end{syntax}
 %   El comando \ics*{spmul} trabaja en \emph{modo matemático} y recibe
 %   dos \emph{argumentos obligatorios} \mymarg{factor} y \mymarg{factor}.
@@ -2524,9 +2485,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spnD}
 %   \begin{syntax}
-%     |\spnD|
-%     |\spnD|\myparg{número natural}
-%     |\spnD|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número natural}
+%     |\spnD| \qquad\qquad |\spnD|\myparg{número natural} \qquad\qquad |\spnD|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número natural}
 %   \end{syntax}
 %   El comando \ics*{spnD} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento delimitado por paréntesis} \myparg{número natural},
@@ -2599,9 +2558,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spnM}
 %   \begin{syntax}
-%     |\spnM|
-%     |\spnM|\myparg{número natural}
-%     |\spnM|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número natural}
+%     |\spnM| \qquad\qquad |\spnM|\myparg{número natural} \qquad\qquad |\spnM|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número natural}
 %   \end{syntax}
 %   El comando \ics*{spnM} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento delimitado por paréntesis} \myparg{número natural},
@@ -2675,9 +2632,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spmcd}
 %   \begin{syntax}
-%     |\spmcd|
-%     |\spmcd|\myparg{números separados por coma}
-%     |\spmcd|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{números separados por coma}
+%     |\spmcd| \qquad\qquad |\spmcd|\myparg{números separados por coma} \qquad\qquad |\spmcd|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{números separados por coma}
 %   \end{syntax}
 %   El comando \ics*{spmcd} trabaja en \emph{modo matemático} y recibe el
 %   \emph{argumento delimitado por paréntesis} \myparg{números separados por coma}, el cual
@@ -2768,9 +2723,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spmcm}
 %   \begin{syntax}
-%     |\spmcm|
-%     |\spmcm|\myparg{números separados por coma}
-%     |\spmcm|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{números separados por coma}
+%     |\spmcm| \qquad\qquad |\spmcm|\myparg{números separados por coma} \qquad\qquad |\spmcm|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{números separados por coma}
 %   \end{syntax}
 %   El comando \ics*{spmcm} trabaja en \emph{modo matemático} y recibe el
 %   \emph{argumento delimitado por paréntesis} \myparg{números separados
@@ -2864,8 +2817,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spnZ}
 %   \begin{syntax}
-%     |\spnZ|\mymarg{número entero}
-%     |\spnZ|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}
+%     |\spnZ|\mymarg{número entero} \qquad\qquad |\spnZ|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}
 %   \end{syntax}
 %   El comando \ics*{spnZ} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento} obligatorio \mymarg{número entero} el cual se procesa
@@ -2906,8 +2858,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spmQ}
 %   \begin{syntax}
-%     |\spmQ|\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
-%     |\spmQ|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
+%     |\spmQ|\mymarg{número entero}\mymarg{numerador}\mymarg{denominador} \qquad\qquad |\spmQ|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
 %   \end{syntax}
 %   El comando \ics*{spmQ} trabaja en \emph{modo matemático} y recibe
 %   \emph{tres argumentos obligatorios}: \mymarg{número entero},
@@ -3869,9 +3820,9 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spang}
 %   \begin{syntax}
-%     \cmdexamp{spang}{grados}
-%     \cmdexamp{spang}{grados \textnormal{\textcolor{red}{:}} minutos}
-%     \cmdexamp{spang}{grados \textnormal{\textcolor{red}{:}} minutos \textnormal{\textcolor{red}{:}} segundos}
+%     |\spang|\mymarg{grados}
+%     |\spang|\mymarg{grados \textnormal{\textcolor{red}{:}} minutos}
+%     |\spang|\mymarg{grados \textnormal{\textcolor{red}{:}} minutos \textnormal{\textcolor{red}{:}} segundos}
 %   \end{syntax}
 %   El comando \ics*{spang} trabaja en \emph{modo matemático} y recibe el
 %   \emph{argumento obligatorio} \mymarg{grados}, \mymarg{grados \textnormal{\textcolor{red}{:}} minutos}
@@ -5515,7 +5466,7 @@ end, "shekel_fallback_patch")
 % keys: \mykey{mathcal} and \mykey{AFghost}, which can be passed as package
 % options.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-21} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-25} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -16161,7 +16112,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-21]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-25]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
