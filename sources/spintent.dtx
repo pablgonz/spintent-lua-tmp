@@ -227,26 +227,26 @@ end, "shekel_fallback_patch")
 % User level commands
 \ExplSyntaxOn
 % Logo
-\NewDocumentCommand{\pkglogo}{}
+\NewDocumentCommand \pkglogo {}
   {
     \group_begin:
       \LibertinusSansOsF{\textcolor{module_name}{sp}\textcolor{OrangeRed}{intent}}
     \group_end:
   }
 % Custom \meta[...]{...}, \marg[...]{...} and \oarg[...]{...} with color
-\NewDocumentCommand{\mymeta}{O{}m}
+\NewDocumentCommand \mymeta { O{} m }
   {
     \__mydoc_meta_generic:Nnn \__mydoc_meta:n { #1 } { #2 }
   }
-\NewDocumentCommand{\mymarg}{O{}m}
+\NewDocumentCommand \mymarg { O{} m }
   {
     \__mydoc_meta_generic:Nnn \__mydoc_marg:n { #1 } { #2 }
   }
-\NewDocumentCommand{\myoarg}{O{}m}
+\NewDocumentCommand \myoarg { O{} m }
   {
     \__mydoc_meta_generic:Nnn \__mydoc_oarg:n { #1 } { #2 }
   }
-\NewDocumentCommand{\myparg}{O{}m}
+\NewDocumentCommand \myparg { O{} m }
   {
     \__mydoc_meta_generic:Nnn \__mydoc_parg:n { #1 } { #2 }
   }
@@ -1157,23 +1157,11 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spnum}
-%   \begin{minipage}[t]{0.35\linewidth}\vspace*{-0.5\mydpstrut}\small
-%     |\spnum|\mymarg{número}\par
-%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{\textnormal{\textcolor{red}{{+}}}número}\par
-%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{\textnormal{\textcolor{red}{{-}}}número}\par
-%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{,}}}número}\par
-%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{.}}}número}
-%   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
-%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{,}}}número\textnormal{\textcolor{red}{{;}}}número}\par
-%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{.}}}número\textnormal{\textcolor{red}{{;}}}número}\par
-%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{;}}}número}\par
-%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número \textnormal{\textcolor{red}{{e}}} exponente}\par
-%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número \textnormal{\textcolor{red}{{E}}} exponente}
-%   \end{minipage}
-%
-%  \medskip
-%
+%   \begin{syntax}
+%     |\spnum|\mymarg{número}\hfill|\spnum|\mymarg{número\textnormal{\textcolor{red}{{,}}}número}\hfill|\spnum|\mymarg{número\textnormal{\textcolor{red}{{.}}}número}\hfill|\spnum|\mymarg{número\textnormal{\textcolor{red}{{;}}}número}\par\noindent
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{,}}}número\textnormal{\textcolor{red}{{;}}}número}\hfill|\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{,}}}número\textnormal{\textcolor{red}{{;}}}número \textnormal{\textcolor{red}{{e}}} exponente}\par\noindent
+%     |\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{.}}}número\textnormal{\textcolor{red}{{;}}}número}\hfill|\spnum|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número\textnormal{\textcolor{red}{{.}}}número\textnormal{\textcolor{red}{{;}}}número \textnormal{\textcolor{red}{{e}}} exponente}
+%   \end{syntax}
 %   El comando \ics*{spnum} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento obligatorio} \mymarg{número}, donde la \emph{«parte entera»}
 %   puede iniciar con los signos `$\mathcolor{red}{+}$' o `$\mathcolor{red}{-}$',
@@ -1297,12 +1285,12 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spunit}
-%   \begin{minipage}[t]{0.35\linewidth}\vspace*{-0.5\mydpstrut}\small
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spunit|\mymarg{unidad}\par
 %     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{unidad}\par
 %     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad}
 %   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.55\linewidth}\vspace*{-0.5\mydpstrut}\small
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.5\mydpstrut}\small
 %     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}\par
 %     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad}\par
 %     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}
@@ -2858,7 +2846,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spmQ}
 %   \begin{syntax}
-%     |\spmQ|\mymarg{número entero}\mymarg{numerador}\mymarg{denominador} \qquad\qquad |\spmQ|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número entero}\mymarg{numerador}\mymarg{denominador}
+%     |\spmQ|\mymarg{entero}\mymarg{numerador}\mymarg{denominador} \hfill |\spmQ|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{entero}\mymarg{numerador}\mymarg{denominador}
 %   \end{syntax}
 %   El comando \ics*{spmQ} trabaja en \emph{modo matemático} y recibe
 %   \emph{tres argumentos obligatorios}: \mymarg{número entero},
@@ -2892,14 +2880,14 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbaliza la
 % conexión entre el entero y la fracción que forman el \emph{número mixto}.
-% Si se establece en |entero|, al usar |$\spmQ[join-word=entero]{1}{5}{7}$|
-% imprimirá `$\scalerel{1}{\frac{5}{7}}$' en la salida \texttt{PDF}, y
+% Si se establece en |entero|, |$\spmQ[join-word=entero]{1}{5}{7}$|
+% imprimirá `$\scalerel{1}{\frac{5}{7}}$' en la salida \texttt{PDF} y
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«un entero cinco séptimos»};
-% si se establece en |enteros|, al usar |$\spmQ[join-word=enteros]{2}{5}{7}$|
-% imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la salida \texttt{PDF}, y
+% si se establece en |enteros|,|$\spmQ[join-word=enteros]{2}{5}{7}$|
+% imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la salida \texttt{PDF} y
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«dos enteros cinco séptimos»};
-% si se establece en |y|, al usar |$\spmQ[join-word=y]{2}{5}{7}$|
-% imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la salida \texttt{PDF}, y
+% si se establece en |y|, |$\spmQ[join-word=y]{2}{5}{7}$|
+% imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la salida \texttt{PDF} y
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«dos y cinco séptimos»}.
 %
 % \smallskip
