@@ -9432,10 +9432,8 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_mc_process_args:nn}
 %   The function \myhlc|\@@_mc_process_args:nn| parses the operation `|#1|'
-%   and its raw argument list `|#2|'. Calls
-%   \myhlc|\@@_luafun_mc_classify_args:n|, splits `|#2|' into
-%   \myhlc|\l_@@_mc_raw_args_seq| and
-%   \myhlc|\l_@@_mc_luaset_types_clist| into
+%   and its raw argument list `|#2|'. Calls \myhlc|\@@_luafun_mc_classify_args:n|,
+%   splits `|#2|' into \myhlc|\l_@@_mc_raw_args_seq| and \myhlc|\l_@@_mc_luaset_types_clist| into
 %   \myhlc|\l_@@_mc_types_seq|, then walks the former by position,
 %   fetching the matching type from the latter through
 %   \myhlc|\seq_item:Nn|, to build \myhlc|\l_@@_mc_args_seq|: each
@@ -9453,8 +9451,11 @@ end, "shekel_fallback_patch")
     \seq_map_inline:Nn \l_@@_mc_raw_args_seq
       {
         \int_incr:N \l_@@_mc_idx_int
-        \str_if_eq:eeTF { \seq_item:Nn \l_@@_mc_types_seq { \l_@@_mc_idx_int } } { number }
-          { \seq_put_right:Nn \l_@@_mc_args_seq { \spnum {##1} } }
+        \str_if_eq:eeTF
+          { \seq_item:Nn \l_@@_mc_types_seq { \l_@@_mc_idx_int } } { number }
+          {
+            \seq_put_right:Nn \l_@@_mc_args_seq { \spnum {##1} }
+          }
           { \seq_put_right:Nn \l_@@_mc_args_seq {##1} }
       }
 %    \end{macrocode}
@@ -9465,20 +9466,20 @@ end, "shekel_fallback_patch")
       {
         \seq_set_map:NNn \l_@@_mc_args_seq \l_@@_mc_args_seq
           { \MathMLintent { :silent } { ##1 } }
-        \MathMLintent { _entre } { \c_@@_invisible_sep_int }
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent "por"
         \MathMLintent { :silent } { ( }
         \seq_use:Nnnn \l_@@_mc_args_seq
-          { \MathMLintent { _y:silent } { , } }
-          { \MathMLintent { :silent }   { , } }
-          { \MathMLintent { _y:silent } { , } }
+          { \MathMLintent { :silent } { , } }
+          { \MathMLintent { :silent } { , } }
+          { \MathMLintent { :silent } { , } }
       }
       {
-        \MathMLintent { _entre } { \c_@@_invisible_sep_int }
-        \MathMLintent { :silent } { ( }
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
+        \MathMLintent { _entre } { ( }
         \seq_use:Nnnn \l_@@_mc_args_seq
-          { \MathMLintent { _y }      { , } }
+          { \MathMLintent { _y- }     { , } }
           { \MathMLintent { :silent } { , } }
-          { \MathMLintent { _y }      { , } }
+          { \MathMLintent { _y- }     { , } }
       }
     \MathMLintent { :silent } { ) }
   }
@@ -9493,7 +9494,7 @@ end, "shekel_fallback_patch")
 %
 %   \smallskip
 %
-%   The operator name (through |\operatorname|, per \mykey{upper-case})
+%   The operator name (through |\mathrm|, per \mykey{upper-case})
 %   is silenced with \mykey{silent-cmd}|=true| — \myhlc|\@@_mc_process_args:nn|
 %   silences the arguments too, in that case — or with \mykey{concept}|=false|
 %   alone, leaving the arguments untouched. With \mykey{concept}|=true|,
@@ -9516,7 +9517,7 @@ end, "shekel_fallback_patch")
       {
         \MathMLintent { :silent }
           {
-            \operatorname
+            \mathrm
               {
                 \bool_if:cTF { l_@@_sp #1 _print_upper_bool }
                   { \text_uppercase:n {#1} } { #1 }
@@ -9535,7 +9536,7 @@ end, "shekel_fallback_patch")
                 \bool_if:cTF { l_@@_sp #1 _read_terse_bool } { #1 :nofix} { #2 :nofix}
               }
               {
-                \operatorname
+                \mathrm
                   {
                     \bool_if:cTF { l_@@_sp #1 _print_upper_bool }
                       { \text_uppercase:n {#1} } { #1 }
@@ -9545,7 +9546,7 @@ end, "shekel_fallback_patch")
           {
             \MathMLintent { :silent }
               {
-                \operatorname
+                \mathrm
                   {
                     \bool_if:cTF { l_@@_sp #1 _print_upper_bool }
                       { \text_uppercase:n {#1} } { #1 }
@@ -9580,7 +9581,7 @@ end, "shekel_fallback_patch")
           {
             \bool_if:cT { l_@@_sp #1 _print_result_bool }
               {
-                \MathMLintent { es-igual-a } { = }
+                \MathMLintent { _es-igual-a } { = }
                 \tl_use:c { l_@@_sp #1 _luaset_ #1 _value_tl }
               }
           }
@@ -9601,7 +9602,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \@@_spmc_process:nnnn { mcd } { máximo-común-divisor } {#1} {#2}
+          \@@_spmc_process:nnnn { mcd } { _máximo-común-divisor } {#1} {#2}
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmcd } }
@@ -9611,7 +9612,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \@@_spmc_process:nnnn { mcm } { mínimo-común-múltiplo } {#1} {#2}
+          \@@_spmc_process:nnnn { mcm } { _mínimo-común-múltiplo } {#1} {#2}
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmcm } }
@@ -9748,7 +9749,7 @@ end, "shekel_fallback_patch")
     \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
       { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
     \str_case:nnF { #2 }
-      { { multiplos } { múltiplos } }
+      { { multiplos } { _múltiplos } }
       { #2 }
     -de
   }
@@ -9767,7 +9768,7 @@ end, "shekel_fallback_patch")
   {
     \MathMLintent { :silent } { \operatorname { #1 } }
     \MathMLintent { :silent } { ( }
-    \MathMLintent { :silent } { \c_@@_invisible_sep_int }
+    \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
     \MathMLintent { :silent } { #2 }
     \MathMLintent { :silent } { ) }
   }
@@ -9799,9 +9800,9 @@ end, "shekel_fallback_patch")
         \seq_set_from_clist:Ne
           \l_@@_md_out_seq { \tl_use:c { l_@@_sp #1 _luaset_result_tl } }
         \seq_use:Nnnn \l_@@_md_out_seq
-          { \MathMLintent { _y }      { , } }
+          { \MathMLintent { _y- }      { , } }
           { \MathMLintent { :silent } { , } }
-          { \MathMLintent { _y }      { , } }
+          { \MathMLintent { _y- }      { , } }
         \str_if_eq:vnT
           { l_@@_sp #1 _luaset_is_truncated_str } { true }
             {
@@ -9830,7 +9831,7 @@ end, "shekel_fallback_patch")
 %   \smallskip
 %
 %   Either way, \mykey{silent-cmd} silences the whole thing through
-%   \myhlc|\@@_spnM_spnD_silent:nn|; otherwise \mykey{concept} |true|
+%   \myhlc|\@@_spnM_spnD_silent:nn|; otherwise \mykey{concept}|=true|
 %   carries the literal |intent| from \myhlc|\@@_spnM_spnD_intent:nn|,
 %   |false| silences only the operator symbol, leaving the argument to
 %   read normally.
@@ -9850,6 +9851,7 @@ end, "shekel_fallback_patch")
               }
               { \MathMLintent { :silent } { \operatorname { #2 } } }
             \MathMLintent { :silent } { ( }
+            \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
             n
             \MathMLintent { :silent } { ) }
           }
@@ -9871,6 +9873,7 @@ end, "shekel_fallback_patch")
               }
               { \MathMLintent { :silent } { \operatorname { #2 } } }
             \MathMLintent { :silent } { ( }
+            \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
             \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
               { \spnum { #4 } }
               { #4 }
@@ -9908,7 +9911,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \@@_spnM_spnD_process:nnnnn { nD } { D } { divisores } {#1} {#2}
+          \@@_spnM_spnD_process:nnnnn { nD } { D } { _divisores } {#1} {#2}
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spnD } }
