@@ -2528,7 +2528,7 @@ end, "shekel_fallback_patch")
 % Establece si se \emph{imprime} el resultado de calcular los \emph{divisores}
 % del argumento \myparg{número}. Si se establece en |true|, |$\spnD[result=true](6)$|
 % imprimirá `$\mathrm{D}(6) = \{1, 2, 3, 6\}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«los divisores de seis son uno,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«divisores de seis son uno,
 % dos, tres y seis»}; si se establece en |false|, no se imprimirá ni verbalizará
 % el resultado de calcular los \emph{divisores}.
 %
@@ -2559,27 +2559,51 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spnM}
 %   \begin{syntax}
-%     |\spnM| \hfill |\spnD|\myparg{número} \hfill |\spnM|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número}  \hfill |\spnM|\myparg{letra} \hfill |\spnM|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{letra}
+%     |\spnM| \hfill |\spnM|\myparg{número} \hfill |\spnM|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número}  \hfill |\spnM|\myparg{letra} \hfill |\spnM|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{letra}
 %   \end{syntax}
 %   El comando \ics*{spnM} trabaja en \emph{modo matemático} y recibe
-%   el \emph{argumento delimitado por paréntesis} \myparg{número natural},
-%   por ejemplo: `|(6)|'. Si se usa sin \myparg{argumento}, |$\spnM$|
-%   imprimirá `$\mathrm{M}(n)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«múltiplos de n»}.
-%
-%   \smallskip
-%
-%   Si se usa con \myparg{argumento}, por ejemplo, |$\spnM(6)$|, imprimirá
-%   `$\mathrm{M}(6)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«múltiplos de seis»}.
+%   el \emph{argumento opcional delimitado por paréntesis} de la forma
+%   \myparg{número} que se procesa internamente por |\spnum| o \myparg{letra}
+%   que se ejecuta de manera directa.
 % \end{function}
 %
+% \smallskip
+%
+% Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+% ni el \emph{argumento opcional delimitado por paréntesis}, |$\spnM$|
+% imprimirá `$\mathrm{M}(n)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«múltiplos de ene»}.
+%
+% \smallskip
+%
+% Si se usa con el argumento \myparg{número}, |$\spnM(6)$| imprimirá
+% `$\mathrm{M}(6)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«múltiplos de seis»}.
+%
+% \smallskip
+%
+% Si se usa con el argumento \myparg{letra}, |$\spnM(m)$| imprimirá
+% `$\mathrm{M}(m)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«múltiplos de eme»}.
+%
 % \subsubsection*{Llaves para \cs[no-index]{spnM}}
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spnM]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«múltiplos de»} al ejecutar el comando sin modificar
+% la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«múltiplos de»} y el \myparg{argumento};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
+% \myparg{argumento}.
+%
+% \smallskip
 %
 % \keyexampcmd{prefix}{prefijo}{no usado}[spnM]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{«antes»} de verbalizar |\spnM|\myparg{argumento}. El valor
+% \emph{antes} de verbalizar el concepto \emph{«múltiplos de»}. El valor
 % de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
@@ -2587,45 +2611,34 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{result}{true \textnormal{%
 %   \textcolor{lightgray}{\textbar}} false}{false}[spnM]
 % \smallskip
-% Establece si se \emph{imprime} el resultado de calcular los
-% \emph{múltiplos} del \myparg{número natural} pasado a |\spnM|. Si se
-% establece en |true|, |$\spnM[result=true](6)$| imprimirá
-% `$\mathrm{M}(6) = \{6, 12, 18, 24, 30, \dots\}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«los múltiplos de seis son seis,
+% Establece si se \emph{imprime} el resultado de calcular los \emph{múltiplos}
+% del argumento \myparg{número}. Si se establece en |true|, |$\spnM[result=true](6)$|
+% imprimirá `$\mathrm{M}(6) = \{6, 12, 18, 24, 30, \dots\}$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«múltiplos de seis son seis,
 % doce, dieciocho, veinticuatro, treinta puntos suspencivos»}; si se
-% establece en |false|, no se imprimirá en la salida \texttt{PDF} el
-% resultado de calcular los \emph{múltiplos}.
+% establece en |false|, no se imprimirá ni verbalizará el resultado de
+% calcular los \emph{múltiplos}.
 %
 % \smallskip
 %
 % \keyexampcmd{result-num}{número natural}{5}[spnM]
 % \smallskip
 % Establece la \emph{cantidad} de números que se mostrarán en la salida
-% \texttt{PDF} al activar |result=true|. Si se establece en |2|, solo
-% se imprimirán dos valores en la salida \texttt{PDF} seguidos de `\dots';
-% si no se establece, se imprimirán por defecto los |5| primeros valores y
-% luego se añadirá `\dots' en la salida \texttt{PDF}.
+% \texttt{PDF} al establecer |result=true|. Si se establece en |2|, solo
+% se imprimirán dos valores en la salida \texttt{PDF}; si no se establece,
+% se imprimirán como máximo |5| valores y luego se añadirá `\dots' en la
+% salida \texttt{PDF}.
 %
 % \smallskip
 %
-% \keyexampcmd{sample-arg}{true \textnormal{\textcolor{lightgray}{\textbar}} false}{false}[spnM]
-% \smallskip
-% Desactiva la \emph{validación} interna del \myparg{argumento} pasado
-% a |\spnM|, permitiendo usar ejemplos \emph{«no numéricos»} como entrada.
-% Si se establece en |true|, |$\spnM[sample-arg=true](m)$| imprimirá `$\mathrm{M}(m)$'
-% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«múltiplos de m»}; si se establece en |false|, el \myparg{argumento}
-% debe ser un número natural, en caso contrario se devolverá un \enquote{error}.
-%
-% \smallskip
-%
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}} false}{false}[spnM]
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spnM]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% de |\spnM|\myparg{argumento} cuando se establece |sample-arg=true|
-% o cuando |\spnM| se usa sin \myparg{argumento}. Si se establece en |true|
-% \mynvmath{NVDA/MathCAT} NO lo verbalizará; si se establece en |false|
-% \mynvmath{NVDA/MathCAT} lo verbalizará.
+% del concepto \emph{«multiplos de»} y del \myparg{argumento} pasado al comando
+% sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spmcd}}\label{subsec:spmcd}
 %
