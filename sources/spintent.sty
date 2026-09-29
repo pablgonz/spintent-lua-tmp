@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-25} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-29} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -2359,7 +2359,7 @@
               }
               { \MathMLintent { :silent } { \operatorname { #2 } } }
             \MathMLintent { :silent } { ( }
-            \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent doble "de"
+            % \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent doble "de"
             \str_if_eq:VnTF \l__spintent_spnmd_luaset_is_number_str { true }
               { \spnum { #4 } }
               { #4 }

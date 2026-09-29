@@ -207,7 +207,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-09-25}
+\def\filedate{2026-09-29}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -2502,10 +2502,22 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection*{Llaves para \cs[no-index]{spnD}}
 %
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spnD]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«divisores de»} al ejecutar el comando sin modificar
+% la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«divisores de»} y el \myparg{argumento};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
+% \myparg{argumento}.
+%
+% \smallskip
+%
 % \keyexampcmd{prefix}{prefijo}{no usado}[spnD]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{«antes»} de verbalizar |\spnD|\myparg{argumento}. El valor
+% \emph{antes} de verbalizar el concepto \emph{«divisores de»}. El valor
 % de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
@@ -2517,8 +2529,8 @@ end, "shekel_fallback_patch")
 % del argumento \myparg{número}. Si se establece en |true|, |$\spnD[result=true](6)$|
 % imprimirá `$\mathrm{D}(6) = \{1, 2, 3, 6\}$' en la salida \texttt{PDF} y
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«los divisores de seis son uno,
-% dos, tres y seis»}; si se establece en |false|, no se imprimirá
-% en la salida \texttt{PDF} el resultado de calcular los \emph{divisores}.
+% dos, tres y seis»}; si se establece en |false|, no se imprimirá ni verbalizará
+% el resultado de calcular los \emph{divisores}.
 %
 % \smallskip
 %
@@ -2532,24 +2544,14 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{sample-arg}{true \textnormal{\textcolor{lightgray}{\textbar}} false}{false}[spnD]
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spnD]
 % \smallskip
-% Desactiva la \emph{validación} interna del \myparg{argumento} pasado
-% a |\spnD|, permitiendo usar ejemplos \emph{«no numéricos»} como entrada.
-% Si se establece en |true|, |$\spnD[sample-arg=true](m)$| imprimirá `$\mathrm{D}(m)$'
-% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«divisores de m»}; si se establece en |false|, el \myparg{argumento}
-% debe ser un número natural, en caso contrario se devolverá un \enquote{error}.
-%
-% \smallskip
-%
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}} false}{false}[spnD]
-% \smallskip
-% Establece si se \emph{silencia} la verbalización para \mynvmath{NVDA/MathCAT}
-% de |\spnD|\myparg{argumento} cuando se establece |sample-arg=true|
-% o cuando |\spnD| se usa sin \myparg{argumento}. Si se establece en |true|
-% \mynvmath{NVDA/MathCAT} NO lo verbalizará; si se establece en |false|,
-% \mynvmath{NVDA/MathCAT} SÍ lo verbalizará.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«divisores de»} y del \myparg{argumento} pasado al comando
+% sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spnM}}\label{subsec:spnM}
 %
@@ -5465,7 +5467,7 @@ end, "shekel_fallback_patch")
 % keys: \mykey{mathcal} and \mykey{AFghost}, which can be passed as package
 % options.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-09-25} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-09-29} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -9505,8 +9507,7 @@ end, "shekel_fallback_patch")
 %
 %   \smallskip
 %
-%   The operator name (through |\mathrm|, per \mykey{upper-case})
-%   is silenced with \mykey{silent-cmd}|=true| — \myhlc|\@@_mc_process_args:nn|
+%   The operator name is silenced with \mykey{silent-cmd}|=true| — \myhlc|\@@_mc_process_args:nn|
 %   silences the arguments too, in that case — or with \mykey{concept}|=false|
 %   alone, leaving the arguments untouched. With \mykey{concept}|=true|,
 %   it carries the literal |intent| instead — |#1| or |#2| per \mykey{read-cmd},
@@ -9520,6 +9521,14 @@ end, "shekel_fallback_patch")
 %   failure, and, when \mykey{result} is |true|, printing the computed
 %   value. \myhlc|\@@_mc_process_args:n| prints the argument list
 %   itself either way.
+%
+%   \smallskip
+%
+% \begin{important}*
+%   We should use |\mathrm| instead of |\operatorname|, which generates
+%   unwanted spacing when \myhlc|\c__spintent_invisible_sep_int| is
+%   applied.
+% \end{important}
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmc_process:nnnn
   {
@@ -9759,8 +9768,7 @@ end, "shekel_fallback_patch")
   {
     \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
       { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-    \str_case:nnF { #2 }
-      { { multiplos } { _múltiplos } }
+    \str_case:nnF { #2 } { { multiplos } { _múltiplos } }
       { #2 }
     -de
   }
@@ -9786,39 +9794,47 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_spnM_spnD_result:n}
-%   The internal function \myhlc|\@@_spn_M_and_D_result:n| handles the
+% \begin{macro}[int]{\@@_spnM_spnD_result:nn}
+%   The internal function \myhlc|\@@_spn_M_and_D_result:nn| handles the
 %   calculation and accessible formatting of the computed mathematical set.
-%   It takes the command identifier `|#1|'. It invokes the corresponding Lua
+%   It takes the command identifier `|#1|' and the classified numeric
+%   argument `|#2|'. It invokes the corresponding Lua
 %   backend calculation, reporting |md-invalid-argument| if that fails —
 %   a safety net beyond \myhlc|\@@_luafun_spnmd_classify:n|'s own check,
 %   since the Lua calculation never trusted that check blindly. On
 %   success, it maps the resulting clist into a sequence, and formats
-%   the final printed output utilizing custom accessibility intents for both
-%   separators and conjunctions. It also safely manages truncation indicators.
+%   the final printed output utilizing custom intents for both
+%   separators and conjunctions.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_spnM_spnD_result:n
+\cs_new_protected:Nn \@@_spnM_spnD_result:nn
   {
-    \use:c { @@_luafun_calcular_ #1 :nn }
-      { \l_@@_luaset_part_int_tl }
-      { \tl_use:c { l_@@_sp #1 _print_result_num_tl } }
+    \use:c { @@_luafun_calcular_ #1 :nn } { #2 }
+      {
+        \tl_use:c { l_@@_sp #1 _print_result_num_tl }
+      }
     \str_if_eq:VnTF \l_@@_spnM_spnD_luaset_error_str { true }
       {
         \msg_error:nne { spintent } { md-invalid-argument } { \exp_not:c { sp #1 } }
       }
       {
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent "por"
         \MathMLintent { _son } { = \{ }
         \seq_set_from_clist:Ne
           \l_@@_md_out_seq { \tl_use:c { l_@@_sp #1 _luaset_result_tl } }
         \seq_use:Nnnn \l_@@_md_out_seq
-          { \MathMLintent { _y- }      { , } }
+          { \MathMLintent { _y- }     { , } }
           { \MathMLintent { :silent } { , } }
-          { \MathMLintent { _y- }      { , } }
-        \str_if_eq:vnT
-          { l_@@_sp #1 _luaset_is_truncated_str } { true }
-            {
-              \MathMLintent { :silent } { , } ~ \dots
-            }
+          {
+            \MathMLintent { :silent } { , }
+            \str_if_eq:vnT { l_@@_sp #1 _luaset_is_truncated_str } { false }
+              {
+                \MathMLintent { _y- } { \c_@@_invisible_sep_int } % "y" final
+              }
+          }
+        \str_if_eq:vnT { l_@@_sp #1 _luaset_is_truncated_str } { true }
+          {
+            \MathMLintent { :silent } { , } ~ \dots
+          }
         \MathMLintent { :silent } { \} }
       }
   }
@@ -9884,16 +9900,16 @@ end, "shekel_fallback_patch")
               }
               { \MathMLintent { :silent } { \operatorname { #2 } } }
             \MathMLintent { :silent } { ( }
-            \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
             \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
-              { \spnum { #4 } }
-              { #4 }
+              { \spnum { #4 } } { #4 }
             \MathMLintent { :silent } { ) }
           }
         \str_if_eq:VnT \l_@@_spnmd_luaset_is_number_str { true }
           {
             \bool_if:cT { l_@@_sp #1 _print_result_bool }
-              { \@@_spnM_spnD_result:n { #1 } }
+              {
+                \@@_spnM_spnD_result:nn { #1 } { #4 }
+              }
           }
       }
   }
@@ -16114,7 +16130,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-25]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-29]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
