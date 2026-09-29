@@ -2473,20 +2473,32 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spnD}
 %   \begin{syntax}
-%     |\spnD| \qquad\qquad |\spnD|\myparg{número natural} \qquad\qquad |\spnD|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número natural}
+%     |\spnD| \hfill |\spnD|\myparg{número} \hfill |\spnD|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número}  \hfill |\spnD|\myparg{letra} \hfill |\spnD|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{letra}
 %   \end{syntax}
 %   El comando \ics*{spnD} trabaja en \emph{modo matemático} y recibe
-%   el \emph{argumento delimitado por paréntesis} \myparg{número natural},
-%   por ejemplo: `|(6)|'. Si se usa sin \myparg{argumento}, |$\spnD$|
-%   imprimirá `$\mathrm{D}(n)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«divisores de n»}.
-%
-%   \smallskip
-%
-%   Si se usa con \myparg{argumento}, por ejemplo, |$\spnD(6)$|, imprimirá
-%   `$\mathrm{D}(6)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-%   verbalizará \emph{«divisores de seis»}.
+%   el \emph{argumento opcional delimitado por paréntesis} de la forma
+%   \myparg{número} que se procesa internamente por |\spnum| o \myparg{letra}
+%   que se ejecuta de manera directa.
 % \end{function}
+%
+% \smallskip
+%
+% Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+% ni el \emph{argumento opcional delimitado por paréntesis}, |$\spnD$|
+% imprimirá `$\mathrm{D}(n)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«divisores de ene»}.
+%
+% \smallskip
+%
+% Si se usa con el argumento \myparg{número}, |$\spnD(6)$| imprimirá
+% `$\mathrm{D}(6)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«divisores de seis»}.
+%
+% \smallskip
+%
+% Si se usa con el argumento \myparg{letra}, |$\spnD(m)$| imprimirá
+% `$\mathrm{D}(m)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«divisores de eme»}.
 %
 % \subsubsection*{Llaves para \cs[no-index]{spnD}}
 %
@@ -2501,10 +2513,9 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{result}{true \textnormal{%
 %   \textcolor{lightgray}{\textbar}} false}{false}[spnD]
 % \smallskip
-% Establece si se \emph{imprime} el resultado de calcular los
-% \emph{divisores} del \myparg{número natural} pasado a |\spnD|. Si se
-% establece en |true|, |$\spnD[result=true](6)$| imprimirá
-% `$\mathrm{D}(6) = \{1, 2, 3, 6\}$' en la salida \texttt{PDF} y
+% Establece si se \emph{imprime} el resultado de calcular los \emph{divisores}
+% del argumento \myparg{número}. Si se establece en |true|, |$\spnD[result=true](6)$|
+% imprimirá `$\mathrm{D}(6) = \{1, 2, 3, 6\}$' en la salida \texttt{PDF} y
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«los divisores de seis son uno,
 % dos, tres y seis»}; si se establece en |false|, no se imprimirá
 % en la salida \texttt{PDF} el resultado de calcular los \emph{divisores}.
@@ -2514,7 +2525,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{result-num}{número natural}{5}[spnD]
 % \smallskip
 % Establece la \emph{cantidad} de números que se mostrarán en la salida
-% \texttt{PDF} al activar |result=true|. Si se establece en |2|, solo
+% \texttt{PDF} al establecer |result=true|. Si se establece en |2|, solo
 % se imprimirán dos valores en la salida \texttt{PDF}; si no se establece,
 % se imprimirán como máximo |5| valores y luego se añadirá `\dots' en la
 % salida \texttt{PDF}.
@@ -2546,7 +2557,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spnM}
 %   \begin{syntax}
-%     |\spnM| \qquad\qquad |\spnM|\myparg{número natural} \qquad\qquad |\spnM|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número natural}
+%     |\spnM| \hfill |\spnD|\myparg{número} \hfill |\spnM|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número}  \hfill |\spnM|\myparg{letra} \hfill |\spnM|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{letra}
 %   \end{syntax}
 %   El comando \ics*{spnM} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento delimitado por paréntesis} \myparg{número natural},
