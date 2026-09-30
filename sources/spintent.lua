@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-09-29]
+     Lua module spintent.lua for spintent package - v0.99 [2026-09-30]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -1204,7 +1204,7 @@ local function spintent_spshort_execute_analysis(raw_input)
   if dict_match then
     token_set_macro("l__spintent_spshort_luaset_status_str", "success")
     token_set_macro("l__spintent_spshort_luaset_layout_str", dict_match.layout_type)
-    token_set_macro("l__spintent_spshort_luaset_expanded_str", dict_match.expand)
+    token_set_macro("l__spintent_spshort_luaset_expand_str", dict_match.expand)
 
     if dict_match.layout_type == "superscript" then
       token_set_macro("l__spintent_spshort_luaset_base_str", dict_match.base)
@@ -1237,7 +1237,7 @@ local function spintent_spshort_execute_analysis(raw_input)
 
     token_set_macro("l__spintent_spshort_luaset_status_str", "success")
     token_set_macro("l__spintent_spshort_luaset_layout_str", "superscript")
-    token_set_macro("l__spintent_spshort_luaset_expanded_str", semantic_read)
+    token_set_macro("l__spintent_spshort_luaset_expand_str", semantic_read)
     token_set_macro("l__spintent_spshort_luaset_base_str", num_part .. ".")
     token_set_macro("l__spintent_spshort_luaset_suffix_str", spintent_spshort_ord_suffixes[suffix_part])
     return
@@ -1246,7 +1246,7 @@ local function spintent_spshort_execute_analysis(raw_input)
   if s_match(raw_input, "^%a+$") then
     token_set_macro("l__spintent_spshort_luaset_status_str", "fallback")
     token_set_macro("l__spintent_spshort_luaset_layout_str", "none")
-    token_set_macro("l__spintent_spshort_luaset_expanded_str", raw_input)
+    token_set_macro("l__spintent_spshort_luaset_expand_str", raw_input)
     token_set_macro("l__spintent_spshort_luaset_output_str", raw_input)
   else
     token_set_macro("l__spintent_spshort_luaset_status_str", "error")
