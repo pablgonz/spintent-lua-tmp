@@ -2678,21 +2678,33 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection*{Llaves para \cs[no-index]{spmcd}}
 %
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spmcd]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto establecido por la llave \mykey{read-cmd} al ejecutar el comando
+% sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común divisor \dots»}
+% o \emph{«m c d \dots»} y el \myparg{argumento}; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% solo verbalizará el \myparg{argumento}.
+%
+% \smallskip
+%
 % \keyexampcmd{read-cmd}{terse \textnormal{%
 %   \textcolor{lightgray}{\textbar}} clear}{clear}[spmcd]
 % \smallskip
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
-% al comando |\spmcd|. Si se establece en |terse|, \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«m c d»}; si se establece en |clear|,
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común divisor»}.
+% el \emph{concepto} asociado al comando sin modificar la impresión de este.
+% Si se establece en |terse|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«m c d»};
+% si se establece en |clear|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común divisor»}.
 %
 % \smallskip
 %
 % \keyexampcmd{upper-case}{true \textnormal{%
 %   \textcolor{lightgray}{\textbar}} false}{false}[spmcd]
 % \smallskip
-% Establece si se usarán \emph{mayúsculas} o \emph{minúsculas} en la salida
-% \texttt{PDF} para el comando |\spmcd|. Si se establece en |true|, se
+% Establece si se usarán \emph{mayúsculas} en la salida \texttt{PDF} al
+% ejecutar el comando sin modificar la verbalización de este. Si se establece en |true|, se
 % imprimirá `$\mathrm{MCD}$' en la salida \texttt{PDF}; si se establece en
 % |false|, se imprimirá `$\mathrm{mcd}$' en la salida \texttt{PDF}.
 %
@@ -2701,7 +2713,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spmcd]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{«antes»} de verbalizar el valor establecido por la llave \mykey{read-cmd}.
+% \emph{antes} de verbalizar el concepto establecido por la llave \mykey{read-cmd}.
 % El valor de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
@@ -2710,24 +2722,25 @@ end, "shekel_fallback_patch")
 %   \textcolor{lightgray}{\textbar}} false}{false}[spmcd]
 % \smallskip
 % Establece si se \emph{imprime} el resultado de calcular el \emph{«máximo
-% común divisor»} del \myparg{argumento} pasado a |\spmcd|. Si se
-% establece en |true|: |$\spmcd[result=true](2, 3, 6)$| imprimirá
+% común divisor»} del argumento \myparg{número\textnormal{\textcolor{gray}{,}} número\textnormal{\textcolor{gray}{,}} \dots}.
+% Si se establece en |true|: |$\spmcd[result=true](2, 3, 6)$| imprimirá
 % `$\mathrm{mcd}(2, 3, 6) = 1$' en la salida \texttt{PDF} y
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común divisor entre
 % dos, tres y seis es igual a uno»}; si se establece en |false| no se
-% imprimirá en la salida \texttt{PDF} el resultado de calcular el
+% imprimirá ni verbalizará el resultado el resultado de calcular el
 % \emph{«máximo común divisor»}.
 %
+%
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{%
-%   \textcolor{lightgray}{\textbar}} false}{false}[spmcd]
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spmcd]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% de |\spmcd|\myparg{argumento} cuando se establece |sample-arg=true|
-% o cuando |\spmcd| se usa sin \myparg{argumento}. Si se establece en |true|
-% \mynvmath{NVDA/MathCAT} NO lo verbalizará; si se establece en |false|,
-% \mynvmath{NVDA/MathCAT} SÍ lo verbalizará.
+% del concepto \emph{«máximo común divisor \dots»} y del \myparg{argumento}
+% pasado al comando sin modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
+% en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
 % \subsection*{El comando \cs[no-index]{spmcm}}\label{subsec:spmcm}
 %
@@ -9509,11 +9522,16 @@ end, "shekel_fallback_patch")
             \MathMLintent { :silent } { ( }
           }
         \seq_use:Nnnn \l_@@_mc_args_seq
-          { \MathMLintent { _y- }     { , } }
-          { \MathMLintent { :silent } { , } }
           {
             \MathMLintent { :silent } { , }
-            \MathMLintent { _y- } { \c__spintent_invisible_sep_int } % "y" final
+            \MathMLintent { _y- } { \c_@@_invisible_sep_int } % "y" medio
+          }
+          {
+            \MathMLintent { :silent } { , }
+          }
+          {
+            \MathMLintent { :silent } { , }
+            \MathMLintent { _y- } { \c_@@_invisible_sep_int } % "y" final
           }
       }
     \MathMLintent { :silent } { ) }
@@ -9575,7 +9593,8 @@ end, "shekel_fallback_patch")
                   {
                     \tl_use:c { l_@@_sp #1 _prefix_tl } -
                   }
-                \bool_if:cTF { l_@@_sp #1 _read_terse_bool } { #1 :nofix} { #2 :nofix}
+                \bool_if:cTF { l_@@_sp #1 _read_terse_bool }
+                  { #1 } { #2 }
               }
               {
                 \mathrm
@@ -9609,22 +9628,29 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
     \tl_if_novalue:nF { #4 }
       {
-        \@@_luafun_mc_classify_args:n {#4}
-        \str_if_eq:VnT \l_@@_mc_luaset_all_numeric_str { true }
+        \seq_set_from_clist:Nn \l_@@_mc_raw_args_seq {#4}
+        \int_compare:nNnTF { \seq_count:N \l_@@_mc_raw_args_seq } < { 2 }
           {
-            \use:c { @@_luafun_calculate_ #1 :n } { #4 }
-            \str_if_eq:VnT \l_@@_spmcm_spmcd_luaset_error_str { true }
-              {
-                \msg_error:nne { spintent } { mc-invalid-arguments } { \exp_not:c { sp #1 } }
-              }
+            \msg_error:nne { spintent } { mc-too-few-arguments } { \exp_not:c { sp #1 } }
           }
-        \@@_mc_process_args:nn {#1} {#4}
-        \str_if_eq:VnT \l_@@_mc_luaset_all_numeric_str { true }
           {
-            \bool_if:cT { l_@@_sp #1 _print_result_bool }
+            \@@_luafun_mc_classify_args:n {#4}
+            \str_if_eq:VnT \l_@@_mc_luaset_all_numeric_str { true }
               {
-                \MathMLintent { _es-igual-a } { = }
-                \tl_use:c { l_@@_sp #1 _luaset_ #1 _value_tl }
+                \use:c { @@_luafun_calculate_ #1 :n } { #4 }
+                \str_if_eq:VnT \l_@@_spmcm_spmcd_luaset_error_str { true }
+                  {
+                    \msg_error:nne { spintent } { mc-invalid-arguments } { \exp_not:c { sp #1 } }
+                  }
+              }
+            \@@_mc_process_args:nn {#1} {#4}
+            \str_if_eq:VnT \l_@@_mc_luaset_all_numeric_str { true }
+              {
+                \bool_if:cT { l_@@_sp #1 _print_result_bool }
+                  {
+                    \MathMLintent { _es-igual-a } { = }
+                    \tl_use:c { l_@@_sp #1 _luaset_ #1 _value_tl }
+                  }
               }
           }
       }
@@ -9747,8 +9773,12 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of error messages for \cs[no-index]{spnM} and \cs[no-index]{spnD}}
 %
-% \begin{macro}[int]{md-invalid-argument}
-% Exception triggered when the argument for multiples or divisors is invalid.
+% \begin{macro}[int]
+%   {
+%     md-invalid-argument,
+%     mc-too-few-arguments,
+%   }
+%   Exception triggered when the argument for multiples or divisors is invalid.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { md-invalid-argument }
   {
@@ -9756,6 +9786,16 @@ end, "shekel_fallback_patch")
   }
   {
     The~argument~must~be~a~single~positive~integer. \\
+  }
+%    \end{macrocode}
+%   Exception triggered when fewer than two arguments are provided.
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { mc-too-few-arguments }
+  {
+    Too~few~arguments~provided~to~#1~\msg_line_context:.
+  }
+  {
+    At~least~two~arguments~are~required. \\
   }
 %    \end{macrocode}
 % \end{macro}
@@ -9874,7 +9914,7 @@ end, "shekel_fallback_patch")
 %   With `|#4|' absent, the placeholder |n| stands in for the argument.
 %   With `|#4|' given, \myhlc|\@@_luafun_spnmd_classify:n| decides
 %   whether it is wrapped through |\spnum| — and, when it is, whether
-%   \myhlc|\@@_spnM_spnD_result:n| also prints the computed set, per
+%   \myhlc|\@@_spnM_spnD_result:nn| also prints the computed set, per
 %   \mykey{result} — or left verbatim, with no result attempted.
 %
 %   \smallskip
