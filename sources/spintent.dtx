@@ -2490,13 +2490,13 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% Si se usa con el argumento \myparg{número}, |$\spnD(6)$| imprimirá
+% Si se usa el argumento \myparg{número}, |$\spnD(6)$| imprimirá
 % `$\mathrm{D}(6)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«divisores de seis»}.
 %
 % \smallskip
 %
-% Si se usa con el argumento \myparg{letra}, |$\spnD(m)$| imprimirá
+% Si se usa el argumento \myparg{letra}, |$\spnD(m)$| imprimirá
 % `$\mathrm{D}(m)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«divisores de eme»}.
 %
@@ -2576,13 +2576,13 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% Si se usa con el argumento \myparg{número}, |$\spnM(6)$| imprimirá
+% Si se usa el argumento \myparg{número}, |$\spnM(6)$| imprimirá
 % `$\mathrm{M}(6)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«múltiplos de seis»}.
 %
 % \smallskip
 %
-% Si se usa con el argumento \myparg{letra}, |$\spnM(m)$| imprimirá
+% Si se usa el argumento \myparg{letra}, |$\spnM(m)$| imprimirá
 % `$\mathrm{M}(m)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«múltiplos de eme»}.
 %
@@ -2646,26 +2646,47 @@ end, "shekel_fallback_patch")
 %
 % \begin{function}{\spmcd}
 %   \begin{syntax}
-%     |\spmcd| \qquad\qquad |\spmcd|\myparg{números separados por coma} \qquad\qquad |\spmcd|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{números separados por coma}
+%     |\spmcd| \hfill |\spmcd|\myparg{número\textnormal{\textcolor{gray}{,}} número\textnormal{\textcolor{gray}{,}} \dots} \hfill |\spmcd|\myparg{letra\textnormal{\textcolor{gray}{,}} letra\textnormal{\textcolor{gray}{,}} \dots}     \hfill |\spmcd|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\myparg{número\textnormal{\textcolor{gray}{,}} número\textnormal{\textcolor{gray}{,}} \dots}
 %   \end{syntax}
 %   El comando \ics*{spmcd} trabaja en \emph{modo matemático} y recibe el
-%   \emph{argumento delimitado por paréntesis} \myparg{números separados por coma}, el cual
-%   debe ser una lista de \emph{números naturales}, por ejemplo: `|(2, 3, 6)|'.
-%   Si se usa sin \myparg{argumento} |$\spmcd$| imprimirá `$\mathrm{mcd}$' en
-%   la salida \texttt{PDF}, y \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo
-%   común divisor»} o \emph{«m c d»}, acorde al \mymarg{valor} establecido por
-%   la llave |read-cmd|.
-%
-%   \smallskip
-%
-%   Si se usa con \myparg{argumento} |$\spmcd(2, 3, 6)$| imprimirá
-%   `$\mathrm{mcd}(2, 3, 6)$' en la salida \texttt{PDF}, y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común divisor entre dos,
-%   tres y seis»} o \emph{«m c d entre dos, tres y seis»} acorde al
-%   \mymarg{valor} establecido por la llave |read-cmd|.
+%   el \emph{argumento opcional delimitado por paréntesis} de la forma
+%   \myparg{número\textnormal{\textcolor{gray}{,}} número\textnormal{\textcolor{gray}{,}} \dots}
+%   que se procesa internamente por |\spnum| o \myparg{letra\textnormal{\textcolor{gray}{,}} letra\textnormal{\textcolor{gray}{,}} \dots}
+%   que se ejecuta de manera directa.
 % \end{function}
 %
+% \smallskip
+%
+% Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+% ni el \emph{argumento opcional delimitado por paréntesis}, |$\spmcd$|
+% imprimirá `$\mathrm{mcd}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«máximo común divisor»}.
+%
+% \smallskip
+%
+% Si se usa el argumento \myparg{número\textnormal{\textcolor{gray}{,}} número\textnormal{\textcolor{gray}{,}} \dots},
+% |$\spmcd(2, 3, 6)$| imprimirá `$\mathrm{mcd}(2, 3, 6)$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común
+% divisor entre dos, tres y seis»}.
+%
+% \smallskip
+%
+% Si se usa el argumento \myparg{letra\textnormal{\textcolor{gray}{,}} letra\textnormal{\textcolor{gray}{,}} \dots},
+% |$\spmcd(m, n)$| imprimirá `$\mathrm{mcd}(m, n)$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común
+% divisor entre eme y ene»}.
+%
 % \subsubsection*{Llaves para \cs[no-index]{spmcd}}
+%
+% \keyexampcmd{read-cmd}{terse \textnormal{%
+%   \textcolor{lightgray}{\textbar}} clear}{clear}[spmcd]
+% \smallskip
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
+% al comando |\spmcd|. Si se establece en |terse|, \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«m c d»}; si se establece en |clear|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común divisor»}.
+%
+% \smallskip
 %
 % \keyexampcmd{upper-case}{true \textnormal{%
 %   \textcolor{lightgray}{\textbar}} false}{false}[spmcd]
@@ -2674,16 +2695,6 @@ end, "shekel_fallback_patch")
 % \texttt{PDF} para el comando |\spmcd|. Si se establece en |true|, se
 % imprimirá `$\mathrm{MCD}$' en la salida \texttt{PDF}; si se establece en
 % |false|, se imprimirá `$\mathrm{mcd}$' en la salida \texttt{PDF}.
-%
-% \smallskip
-%
-% \keyexampcmd{read-cmd}{terse \textnormal{%
-%   \textcolor{lightgray}{\textbar}} clear}{clear}[spmcd]
-% \smallskip
-% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará el
-% comando |\spmcd|. Si se establece en |terse|, \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«m c d»}; si se establece en |clear|,
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común divisor»}.
 %
 % \smallskip
 %
@@ -2706,19 +2717,6 @@ end, "shekel_fallback_patch")
 % dos, tres y seis es igual a uno»}; si se establece en |false| no se
 % imprimirá en la salida \texttt{PDF} el resultado de calcular el
 % \emph{«máximo común divisor»}.
-%
-% \smallskip
-%
-% \keyexampcmd{sample-arg}{true \textnormal{%
-%   \textcolor{lightgray}{\textbar}} false}{false}[spmcd]
-% \smallskip
-% Desactiva la \emph{validación} interna del \myparg{argumento} pasado
-% a |\spmcd|, permitiendo usar ejemplos \emph{«no numéricos»} como entrada.
-% Si se establece en |true|: |$\spmcd[sample-arg=true](m, n)$|, imprimirá
-% `$\mathrm{mcd}(m, n)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«máximo común divisor entre m y n»}; si se establece
-% en |false| el \myparg{argumento} debe ser una lista de \emph{números naturales},
-% en caso contrario se devolverá un \enquote{error}.
 %
 % \smallskip
 %
@@ -9486,12 +9484,14 @@ end, "shekel_fallback_patch")
       }
 %    \end{macrocode}
 %   Injects \mynvmath{MathML} intents around the already-formatted
-%   \myhlc|\l_@@_mc_args_seq|, exactly as before.
+%   \myhlc|\l_@@_mc_args_seq|.
 %    \begin{macrocode}
     \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
       {
         \seq_set_map:NNn \l_@@_mc_args_seq \l_@@_mc_args_seq
-          { \MathMLintent { :silent } { ##1 } }
+          {
+            \MathMLintent { :silent } { ##1 }
+          }
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent "por"
         \MathMLintent { :silent } { ( }
         \seq_use:Nnnn \l_@@_mc_args_seq
@@ -9501,11 +9501,20 @@ end, "shekel_fallback_patch")
       }
       {
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
-        \MathMLintent { _entre } { ( }
+        \bool_if:cTF { l_@@_sp #1 _concept_bool }
+          {
+            \MathMLintent { _entre } { ( }
+          }
+          {
+            \MathMLintent { :silent } { ( }
+          }
         \seq_use:Nnnn \l_@@_mc_args_seq
           { \MathMLintent { _y- }     { , } }
           { \MathMLintent { :silent } { , } }
-          { \MathMLintent { _y- }     { , } }
+          {
+            \MathMLintent { :silent } { , }
+            \MathMLintent { _y- } { \c__spintent_invisible_sep_int } % "y" final
+          }
       }
     \MathMLintent { :silent } { ) }
   }
