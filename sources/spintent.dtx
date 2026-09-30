@@ -349,9 +349,12 @@ end, "shekel_fallback_patch")
       \textcolor { gray } { \small \textsf{default}:~ \emph{#4} } \par
       \IfValueT {#5}
         {
-          \__mydoc_sort_index:nn {Keys}
+          \clist_map_inline:nn {#5}
             {
-              Keys~for~ \texttt { \textbackslash #5 } ~ provide~by~ \pkglogo :> \texttt {#2}
+              \__mydoc_sort_index:nn {Keys}
+                {
+                  Keys~for~ \texttt { \textbackslash ##1 } ~ provide~by~ \pkglogo :> \texttt {#2}
+                }
             }
         }
     \group_end:
@@ -646,7 +649,7 @@ end, "shekel_fallback_patch")
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
                     lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent-cmd, en-US, math, mathml-SE, es-CL, on, off, %
                     setup, tagging, tagging-setup, lang, pdfversion, pdfstandard, arg, auto, read-sub, radio-sty, diameter, %
-                    circun, circle, side, mside, usual, sub-index, odot, concept, },%
+                    circun, circle, side, mside, usual, sub-index, odot, concept, upper-case, },%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
@@ -4583,9 +4586,11 @@ end, "shekel_fallback_patch")
 %   \medskip
 %
 %   Los comandos \ics*{sprad} y \ics*{spdiam} trabajan en \emph{modo
-%   matemático} y no reciben ningún argumento: imprimen y verbalizan la
-%   letra `r'/`d' (o `R'/`D', según \mykey{upper-case}) que representa
-%   el radio o el diámetro de una circunferencia.
+%   matemático} y reciben el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   mediante el cual se establece la \emph{«forma»} en la que se imprimirán
+%   en la salida \texttt{PDF} las letras `$r$' y `$d$' y como se verbalizarán
+%   en \mynvmath{NVDA/MathCAT}.
+%
 %
 %   \smallskip
 %
@@ -4597,29 +4602,48 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection*{Llaves para \cs[no-index]{sprad} y \cs[no-index]{spdiam}}
 %
-% \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
-%   mathcat}{school}[sprad]
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[sprad,spdiam]
 % \smallskip
-% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
-% la letra cuando \mykey{concept} es |false|. Si se establece en
-% |school|, \mynvmath{NVDA/MathCAT} verbaliza la letra deletreada; si se
-% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias
-% reglas.
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% de los conceptos \emph{«radio»} o \emph{«diámetro»} al ejecutar el comando
+% sin modificar la impresión de este. Si se establece en |true|, |$\sprad$| y |$\spdiam$|
+% se verbalizan como \emph{«radio»} y \emph{«diámetro»} en \mynvmath{NVDA/MathCAT};
+% si se establece en |false|, se verbalizarán las letras `$r$' o `$d$' acorde
+% al valor establecido por la llave \mykey{read-cmd}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
+%   mathcat}{school}[sprad,spdiam]
+% \smallskip
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará las
+% letras `$R$' o `$D$' cuando |concept=false| y |upper-case=true|. Si se
+% establece en |school|,  \mynvmath{NVDA/MathCAT} verbalizará las letras `$R$'
+% o `$D$' sin el prefijo «mayúscula»: si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir
+% el prefijo «mayúscula» dependiendo de la configuración del usuario.
 %
 % \smallskip
 %
 % \keyexampcmd{upper-case}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{false}[sprad]
+%   false}{false}[sprad,spdiam]
 % \smallskip
-% Establece si se imprime la letra en mayúscula sin modificar la
-% verbalización de este. Si se establece en |true|, |$\sprad[upper-case=true]$|
-% imprimirá `$R$' en la salida \texttt{PDF}; |$\spdiam[upper-case=true]$|
-% imprimirá `$D$'. En ambos casos la verbalización no cambia.
+% Establece si se \emph{imprime} usando mayúsculas. Si se establece en |true|,
+% |$\sprad[upper-case=true]$| y |$\spdiam[upper-case=true]$| imprimirán `$R$' y `$D$'
+% en la salida \texttt{PDF}; si se establece en |false| se imrimirá usando
+% minúsculas.
+%
+% \smallskip
+%
+% \begin{important}*
+%   La verbalización al establecer esta llave es controlada por la llave |read-cmd|.
+% \end{important}
 %
 % \smallskip
 %
 % \keyexampcmd{print-sym}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{false}[sprad]
+%   false}{false}[spdiam]
 % \smallskip
 % Establece si se \emph{usará} |\diameter| antes de la letra en la
 % impresión sin modificar la verbalización de este. Si se establece en
@@ -4629,42 +4653,33 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%   La llave \mykey{print-sym} no tiene ningún efecto en \ics{sprad}.
+%   La llave \mykey{print-sym} no tiene ningún efecto en |\sprad|.
 % \end{important}
 %
 % \smallskip
 %
-% \keyexampcmd{sub-index}{subíndice}{no usado}[sprad]
+% \keyexampcmd{sub-index}{subíndice}{no usado}[sprad,spdiam]
 % \smallskip
-% Establece un \emph{subíndice} sobre la letra. El valor de esta llave
-% \emph{siempre} debe pasarse entre llaves `|{ }|'.
+% Establece un \emph{subíndice} sobre la letra `$r$' o `$d$'. El valor de
+% esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
+% |$\sprad[sub-index={1}]$| imprimirá `$r_{1}$' en la salida \texttt{PDF}
+% y \mynvmath{NVDA/MathCAT} verbalizará \emph{«radio uno»}.
 %
 % \smallskip
 %
 % \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{false}[sprad]
+%   false}{false}[sprad,spdiam]
 % \smallskip
 % Establece si se \emph{antepone} la palabra «sub» al verbalizar el
 % \mykey{sub-index} para \mynvmath{NVDA/MathCAT}. Si se establece en
-% |true|, |$\sprad[sub-index={1},read-sub=true]$| imprimirá `$r_1$' en
+% |true|, |$\sprad[sub-index={1},read-sub=true]$| imprimirá `$r_{1}$' en
 % la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
 % \emph{«radio sub uno»}; si se establece en |false|, se verbaliza
 % \emph{«radio uno»}.
 %
 % \smallskip
 %
-% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{true}[sprad]
-% \smallskip
-% Establece si \mynvmath{NVDA/MathCAT} verbaliza \emph{«radio»} (o
-% \emph{«diámetro»}) en lugar de la letra misma. Si se establece en
-% |true|, |$\sprad$| se verbaliza \emph{«radio»}; si se establece en
-% |false|, se verbaliza la letra acorde al valor establecido por la
-% llave \mykey{read-cmd}.
-%
-% \smallskip
-%
-% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[sprad]
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[sprad,spdiam]
 % \smallskip
 % Sobrescribe \emph{«radio»} (o \emph{«diámetro»}) que será verbalizado
 % por \mynvmath{NVDA/MathCAT} al ejecutar el comando sin modificar la
@@ -4677,7 +4692,7 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{false}[sprad]
+%   false}{false}[sprad,spdiam]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
 % de \emph{«radio»} (o \emph{«diámetro»}) y de la letra al ejecutar el
@@ -14906,11 +14921,16 @@ end, "shekel_fallback_patch")
                   { \tl_set:Nn \l_@@_sp_rad_diam_word_tl { radio } }
                   { \tl_set:Nn \l_@@_sp_rad_diam_word_tl { diámetro } }
               }
-              { \tl_set:Ne \l_@@_sp_rad_diam_word_tl { \tl_use:c { l_@@_sp #1 _read_arg_tl } } }
+              {
+                \tl_set:Ne \l_@@_sp_rad_diam_word_tl
+                  {
+                    \tl_use:c { l_@@_sp #1 _read_arg_tl }
+                  }
+              }
             \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
               {
                 \@@_luafun_mrow_intent_arg:nn
-                  { } { intent = "_ \l_@@_sp_rad_diam_word_tl - :prefix" }
+                  { } { intent = "_ \l_@@_sp_rad_diam_word_tl :nofix" }
                 { \l_@@_sp_rad_diam_letra_tl }
               }
               {
@@ -14936,7 +14956,7 @@ end, "shekel_fallback_patch")
                   }
                   {
                     \@@_luafun_mrow_intent_arg:nn
-                      { } { intent = "_ \l_@@_sp_rad_diam_word_tl - :prefix" }
+                      { } { intent = "_ \l_@@_sp_rad_diam_word_tl :nofix" }
                     { \l_@@_sp_rad_diam_letra_tl }
                     \c_math_subscript_token
                       { \str_use:c { l_@@_sp #1 _sub_index_str } }
@@ -14944,7 +14964,7 @@ end, "shekel_fallback_patch")
               }
           }
 %    \end{macrocode}
-%   With \mykey{concept} |false|, the letter itself is read instead —
+%   With \mykey{concept}|=false|, the letter itself is read instead —
 %   but only when \mykey{read-cmd} is |school|, built the same way
 %   from the letter (with \mykey{sub-index}, letter and subscript
 %   wrapped together, subscript silenced). With \mykey{read-cmd}
@@ -14958,7 +14978,7 @@ end, "shekel_fallback_patch")
                   { \str_use:c { l_@@_sp #1 _mode_str } } { school }
                   {
                     \@@_luafun_mrow_intent_arg:nn
-                      { } { intent = "_ \l_@@_sp_rad_diam_letra_tl - :prefix" }
+                      { } { intent = "_ \l_@@_sp_rad_diam_letra_tl -" }
                     { \l_@@_sp_rad_diam_letra_tl }
                   }
                   { \l_@@_sp_rad_diam_letra_tl }
@@ -15018,6 +15038,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
           \@@_sp_rad_diam_exec:nn { rad } {#1}
         \group_end:
       }
@@ -15028,6 +15049,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
           \@@_sp_rad_diam_exec:nn { diam } {#1}
         \group_end:
       }
