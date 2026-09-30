@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-09-30} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-10-01} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -5141,11 +5141,16 @@
                   { \tl_set:Nn \l__spintent_sp_rad_diam_word_tl { radio } }
                   { \tl_set:Nn \l__spintent_sp_rad_diam_word_tl { diámetro } }
               }
-              { \tl_set:Ne \l__spintent_sp_rad_diam_word_tl { \tl_use:c { l__spintent_sp #1 _read_arg_tl } } }
+              {
+                \tl_set:Ne \l__spintent_sp_rad_diam_word_tl
+                  {
+                    \tl_use:c { l__spintent_sp #1 _read_arg_tl }
+                  }
+              }
             \str_if_empty:cTF { l__spintent_sp #1 _sub_index_str }
               {
                 \__spintent_luafun_mrow_intent_arg:nn
-                  { } { intent = "_ \l__spintent_sp_rad_diam_word_tl - :prefix" }
+                  { } { intent = "_ \l__spintent_sp_rad_diam_word_tl :nofix" }
                 { \l__spintent_sp_rad_diam_letra_tl }
               }
               {
@@ -5171,7 +5176,7 @@
                   }
                   {
                     \__spintent_luafun_mrow_intent_arg:nn
-                      { } { intent = "_ \l__spintent_sp_rad_diam_word_tl - :prefix" }
+                      { } { intent = "_ \l__spintent_sp_rad_diam_word_tl :nofix" }
                     { \l__spintent_sp_rad_diam_letra_tl }
                     \c_math_subscript_token
                       { \str_use:c { l__spintent_sp #1 _sub_index_str } }
@@ -5185,7 +5190,7 @@
                   { \str_use:c { l__spintent_sp #1 _mode_str } } { school }
                   {
                     \__spintent_luafun_mrow_intent_arg:nn
-                      { } { intent = "_ \l__spintent_sp_rad_diam_letra_tl - :prefix" }
+                      { } { intent = "_ \l__spintent_sp_rad_diam_letra_tl -" }
                     { \l__spintent_sp_rad_diam_letra_tl }
                   }
                   { \l__spintent_sp_rad_diam_letra_tl }
@@ -5230,6 +5235,7 @@
     \mode_if_math:TF
       {
         \group_begin:
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_sp_rad_diam_exec:nn { rad } {#1}
         \group_end:
       }
@@ -5240,6 +5246,7 @@
     \mode_if_math:TF
       {
         \group_begin:
+          \attribute \l__spintent_scope_attr_int = 1
           \__spintent_sp_rad_diam_exec:nn { diam } {#1}
         \group_end:
       }
