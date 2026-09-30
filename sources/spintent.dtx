@@ -196,7 +196,7 @@ end, "shekel_fallback_patch")
         spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, spang,
         spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle,
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
-        spPcirc, spcoord, spvec, sprazon, spProp, spnewread, %
+        spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, %
       }
   }
 % Colors
@@ -637,7 +637,7 @@ end, "shekel_fallback_patch")
                         spdate, spread, spdsym, spmsym, spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, %
                         spang, spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle, sparc, spmarc,%
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
-                        spProp, spnewread, },%
+                        spProp, spnewread, spVol, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -5263,6 +5263,99 @@ end, "shekel_fallback_patch")
 % \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se
 % establece en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la
 % salida del comando.
+%
+% \subsection*{El comando \cs[no-index]{spVol}}\label{subsec:spvol}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spVol}
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.15\mydpstrut}\small
+%     |\spVol|
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.15\mydpstrut}\small
+%     |\spVol|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   \end{minipage}
+%
+%   \medskip
+%
+%   El comando \ics*{spVol} trabaja en \emph{modo matemático} y recibe
+%   el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   mediante el cual se establece la \emph{«forma»} en la que se verbalizará
+%   en \mynvmath{NVDA/MathCAT}.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spVol$| imprimirá `$\mathcal{V}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«volumen»}.
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spVol}}
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spVol]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del concepto \emph{«volumen»} al ejecutar el comando sin modificar la
+% impresión de este. Si se establece en |true|, |$\spVol$| se verbaliza
+% como \emph{«volumen»} en \mynvmath{NVDA/MathCAT}; si se establece en
+% |false|, se verbalizará `$\mathcal{V}$'.
+%
+% \smallskip
+%
+% \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
+%   mathcat}{school}[spVol]
+% \smallskip
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
+% el subíndice establecido por la llave \mykey{sub-index}. Si se
+% establece en |school|, \mynvmath{NVDA/MathCAT} verbalizará el concepto
+% y el subíndice en una sola frase; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas sobre el subíndice.
+%
+% \smallskip
+%
+% \keyexampcmd{sub-index}{subíndice}{no usado}[spVol]
+% \smallskip
+% Establece un \emph{subíndice} sobre `$\mathcal{V}$'. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
+% |$\spVol[sub-index={1}]$| imprimirá `$\mathcal{V}_{1}$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«volumen uno»}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spVol]
+% \smallskip
+% Establece si se \emph{antepone} la palabra \emph{«sub»} al verbalizar
+% el subíndice establecido por la llave \mykey{sub-index} al ejecutar el
+% comando sin modificar la impresión de este. Si se establece en |true|,
+% |$\spVol[sub-index={1},read-sub=true]$| se verbalizará \emph{«volumen sub
+% uno»} en \mynvmath{NVDA/MathCAT}; si se establece en |false|,
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«volumen uno»}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spVol]
+% \smallskip
+% Sobrescribe la \emph{verbalización} del subíndice establecido por la
+% llave \mykey{sub-index} (o funciona sin esta) que será verbalizada por
+% \mynvmath{NVDA/MathCAT} al ejecutar el comando sin modificar la
+% impresión de este. El valor de esta llave \emph{siempre} debe pasarse
+% entre llaves `|{ }|'. Por ejemplo: |$\spVol[sub-index={1},read-arg={del cono}]$|
+% imprimirá `$\mathcal{V}_{1}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«volumen del cono»}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spVol]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del \emph{concepto} establecido por la llave \mykey{concept} y de
+% `$\mathcal{V}$' al ejecutar el comando sin modificar la impresión de
+% este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará
+% la salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% sí verbalizará la salida del comando.
 %
 % \newpage
 %
@@ -16202,6 +16295,250 @@ end, "shekel_fallback_patch")
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spPcirc } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spVol}}\label{cmd:spvol}
+%
+% The user-level command |\spVol| provides a semantic interface for
+% the volume of a solid, always typesetting |\mathcal{V}|.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spVol}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spVol_mode_str,
+%     \l_@@_spVol_sub_index_str,
+%     \l_@@_spVol_read_arg_tl,
+%     \l_@@_spVol_word_tl,
+%     \l_@@_spVol_suffix_tl,
+%     \l_@@_spVol_native_bool,
+%   }
+%   \myhlc|\l_@@_spVol_mode_str| holds the \mykey{read-cmd} choice
+%   (|school| or |mathcat|); \myhlc|\l_@@_spVol_sub_index_str| the raw
+%   \mykey{sub-index} text; \myhlc|\l_@@_spVol_read_arg_tl| the
+%   sanitized \mykey{read-arg} text. \myhlc|\l_@@_spVol_word_tl| and
+%   \myhlc|\l_@@_spVol_suffix_tl| are scratch variables holding the
+%   word to voice (|volumen| or the bare symbol) and the text to
+%   attach after it; \myhlc|\l_@@_spVol_native_bool| records whether
+%   that text should be combined natively with the subscript
+%   (silenced) or left for \mynvmath{MathCAT} to read on its own.
+%    \begin{macrocode}
+\str_new:N  \l_@@_spVol_mode_str
+\str_new:N  \l_@@_spVol_sub_index_str
+\tl_new:N   \l_@@_spVol_read_arg_tl
+\tl_new:N   \l_@@_spVol_word_tl
+\tl_new:N   \l_@@_spVol_suffix_tl
+\bool_new:N \l_@@_spVol_native_bool
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spVol}}
+%
+% \begin{macro}[int]
+%   {
+%     read-cmd,
+%     sub-index,
+%     read-sub,
+%     read-arg,
+%     concept,
+%     silent-cmd,
+%     unknown,
+%   }
+%   We define the \mymeta{keys} \mykey[spVol]{read-cmd},
+%   \mykey[spVol]{sub-index}, \mykey[spVol]{read-sub},
+%   \mykey[spVol]{read-arg}, \mykey[spVol]{concept} and
+%   \mykey[spVol]{silent-cmd}.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spVol }
+  {
+    read-cmd    .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spVol_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spVol_mode_str { mathcat } }
+          }
+      },
+    read-cmd    .initial:n  = school,
+    read-cmd    .value_required:n = true,
+    read-cmd / unknown .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
+    sub-index   .code:n =
+      { \str_set:Nn \l_@@_spVol_sub_index_str {#1} },
+    sub-index   .initial:n  = ,
+    sub-index   .value_required:n = true,
+    read-sub    .bool_set:N = \l_@@_spVol_read_sub_bool,
+    read-sub    .initial:n  = false,
+    read-sub    .value_required:n = true,
+    read-arg    .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spVol_read_arg_tl {#1} },
+    read-arg    .initial:n  = ,
+    read-arg    .value_required:n = true,
+    concept     .bool_set:N = \l_@@_spVol_concept_bool,
+    concept     .initial:n  = true,
+    concept     .value_required:n = true,
+    silent-cmd  .bool_set:N = \l_@@_spVol_silent_cmd_bool,
+    silent-cmd  .initial:n  = false,
+    silent-cmd  .value_required:n = true,
+    unknown     .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spVol }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spVol}}
+%
+% \begin{macro}[int]{\@@_spVol_print:}
+%   The function \myhlc|\@@_spVol_print:| dispatches to
+%   \myhlc|\@@_spVol_silent:| when \mykey{silent-cmd} is |true|, or to
+%   \myhlc|\@@_spVol_verbal:| otherwise.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spVol_print:
+  {
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_spVol_silent_cmd_bool
+      { \@@_spVol_silent: }
+      { \@@_spVol_verbal: }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spVol_silent:}
+%   The function \myhlc|\@@_spVol_silent:| typesets |\mathcal{V}|
+%   with the intent |_-| — the symbol alone through the shared queue
+%   when there is no \mykey{sub-index}, or symbol and subscript
+%   together in one native |\MathMLintent| (subscript silenced) when
+%   there is.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spVol_silent:
+  {
+    \str_if_empty:NTF \l_@@_spVol_sub_index_str
+      {
+        \@@_luafun_mrow_intent_arg:nn
+          { } { intent = "_-" }
+        { \mathcal{V} }
+      }
+      {
+        \MathMLintent { _- }
+          {
+            \@@_inner_sep:
+            \mathcal{V}
+            \c_math_subscript_token
+              {
+                \MathMLintent { :silent }
+                  { \l_@@_spVol_sub_index_str }
+              }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spVol_verbal:}
+%   The function \myhlc|\@@_spVol_verbal:| sets
+%   \myhlc|\l_@@_spVol_word_tl| to |volumen| or the bare symbol per
+%   \mykey{concept}. With \mykey{read-arg} given, it takes priority
+%   over \mykey{sub-index}/\mykey{read-sub} entirely:
+%   \myhlc|\l_@@_spVol_suffix_tl| becomes \mykey{read-arg}'s text,
+%   combined natively regardless of \mykey{read-cmd}. Without it,
+%   the suffix is |sub-|\mymeta{value}/\mymeta{value} (per
+%   \mykey{read-sub}), combined natively only under
+%   |read-cmd=school| — under |read-cmd=mathcat| the suffix is left
+%   for \mynvmath{MathCAT} to read on its own. Delegates the actual
+%   typesetting to \myhlc|\@@_spVol_attach_subscript:|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spVol_verbal:
+  {
+    \bool_if:NTF \l_@@_spVol_concept_bool
+      { \tl_set:Nn \l_@@_spVol_word_tl { volumen } }
+      { \tl_set:Nn \l_@@_spVol_word_tl { \mathcal{V} } }
+    \tl_if_empty:NTF \l_@@_spVol_read_arg_tl
+      {
+        \str_if_eq:VnTF \l_@@_spVol_mode_str { school }
+          { \bool_set_true:N  \l_@@_spVol_native_bool }
+          { \bool_set_false:N \l_@@_spVol_native_bool }
+        \tl_set:Ne \l_@@_spVol_suffix_tl
+          {
+            \bool_if:NT \l_@@_spVol_read_sub_bool { sub- }
+            \l_@@_spVol_sub_index_str
+          }
+      }
+      {
+        \bool_set_true:N \l_@@_spVol_native_bool
+        \tl_set_eq:NN \l_@@_spVol_suffix_tl \l_@@_spVol_read_arg_tl
+      }
+    \@@_spVol_attach_subscript:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spVol_attach_subscript:}
+%   The function \myhlc|\@@_spVol_attach_subscript:| typesets
+%   |\mathcal{V}|. An empty \mykey{sub-index} tags the symbol alone
+%   through the shared queue (\myhlc|\l_@@_spVol_suffix_tl| is
+%   discarded, since there's no subscript to attach it to). A given
+%   one combines symbol, subscript, and
+%   \myhlc|\l_@@_spVol_suffix_tl| in one native |\MathMLintent|
+%   (subscript silenced) when \myhlc|\l_@@_spVol_native_bool| is
+%   |true|, or tags the symbol alone through the shared queue with the
+%   subscript left bare when |false|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spVol_attach_subscript:
+  {
+    \str_if_empty:NTF \l_@@_spVol_sub_index_str
+      {
+        \@@_luafun_mrow_intent_arg:nn
+          { } { intent = "_ \l_@@_spVol_word_tl :nofix" }
+        { \mathcal{V} }
+      }
+      {
+        \bool_if:NTF \l_@@_spVol_native_bool
+          {
+            \MathMLintent
+              { _ \l_@@_spVol_word_tl - \l_@@_spVol_suffix_tl :nofix }
+              {
+                \@@_inner_sep:
+                \mathcal{V}
+                \c_math_subscript_token
+                  {
+                    \MathMLintent { :silent }
+                      { \l_@@_spVol_sub_index_str }
+                  }
+              }
+          }
+          {
+            \@@_luafun_mrow_intent_arg:nn
+              { } { intent = "_ \l_@@_spVol_word_tl :nofix" }
+            { \mathcal{V} }
+            \c_math_subscript_token
+              { \l_@@_spVol_sub_index_str }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spVol}
+%   The public command |\spVol| enforces \emph{math mode}, opens a
+%   local group, and delegates execution to \myhlc|\@@_spVol_print:|.
+%    \begin{macrocode}
+\NewDocumentCommand \spVol { O{} }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \keys_set:nn { spintent / spVol } {#1}
+          \@@_spVol_print:
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spVol } }
   }
 %    \end{macrocode}
 % \end{macro}
