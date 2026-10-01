@@ -1288,19 +1288,11 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spunit}
-%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.5\mydpstrut}\small
-%     |\spunit|\mymarg{unidad}\par
-%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{unidad}\par
-%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad}
-%   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.5\mydpstrut}\small
-%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}\par
-%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad}\par
-%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}
-%   \end{minipage}
-%
-% \medskip
-%
+%   \begin{syntax}
+%     |\spunit|\mymarg{unidad}\hfill|\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{unidad}\hfill|\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad}\par\noindent
+%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad}\hfill|\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad}\par\noindent
+%     |\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}unidad\textnormal{\textcolor{red}{{/}}}unidad\textnormal{\textcolor{red}{{\textasteriskcentered}}}\dots}\hfill|\spunit|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{número \textnormal{\textcolor{red}{{e}}} exponente unidad \dots}
+%   \end{syntax}
 %   El comando |\spunit| trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento obligatorio} \mymarg{unidad}, el cual puede contener
 %   una \emph{«parte numérica»} opcional la cual se procesa
@@ -1308,33 +1300,32 @@ end, "shekel_fallback_patch")
 %   de una \mymarg{unidad} o un \mymarg{alias} valido  descritos en~\S\ref{subsec:arg-spunit}
 %   o una \mymarg{unidad} creada por el comando |\spnewunit| (\S\ref{subsec:spnewunit})
 %   o un \mymarg{alias} creado por el comando |\spunitalias| (\S\ref{subsec:spunitalias}).
-%
-%   \smallskip
-%
-%   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
-%   y se ejecuta |$\spunit{23 m}$| se imprimirá `$23\,\mathrm{m}$' en la
-%   salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veintitrés metros»}.
-%
-%   \smallskip
-%
-%   La multiplicación entre las \mymarg{unidades} se realiza mediante un
-%   \emph{asterisco} `$\mathcolor{red}{\ast}$' y las potencias de estas
-%   se indican con un \emph{circunflejo seguido del exponente entre llaves}
-%   `\textcolor{red}{\texttt{\^{}}}\mymarg{exponente}'. Por ejemplo si
-%   se ejecuta |$\spunit{23 m*s^{2}}$| se imprimirá `$23\,\mathrm{m}\,\mathrm{s}^{2}$'
-%   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«veintitrés metros segundos al cuadrado»}.
-%
-%   \smallskip
-%
-%   Se pueden usar \emph{fracciones lineales} con las \mymarg{unidades}
-%   utilizando una \emph{«única barra»} `$\mathcolor{red}{/}$' para la
-%   separación entre las \mymarg{unidades} del numerador y el denominador,
-%   teniendo presente que el denominador NO puede contener números de ningún
-%   tipo. Por ejemplo si se ejecuta |$\spunit{23 m/s^{2}}$| se imprimirá
-%   `$23\,\mathrm{m}/\mathrm{s}^{2}$' en la salida \texttt{PDF} y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«veintitrés metros por segundos al cuadrado»}.
 % \end{function}
+%
+% \smallskip
+%
+% Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+% |$\spunit{23 m}$| imprimirá `$23\,\mathrm{m}$' en la salida \texttt{PDF}
+% y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veintitrés metros»}.
+%
+% \smallskip
+%
+% La multiplicación entre las \mymarg{unidades} se realiza mediante un
+% \emph{asterisco} `$\mathcolor{red}{\ast}$' y las potencias de estas
+% se indican con un \emph{circunflejo seguido del exponente entre llaves}
+% `\textcolor{red}{\texttt{\^{}}}\mymarg{exponente}'. Por ejemplo si
+% se ejecuta |$\spunit{23 m*s^{2}}$| se imprimirá `$23\,\mathrm{m}\,\mathrm{s}^{2}$'
+% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«veintitrés metros segundos al cuadrado»}.
+%
+% \smallskip
+%
+% Se pueden usar \emph{fracciones lineales} con las \mymarg{unidades}
+% utilizando una \emph{«única barra»} `$\mathcolor{red}{/}$' para la
+% separación entre las \mymarg{unidades} del numerador y el denominador,
+% teniendo presente que el denominador NO puede contener números de ningún
+% tipo. Por ejemplo: |$\spunit{23 m/s^{2}}$| imprimirá `$23\,\mathrm{m}/\mathrm{s}^{2}$'
+% en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veintitrés metros por segundos al cuadrado»}.
 %
 % \smallskip
 %
@@ -2679,6 +2670,14 @@ end, "shekel_fallback_patch")
 % \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«máximo común
 % divisor entre eme y ene»}.
 %
+% \smallskip
+%
+% \begin{important}*
+%  Los argumentos \myparg{número\textnormal{\textcolor{gray}{,}} número\textnormal{\textcolor{gray}{,}} \dots}
+%  o \myparg{letra\textnormal{\textcolor{gray}{,}} letra\textnormal{\textcolor{gray}{,}} \dots}
+%  requiere al menos dos elementos.
+% \end{important}
+%
 % \subsubsection*{Llaves para \cs[no-index]{spmcd}}
 %
 % \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
@@ -2781,6 +2780,13 @@ end, "shekel_fallback_patch")
 % \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«mínimo común
 % múltiplo entre eme y ene»}.
 %
+% \smallskip
+%
+% \begin{important}*
+%  Los argumentos \myparg{número\textnormal{\textcolor{gray}{,}} número\textnormal{\textcolor{gray}{,}} \dots}
+%  o \myparg{letra\textnormal{\textcolor{gray}{,}} letra\textnormal{\textcolor{gray}{,}} \dots}
+%  requiere al menos dos elementos.
+% \end{important}
 % \subsubsection*{Llaves para \cs[no-index]{spmcm}}
 %
 % \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
@@ -4694,7 +4700,7 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%  Las llaves \mykey{sub-index} y \mykey{read-sub} no tienen efecto al usar |read-arg|-
+%  Las llaves \mykey{sub-index} y \mykey{read-sub} no tienen efecto al usar |read-arg|.
 % \end{important}
 %
 % \smallskip
@@ -5278,15 +5284,9 @@ end, "shekel_fallback_patch")
 % \vspace*{-\baselineskip}
 %
 % \begin{function}{\spVol}
-%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.15\mydpstrut}\small
-%     |\spVol|
-%   \end{minipage}\hfill
-%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.15\mydpstrut}\small
-%     |\spVol|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
-%   \end{minipage}
-%
-%   \medskip
-%
+%   \begin{syntax}
+%     |\spVol| \quad\quad |\spVol|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   \end{syntax}
 %   El comando \ics*{spVol} trabaja en \emph{modo matemático} y recibe
 %   el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
 %   mediante el cual se establece la \emph{«forma»} en la que se verbalizará
@@ -5308,18 +5308,19 @@ end, "shekel_fallback_patch")
 % del concepto \emph{«volumen»} al ejecutar el comando sin modificar la
 % impresión de este. Si se establece en |true|, |$\spVol$| se verbaliza
 % como \emph{«volumen»} en \mynvmath{NVDA/MathCAT}; si se establece en
-% |false|, se verbalizará `$\mathcal{V}$'.
+% |false|, se verbalizará la letra `$\mathcal{V}$' acorde al valor
+% establecido por la llave \mykey{read-cmd}.
 %
 % \smallskip
 %
 % \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
 %   mathcat}{school}[spVol]
 % \smallskip
-% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
-% el subíndice establecido por la llave \mykey{sub-index}. Si se
-% establece en |school|, \mynvmath{NVDA/MathCAT} verbalizará el concepto
-% y el subíndice en una sola frase; si se establece en |mathcat|,
-% \mynvmath{NVDA/MathCAT} aplica sus propias reglas sobre el subíndice.
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará la
+% letra `$\mathcal{V}$' cuando |concept=false|. Si se establece en |school|,
+% \mynvmath{NVDA/MathCAT} verbalizará únicamente la letra `$V$'; si se
+% establece en |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias reglas
+% sobre `$\mathcal{V}$'.
 %
 % \smallskip
 %
@@ -5346,13 +5347,21 @@ end, "shekel_fallback_patch")
 %
 % \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spVol]
 % \smallskip
-% Sobrescribe la \emph{verbalización} del subíndice establecido por la
-% llave \mykey{sub-index} (o funciona sin esta) que será verbalizada por
-% \mynvmath{NVDA/MathCAT} al ejecutar el comando sin modificar la
-% impresión de este. El valor de esta llave \emph{siempre} debe pasarse
-% entre llaves `|{ }|'. Por ejemplo: |$\spVol[sub-index={1},read-arg={del cono}]$|
-% imprimirá `$\mathcal{V}_{1}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«volumen del cono»}.
+% Sobrescribe el \emph{concepto} establecido por la llave |concept| que
+% será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el comando sin
+% modificar la impresión de este. El valor de esta llave \emph{siempre}
+% debe pasarse entre llaves `|{ }|' y se debe usar en conjunto
+% con la llave |concept|. Por ejemplo: |$\spVol[read-arg={medida exacta}]$|
+% imprimirá `$\mathcal{V}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«volumen medida exacta»}; |$\spVol[concept=false,read-arg={medida exacta}]$|
+% imprimirá `$\mathcal{V}$' y \mynvmath{NVDA/MathCAT} verbalizará \emph{«medida
+% exacta»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%  Las llaves \mykey{sub-index} y \mykey{read-sub} no tienen efecto al usar |read-arg|.
+% \end{important}
 %
 % \smallskip
 %
@@ -5365,6 +5374,7 @@ end, "shekel_fallback_patch")
 % este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará
 % la salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
 % sí verbalizará la salida del comando.
+%
 %
 % \newpage
 %
@@ -10343,7 +10353,7 @@ end, "shekel_fallback_patch")
           }
         \str_if_empty:NF \l_@@_spang_luaset_minuto_str
           {
-            \MathMLintent { minutos : postfix($m) }
+            \MathMLintent { _minutos:postfix($m) }
               {
                 \MathMLarg { m }
                   {
@@ -10353,7 +10363,7 @@ end, "shekel_fallback_patch")
           }
         \str_if_empty:NF \l_@@_spang_luaset_segundo_str
           {
-            \MathMLintent { segundos : postfix($s) }
+            \MathMLintent { _segundos:postfix($s) }
               {
                 \MathMLarg { s }
                   {
@@ -16347,16 +16357,19 @@ end, "shekel_fallback_patch")
 %     \l_@@_spVol_word_tl,
 %     \l_@@_spVol_suffix_tl,
 %     \l_@@_spVol_native_bool,
+%     \l_@@_spVol_read_arg_full_tl,
 %   }
 %   \myhlc|\l_@@_spVol_mode_str| holds the \mykey{read-cmd} choice
 %   (|school| or |mathcat|); \myhlc|\l_@@_spVol_sub_index_str| the raw
 %   \mykey{sub-index} text; \myhlc|\l_@@_spVol_read_arg_tl| the
 %   sanitized \mykey{read-arg} text. \myhlc|\l_@@_spVol_word_tl| and
 %   \myhlc|\l_@@_spVol_suffix_tl| are scratch variables holding the
-%   word to voice (|volumen| or the bare symbol) and the text to
+%   word to voice (|volumen|) and the text to
 %   attach after it; \myhlc|\l_@@_spVol_native_bool| records whether
 %   that text should be combined natively with the subscript
 %   (silenced) or left for \mynvmath{MathCAT} to read on its own.
+%   \myhlc|\l_@@_spVol_read_arg_full_tl| holds the text to voice when
+%   \mykey{read-arg} is given.
 %    \begin{macrocode}
 \str_new:N  \l_@@_spVol_mode_str
 \str_new:N  \l_@@_spVol_sub_index_str
@@ -16364,6 +16377,7 @@ end, "shekel_fallback_patch")
 \tl_new:N   \l_@@_spVol_word_tl
 \tl_new:N   \l_@@_spVol_suffix_tl
 \bool_new:N \l_@@_spVol_native_bool
+\tl_new:N   \l_@@_spVol_read_arg_full_tl
 %    \end{macrocode}
 % \end{variable}
 %
@@ -16474,39 +16488,88 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spVol_verbal:}
-%   The function \myhlc|\@@_spVol_verbal:| sets
-%   \myhlc|\l_@@_spVol_word_tl| to |volumen| or the bare symbol per
-%   \mykey{concept}. With \mykey{read-arg} given, it takes priority
-%   over \mykey{sub-index}/\mykey{read-sub} entirely:
-%   \myhlc|\l_@@_spVol_suffix_tl| becomes \mykey{read-arg}'s text,
-%   combined natively regardless of \mykey{read-cmd}. Without it,
-%   the suffix is |sub-|\mymeta{value}/\mymeta{value} (per
-%   \mykey{read-sub}), combined natively only under
+%   The function \myhlc|\@@_spVol_verbal:| delegates to
+%   \myhlc|\@@_spVol_read_arg_print:| when \mykey{read-arg} is given,
+%   and otherwise, with \mykey{concept} |false|, to
+%   \myhlc|\@@_spVol_symbol_print:|. With \mykey{concept} |true| it
+%   sets \myhlc|\l_@@_spVol_word_tl| to |volumen| and
+%   \myhlc|\l_@@_spVol_suffix_tl| to |sub-|\mymeta{value}/\mymeta{value}
+%   (per \mykey{read-sub}), combined natively only under
 %   |read-cmd=school| — under |read-cmd=mathcat| the suffix is left
 %   for \mynvmath{MathCAT} to read on its own. Delegates the actual
 %   typesetting to \myhlc|\@@_spVol_attach_subscript:|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spVol_verbal:
   {
-    \bool_if:NTF \l_@@_spVol_concept_bool
-      { \tl_set:Nn \l_@@_spVol_word_tl { volumen } }
-      { \tl_set:Nn \l_@@_spVol_word_tl { \mathcal{V} } }
     \tl_if_empty:NTF \l_@@_spVol_read_arg_tl
       {
-        \str_if_eq:VnTF \l_@@_spVol_mode_str { school }
-          { \bool_set_true:N  \l_@@_spVol_native_bool }
-          { \bool_set_false:N \l_@@_spVol_native_bool }
-        \tl_set:Ne \l_@@_spVol_suffix_tl
+        \bool_if:NTF \l_@@_spVol_concept_bool
           {
-            \bool_if:NT \l_@@_spVol_read_sub_bool { sub- }
-            \l_@@_spVol_sub_index_str
+            \tl_set:Nn \l_@@_spVol_word_tl { volumen }
+            \str_if_eq:VnTF \l_@@_spVol_mode_str { school }
+              { \bool_set_true:N  \l_@@_spVol_native_bool }
+              { \bool_set_false:N \l_@@_spVol_native_bool }
+            \tl_set:Ne \l_@@_spVol_suffix_tl
+              {
+                \bool_if:NT \l_@@_spVol_read_sub_bool { sub- }
+                \l_@@_spVol_sub_index_str
+              }
+            \@@_spVol_attach_subscript:
           }
+          { \@@_spVol_symbol_print: }
+      }
+      { \@@_spVol_read_arg_print: }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spVol_symbol_print:}
+%   With \mykey{concept} |false|, the symbol itself is read instead —
+%   but only when \mykey{read-cmd} is |school|: with no
+%   \mykey{sub-index}, the shared queue tags the symbol with the intent
+%   |_V-|; with one, symbol and subscript are wrapped together in one
+%   native |\MathMLintent| (subscript silenced). With \mykey{read-cmd}
+%   |mathcat|, the intent is left empty: \mynvmath{MathCAT} applies its
+%   own rules to the symbol and its subscript, unmarked by us.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spVol_symbol_print:
+  {
+    \str_if_empty:NTF \l_@@_spVol_sub_index_str
+      {
+        \str_if_eq:VnTF \l_@@_spVol_mode_str { school }
+          {
+            \@@_luafun_mrow_intent_arg:nn
+              { } { intent = "_V-" }
+            { \mathcal{V} }
+          }
+          { \mathcal{V} }
       }
       {
-        \bool_set_true:N \l_@@_spVol_native_bool
-        \tl_set_eq:NN \l_@@_spVol_suffix_tl \l_@@_spVol_read_arg_tl
+        \str_if_eq:VnTF \l_@@_spVol_mode_str { school }
+          {
+            \MathMLintent
+              {
+                _V-
+                \bool_if:NT \l_@@_spVol_read_sub_bool { sub- }
+                \l_@@_spVol_sub_index_str
+                :prefix
+              }
+              {
+                \@@_inner_sep:
+                \mathcal{V}
+                \c_math_subscript_token
+                  {
+                    \MathMLintent { :silent }
+                      { \l_@@_spVol_sub_index_str }
+                  }
+              }
+          }
+          {
+            \mathcal{V}
+            \c_math_subscript_token
+              { \l_@@_spVol_sub_index_str }
+          }
       }
-    \@@_spVol_attach_subscript:
   }
 %    \end{macrocode}
 % \end{macro}
@@ -16551,6 +16614,48 @@ end, "shekel_fallback_patch")
             { \mathcal{V} }
             \c_math_subscript_token
               { \l_@@_spVol_sub_index_str }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spVol_read_arg_print:}
+%   With \mykey{read-arg} given, \mykey{sub-index}/\mykey{read-sub}
+%   are ignored for the \emph{spoken} content (the subscript, if any,
+%   still displays, silenced). With \mykey{concept} |true|,
+%   \myhlc|\l_@@_spVol_read_arg_full_tl| becomes |volumen| followed by
+%   \mykey{read-arg}'s text; with |false|, \mykey{read-arg}'s text
+%   alone. Combined natively regardless of \mykey{read-cmd}: with no
+%   \mykey{sub-index}, the shared queue tags the symbol alone; with
+%   one, symbol and subscript are wrapped together in one native
+%   |\MathMLintent|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spVol_read_arg_print:
+  {
+    \bool_if:NTF \l_@@_spVol_concept_bool
+      {
+        \tl_set:Ne \l_@@_spVol_read_arg_full_tl
+          { volumen- \tl_use:N \l_@@_spVol_read_arg_tl }
+      }
+      { \tl_set_eq:NN \l_@@_spVol_read_arg_full_tl \l_@@_spVol_read_arg_tl }
+    \str_if_empty:NTF \l_@@_spVol_sub_index_str
+      {
+        \@@_luafun_mrow_intent_arg:nn
+          { } { intent = "_ \l_@@_spVol_read_arg_full_tl :nofix" }
+        { \mathcal{V} }
+      }
+      {
+        \MathMLintent
+          { _ \l_@@_spVol_read_arg_full_tl :nofix }
+          {
+            \@@_inner_sep:
+            \mathcal{V}
+            \c_math_subscript_token
+              {
+                \MathMLintent { :silent }
+                  { \l_@@_spVol_sub_index_str }
+              }
           }
       }
   }

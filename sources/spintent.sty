@@ -2537,7 +2537,7 @@
           }
         \str_if_empty:NF \l__spintent_spang_luaset_minuto_str
           {
-            \MathMLintent { minutos : postfix($m) }
+            \MathMLintent { _minutos:postfix($m) }
               {
                 \MathMLarg { m }
                   {
@@ -2547,7 +2547,7 @@
           }
         \str_if_empty:NF \l__spintent_spang_luaset_segundo_str
           {
-            \MathMLintent { segundos : postfix($s) }
+            \MathMLintent { _segundos:postfix($s) }
               {
                 \MathMLarg { s }
                   {
@@ -5902,6 +5902,7 @@
 \tl_new:N   \l__spintent_spVol_word_tl
 \tl_new:N   \l__spintent_spVol_suffix_tl
 \bool_new:N \l__spintent_spVol_native_bool
+\tl_new:N   \l__spintent_spVol_read_arg_full_tl
 \keys_define:nn { spintent / spVol }
   {
     read-cmd    .choices:nn = { school , mathcat }
@@ -5970,25 +5971,63 @@
   }
 \cs_new_protected:Nn \__spintent_spVol_verbal:
   {
-    \bool_if:NTF \l__spintent_spVol_concept_bool
-      { \tl_set:Nn \l__spintent_spVol_word_tl { volumen } }
-      { \tl_set:Nn \l__spintent_spVol_word_tl { \mathcal{V} } }
     \tl_if_empty:NTF \l__spintent_spVol_read_arg_tl
       {
-        \str_if_eq:VnTF \l__spintent_spVol_mode_str { school }
-          { \bool_set_true:N  \l__spintent_spVol_native_bool }
-          { \bool_set_false:N \l__spintent_spVol_native_bool }
-        \tl_set:Ne \l__spintent_spVol_suffix_tl
+        \bool_if:NTF \l__spintent_spVol_concept_bool
           {
-            \bool_if:NT \l__spintent_spVol_read_sub_bool { sub- }
-            \l__spintent_spVol_sub_index_str
+            \tl_set:Nn \l__spintent_spVol_word_tl { volumen }
+            \str_if_eq:VnTF \l__spintent_spVol_mode_str { school }
+              { \bool_set_true:N  \l__spintent_spVol_native_bool }
+              { \bool_set_false:N \l__spintent_spVol_native_bool }
+            \tl_set:Ne \l__spintent_spVol_suffix_tl
+              {
+                \bool_if:NT \l__spintent_spVol_read_sub_bool { sub- }
+                \l__spintent_spVol_sub_index_str
+              }
+            \__spintent_spVol_attach_subscript:
           }
+          { \__spintent_spVol_symbol_print: }
+      }
+      { \__spintent_spVol_read_arg_print: }
+  }
+\cs_new_protected:Nn \__spintent_spVol_symbol_print:
+  {
+    \str_if_empty:NTF \l__spintent_spVol_sub_index_str
+      {
+        \str_if_eq:VnTF \l__spintent_spVol_mode_str { school }
+          {
+            \__spintent_luafun_mrow_intent_arg:nn
+              { } { intent = "_V-" }
+            { \mathcal{V} }
+          }
+          { \mathcal{V} }
       }
       {
-        \bool_set_true:N \l__spintent_spVol_native_bool
-        \tl_set_eq:NN \l__spintent_spVol_suffix_tl \l__spintent_spVol_read_arg_tl
+        \str_if_eq:VnTF \l__spintent_spVol_mode_str { school }
+          {
+            \MathMLintent
+              {
+                _V-
+                \bool_if:NT \l__spintent_spVol_read_sub_bool { sub- }
+                \l__spintent_spVol_sub_index_str
+                :prefix
+              }
+              {
+                \__spintent_inner_sep:
+                \mathcal{V}
+                \c_math_subscript_token
+                  {
+                    \MathMLintent { :silent }
+                      { \l__spintent_spVol_sub_index_str }
+                  }
+              }
+          }
+          {
+            \mathcal{V}
+            \c_math_subscript_token
+              { \l__spintent_spVol_sub_index_str }
+          }
       }
-    \__spintent_spVol_attach_subscript:
   }
 \cs_new_protected:Nn \__spintent_spVol_attach_subscript:
   {
@@ -6019,6 +6058,34 @@
             { \mathcal{V} }
             \c_math_subscript_token
               { \l__spintent_spVol_sub_index_str }
+          }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spVol_read_arg_print:
+  {
+    \bool_if:NTF \l__spintent_spVol_concept_bool
+      {
+        \tl_set:Ne \l__spintent_spVol_read_arg_full_tl
+          { volumen- \tl_use:N \l__spintent_spVol_read_arg_tl }
+      }
+      { \tl_set_eq:NN \l__spintent_spVol_read_arg_full_tl \l__spintent_spVol_read_arg_tl }
+    \str_if_empty:NTF \l__spintent_spVol_sub_index_str
+      {
+        \__spintent_luafun_mrow_intent_arg:nn
+          { } { intent = "_ \l__spintent_spVol_read_arg_full_tl :nofix" }
+        { \mathcal{V} }
+      }
+      {
+        \MathMLintent
+          { _ \l__spintent_spVol_read_arg_full_tl :nofix }
+          {
+            \__spintent_inner_sep:
+            \mathcal{V}
+            \c_math_subscript_token
+              {
+                \MathMLintent { :silent }
+                  { \l__spintent_spVol_sub_index_str }
+              }
           }
       }
   }
