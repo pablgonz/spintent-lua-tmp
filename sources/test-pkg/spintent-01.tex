@@ -3,93 +3,77 @@
 % arara: lualatex: { branch: developer }
 % arara: clean: { extensions: [ aux, log, out] }
 % arara: move: { files: [ spintent-01-luamml-mathml.html ], target: 'spintent-01-mathml.html' }
-\DocumentMetadata
-  {
-    lang=en-US,
-    pdfversion=2.0,
-    pdfstandard=ua-2,
-    tagging=on,
-  }
+\DocumentMetadata{lang=es-CL, pdfversion=2.0, pdfstandard=ua-2, tagging=on, tagging-setup={math/setup={mathml-SE}},}
 \documentclass{article}
+\usepackage[spanish]{babel}
 \usepackage[top=2cm,bottom=2cm,left=1cm,right=1cm]{geometry}
 \usepackage{unicode-math,hyperref,enumext}
 \hypersetup
   {
     colorlinks = true,
-    pdftitle   = {Test tagged PDF for enumext package},
+    pdftitle   = {Test tagged PDF for spintent package},
   }
+\usepackage{spintent}
+\theoremstyle{definition}
+\newtheorem{ejercicio}{Ejercicio}[section]
 \begin{document}
-\section{only enumext}
-Some text here
 
-\begin{enumext}[labelwidth=1cm,labelsep=0.25cm,align=left, wrap-label=\textbf{(#1}, label=\arabic*.)]
-  \item This text is in the first level.\label{A}
-    \begin{enumext}
-      \item This text is in the second level.\footnote{foot note in enumext}
-        \begin{enumext}
-          \item This text is in the third level.
-            \begin{enumext}
-              \item This text is in the fourth level.\footnotemark[20]
-            \end{enumext}
-        \end{enumext}
-    \end{enumext}
-  \item[X] This text is in the first level.
-  \item* This text is in the first level.
-\end{enumext}
+\title{Guía Práctica: Operaciones, Notación Científica y Fracciones}
+\author{Pablo González Luengo}
+\date{}
+\maketitle
 
-Some ref here \ref{A}\footnotetext[20]{foot note in enumext [20]}
+\section{Operaciones con números decimales}
 
-\section{only enumext*}
+\begin{ejercicio}[Adición]
+  Calcule la suma de los siguientes valores exactos, manteniendo la
+  alineación correspondiente a la coma decimal:
+  \[
+    X = \spnum{12,45} + \spnum{3,789}
+  \]
+\end{ejercicio}
 
-Some text here
+\begin{ejercicio}[Multiplicación]
+  Determine el producto de los siguientes números decimales:
+  \[
+    Y = \spnum{4,2} \times \spnum{1,5}
+  \]
+\end{ejercicio}
 
-\begin{enumext*}[columns=2,labelwidth=1cm,labelsep=0.25cm,align=left, wrap-label=\textbf{#1)}, label=(\arabic*.]
-  \item This text is in the first level.\label{B}
-  \item[X] This text is in the first level.\footnotemark[30]
-  \item* This text is in the first level.\footnote{foot note in enumext*}
-  \item This text is in the first level.
-\end{enumext*}
+\section{Conversión a notación científica}
 
-Some ref here \ref{B}\footnotetext[30]{foot note in enumext* [30]}
+\begin{ejercicio}[Magnitudes grandes]
+  Exprese el valor numérico en notación científica utilizando el símbolo
+  de multiplicación explícito (\texttt{times}):
+  \[
+    \spnum{45000} \implies \spnum[notation-sym=times]{4,5e4}
+  \]
+\end{ejercicio}
 
-\section{enumext nested in enumext*}
+\begin{ejercicio}[Magnitudes pequeñas]
+  Convierta el número a notación científica forzando la lectura del signo
+  en la base:
+  \[
+    \spnum{0,00000000000016} \implies
+    \spnum[read-sign=terse, notation-sym=cdot]{+1,6e-4}
+  \]
+\end{ejercicio}
 
-Some text here
+\section{Conversión de decimales a fracciones}
 
-\begin{enumext*}
-  \item This text is in the first level.\label{C}
-  \item \begin{enumext}[base-fix]
-              \item This text is in nested enumext.\label{D}\footnote{foot note in neseted enumext}
-              \item This text is in nested enumext.\footnotemark[40]
-         \end{enumext}
-  \item This text is in the first level.
-\end{enumext*}
+\begin{ejercicio}[Decimal finito]
+  Convierta el siguiente decimal exacto a fracción irreductible:
+  \[
+    \spnum{0,75} = \frac{75}{100} = \frac{3}{4}
+  \]
+\end{ejercicio}
 
-Some refs here \ref{C} and \ref{D} \footnotetext[40]{foot note in neseted enumext [40]}
+\begin{ejercicio}[Decimal periódico mixto]
+  Exprese el siguiente decimal periódico infinito como fracción y simplifique
+  su resultado al máximo:
+  \[
+    \spnum{2,1;6} = \frac{216 - 21}{90} = \frac{195}{90} = \frac{13}{6}
+  \]
+\end{ejercicio}
 
-\section{enumext* nested in enumext}
-
-\begin{enumext}
-  \item This text is in the first level. \label{E}
-  \item \begin{enumext*}[label=\roman*.]
-              \item This text is in nested enumext*.\label{F}\footnotemark[50]
-              \item This text is in nested enumext*.\footnote{foot note in neseted enumext*}
-         \end{enumext*}
-  \item This text is in the first level.
-\end{enumext}
-
-Some refs here \ref{E} and \ref{F} \footnotetext[50]{foot note in neseted enumext* [50]}
-
-\section{Custom ref}
-
-\begin{enumext}[ref={enumext-level-\arabic*}]
-  \item This text is in the first level. \label{G}
-  \item \begin{enumext*}[label=\roman*., ref={nested-\arabic{enumXi}.\roman*}]
-              \item This text is in nested enumext*.\label{H}
-              \item This text is in nested enumext*.
-         \end{enumext*}
-  \item This text is in the first level.
-\end{enumext}
-
-Some refs here \ref{G} and \ref{H}
 \end{document}
