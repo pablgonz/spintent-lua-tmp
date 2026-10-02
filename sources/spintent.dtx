@@ -1502,7 +1502,7 @@ end, "shekel_fallback_patch")
 % La declaración de la \mymarg{nueva unidad} es «global» y se almacena
 % en el módulo \myluamod{} como una \mymarg{unidad} valida para pasar como
 % \mymarg{argumento} a |\spunit|. Por ejemplo: |\spnewunit{px}{píxeles}|
-% creará la \mymarg{nueva unidad} `|px|' y cuando se utilice |\spunit{100 px}|
+% creará la \mymarg{nueva unidad} `|px|' y cuando se utilice |$\spunit{100 px}$|
 % se imprimirá `$100\,\mathrm{px}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«cien píxeles»}.
 %
@@ -1576,7 +1576,7 @@ end, "shekel_fallback_patch")
 %  \emph{«alias moneda»} en el \emph{argumento obligatorio} donde tienen
 %  prioridad por sobre los valores por defecto. Por ejemplo:
 %  |$\spmoney{500 dolares}$| imprimirá `$\$500$' en la salida \texttt{PDF}
-%  y \mynvmath{NVDA/MathCAT} verbalizará \emph{«quinientos dolares»}
+%  y \mynvmath{NVDA/MathCAT} verbalizará \emph{«quinientos dólares»}
 %  aunque la moneda por defecto sean pesos.
 %
 % \smallskip
@@ -1717,7 +1717,7 @@ end, "shekel_fallback_patch")
 %   \midrule
 %   \texttt{clp} & --- & peso chileno & \$ & \emph{«peso chileno / pesos chilenos»} \\
 %   \texttt{mxn} & --- & peso mexicano & \$ & \emph{«peso mexicano / pesos mexicanos»} \\
-%   \texttt{usd} & \texttt{dolar}, \texttt{dolares} & dólar & \$ & \emph{«dólar estadounidense / dólares estadounidenses»} \\
+%   \texttt{usd} & \texttt{dolar}, \texttt{dólares} & dólar & \$ & \emph{«dólar estadounidense / dólares estadounidenses»} \\
 %   \texttt{eur} & --- & euro & € & \emph{«euro / euros»} \\
 %   \texttt{gbp} & --- & libra & £ & \emph{«libra / libras»} \\
 %   \texttt{jpy} & --- & yen & ¥ & \emph{«yen / yenes»} \\
@@ -17407,7 +17407,7 @@ local function spintent_sanitize_for_screen_reader(raw_string)
 end
 
 register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
-    if spintent_units[unit_symbol] or spintent_custom_spunit_spoken_names[unit_symbol] then
+    if spintent_units[unit_symbol] or spintent_custom_spunit_spoken_names[unit_symbol] or spintent_custom_spunit_aliases[unit_symbol] then
         token_set_macro("l__spintent_spunit_luaset_status_str", "duplicate")
         return
     end
@@ -17415,8 +17415,9 @@ register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
     -- Sanitizamos y aglutinamos para MathCAT
     local clean_spoken_name = spintent_sanitize_for_screen_reader(spoken_name)
 
-    spintent_custom_spunit_spoken_names[unit_symbol] = clean_spoken_name
-    spintent_custom_spunit_aliases[unit_symbol] = true
+    -- El prefijo _ marca un intent propio, no reconocido por MathCAT
+    spintent_custom_spunit_spoken_names[unit_symbol] = "_" .. clean_spoken_name
+    spintent_units[unit_symbol] = unit_symbol
 
     token_set_macro("l__spintent_spunit_luaset_status_str", "success")
 end, { "string", "string" })

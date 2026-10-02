@@ -1,0 +1,168 @@
+% test-002.tex -- comandos \spunit, \spnewunit y \spunitalias
+%
+% Compilar:  lualatex-dev test-002.tex
+% Validar:   show-pdf-tags --xml test-002.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-002.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al
+% escuchar el PDF. Los comentarios "doc:" indican la lectura que
+% documenta el manual de usuario; en el resto, la lectura se revisa
+% escuchando. Las entradas invalidas (que detienen la compilacion)
+% no van aqui. La tabla completa de unidades y alias va en test-003.
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-002: spunit},
+  }
+\begin{document}
+
+\section*{A. Formas del argumento}
+
+% doc: «metro»
+1. Solo la unidad: $\spunit{m}$.
+
+% doc: «veintitrés metros»
+2. Número y unidad: $\spunit{23 m}$.
+
+% doc: «veintitrés metros segundos al cuadrado»
+3. Producto de unidades con potencia: $\spunit{23 m*s^{2}}$.
+
+% doc: «veintitrés metros por segundos al cuadrado»
+4. Fracción lineal: $\spunit{23 m/s^{2}}$.
+
+5. Producto de dos unidades: $\spunit{2 N*m}$.
+
+6. Producto de tres unidades: $\spunit{3 kg*m*s}$.
+
+7. Producto y fracción: $\spunit{3 kg*m^{2}/s^{2}}$.
+
+8. Número decimal: $\spunit{9,8 m/s^{2}}$.
+
+9. Número negativo: $\spunit{-3,5 m}$.
+
+10. Número periódico: $\spunit{1,2;3 m}$.
+
+11. Notación científica: $\spunit{3e8 m/s}$.
+
+12. Sin número, con potencia: $\spunit{m^{2}}$.
+
+13. Sin número, con fracción: $\spunit{m/s}$.
+
+14. Con alias de la tabla: $\spunit{23 metros}$.
+
+15. Con alias de temperatura: $\spunit{20 celsius}$.
+
+\section*{B. Llave cifras-sep}
+
+16. Por defecto: $\spunit{100000 m}$.
+
+17. Con false y espacios del usuario: $\spunit[cifras-sep=false]{10\,00\,00 m}$.
+
+18. Con false y sin espacios: $\spunit[cifras-sep=false]{100000 m}$.
+
+\section*{C. Llave read-period-sep}
+
+19. Con coma: $\spunit[read-period-sep=coma]{3;4 m}$.
+
+20. Con punto: $\spunit[read-period-sep=punto]{3;4 m}$.
+
+\section*{D. Llave notation-sym}
+
+21. Con cdot: $\spunit[notation-sym=cdot]{3e8 m/s}$.
+
+22. Con times: $\spunit[notation-sym=times]{3e8 m/s}$.
+
+\section*{E. Llave print-cdot}
+
+% doc: imprime un espacio fino entre las unidades
+23. Por defecto: $\spunit{23 m*s^{2}}$.
+
+24. Con false: $\spunit[print-cdot=false]{23 m*s^{2}}$.
+
+% doc: imprime \cdot entre las unidades
+25. Con true: $\spunit[print-cdot=true]{23 m*s^{2}}$.
+
+26. Con true y dos unidades: $\spunit[print-cdot=true]{2 N*m}$.
+
+\section*{F. Llave read-cdot}
+
+% doc: no verbaliza nada entre las unidades
+27. Por defecto: $\spunit{23 m*s^{2}}$.
+
+% doc: no verbaliza nada entre las unidades
+28. Con false: $\spunit[read-cdot=false]{23 m*s^{2}}$.
+
+% doc: verbaliza «por» entre las unidades
+29. Con true: $\spunit[read-cdot=true]{23 m*s^{2}}$.
+
+30. Con true y print-cdot true: $\spunit[print-cdot=true,read-cdot=true]{2 N*m}$.
+
+\section*{G. Llave read-slash}
+
+% doc: «por»
+31. Por defecto: $\spunit{23 m/s^{2}}$.
+
+% doc: «por»
+32. Con por: $\spunit[read-slash=por]{23 m/s^{2}}$.
+
+% doc: «partido por»
+33. Con partido-por: $\spunit[read-slash=partido-por]{23 m/s^{2}}$.
+
+34. Con partido-por y sin número: $\spunit[read-slash=partido-por]{m/s}$.
+
+\section*{H. Combinaciones de llaves}
+
+35. Todas las de unidades: $\spunit[print-cdot=true,read-cdot=true,read-slash=partido-por]{9,8 kg*m/s^{2}}$.
+
+36. Llaves de número y de unidades: $\spunit[cifras-sep=false,notation-sym=times,read-slash=partido-por]{3e8 m/s}$.
+
+\section*{I. Unidades y alias nuevos}
+
+\spnewunit{px}{píxeles}%
+\spnewunit{ppm}{partes por millón}%
+\spunitalias{caudal}{m^{3}/s}%
+\spunitalias{velocidad}{m/s}%
+
+% doc: «cien píxeles»
+37. Unidad nueva: $\spunit{100 px}$.
+
+38. Otra unidad nueva: $\spunit{5 ppm}$.
+
+39. Unidad nueva en un producto: $\spunit{3 px*s}$.
+
+% doc: «cincuenta metros al cubo por segundos»
+40. Alias nuevo: $\spunit{50 caudal}$.
+
+41. Otro alias nuevo: $\spunit{30 velocidad}$.
+
+42. Alias nuevo con read-slash: $\spunit[read-slash=partido-por]{50 caudal}$.
+
+\section*{J. Dentro de fórmulas}
+
+43. Suma e igualdad: $\spunit{3 m} + \spunit{2 m} = \spunit{5 m}$.
+
+44. Con una variable: $g = \spunit{9,8 m/s^{2}}$.
+
+45. Con un número aparte: $\spnum{3,5} \cdot \spunit{2 m}$.
+
+46. Llaves distintas en una misma fórmula: $\spunit[read-slash=por]{2 m/s} < \spunit[read-slash=partido-por]{3 m/s}$.
+
+47. En fórmula destacada:
+\[ \spunit{3 kg*m^{2}/s^{2}} \]
+
+48. En una fracción: $\frac{\spunit{10 m}}{\spunit{2 s}}$.
+
+\end{document}
