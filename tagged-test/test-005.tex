@@ -10,15 +10,14 @@
 % "doc:" indican la lectura que documenta la tabla. Se usa siempre la
 % cifra 500.
 %
-% La fila del yuan repite el simbolo del yen en la columna Entrada, que es
-% la misma entrada: ese caso se omite y el yuan se prueba por sus alias.
-%
-% Los simbolos del won, el sequel, la rupia, el rublo, la lira y la grivna
-% no estan en Latin Modern Math (la fuente matematica por defecto), por
-% eso esos casos usan money-math=false, que imprime el simbolo con la
-% fuente de texto. La fuente de texto es Libertinus Serif, con el respaldo
-% de glifos que usa el manual (bloque luacode copiado de spintent.dtx).
-% Los codigos ISO en mayusculas se imprimen con \mathrm y no la necesitan.
+% Fuentes: las mismas del manual (bloques copiados de spintent.dtx).
+% - Los simbolos del won, el sequel, la rupia y la grivna no estan en
+%   Latin Modern Math (fuente matematica por defecto): esos casos usan
+%   money-math=false y se imprimen con Libertinus Serif y su respaldo.
+% - El rublo y la lira no estan ni en Libertinus ni en el respaldo: igual
+%   que en la tabla del manual, esos casos se imprimen dentro de \texttt,
+%   con la fuente monoespaciada y su respaldo de DejaVu Sans Mono.
+% - Los codigos ISO en mayusculas se imprimen con \mathrm.
 \DocumentMetadata
   {
     lang=es-CL,
@@ -29,8 +28,7 @@
   }
 \documentclass{article}
 \usepackage[spanish]{babel}
-% fuente de texto: Libertinus Serif con el mismo respaldo de glifos del
-% manual (copiado tal cual de spintent.dtx)
+% respaldo de glifos para Libertinus Serif (copiado de spintent.dtx)
 \usepackage{luacode}
 % Para documentación y ejemplos
 \begin{luacode*}
@@ -74,6 +72,23 @@ luatexbase.add_to_callback("luaotfload.patch_font", function(fontdata, specifica
 end, "shekel_fallback_patch")
 \end{luacode*}
 \usepackage[nomath,mono=false]{libertinus-otf}
+% fuente monoespaciada con respaldo de DejaVu Sans Mono (copiado de spintent.dtx)
+\begin{luacode*}
+  local dejavu_path = kpse.find_file("DejaVuSansMono.ttf", "truetype fonts")
+  luaotfload.add_fallback("shekelfallback", { "[" .. dejavu_path .. "]" })
+\end{luacode*}
+\defaultfontfeatures[\ttfamily]
+  {
+    Numbers   = OldStyle,
+    Scale     = 0.84249,
+    Extension = .otf,
+  }
+\setmonofont[
+    UprightFont       = *-Regular,
+    ItalicFont        = *-RegularIt,
+    BoldFont          = *-Medium,
+    BoldItalicFont    = *-MediumIt,
+    RawFeature        = {+zero,+ss01,fallback=shekelfallback}]{SourceCodePro}
 \usepackage{unicode-math}
 \usepackage{spintent}
 \usepackage{hyperref}
@@ -95,194 +110,200 @@ end, "shekel_fallback_patch")
 % doc: «peso / pesos»
 3. Peso, alias pesos: $\spmoney{500 pesos}$.
 
-% doc: «euro / euros»
-4. Euro, símbolo: $\spmoney{500 €}$.
+% doc: «dólar / dólares»
+4. Dólar, entrada: $\spmoney{500 dolar}$.
+
+% doc: «dólar / dólares»
+5. Dólar, alias dolares: $\spmoney{500 dolares}$.
+
+% doc: «dólar / dólares»
+6. Dólar, alias dólar: $\spmoney{500 dólar}$.
+
+% doc: «dólar / dólares»
+7. Dólar, alias dólares: $\spmoney{500 dólares}$.
 
 % doc: «euro / euros»
-5. Euro, alias euro: $\spmoney{500 euro}$.
+8. Euro, símbolo: $\spmoney{500 €}$.
 
 % doc: «euro / euros»
-6. Euro, alias euros: $\spmoney{500 euros}$.
+9. Euro, alias euro: $\spmoney{500 euro}$.
+
+% doc: «euro / euros»
+10. Euro, alias euros: $\spmoney{500 euros}$.
 
 % doc: «libra / libras»
-7. Libra, símbolo: $\spmoney{500 £}$.
+11. Libra, símbolo: $\spmoney{500 £}$.
 
 % doc: «libra / libras»
-8. Libra, alias libra: $\spmoney{500 libra}$.
+12. Libra, alias libra: $\spmoney{500 libra}$.
 
 % doc: «libra / libras»
-9. Libra, alias libras: $\spmoney{500 libras}$.
+13. Libra, alias libras: $\spmoney{500 libras}$.
 
 % doc: «yen / yenes»
-10. Yen, símbolo: $\spmoney{500 ¥}$.
+14. Yen, símbolo: $\spmoney{500 ¥}$.
 
 % doc: «yen / yenes»
-11. Yen, alias yen: $\spmoney{500 yen}$.
+15. Yen, alias yen: $\spmoney{500 yen}$.
 
 % doc: «yen / yenes»
-12. Yen, alias yenes: $\spmoney{500 yenes}$.
+16. Yen, alias yenes: $\spmoney{500 yenes}$.
 
 % doc: «yuan / yuanes»
-13. Yuan, alias yuan: $\spmoney{500 yuan}$.
+17. Yuan, entrada: $\spmoney{500 yuan}$.
 
 % doc: «yuan / yuanes»
-14. Yuan, alias yuanes: $\spmoney{500 yuanes}$.
+18. Yuan, alias yuanes: $\spmoney{500 yuanes}$.
 
 % doc: «won / wons»
-15. Won, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₩}$.
+19. Won, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₩}$.
 
 % doc: «won / wons»
-16. Won, alias won, con money-math=false: $\spmoney[money-math=false]{500 won}$.
+20. Won, alias won, con money-math=false: $\spmoney[money-math=false]{500 won}$.
 
 % doc: «won / wons»
-17. Won, alias wons, con money-math=false: $\spmoney[money-math=false]{500 wons}$.
+21. Won, alias wons, con money-math=false: $\spmoney[money-math=false]{500 wons}$.
 
 % doc: «séquel / séqueles»
-18. Séquel, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₪}$.
+22. Séquel, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₪}$.
 
 % doc: «séquel / séqueles»
-19. Séquel, alias shekel, con money-math=false: $\spmoney[money-math=false]{500 shekel}$.
+23. Séquel, alias shekel, con money-math=false: $\spmoney[money-math=false]{500 shekel}$.
 
 % doc: «séquel / séqueles»
-20. Séquel, alias shekels, con money-math=false: $\spmoney[money-math=false]{500 shekels}$.
+24. Séquel, alias shekels, con money-math=false: $\spmoney[money-math=false]{500 shekels}$.
 
 % doc: «séquel / séqueles»
-21. Séquel, alias sequel, con money-math=false: $\spmoney[money-math=false]{500 sequel}$.
+25. Séquel, alias sequel, con money-math=false: $\spmoney[money-math=false]{500 sequel}$.
 
 % doc: «séquel / séqueles»
-22. Séquel, alias sequeles, con money-math=false: $\spmoney[money-math=false]{500 sequeles}$.
+26. Séquel, alias sequeles, con money-math=false: $\spmoney[money-math=false]{500 sequeles}$.
 
 % doc: «rupia / rupias»
-23. Rupia, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₹}$.
+27. Rupia, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₹}$.
 
 % doc: «rupia / rupias»
-24. Rupia, alias rupia, con money-math=false: $\spmoney[money-math=false]{500 rupia}$.
+28. Rupia, alias rupia, con money-math=false: $\spmoney[money-math=false]{500 rupia}$.
 
 % doc: «rupia / rupias»
-25. Rupia, alias rupias, con money-math=false: $\spmoney[money-math=false]{500 rupias}$.
+29. Rupia, alias rupias, con money-math=false: $\spmoney[money-math=false]{500 rupias}$.
 
 % doc: «rublo / rublos»
-26. Rublo, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₽}$.
+30. Rublo, símbolo, con money-math=false en monoespaciada: \texttt{$\spmoney[money-math=false]{500 ₽}$}.
 
 % doc: «rublo / rublos»
-27. Rublo, alias rublo, con money-math=false: $\spmoney[money-math=false]{500 rublo}$.
+31. Rublo, alias rublo, con money-math=false en monoespaciada: \texttt{$\spmoney[money-math=false]{500 rublo}$}.
 
 % doc: «rublo / rublos»
-28. Rublo, alias rublos, con money-math=false: $\spmoney[money-math=false]{500 rublos}$.
+32. Rublo, alias rublos, con money-math=false en monoespaciada: \texttt{$\spmoney[money-math=false]{500 rublos}$}.
 
 % doc: «lira / liras»
-29. Lira, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₺}$.
+33. Lira, símbolo, con money-math=false en monoespaciada: \texttt{$\spmoney[money-math=false]{500 ₺}$}.
 
 % doc: «lira / liras»
-30. Lira, alias lira, con money-math=false: $\spmoney[money-math=false]{500 lira}$.
+34. Lira, alias lira, con money-math=false en monoespaciada: \texttt{$\spmoney[money-math=false]{500 lira}$}.
 
 % doc: «lira / liras»
-31. Lira, alias liras, con money-math=false: $\spmoney[money-math=false]{500 liras}$.
+35. Lira, alias liras, con money-math=false en monoespaciada: \texttt{$\spmoney[money-math=false]{500 liras}$}.
 
 % doc: «grivna / grivnas»
-32. Grivna, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₴}$.
+36. Grivna, símbolo, con money-math=false: $\spmoney[money-math=false]{500 ₴}$.
 
 % doc: «grivna / grivnas»
-33. Grivna, alias grivna, con money-math=false: $\spmoney[money-math=false]{500 grivna}$.
+37. Grivna, alias grivna, con money-math=false: $\spmoney[money-math=false]{500 grivna}$.
 
 % doc: «grivna / grivnas»
-34. Grivna, alias grivnas, con money-math=false: $\spmoney[money-math=false]{500 grivnas}$.
+38. Grivna, alias grivnas, con money-math=false: $\spmoney[money-math=false]{500 grivnas}$.
 
 % doc: «centavo / centavos»
-35. Centavo, símbolo: $\spmoney{500 ¢}$.
+39. Centavo, símbolo: $\spmoney{500 ¢}$.
 
 % doc: «centavo / centavos»
-36. Centavo, alias centavo: $\spmoney{500 centavo}$.
+40. Centavo, alias centavo: $\spmoney{500 centavo}$.
 
 % doc: «centavo / centavos»
-37. Centavo, alias centavos: $\spmoney{500 centavos}$.
+41. Centavo, alias centavos: $\spmoney{500 centavos}$.
 
 \section*{B. Códigos ISO en mayúsculas}
 
 % doc: «peso chileno / pesos chilenos»
-38. Peso chileno, código en mayúsculas: $\spmoney{500 CLP}$.
+42. Peso chileno, código en mayúsculas: $\spmoney{500 CLP}$.
 
 % doc: «peso mexicano / pesos mexicanos»
-39. Peso mexicano, código en mayúsculas: $\spmoney{500 MXN}$.
+43. Peso mexicano, código en mayúsculas: $\spmoney{500 MXN}$.
 
 % doc: «dólar estadounidense / dólares estadounidenses»
-40. Dólar, código en mayúsculas: $\spmoney{500 USD}$.
+44. Dólar, código en mayúsculas: $\spmoney{500 USD}$.
 
 % doc: «euro / euros»
-41. Euro, código en mayúsculas: $\spmoney{500 EUR}$.
+45. Euro, código en mayúsculas: $\spmoney{500 EUR}$.
 
 % doc: «libra / libras»
-42. Libra, código en mayúsculas: $\spmoney{500 GBP}$.
+46. Libra, código en mayúsculas: $\spmoney{500 GBP}$.
 
 % doc: «yen / yenes»
-43. Yen, código en mayúsculas: $\spmoney{500 JPY}$.
+47. Yen, código en mayúsculas: $\spmoney{500 JPY}$.
 
 % doc: «yuan / yuanes»
-44. Yuan, código en mayúsculas: $\spmoney{500 CNY}$.
+48. Yuan, código en mayúsculas: $\spmoney{500 CNY}$.
 
 % doc: «won / wons»
-45. Won, código en mayúsculas: $\spmoney{500 KRW}$.
+49. Won, código en mayúsculas: $\spmoney{500 KRW}$.
 
 % doc: «séquel / séqueles»
-46. Séquel, código en mayúsculas: $\spmoney{500 ILS}$.
+50. Séquel, código en mayúsculas: $\spmoney{500 ILS}$.
 
 % doc: «rupia / rupias»
-47. Rupia, código en mayúsculas: $\spmoney{500 INR}$.
+51. Rupia, código en mayúsculas: $\spmoney{500 INR}$.
 
 % doc: «rublo / rublos»
-48. Rublo, código en mayúsculas: $\spmoney{500 RUB}$.
+52. Rublo, código en mayúsculas: $\spmoney{500 RUB}$.
 
 % doc: «lira / liras»
-49. Lira, código en mayúsculas: $\spmoney{500 TRY}$.
+53. Lira, código en mayúsculas: $\spmoney{500 TRY}$.
 
 % doc: «grivna / grivnas»
-50. Grivna, código en mayúsculas: $\spmoney{500 UAH}$.
+54. Grivna, código en mayúsculas: $\spmoney{500 UAH}$.
 
 \section*{C. Códigos ISO en minúsculas}
 
 % doc: «peso chileno / pesos chilenos»
-51. Peso chileno, código en minúsculas: $\spmoney{500 clp}$.
+55. Peso chileno, código en minúsculas: $\spmoney{500 clp}$.
 
 % doc: «peso mexicano / pesos mexicanos»
-52. Peso mexicano, código en minúsculas: $\spmoney{500 mxn}$.
+56. Peso mexicano, código en minúsculas: $\spmoney{500 mxn}$.
 
 % doc: «dólar estadounidense / dólares estadounidenses»
-53. Dólar, código en minúsculas: $\spmoney{500 usd}$.
-
-% doc: «dólar estadounidense / dólares estadounidenses»
-54. Dólar, alias dolar: $\spmoney{500 dolar}$.
-
-% doc: «dólar estadounidense / dólares estadounidenses»
-55. Dólar, alias dolares: $\spmoney{500 dolares}$.
+57. Dólar, código en minúsculas: $\spmoney{500 usd}$.
 
 % doc: «euro / euros»
-56. Euro, código en minúsculas: $\spmoney{500 eur}$.
+58. Euro, código en minúsculas: $\spmoney{500 eur}$.
 
 % doc: «libra / libras»
-57. Libra, código en minúsculas: $\spmoney{500 gbp}$.
+59. Libra, código en minúsculas: $\spmoney{500 gbp}$.
 
 % doc: «yen / yenes»
-58. Yen, código en minúsculas: $\spmoney{500 jpy}$.
+60. Yen, código en minúsculas: $\spmoney{500 jpy}$.
 
 % doc: «yuan / yuanes»
-59. Yuan, código en minúsculas: $\spmoney{500 cny}$.
+61. Yuan, código en minúsculas: $\spmoney{500 cny}$.
 
 % doc: «won / wons»
-60. Won, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 krw}$.
+62. Won, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 krw}$.
 
 % doc: «séquel / séqueles»
-61. Séquel, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 ils}$.
+63. Séquel, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 ils}$.
 
 % doc: «rupia / rupias»
-62. Rupia, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 inr}$.
+64. Rupia, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 inr}$.
 
 % doc: «rublo / rublos»
-63. Rublo, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 rub}$.
+65. Rublo, código en minúsculas, con money-math=false en monoespaciada: \texttt{$\spmoney[money-math=false]{500 rub}$}.
 
 % doc: «lira / liras»
-64. Lira, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 try}$.
+66. Lira, código en minúsculas, con money-math=false en monoespaciada: \texttt{$\spmoney[money-math=false]{500 try}$}.
 
 % doc: «grivna / grivnas»
-65. Grivna, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 uah}$.
+67. Grivna, código en minúsculas, con money-math=false: $\spmoney[money-math=false]{500 uah}$.
 
 \end{document}

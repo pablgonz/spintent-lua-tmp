@@ -12,9 +12,11 @@
 % escuchando. Las entradas invalidas (que detienen la compilacion) no van
 % aqui.
 %
-% Pendiente: los alias 1.ª y 2.º de la tabla de ordinales dan error en el
-% codigo, aunque el manual los lista, por eso no se incluyen. Tampoco
-% 12.er, que es invalido (er solo admite terminaciones 1 y 3).
+% No incluido porque detiene la compilacion: 12.er (invalido: er solo se
+% admite con terminaciones 1 y 3).
+% El texto va en Libertinus Serif con cifras de estilo antiguo (osf), como
+% el manual: asi el caso de Numbers=Lining tiene sentido, porque
+% \addfontfeatures solo funciona con fuentes elegidas con fontspec.
 \DocumentMetadata
   {
     lang=es-CL,
@@ -25,6 +27,7 @@
   }
 \documentclass{article}
 \usepackage[spanish]{babel}
+\usepackage[osf,nomath,mono=false]{libertinus-otf}
 \usepackage{unicode-math}
 \usepackage{spintent}
 \usepackage{hyperref}
@@ -279,8 +282,8 @@
 % doc: «organización no gubernamental»
 78. Entrada ong: \spshort{ong}.
 
-% doc: «organización no gubernamental» (el código lee el plural: «organizaciones no gubernamentales»)
-79. Alias ongs: \spshort{ongs}.
+% doc: «organizaciones no gubernamentales»
+79. Entrada ongs: \spshort{ongs}.
 
 % doc: «unión de repúblicas socialistas soviéticas»
 80. Entrada urss: \spshort{urss}.
@@ -331,89 +334,106 @@
 % doc: «primera»
 94. Entrada 1.a: \spshort{1.a}.
 
+% doc: «primera»
+95. Alias 1.ª: \spshort{1.ª}.
+
 % doc: «segundo»
-95. Entrada 2.o: \spshort{2.o}.
+96. Entrada 2.o: \spshort{2.o}.
+
+% doc: «segundo»
+97. Alias 2.º: \spshort{2.º}.
 
 % doc: «tercer»
-96. Entrada 3.er: \spshort{3.er}.
+98. Entrada 3.er: \spshort{3.er}.
 
 % doc: «cuartos»
-97. Entrada 4.os: \spshort{4.os}.
+99. Entrada 4.os: \spshort{4.os}.
 
 % doc: «quintas»
-98. Entrada 5.as: \spshort{5.as}.
+100. Entrada 5.as: \spshort{5.as}.
 
 \section*{H. Otros ordinales y escritura en mayúsculas}
 
 % código: «décimo»
-99. Décimo: \spshort{10.o}.
+101. Décimo: \spshort{10.o}.
 
 % código: «undécima»
-100. Undécima: \spshort{11.a}.
+102. Undécima: \spshort{11.a}.
 
 % código: «vigésimo primer»
-101. Vigésimo primer: \spshort{21.er}.
+103. Vigésimo primer: \spshort{21.er}.
 
 % código: «trigésimo tercer»
-102. Trigésimo tercer: \spshort{33.er}.
+104. Trigésimo tercer: \spshort{33.er}.
 
 % código: «primeros»
-103. Plural: \spshort{1.os}.
+105. Plural: \spshort{1.os}.
+
+% código: «primero»
+106. Indicador º en masculino: \spshort{1.º}.
+
+% código: «segunda»
+107. Indicador ª en la segunda: \spshort{2.ª}.
+
+% código: «tercero»
+108. Indicador º en la tercera: \spshort{3.º}.
 
 % código: «100º», sin lectura en palabras
-104. Centésimo: \spshort{100.o}.
+109. Centésimo: \spshort{100.o}.
 
 % código: «documento nacional de identidad»
-105. Sigla en mayúsculas: \spshort{DNI}.
+110. Sigla en mayúsculas: \spshort{DNI}.
 
 % código: «fondo de las naciones unidas para la infancia»
-106. Acrónimo con mayúscula inicial: \spshort{Unicef}.
+111. Acrónimo con mayúscula inicial: \spshort{Unicef}.
 
 % código: «doctora»
-107. Abreviatura con letra volada en mayúscula: \spshort{Dr.A}.
+112. Abreviatura con letra volada en mayúscula: \spshort{Dr.A}.
 
 % código: «etcétera»
-108. Abreviatura con punto final y mayúscula: \spshort{Etc.}.
+113. Abreviatura con punto final y mayúscula: \spshort{Etc.}.
 
 \section*{I. Llave small-caps}
 
-109. Por defecto: \spshort{dr.a}.
+114. Por defecto: \spshort{dr.a}.
 
-110. Con false: \spshort[small-caps=false]{dr.a}.
+115. Con false: \spshort[small-caps=false]{dr.a}.
 
 % doc: «doctora», imprime Dr. con la a en versalita
-111. Letra volada con true: \spshort[small-caps=true]{dr.a}.
+116. Letra volada con true: \spshort[small-caps=true]{dr.a}.
 
-112. Ordinal con true: \spshort[small-caps=true]{1.o}.
+117. Ordinal con true: \spshort[small-caps=true]{1.o}.
 
-113. Número con true: \spshort[small-caps=true]{n.o}.
+118. Número con true: \spshort[small-caps=true]{n.o}.
 
-114. Sigla de tres letras con true: \spshort[small-caps=true]{onu}.
+119. Sigla de tres letras con true: \spshort[small-caps=true]{onu}.
 
-115. Sigla de cuatro letras con true: \spshort[small-caps=true]{otan}.
+120. Sigla de cuatro letras con true: \spshort[small-caps=true]{otan}.
 
-116. Acrónimo de cinco o más letras con true: \spshort[small-caps=true]{unicef}.
+121. Acrónimo de cinco o más letras con true: \spshort[small-caps=true]{unicef}.
 
-117. Abreviatura en mayúsculas con true: \spshort[small-caps=true]{ee. uu.}.
+122. Abreviatura en mayúsculas con true: \spshort[small-caps=true]{ee. uu.}.
 
 \section*{J. Llave read-arg}
 
 % doc: «octavo»
-118. Ejemplo del manual: \spshort[read-arg={octavo}]{8.\textsuperscript{\emph{avo}}}.
+123. Ejemplo del manual: \spshort[read-arg={octavo}]{8.\textsuperscript{\emph{avo}}}.
 
-119. Abreviatura nueva: \spshort[read-arg={profesor emérito}]{Prof.~em.}.
+124. Abreviatura nueva: \spshort[read-arg={profesor emérito}]{Prof.~em.}.
 
-120. Sigla nueva: \spshort[read-arg={instituto nacional de estadísticas}]{INE}.
+125. Sigla nueva: \spshort[read-arg={instituto nacional de estadísticas}]{INE}.
 
 \section*{K. En contexto}
 
-121. Varias abreviaturas en una oración: La \spshort{dra.} Pérez y el \spshort{sr.} López, de la \spshort{onu}, citaron la \spshort{pág.} 12 del \spshort{vol.} 3.
+126. Varias abreviaturas en una oración: La \spshort{dra.} Pérez y el \spshort{sr.} López, de la \spshort{onu}, citaron la \spshort{pág.} 12 del \spshort{vol.} 3.
 
-122. Ordinales en una oración: Quedó en el \spshort{3.er} lugar del \spshort{5.o} concurso.
+127. Ordinales en una oración: Quedó en el \spshort{3.er} lugar del \spshort{5.o} concurso.
 
 % doc: «primero»
-123. Con numerales de caja alta, como indica el manual: {\addfontfeatures{Numbers=Lining}\spshort{1.o}}.
+128. Con cifras de estilo antiguo y sin el grupo: \spshort{1.o}.
 
-124. Sigla y abreviatura juntas: El \spshort{rut} del \spshort{ing.} Soto figura como \spshort{n.o} 5.
+129. Con el grupo y Numbers=Lining, como indica el manual: {\addfontfeatures{Numbers=Lining}\spshort{1.o}}.
+
+130. Sigla y abreviatura juntas: El \spshort{rut} del \spshort{ing.} Soto figura como \spshort{n.o} 5.
 
 \end{document}

@@ -647,7 +647,7 @@ end, "shekel_fallback_patch")
                     osf, nomath, mono, ScaleSF, ScaleRM, spanish, shorthands, no-text, semibold, colorlinks, pdftitle, pdfdisplaydoctitle, %
                     pdfstartview, FitH, pdfinfo, Title, Subject, range, StylisticSet, small-caps, read-arg, píxeles, px, caudal,%
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
-                    lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent-cmd, en-US, math, mathml-SE, es-CL, on, off, %
+                    lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent, en-US, math, mathml-SE, es-CL, on, off, %
                     setup, tagging, tagging-setup, lang, pdfversion, pdfstandard, arg, auto, read-sub, radio-sty, diameter, %
                     circun, circle, side, mside, usual, sub-index, odot, concept, upper-case, },%
 % Reserved words 9 (intent values)
@@ -1602,6 +1602,7 @@ end, "shekel_fallback_patch")
 % como `$\mathcolor{red}{\mathdollar}$', `$\mathcolor{red}{\euro}$', `$\mathcolor{red}{\mathsterling}$'
 % o un \emph{«alias moneda»} como |peso|, |euro| o |libra| produce
 % la salida \texttt{PDF} y verbalización estándar esperada para \mynvmath{NVDA/MathCAT}.
+% Los \emph{«alias moneda»} se pueden pasar con o sin tilde, por ejemplo |dolares| o |dólares|.
 %
 % \smallskip
 %
@@ -1616,12 +1617,13 @@ end, "shekel_fallback_patch")
 %
 % \begin{important}*
 %  El \emph{«símbolo moneda»} es tomado de la fuente tipográfica definida
-%  para el \emph{modo matemático} al momento de ejecutar el comando, se
+%  para el \emph{modo matemático} al momento de ejecutar el comando (o del
+%  \emph{modo texto} si se establece \mykey[spmoney]{money-math}|=false|), se
 %  debe tener presente en caso de querer usar un \emph{«símbolo moneda»}
 %  poco habitual que esté soportada por \mypkg*[no-index]{spintent}. El \mymarg{argumento}
 %  puede contener espacios matemáticos validos, pero, NO puede contener
 %  comandos con o sin argumentos como |\textstyle|, |\mathrm{#1}| o
-%  |\mathbf{#1}| por ejemplo. La \emph{coma} `\textcolor{red}{\texttt{,}}'
+%  |\mathbf{#1}| por ejemplo, con la única excepción de |\$|. La \emph{coma} `\textcolor{red}{\texttt{,}}'
 %  o el \emph{punto} `\textcolor{red}{\texttt{.}}' como \emph{separador decimal} solo
 %  pueden aparecer una «única vez». Cualquier entrada fuera de esta sintaxis
 %  devolverá un \enquote{error} deteniendo la compilación del documento.
@@ -1651,6 +1653,14 @@ end, "shekel_fallback_patch")
 % \emph{subunidades}. Por ejemplo: |$\spmoney[sub-units=true]{100,5 dolares}$|
 % imprimirá `$\$100{,}5$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
 % \emph{«cien dólares con cincuenta centavos»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%  Si la \emph{«cifra numérica»} no tiene parte decimal, la llave
+%  \mykey[spmoney]{sub-units} no tiene efecto. Si la moneda en curso no admite
+%  \emph{subunidades} se emite una advertencia y la llave tampoco tiene efecto.
+% \end{important}
 %
 % \smallskip
 %
@@ -1686,10 +1696,11 @@ end, "shekel_fallback_patch")
 %   \bottomrule
 %   \endlastfoot
 %   \texttt{\$} & \texttt{peso}, \texttt{pesos} & peso & \$ & \emph{«peso / pesos»} \\
+%   \texttt{dolar} & \texttt{dolares}, \texttt{dólar}, \texttt{dólares} & dólar & \$ & \emph{«dólar / dólares»} \\
 %   \texttt{€} & \texttt{euro}, \texttt{euros} & euro & € & \emph{«euro / euros»} \\
 %   \texttt{£} & \texttt{libra}, \texttt{libras} & libra & £ & \emph{«libra / libras»} \\
 %   \texttt{¥} & \texttt{yen}, \texttt{yenes} & yen & ¥ & \emph{«yen / yenes»} \\
-%   \texttt{¥} & \texttt{yuan}, \texttt{yuanes} & yuan & ¥ & \emph{«yuan / yuanes»} \\
+%   \texttt{yuan} & \texttt{yuanes} & yuan & ¥ & \emph{«yuan / yuanes»} \\
 %   \texttt{₩} & \texttt{won}, \texttt{wons} & won & \texttt{₩} & \emph{«won / wons»} \\
 %   \texttt{₪} & \texttt{shekel}, \texttt{shekels}, \texttt{sequel}, \texttt{sequeles} & séquel & ₪ & \emph{«séquel / séqueles»} \\
 %   \texttt{₹} & \texttt{rupia}, \texttt{rupias} & rupia & ₹ & \emph{«rupia / rupias»} \\
@@ -1718,7 +1729,7 @@ end, "shekel_fallback_patch")
 %   \midrule
 %   \texttt{clp} & --- & peso chileno & \$ & \emph{«peso chileno / pesos chilenos»} \\
 %   \texttt{mxn} & --- & peso mexicano & \$ & \emph{«peso mexicano / pesos mexicanos»} \\
-%   \texttt{usd} & \texttt{dolar}, \texttt{dólares} & dólar & \$ & \emph{«dólar estadounidense / dólares estadounidenses»} \\
+%   \texttt{usd} & --- & dólar & \$ & \emph{«dólar estadounidense / dólares estadounidenses»} \\
 %   \texttt{eur} & --- & euro & € & \emph{«euro / euros»} \\
 %   \texttt{gbp} & --- & libra & £ & \emph{«libra / libras»} \\
 %   \texttt{jpy} & --- & yen & ¥ & \emph{«yen / yenes»} \\
@@ -1927,7 +1938,8 @@ end, "shekel_fallback_patch")
 % \texttt{run} & --- & RUN & \emph{«rol único nacional»} \\
 % \texttt{onu} & --- & ONU & \emph{«organización de las naciones unidas»} \\
 % \texttt{rae} & --- & RAE & \emph{«real academia española»} \\
-% \texttt{ong} & \texttt{ongs} & ONG & \emph{«organización no gubernamental»} \\
+% \texttt{ong} & --- & ONG & \emph{«organización no gubernamental»} \\
+% \texttt{ongs} & --- & ONGs & \emph{«organizaciones no gubernamentales»} \\
 % \texttt{urss} & --- & URSS & \emph{«unión de repúblicas socialistas soviéticas»} \\
 % \texttt{oea} & --- & OEA & \emph{«organización de los estados americanos»} \\
 % \texttt{oms} & --- & OMS & \emph{«organización mundial de la salud»} \\
@@ -2019,11 +2031,11 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{print-era}{ac \textnormal{\textcolor{lightgray}{\textbar}} dc \textnormal{\textcolor{lightgray}{\textbar}} none}{none}[spsiglo]
 % \smallskip
 % Establece si se \emph{imprime} o no la abreviatura después de imprimir el argumento \mymarg{siglo}.
-% Si se establece en |ac|, |\spsiglo[print-era=ac]{XXI}| imprimirá `\textsc{xi} a.~C.'
+% Si se establece en |ac|, |\spsiglo[print-era=ac]{XXI}| imprimirá `\textsc{xxi} a.~C.'
 % en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veintiuno antes de cristo»};
-% si se establece en |dc|, |\spsiglo[print-era=dc]{XXI}| imprimirá `\textsc{xi} d.~C.'
+% si se establece en |dc|, |\spsiglo[print-era=dc]{XXI}| imprimirá `\textsc{xxi} d.~C.'
 % en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veintiuno después de cristo»};
-% si se establece en |none|, |\spsiglo[print-era=none]{XXI}| imprimirá `\textsc{xi}'
+% si se establece en |none|, |\spsiglo[print-era=none]{XXI}| imprimirá `\textsc{xxi}'
 % en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veintiuno»}.
 %
 % \bigskip
@@ -2163,7 +2175,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spread]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -2176,10 +2188,10 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%  Al utilizar |silent-cmd| no es necesario que el argumento
+%  Al utilizar |silent| no es necesario que el argumento
 %  \mymarg{símbolo} esté registrado o usar la llave |read-arg| con
 %  \mymarg{comandos \textnormal{\hologo{LaTeX}}}. Dependiendo de que
-%  contenga \mymarg{argumento} puede que |silent-cmd| no sea suficiente,
+%  contenga \mymarg{argumento} puede que |silent| no sea suficiente,
 %  en ese caso utilice |read-arg={_-}|.
 % \end{important}
 %
@@ -2539,7 +2551,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spnD]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -2626,7 +2638,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spnM]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -2736,7 +2748,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmcd]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -2845,7 +2857,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmcm]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3057,7 +3069,7 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection*{Llaves para \cs[no-index]{spcoord}}
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spcoord]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3146,7 +3158,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spPoint]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3250,7 +3262,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spvec]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3329,7 +3341,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[sprecta]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3408,7 +3420,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[sprayo]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3514,7 +3526,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spside]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3627,7 +3639,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmside]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3732,7 +3744,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spangle]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3849,7 +3861,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmangle]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -3951,7 +3963,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[sparc]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -4032,7 +4044,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmarc]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -4128,7 +4140,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spPoly]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -4346,7 +4358,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spAfig]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -4566,7 +4578,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spPfig]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -4706,7 +4718,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[sprad,spdiam]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -4918,7 +4930,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spcirc]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -5032,7 +5044,7 @@ end, "shekel_fallback_patch")
 % \begin{important}*
 %   Utilizar |concept=false| sin el argumento \myparg{centro} o con el
 %   argumento \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
-%   es equivalente a usar |silent-cmd=true|.
+%   es equivalente a usar |silent=true|.
 % \end{important}
 %
 % \smallskip
@@ -5053,7 +5065,7 @@ end, "shekel_fallback_patch")
 % \begin{important}*
 %   Utilizar esta llave con |concept=false| y el argumento
 %   \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
-%   es equivalente a usar |silent-cmd=true|.
+%   es equivalente a usar |silent=true|.
 % \end{important}
 %
 % \smallskip
@@ -5093,7 +5105,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spAcirc]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -5208,7 +5220,7 @@ end, "shekel_fallback_patch")
 % \begin{important}*
 %   Utilizar |concept=false| sin el argumento \myparg{centro} o con el
 %   argumento \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
-%   es equivalente a usar |silent-cmd=true|.
+%   es equivalente a usar |silent=true|.
 % \end{important}
 %
 % \smallskip
@@ -5229,7 +5241,7 @@ end, "shekel_fallback_patch")
 % \begin{important}*
 %   Utilizar esta llave con |concept=false| y el argumento
 %   \myparg{1 \textnormal{\textcolor{lightgray}{\textbar}} 2 \textnormal{\textcolor{lightgray}{\textbar}} 3 \textnormal{\textcolor{lightgray}{\textbar}} \ldots \textnormal{\textcolor{lightgray}{\textbar}} n}
-%   es equivalente a usar |silent-cmd=true|.
+%   es equivalente a usar |silent=true|.
 % \end{important}
 %
 % \smallskip
@@ -5269,7 +5281,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spPcirc]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -5366,7 +5378,7 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{silent-cmd}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spVol]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
@@ -8920,9 +8932,9 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{variable}
 %
-% \begin{macro}[int]{read-arg, silent-cmd, unknown}
+% \begin{macro}[int]{read-arg, silent, unknown}
 %   We define the \mymeta{keys} \mykey[spread]{read-arg} and
-%   \mykey[spread]{silent-cmd}.
+%   \mykey[spread]{silent}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spread }
   {
@@ -8930,9 +8942,9 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_spread_read_arg_tl {#1} },
     read-arg    .initial:n = ,
     read-arg    .value_required:n = true,
-    silent-cmd  .bool_set:N = \l_@@_spread_silent_cmd_bool,
-    silent-cmd  .initial:n  = false,
-    silent-cmd  .value_required:n = true,
+    silent  .bool_set:N = \l_@@_spread_silent_bool,
+    silent  .initial:n  = false,
+    silent  .value_required:n = true,
     unknown     .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spread }
@@ -8945,7 +8957,7 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spread_exec:nn}
 %   The function \myhlc|\@@_spread_exec:nn| receives the optional
 %   \mymeta{keys} in `|#1|' and the \mymarg{symbol} in `|#2|'. With
-%   \mykey{silent-cmd} |true|, the symbol is typeset with a |:silent|
+%   \mykey{silent} |true|, the symbol is typeset with a |:silent|
 %   |intent|, nothing else evaluated. Otherwise, with \mykey{read-arg}
 %   given, it is used directly, overriding any registered reading for
 %   this call alone. With \mykey{read-arg} empty, calls
@@ -8959,7 +8971,7 @@ end, "shekel_fallback_patch")
       { \msg_error:nn { spintent } { spread-empty-sym } }
       {
         \@@_invisible_sep:
-        \bool_if:NTF \l_@@_spread_silent_cmd_bool
+        \bool_if:NTF \l_@@_spread_silent_bool
           {
             \MathMLintent { :silent } { #2 }
           }
@@ -9561,13 +9573,13 @@ end, "shekel_fallback_patch")
 %     read-cmd,
 %     upper-case,
 %     concept,
-%     silent-cmd,
+%     silent,
 %     unknown,
 %   }
 %   We define the shared \mymeta{keys} \mykey[spmcd,spmcm]{result},
 %   \mykey[spmcd,spmcm]{prefix}, \mykey[spmcd,spmcm]{read-cmd},
 %   \mykey[spmcd,spmcm]{upper-case}, \mykey[spmcd,spmcm]{concept} and
-%   \mykey[spmcd,spmcm]{silent-cmd}.
+%   \mykey[spmcd,spmcm]{silent}.
 %    \begin{macrocode}
 \clist_map_inline:nn { mcd , mcm }
   {
@@ -9600,9 +9612,9 @@ end, "shekel_fallback_patch")
         concept            .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept            .initial:n  = true,
         concept            .value_required:n = true,
-        silent-cmd         .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
-        silent-cmd         .initial:n  = false,
-        silent-cmd         .value_required:n = true,
+        silent         .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent         .initial:n  = false,
+        silent         .value_required:n = true,
         unknown            .code:n =
           {
             \str_set:Nn \l_@@_command_name_str { sp #1 }
@@ -9647,7 +9659,7 @@ end, "shekel_fallback_patch")
 %   Injects \mynvmath{MathML} intents around the already-formatted
 %   \myhlc|\l_@@_mc_args_seq|.
 %    \begin{macrocode}
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
         \seq_set_map:NNn \l_@@_mc_args_seq \l_@@_mc_args_seq
           {
@@ -9695,7 +9707,7 @@ end, "shekel_fallback_patch")
 %
 %   \smallskip
 %
-%   The operator name is silenced with \mykey{silent-cmd}|=true| — \myhlc|\@@_mc_process_args:nn|
+%   The operator name is silenced with \mykey{silent}|=true| — \myhlc|\@@_mc_process_args:nn|
 %   silences the arguments too, in that case — or with \mykey{concept}|=false|
 %   alone, leaving the arguments untouched. With \mykey{concept}|=true|,
 %   it carries the literal |intent| instead — |#1| or |#2| per \mykey{read-cmd},
@@ -9721,7 +9733,7 @@ end, "shekel_fallback_patch")
 \cs_new_protected:Nn \@@_spmc_process:nnnn
   {
     \keys_set:nn { spintent / sp #1 } { #3 }
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
         \MathMLintent { :silent }
           {
@@ -9880,14 +9892,14 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]
 %   {
 %     result,
-%     silent-cmd,
+%     silent,
 %     result-num,
 %     prefix,
 %     concept,
 %     unknown,
 %   }
 %   We define the shared \mymeta{keys} \mykey[spnM,spnD]{result},
-%   \mykey[spnM,spnD]{silent-cmd}, \mykey[spnM,spnD]{result-num},
+%   \mykey[spnM,spnD]{silent}, \mykey[spnM,spnD]{result-num},
 %   \mykey[spnM,spnD]{prefix} and \mykey[spnM,spnD]{concept}.
 %    \begin{macrocode}
 \clist_map_inline:nn { nM , nD }
@@ -9897,9 +9909,9 @@ end, "shekel_fallback_patch")
         result     .bool_set:c = { l_@@_sp #1 _print_result_bool },
         result     .initial:n  = false,
         result     .value_required:n = true,
-        silent-cmd .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
-        silent-cmd .initial:n  = false,
-        silent-cmd .value_required:n = true,
+        silent .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent .initial:n  = false,
+        silent .value_required:n = true,
         result-num .tl_set:c   = { l_@@_sp #1 _print_result_num_tl },
         result-num .initial:n  = ,
         prefix     .code:n =
@@ -10067,7 +10079,7 @@ end, "shekel_fallback_patch")
 %
 %   \smallskip
 %
-%   Either way, \mykey{silent-cmd} silences the whole thing through
+%   Either way, \mykey{silent} silences the whole thing through
 %   \myhlc|\@@_spnM_spnD_silent:nn|; otherwise \mykey{concept}|=true|
 %   carries the literal |intent| from \myhlc|\@@_spnM_spnD_intent:nn|,
 %   |false| silences only the operator symbol, leaving the argument to
@@ -10077,7 +10089,7 @@ end, "shekel_fallback_patch")
   {
     \tl_if_novalue:nTF { #4 }
       {
-        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l_@@_sp #1 _silent_bool }
           { \@@_spnM_spnD_silent:nn { #2 } { n } }
           {
             \bool_if:cTF { l_@@_sp #1 _concept_bool }
@@ -10095,7 +10107,7 @@ end, "shekel_fallback_patch")
       }
       {
         \@@_luafun_spnmd_classify:n { \exp_not:n { #4 } }
-        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l_@@_sp #1 _silent_bool }
           {
             \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
               { \@@_spnM_spnD_silent:nn { #2 } { \spnum { #4 } } }
@@ -10164,15 +10176,15 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{sprazon}}
 %
-% \begin{macro}[int]{silent-cmd, use-dfrac, inline, unknown}
-%   We define the \mymeta{keys} \mykey[sprazon]{silent-cmd},
+% \begin{macro}[int]{silent, use-dfrac, inline, unknown}
+%   We define the \mymeta{keys} \mykey[sprazon]{silent},
 %   \mykey[sprazon]{use-dfrac} and \mykey[sprazon]{inline}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / sprazon }
   {
-    silent-cmd .bool_set:N = \l_@@_sprazon_silent_cmd_bool,
-    silent-cmd .initial:n  = false,
-    silent-cmd .value_required:n = true,
+    silent .bool_set:N = \l_@@_sprazon_silent_bool,
+    silent .initial:n  = false,
+    silent .value_required:n = true,
     use-dfrac  .bool_set:N = \l_@@_sprazon_use_dfrac_bool,
     use-dfrac  .initial:n  = false,
     use-dfrac  .value_required:n = true,
@@ -10191,7 +10203,7 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_sprazon_exec:nnn}
 %   The function \myhlc|\@@_sprazon_exec:nnn| receives the optional
 %   \mymeta{keys} in `|#1|', the numerator in `|#2|' and the
-%   denominator in `|#3|'. Under \mykey{silent-cmd}, the whole
+%   denominator in `|#3|'. Under \mykey{silent}, the whole
 %   thing is silenced as one unit — |\frac|/|\dfrac| (per
 %   \mykey{use-dfrac}) normally, or |#2 : #3| under \mykey{inline}.
 %
@@ -10210,7 +10222,7 @@ end, "shekel_fallback_patch")
   {
     \keys_set:nn { spintent / sprazon } { #1 }
     \@@_invisible_sep:
-    \bool_if:NTF \l_@@_sprazon_silent_cmd_bool
+    \bool_if:NTF \l_@@_sprazon_silent_bool
       {
         \MathMLintent { _- }
           {
@@ -10286,7 +10298,7 @@ end, "shekel_fallback_patch")
       {
         \group_begin:
           \@@_sprazon_exec:nnn { #1 } { #2 } { #3 }
-          \bool_if:NTF \l_@@_sprazon_silent_cmd_bool
+          \bool_if:NTF \l_@@_sprazon_silent_bool
             {
               \MathMLintent { :silent } { = }
             }
@@ -11133,14 +11145,14 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spcoord}}
 %
-% \begin{macro}[int]{silent-cmd}
-%   We define the key \mykey[spcoord]{silent-cmd}.
+% \begin{macro}[int]{silent}
+%   We define the key \mykey[spcoord]{silent}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spcoord }
   {
-    silent-cmd  .bool_set:N = \l_@@_spcoord_silent_cmd_bool,
-    silent-cmd  .initial:n  = false,
-    silent-cmd  .value_required:n = true,
+    silent  .bool_set:N = \l_@@_spcoord_silent_bool,
+    silent  .initial:n  = false,
+    silent  .value_required:n = true,
     unknown     .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spcoord }
@@ -11284,7 +11296,7 @@ end, "shekel_fallback_patch")
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spcoord_mathml:}
-%   With \mykey{silent-cmd}|=true|, everything — parentheses and
+%   With \mykey{silent}|=true|, everything — parentheses and
 %   argument alike — is wrapped in a single |_-|, reading nothing at
 %   all: \myhlc|\l_@@_spcoord_raw_arg_tl| is typeset exactly as given,
 %   untouched by \myhlc|\@@_spcoord_print:n|/\myhlc|\@@_spcoord_intent_infix:|.
@@ -11293,7 +11305,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcoord_mathml:
   {
-    \bool_if:NTF \l_@@_spcoord_silent_cmd_bool
+    \bool_if:NTF \l_@@_spcoord_silent_bool
       {
         \MathMLintent { _- }
           {
@@ -11314,9 +11326,9 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spcoord_exec:nn}
 %   Sets the \mymeta{keys} in `|#1|' and \myhlc|\l_@@_spcoord_raw_arg_tl|
 %   to `|#2|'. Calls \myhlc|\@@_luafun_spcoord_parse_and_set:n| either way — even with
-%   \mykey{silent-cmd}|=true|, since \myhlc|\@@_spcoord_set_wrap_parens_size:|
+%   \mykey{silent}|=true|, since \myhlc|\@@_spcoord_set_wrap_parens_size:|
 %   still needs \myhlc|\l_@@_spcoord_luaset_ #1 _has_frac_str| — but
-%   with \mykey{silent-cmd}|=true|, forces \myhlc|\l_@@_spcoord_luaset_error_str|
+%   with \mykey{silent}|=true|, forces \myhlc|\l_@@_spcoord_luaset_error_str|
 %   back to |false| rather than reporting it: the raw \mymarg{argument}
 %   is typeset regardless of whether it parsed. Otherwise, reports |spcoord-invalid-arg|
 %   on error. Either way, sizes the parentheses, then delegates to
@@ -11326,7 +11338,7 @@ end, "shekel_fallback_patch")
   {
     \keys_set:nn { spintent / spcoord } {#1}
     \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#2}
-    \bool_if:NTF \l_@@_spcoord_silent_cmd_bool
+    \bool_if:NTF \l_@@_spcoord_silent_bool
       {
         \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
         \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
@@ -11372,7 +11384,7 @@ end, "shekel_fallback_patch")
 %   }
 %   Scratch variables for \myhlc|\@@_mathmlarg_point:nnn|: the
 %   reference name (|#1|), and the calling command's own
-%   \mykey{read-cmd}/\mykey{silent-cmd} state, looked up by name (|#2|).
+%   \mykey{read-cmd}/\mykey{silent} state, looked up by name (|#2|).
 %    \begin{macrocode}
 \tl_new:N   \l_@@_mathmlarg_point_ref_tl
 \str_new:N  \l_@@_mathmlarg_point_mode_str
@@ -11398,7 +11410,7 @@ end, "shekel_fallback_patch")
   {
     \tl_set:Nn \l_@@_mathmlarg_point_ref_tl {#1}
     \@@_luafun_geo_point_parse_and_set:n { \exp_not:n {#3} }
-    \bool_set_eq:Nc \l_@@_mathmlarg_point_silent_bool { l_@@_ #2 _silent_cmd_bool }
+    \bool_set_eq:Nc \l_@@_mathmlarg_point_silent_bool { l_@@_ #2 _silent_bool }
     \str_set_eq:Nc  \l_@@_mathmlarg_point_mode_str  { l_@@_ #2 _mode_str }
     \@@_invisible_sep:
     \str_case:VnF \l_@@_geo_luaset_tipo_str
@@ -11463,7 +11475,7 @@ end, "shekel_fallback_patch")
 %
 %   Otherwise (no subscript, no prime), the same distinction applies
 %   to the combined \myhlc|\l_@@_geo_luaset_print_tl| as a whole — the
-%   shared queue for |school| (or when \mykey{silent-cmd} is |true|),
+%   shared queue for |school| (or when \mykey{silent} is |true|),
 %   a native |\MathMLarg| for |mathcat|, never mixed within the same
 %   formula, since the queue does not recognize a native |\MathMLarg|
 %   claim as already taken.
@@ -11543,9 +11555,9 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spPoint}}
 %
-% \begin{macro}[int]{read-cmd, prefix, silent-cmd, unknown}
+% \begin{macro}[int]{read-cmd, prefix, silent, unknown}
 %   We define the \mymeta{keys} \mykey[spPoint]{read-cmd},
-%   \mykey[spPoint]{prefix}, \mykey[spPoint]{silent-cmd}  and
+%   \mykey[spPoint]{prefix}, \mykey[spPoint]{silent}  and
 %   \mykey[spPoint]{concept}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spPoint }
@@ -11567,9 +11579,9 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_spPoint_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l_@@_spPoint_silent_cmd_bool,
-    silent-cmd          .initial:n = false,
-    silent-cmd          .value_required:n = true,
+    silent          .bool_set:N = \l_@@_spPoint_silent_bool,
+    silent          .initial:n = false,
+    silent          .value_required:n = true,
     concept             .bool_set:N = \l_@@_spPoint_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -11588,10 +11600,10 @@ end, "shekel_fallback_patch")
 %   The internal function \myhlc|\@@_spPoint_print:n| processes the
 %   \mymarg{argument} passed in `|#1|'. Calls
 %   \myhlc|\@@_luafun_geo_point_parse_and_set:n|, reporting
-%   |spPoint-invalid-point| on error. If \mykey{silent-cmd} is |true|
+%   |spPoint-invalid-point| on error. If \mykey{silent} is |true|
 %   or \mykey{concept} is |false|, sets
 %   \myhlc|\l_@@_spPoint_intent_arg_tl| to |_($pt)| — forced further to
-%   |_-| when \mykey{silent-cmd} is |true| and |read-cmd| is not
+%   |_-| when \mykey{silent} is |true| and |read-cmd| is not
 %   |school|, since \myhlc|\@@_spPoint_mathml:n| then tags through a
 %   native |\MathMLarg| that needs the concept silenced too. Otherwise
 %   sets it to |punto:prefix($pt)|, prefixed with \mykey{prefix} when
@@ -11607,12 +11619,12 @@ end, "shekel_fallback_patch")
     \bool_if:nTF
       {
         \bool_lazy_or_p:nn
-          { \l_@@_spPoint_silent_cmd_bool }
+          { \l_@@_spPoint_silent_bool }
           { ! \l_@@_spPoint_concept_bool }
       }
       {
         \tl_set:Nn \l_@@_spPoint_intent_arg_tl { _($pt) }
-        \bool_if:NT \l_@@_spPoint_silent_cmd_bool
+        \bool_if:NT \l_@@_spPoint_silent_bool
           {
             \str_if_eq:VnF \l_@@_spPoint_mode_str { school }
               {
@@ -11662,7 +11674,7 @@ end, "shekel_fallback_patch")
 %   delegating to \myhlc|\@@_spPoint_print:n|. With `|#3|' given (the
 %   optional coordinate), silences the gap between the point and the
 %   coordinate first (otherwise read as an implicit product), then temporarily aliases
-%   \myhlc|\l_@@_spcoord_silent_cmd_bool| to \myhlc|\l_@@_spPoint_silent_cmd_bool|
+%   \myhlc|\l_@@_spcoord_silent_bool| to \myhlc|\l_@@_spPoint_silent_bool|
 %   and calls \myhlc|\@@_luafun_spcoord_parse_and_set:n| directly, reporting
 %   |spcoord-invalid-arg| on error unless silenced, then \myhlc|\@@_spcoord_set_wrap_parens_size:|
 %   and \myhlc|\@@_spcoord_mathml:|.
@@ -11674,9 +11686,9 @@ end, "shekel_fallback_patch")
     \tl_if_novalue:nF {#3}
       {
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % silencia el "por"
-        \bool_set_eq:NN \l_@@_spcoord_silent_cmd_bool \l_@@_spPoint_silent_cmd_bool
+        \bool_set_eq:NN \l_@@_spcoord_silent_bool \l_@@_spPoint_silent_bool
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l_@@_spcoord_silent_cmd_bool
+        \bool_if:NTF \l_@@_spcoord_silent_bool
           {
             \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
             \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
@@ -11763,16 +11775,16 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spvec}}
 %
-% \begin{macro}[int]{silent-cmd, concept, autofit, read-cmd, prefix, unknown}
-%   We define the \mymeta{keys} \mykey[spvec]{silent-cmd},
+% \begin{macro}[int]{silent, concept, autofit, read-cmd, prefix, unknown}
+%   We define the \mymeta{keys} \mykey[spvec]{silent},
 %   \mykey[spvec]{concept}, \mykey[spvec]{autofit},
 %   \mykey[spvec]{read-cmd} and \mykey[spvec]{prefix}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spvec }
   {
-    silent-cmd    .bool_set:N = \l_@@_spvec_silent_cmd_bool,
-    silent-cmd    .initial:n = false,
-    silent-cmd    .value_required:n = true,
+    silent    .bool_set:N = \l_@@_spvec_silent_bool,
+    silent    .initial:n = false,
+    silent    .value_required:n = true,
     concept       .bool_set:N = \l_@@_spvec_concept_bool,
     concept       .initial:n  = true,
     concept       .value_required:n = true,
@@ -11841,15 +11853,15 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_geo_luaset_is_name_str|.
 %
 %   For a proper name (a single letter, no prime), the concept
-%   |intent| is |_($pt)| when \mykey{silent-cmd} is |true| \emph{or}
+%   |intent| is |_($pt)| when \mykey{silent} is |true| \emph{or}
 %   \mykey{concept} is |false| — forced further to |_-| when
-%   \mykey{silent-cmd} is |true| and |read-cmd| is not |school|;
+%   \mykey{silent} is |true| and |read-cmd| is not |school|;
 %   otherwise |vector:prefix($pt)|. With
 %   \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|, |read-cmd=school|
 %   tags |\vec{letra}| through \myhlc|\@@_luafun_mrow_intent_arg:nn|
 %   with a literal |kv|, the subscript appended and silenced;
 %   |read-cmd=mathcat| tags |\vec{...}| through a native |\MathMLarg|
-%   instead, the subscript silenced only under \mykey{silent-cmd}.
+%   instead, the subscript silenced only under \mykey{silent}.
 %   \mykey{autofit} inserts a |\vphantom{b}| inside |\vec{...}| to
 %   normalize its height. Otherwise (no subscript), the same |kv|
 %   logic wraps |\vec{print\_tl}| as a whole.
@@ -11861,12 +11873,12 @@ end, "shekel_fallback_patch")
         \bool_if:nTF
           {
             \bool_lazy_or_p:nn
-              { \l_@@_spvec_silent_cmd_bool }
+              { \l_@@_spvec_silent_bool }
               { ! \l_@@_spvec_concept_bool }
           }
           {
             \tl_set:Nn \l_@@_spvec_intent_arg_tl { _($pt) }
-            \bool_if:NT \l_@@_spvec_silent_cmd_bool
+            \bool_if:NT \l_@@_spvec_silent_bool
               {
                 \str_if_eq:VnF \l_@@_spvec_mode_str { school }
                   { \tl_set:Nn \l_@@_spvec_intent_arg_tl { _- } }
@@ -11881,7 +11893,7 @@ end, "shekel_fallback_patch")
               {
                 \str_if_eq:VnTF \l_@@_spvec_mode_str { school }
                   {
-                    \bool_if:NTF \l_@@_spvec_silent_cmd_bool
+                    \bool_if:NTF \l_@@_spvec_silent_bool
                       { \tl_set:Nn \l_@@_spvec_kv_tl { arg = "pt", intent = "_-" } }
                       {
                         \tl_set:Ne \l_@@_spvec_kv_tl
@@ -11916,16 +11928,16 @@ end, "shekel_fallback_patch")
                               { \vphantom{ b } }
                             \MathMLarg{ pt } { \l_@@_geo_luaset_letra_str }
                           }
-                        \bool_if:NT \l_@@_spvec_silent_cmd_bool
+                        \bool_if:NT \l_@@_spvec_silent_bool
                           { \c_math_subscript_token { \l_@@_geo_luaset_sub_str } }
                       }
-                    \bool_if:NF \l_@@_spvec_silent_cmd_bool
+                    \bool_if:NF \l_@@_spvec_silent_bool
                       { \c_math_subscript_token { \l_@@_geo_luaset_sub_str } }
                   }
               }
           }
           {
-            \bool_if:NTF \l_@@_spvec_silent_cmd_bool
+            \bool_if:NTF \l_@@_spvec_silent_bool
               { \tl_set:Nn \l_@@_spvec_kv_tl { arg = "pt", intent = "_-" } }
               {
                 \tl_set:Ne \l_@@_spvec_kv_tl
@@ -11971,7 +11983,7 @@ end, "shekel_fallback_patch")
         \bool_if:nTF
           {
             \bool_lazy_or_p:nn
-              { \l_@@_spvec_silent_cmd_bool }
+              { \l_@@_spvec_silent_bool }
               { ! \l_@@_spvec_concept_bool }
           }
           {
@@ -12011,8 +12023,8 @@ end, "shekel_fallback_patch")
 %   The function \myhlc|\@@_spvec_exec:nnn| receives the optional
 %   \mymeta{keys} in `|#1|' and the \mymarg{argument} in `|#2|',
 %   delegating to \myhlc|\@@_spvec_print:n|. With `|#3|' given (the
-%   optional coordinate), aliases \myhlc|\l_@@_spcoord_silent_cmd_bool|
-%   to \myhlc|\l_@@_spvec_silent_cmd_bool| — reverted when the calling
+%   optional coordinate), aliases \myhlc|\l_@@_spcoord_silent_bool|
+%   to \myhlc|\l_@@_spvec_silent_bool| — reverted when the calling
 %   group closes — and calls
 %   \myhlc|\@@_luafun_spcoord_parse_and_set:n| directly, reporting
 %   |spcoord-invalid-arg| on error unless silenced, then
@@ -12028,9 +12040,9 @@ end, "shekel_fallback_patch")
       {
         \equal % notación de vector =( , )
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % previene lectura de intervalo
-        \bool_set_eq:NN \l_@@_spcoord_silent_cmd_bool \l_@@_spvec_silent_cmd_bool
+        \bool_set_eq:NN \l_@@_spcoord_silent_bool \l_@@_spvec_silent_bool
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l_@@_spvec_silent_cmd_bool
+        \bool_if:NTF \l_@@_spvec_silent_bool
           {
             \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
             \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
@@ -12120,9 +12132,9 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{sprecta}}
 %
-% \begin{macro}[int]{read-cmd, prefix, silent-cmd, unknown}
+% \begin{macro}[int]{read-cmd, prefix, silent, unknown}
 %   We define the \mymeta{keys} \mykey[sprecta]{read-cmd}, \mykey[sprecta]{prefix}
-%   and \mykey[sprecta]{silent-cmd}.
+%   and \mykey[sprecta]{silent}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / sprecta }
   {
@@ -12143,9 +12155,9 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_sprecta_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l_@@_sprecta_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
+    silent          .bool_set:N = \l_@@_sprecta_silent_bool,
+    silent          .initial:n  = false,
+    silent          .value_required:n = true,
     concept             .bool_set:N = \l_@@_sprecta_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -12183,7 +12195,7 @@ end, "shekel_fallback_patch")
 %   The function \myhlc|\@@_sprecta_mathml:n| branches on
 %   \myhlc|\l_@@_geo_luaset_is_name_str|. For a proper name (|m|,
 %   |l|, \ldots), the concept |intent| is |:silent($pt)| when
-%   \mykey{silent-cmd} is |true| \emph{or} \mykey{concept} is |false|;
+%   \mykey{silent} is |true| \emph{or} \mykey{concept} is |false|;
 %   otherwise |recta:prefix($pt)|, prefixed with \mykey{prefix} when
 %   given.
 %
@@ -12203,7 +12215,7 @@ end, "shekel_fallback_patch")
         \bool_if:nTF
           {
             \bool_lazy_or_p:nn
-              { \l_@@_sprecta_silent_cmd_bool }
+              { \l_@@_sprecta_silent_bool }
               { ! \l_@@_sprecta_concept_bool }
           }
           {
@@ -12300,7 +12312,7 @@ end, "shekel_fallback_patch")
 %   queue for |school|, its own |arg| alone for |mathcat|.
 %    \begin{macrocode}
           {
-            \bool_if:NTF \l_@@_sprecta_silent_cmd_bool
+            \bool_if:NTF \l_@@_sprecta_silent_bool
               {
                 \tl_set:Nn \l_@@_sprecta_kv_tl { arg = "pt", intent = "_-" }
               }
@@ -12343,7 +12355,7 @@ end, "shekel_fallback_patch")
         \bool_if:nTF
           {
             \bool_lazy_or_p:nn
-              { \l_@@_sprecta_silent_cmd_bool }
+              { \l_@@_sprecta_silent_bool }
               { ! \l_@@_sprecta_concept_bool }
           }
           {
@@ -12461,9 +12473,9 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{sprayo}}
 %
-% \begin{macro}[int]{read-cmd, prefix, silent-cmd, read-sty, unknown}
+% \begin{macro}[int]{read-cmd, prefix, silent, read-sty, unknown}
 %   We define the \mymeta{keys} \mykey[sprayo]{read-cmd},
-%   \mykey[sprayo]{prefix}, \mykey[sprayo]{silent-cmd}, \mykey[sprayo]{concept}
+%   \mykey[sprayo]{prefix}, \mykey[sprayo]{silent}, \mykey[sprayo]{concept}
 %   and \mykey[sprayo]{read-sty}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / sprayo }
@@ -12485,9 +12497,9 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_sprayo_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l_@@_sprayo_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
+    silent          .bool_set:N = \l_@@_sprayo_silent_bool,
+    silent          .initial:n  = false,
+    silent          .value_required:n = true,
     concept             .bool_set:N = \l_@@_sprayo_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -12560,7 +12572,7 @@ end, "shekel_fallback_patch")
 %   build \myhlc|\l_@@_sprayo_refs_tl|, the comma-separated
 %   |$pts1,$pts2,...| reference list, naming each point by position.
 %
-%   The concept |intent| is |_(refs)| when \mykey{silent-cmd} is
+%   The concept |intent| is |_(refs)| when \mykey{silent} is
 %   |true| \emph{or} \mykey{concept} is |false|; otherwise it is
 %   \myhlc|\l_@@_sprayo_read_sty_str|\myhlc|:prefix(refs)| — the concept
 %   word itself (|rayo| or |semirrecta|) comes from the
@@ -12571,7 +12583,7 @@ end, "shekel_fallback_patch")
 %   sole |<mrow>| does not collapse into |<math>|). The
 %   sequence is walked a second time, calling
 %   \myhlc|\@@_mathmlarg_point:nnn| once per point with its |pts|$n$
-%   reference name and \mykey[sprayo]{silent-cmd}/\mykey[sprayo]{read-cmd}
+%   reference name and \mykey[sprayo]{silent}/\mykey[sprayo]{read-cmd}
 %   looked up under |sprayo|: it alone decides |arg|/literal |intent|
 %   per point, so |concept| plays no role at that level.
 %    \begin{macrocode}
@@ -12590,7 +12602,7 @@ end, "shekel_fallback_patch")
     \bool_if:nTF
       {
         \bool_lazy_or_p:nn
-          { \l_@@_sprayo_silent_cmd_bool }
+          { \l_@@_sprayo_silent_bool }
           { ! \l_@@_sprayo_concept_bool }
       }
       {
@@ -12742,7 +12754,7 @@ end, "shekel_fallback_patch")
 %  {
 %    read-cmd,
 %    prefix,
-%    silent-cmd,
+%    silent,
 %    concept,
 %    read-sty,
 %    read-arg,
@@ -12750,7 +12762,7 @@ end, "shekel_fallback_patch")
 %    unknown,
 %  }
 %   We define the shared \mymeta{keys} \mykey[spside,spmside]{read-cmd},
-%   \mykey[spside,spmside]{prefix}, \mykey[spside,spmside]{silent-cmd},
+%   \mykey[spside,spmside]{prefix}, \mykey[spside,spmside]{silent},
 %   \mykey[spside,spmside]{concept}, \mykey[spside,spmside]{read-sty},
 %   \mykey[spside,spmside]{read-arg} and \mykey[spmside]{print-m}.
 %    \begin{macrocode}
@@ -12775,9 +12787,9 @@ end, "shekel_fallback_patch")
           { \@@_sanitize_affix:cn { l_@@_sp #1 _prefix_tl } {##1} },
         prefix              .initial:n  = ,
         prefix              .value_required:n = true,
-        silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -12909,7 +12921,7 @@ end, "shekel_fallback_patch")
       }
 %    \end{macrocode}
 %
-%   The concept |intent| is |_(refs)| when \mykey{silent-cmd} is |true|;
+%   The concept |intent| is |_(refs)| when \mykey{silent} is |true|;
 %   otherwise, if \mykey{read-arg} is empty, it is |_(refs)| when
 %   \mykey{concept} is |false| or
 %   \myhlc|\l_@@_spside_intent_tl|\myhlc|:prefix(refs)| when |true|; if
@@ -12919,7 +12931,7 @@ end, "shekel_fallback_patch")
 %   \myhlc|\@@_spside_process:nn|). The |:prefix(...)| form is prefixed
 %   with \mykey{prefix} when given.
 %    \begin{macrocode}
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
         \tl_set:Ne \l_@@_spside_intent_arg_tl { _( \l_@@_spside_refs_tl ) }
       }
@@ -12961,7 +12973,7 @@ end, "shekel_fallback_patch")
 %   directly in the |\MathMLintent| group. In every case the sequence
 %   is walked a second time, calling \myhlc|\@@_mathmlarg_point:nnn|
 %   once per point with its |pts|$n$ reference name and
-%   \mykey[spside,spmside]{silent-cmd}/\mykey[spside,spmside]{read-cmd}
+%   \mykey[spside,spmside]{silent}/\mykey[spside,spmside]{read-cmd}
 %   looked up under |sp#1|: it alone decides |arg|/literal |intent| per
 %   point, so |concept| plays no role at that level.
 %    \begin{macrocode}
@@ -13129,13 +13141,13 @@ end, "shekel_fallback_patch")
 %     prefix,
 %     recto,
 %     print-m,
-%     silent-cmd,
+%     silent,
 %     concept,
 %     unknown,
 %    }
 %   We define the shared \mymeta{keys} \mykey[spangle,spmangle]{read-cmd},
 %   \mykey[spangle,spmangle]{prefix}, \mykey[spangle,spmangle]{recto},
-%   \mykey[spangle,spmangle]{print-m}, \mykey[spangle,spmangle]{silent-cmd}
+%   \mykey[spangle,spmangle]{print-m}, \mykey[spangle,spmangle]{silent}
 %   and \mykey[spangle,spmangle]{concept},
 %    \begin{macrocode}
 \clist_map_inline:nn { angle , mangle }
@@ -13165,9 +13177,9 @@ end, "shekel_fallback_patch")
         print-m             .bool_set:c = { l_@@_sp #1 _print_m_bool },
         print-m             .initial:n  = false,
         print-m             .value_required:n = true,
-        silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -13304,8 +13316,8 @@ end, "shekel_fallback_patch")
 %   through \myhlc|\@@_luafun_mrow_intent_arg:nn| on its own,
 %   with \myhlc|\l_@@_spangle_intent_tl|\myhlc|:prefix| (no
 %   |$|-reference: |nombre| never refers to more than one thing) —
-%   |_-| when \mykey{silent-cmd} is |true| \emph{or} \mykey{concept}
-%   is |false|. With \mykey{silent-cmd} |true|, the name that follows
+%   |_-| when \mykey{silent} is |true| \emph{or} \mykey{concept}
+%   is |false|. With \mykey{silent} |true|, the name that follows
 %   is silenced as a whole.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spangle_mathml:n
@@ -13313,7 +13325,7 @@ end, "shekel_fallback_patch")
     \@@_invisible_sep: % (luamml issues #26)
     \str_if_eq:VnTF \l_@@_geo_luaset_angulo_case_str { nombre }
       {
-        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l_@@_sp #1 _silent_bool }
           {
             \tl_set:Nn \l_@@_spangle_intent_arg_tl { _- }
           }
@@ -13336,7 +13348,7 @@ end, "shekel_fallback_patch")
         \@@_luafun_mrow_intent_arg:nn
           { } { \l_@@_spangle_kv_tl }
         { \@@_spangle_sym:n {#1} }
-        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l_@@_sp #1 _silent_bool }
           {
             \@@_luafun_mrow_intent_arg:nn { } { intent = "_-" }
             { \l_@@_geo_luaset_print_tl }
@@ -13416,7 +13428,7 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_spangle_refs_tl|, the |$pt1,$pt2,...| reference list.
 %   A single native \cs{MathMLintent} wraps the symbol and the points
 %   together, with \myhlc|\l_@@_spangle_intent_tl|\myhlc|:prefix(refs)|
-%   — |_-| when \mykey{silent-cmd} is |true|, |_(refs)| when
+%   — |_-| when \mykey{silent} is |true|, |_(refs)| when
 %   \mykey{concept} is |false| alone. For |\spmangle| with
 %   \mykey{print-m} |true|, a silent |\operatorname{m}| precedes
 %   \myhlc|\@@_spangle_sym:n| inside the same |\MathMLintent|. The
@@ -13434,7 +13446,7 @@ end, "shekel_fallback_patch")
               { \tl_put_right:Nn \l_@@_spangle_refs_tl { , } }
             \tl_put_right:Ne \l_@@_spangle_refs_tl { $ pt \int_use:N \l_@@_spangle_pt_idx_int }
           }
-        \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l_@@_sp #1 _silent_bool }
           {
             \tl_set:Nn \l_@@_spangle_intent_arg_tl { _- }
           }
@@ -13584,9 +13596,9 @@ end, "shekel_fallback_patch")
 % \subsubsection{Definition of keys for \cs[no-index]{sparc} and
 %   \cs[no-index]{spmarc}}
 %
-% \begin{macro}[int]{read-cmd, prefix, silent-cmd, concept, unknown}
+% \begin{macro}[int]{read-cmd, prefix, silent, concept, unknown}
 %   We define the shared \mymeta{keys} \mykey[sparc,spmarc]{read-cmd},
-%   \mykey[sparc,spmarc]{prefix}, \mykey[sparc,spmarc]{silent-cmd} and
+%   \mykey[sparc,spmarc]{prefix}, \mykey[sparc,spmarc]{silent} and
 %   \mykey[sparc,spmarc]{concept}.
 %    \begin{macrocode}
 \clist_map_inline:nn { arc , marc }
@@ -13610,9 +13622,9 @@ end, "shekel_fallback_patch")
           { \@@_sanitize_affix:cn { l_@@_sp #1 _prefix_tl } {##1} },
         prefix              .initial:n  = ,
         prefix              .value_required:n = true,
-        silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -13728,12 +13740,12 @@ end, "shekel_fallback_patch")
       }
 %    \end{macrocode}
 %
-%   The concept |intent| is |_-| when \mykey{silent-cmd} is |true| or
+%   The concept |intent| is |_-| when \mykey{silent} is |true| or
 %   \mykey{concept} is |false|; otherwise
 %   \myhlc|\l_@@_sparc_intent_tl|\myhlc|:prefix(refs)|, prefixed with
 %   \mykey{prefix} when given.
 %    \begin{macrocode}
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
         \tl_set:Nn \l_@@_sparc_intent_arg_tl { _- }
       }
@@ -13882,12 +13894,12 @@ end, "shekel_fallback_patch")
 %     read-cmd,
 %     prefix,
 %     print-sym,
-%     silent-cmd,
+%     silent,
 %     concept,
 %     unknown,
 %   }
 %   We define the \mymeta{keys} \mykey[spPoly]{read-cmd}, \mykey[spPoly]{prefix},
-%  \mykey[spPoly]{print-sym}, \mykey[spPoly]{silent-cmd} and \mykey[spPoly]{concept}.
+%  \mykey[spPoly]{print-sym}, \mykey[spPoly]{silent} and \mykey[spPoly]{concept}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spPoly }
   {
@@ -13911,9 +13923,9 @@ end, "shekel_fallback_patch")
     print-sym           .bool_set:N = \l_@@_spPoly_print_sym_bool,
     print-sym           .initial:n  = true,
     print-sym           .value_required:n = true,
-    silent-cmd          .bool_set:N = \l_@@_spPoly_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
+    silent          .bool_set:N = \l_@@_spPoly_silent_bool,
+    silent          .initial:n  = false,
+    silent          .value_required:n = true,
     concept             .bool_set:N = \l_@@_spPoly_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -13985,7 +13997,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_spPoly_build_concept:}
 %   Builds \myhlc|\l_@@_spPoly_intent_arg_tl|, independently of
-%   \mykey{print-sym}: |_(refs)| when \mykey{silent-cmd} is |true| or
+%   \mykey{print-sym}: |_(refs)| when \mykey{silent} is |true| or
 %   \mykey{concept} is |false|; otherwise
 %   \myhlc|\l_@@_geo_luaset_concept_str|\myhlc|:prefix(refs)|,
 %   prefixed with \mykey{prefix} when given. Must be called after
@@ -13993,7 +14005,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoly_build_concept:
   {
-    \bool_if:NTF \l_@@_spPoly_silent_cmd_bool
+    \bool_if:NTF \l_@@_spPoly_silent_bool
       {
         \tl_set:Ne \l_@@_spPoly_intent_arg_tl { _( \l_@@_spPoly_refs_tl ) }
       }
@@ -14069,7 +14081,7 @@ end, "shekel_fallback_patch")
 %   |<mrow>| does not collapse into |<math>|, |luamml| issue
 %   \href{https://github.com/latex3/luamml/issues/26}{\#26}).
 %
-%   \mykey{print-sym} and \mykey{concept}/\mykey{silent-cmd} are
+%   \mykey{print-sym} and \mykey{concept}/\mykey{silent} are
 %   independent: the former only decides whether the glyph
 %   (\myhlc|\@@_spPoly_sym:|, silenced with
 %   \myhlc|\@@_luafun_mrow_intent_arg:nn|) is attempted — it is
@@ -14258,7 +14270,7 @@ end, "shekel_fallback_patch")
 %     print-sym,
 %     read-arg,
 %     read-sub,
-%     silent-cmd,
+%     silent,
 %     concept,
 %     concept*,
 %     unknown,
@@ -14321,9 +14333,9 @@ end, "shekel_fallback_patch")
         read-sub            .bool_set:c = { l_@@_sp #1 _read_sub_bool },
         read-sub            .initial:n  = false,
         read-sub            .value_required:n = true,
-        silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -14560,9 +14572,9 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 %   The variable \myhlc|\l_@@_spfig_intent_tl| is always the |_word-| shape:
 %   \myhlc|\l_@@_spfig_op_tl| alone when \myhlc|\l_@@_spfig_desc_tl| is
-%   empty, both joined by a dash otherwise. \mykey{silent-cmd}
+%   empty, both joined by a dash otherwise. \mykey{silent}
 %   overrides \myhlc|\l_@@_spfig_intent_arg_tl| with |_-|; with
-%   |silent-cmd=false| and \mykey{concept} |false|, it becomes
+%   |silent=false| and \mykey{concept} |false|, it becomes
 %   |_|\myhlc|\l_@@_spfig_desc_tl|\myhlc|-| (the descriptive part
 %   alone, without |área|/|perímetro|); with \mykey{concept} |true| it
 %   is \myhlc|\l_@@_spfig_intent_tl|.
@@ -14573,7 +14585,7 @@ end, "shekel_fallback_patch")
           { _ \l_@@_spfig_op_tl - }
           { _ \l_@@_spfig_op_tl - \l_@@_spfig_desc_tl - }
       }
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l_@@_sp #1 _silent_bool }
       { \tl_set:Nn \l_@@_spfig_intent_arg_tl { _- } }
       {
         \bool_if:cTF { l_@@_sp #1 _concept_bool }
@@ -14666,16 +14678,16 @@ end, "shekel_fallback_patch")
           }
       }
 %    \end{macrocode}
-%   \mykey{silent-cmd} sets \myhlc|\l_@@_spfig_intent_arg_tl| to
+%   \mykey{silent} sets \myhlc|\l_@@_spfig_intent_arg_tl| to
 %   |_(refs)|. Otherwise, with \mykey{read-arg} empty,
 %   \mykey{concept} chooses between
 %   \myhlc|\l_@@_spfig_intent_tl|\myhlc|:prefix(refs)| (prefixed with
 %   \mykey{prefix} when given) and |_(refs)| alone; with
 %   \mykey{read-arg} given, it is always
 %   \myhlc|\l_@@_spfig_intent_tl|\myhlc|:prefix(refs)| — |read-arg|
-%   is never silenced by \mykey{concept} alone, only by \mykey{silent-cmd}.
+%   is never silenced by \mykey{concept} alone, only by \mykey{silent}.
 %    \begin{macrocode}
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
         \tl_set:Ne \l_@@_spfig_intent_arg_tl { _( \l_@@_spfig_refs_tl ) }
       }
@@ -14883,14 +14895,14 @@ end, "shekel_fallback_patch")
 %     read-sub,
 %     read-arg,
 %     concept,
-%     silent-cmd,
+%     silent,
 %     print-sym,
 %     unknown,
 %   }
 %   We define the shared \mymeta{keys} \mykey[sprad,spdiam]{read-cmd},
 %   \mykey[sprad,spdiam]{upper-case}, \mykey[sprad,spdiam]{sub-index},
 %   \mykey[sprad,spdiam]{read-sub}, \mykey[sprad,spdiam]{read-arg},
-%   \mykey[sprad,spdiam]{concept}, \mykey[sprad,spdiam]{silent-cmd} and
+%   \mykey[sprad,spdiam]{concept}, \mykey[sprad,spdiam]{silent} and
 %   \mykey[spmside]{print-sym}.
 %    \begin{macrocode}
 \clist_map_inline:nn { rad , diam }
@@ -14927,9 +14939,9 @@ end, "shekel_fallback_patch")
         concept     .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept     .initial:n  = true,
         concept     .value_required:n = true,
-        silent-cmd  .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
-        silent-cmd  .initial:n  = false,
-        silent-cmd  .value_required:n = true,
+        silent  .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent  .initial:n  = false,
+        silent  .value_required:n = true,
         print-sym   .bool_set:c = { l_@@_sp #1 _print_sym_bool },
         print-sym   .initial:n  = false,
         print-sym   .value_required:n = true,
@@ -14977,12 +14989,12 @@ end, "shekel_fallback_patch")
           { \MathMLintent { :silent } { \diameter } }
       }
 %    \end{macrocode}
-%   With \mykey{silent-cmd} |true|, the intent is |_-| — the letter
+%   With \mykey{silent} |true|, the intent is |_-| — the letter
 %   alone through the shared queue when there is no
 %   \mykey{sub-index}, or letter and subscript together in one native
 %   |\MathMLintent| (subscript silenced) when there is.
 %    \begin{macrocode}
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
         \str_if_empty:cTF { l_@@_sp #1 _sub_index_str }
           {
@@ -15311,7 +15323,7 @@ end, "shekel_fallback_patch")
 %     sub-index,
 %     read-sub,
 %     read-arg,
-%     silent-cmd,
+%     silent,
 %     concept,
 %     spside,
 %     spmside,
@@ -15400,9 +15412,9 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_spcirc_read_arg_tl {#1} },
     read-arg     .initial:n = ,
     read-arg     .value_required:n = true,
-    silent-cmd   .bool_set:N = \l_@@_spcirc_silent_cmd_bool,
-    silent-cmd   .initial:n = false,
-    silent-cmd   .value_required:n = true,
+    silent   .bool_set:N = \l_@@_spcirc_silent_bool,
+    silent   .initial:n = false,
+    silent   .value_required:n = true,
     concept      .bool_set:N = \l_@@_spcirc_concept_bool,
     concept      .initial:n  = true,
     concept      .value_required:n = true,
@@ -15554,12 +15566,12 @@ end, "shekel_fallback_patch")
     \tl_set:Nn \l_@@_spcirc_connector_tl { de-centro-en }
 %    \end{macrocode}
 %
-%   \mykey{silent-cmd} |true| overrides
+%   \mykey{silent} |true| overrides
 %   \myhlc|\l_@@_spcirc_intent_arg_tl|/\myhlc|\l_@@_spcirc_radio_arg_tl|
 %   with |_-| and \myhlc|\l_@@_spcirc_connector_arg_tl| with |_($pt)|
 %   (the center is always read), regardless of \mykey{read-arg}.
 %    \begin{macrocode}
-    \bool_if:NTF \l_@@_spcirc_silent_cmd_bool
+    \bool_if:NTF \l_@@_spcirc_silent_bool
       {
         \tl_set:Nn \l_@@_spcirc_intent_arg_tl     { _- }
         \tl_set:Ne \l_@@_spcirc_connector_arg_tl  { _( $ pt ) }
@@ -15597,7 +15609,7 @@ end, "shekel_fallback_patch")
           }
 %    \end{macrocode}
 %   With \mykey{concept} |false| and \mykey{read-arg} empty, the same
-%   |_-|/|_($pt)| silencing applies as \mykey{silent-cmd}; with
+%   |_-|/|_($pt)| silencing applies as \mykey{silent}; with
 %   \mykey{read-arg} given, none of the three is silenced instead —
 %   the connector and |y-radio|/|y-diámetro| words are fixed
 %   structural pieces, not customized by \mykey{read-arg}, but once a
@@ -15869,14 +15881,14 @@ end, "shekel_fallback_patch")
 %     sub-index,
 %     read-sub,
 %     read-arg,
-%     silent-cmd,
+%     silent,
 %     unknown
 %   }
 %   We define the shared \mymeta{keys} \mykey[spAcirc,spPcirc]{read-cmd},
 %   \mykey[spAcirc,spPcirc]{prefix}, \mykey[spAcirc,spPcirc]{print-sym},
 %   \mykey[spAcirc,spPcirc]{read-sty}, \mykey[spAcirc,spPcirc]{concept},
 %   \mykey[spAcirc,spPcirc]{sub-index}, \mykey[spAcirc,spPcirc]{read-sub},
-%   \mykey[spAcirc,spPcirc]{read-arg} and \mykey[spAcirc,spPcirc]{silent-cmd}.
+%   \mykey[spAcirc,spPcirc]{read-arg} and \mykey[spAcirc,spPcirc]{silent}.
 %    \begin{macrocode}
     \keys_define:nn { spintent / sp #1 }
       {
@@ -15934,9 +15946,9 @@ end, "shekel_fallback_patch")
           { \@@_sanitize_affix:cn { l_@@_sp #1 _read_arg_tl } {##1} },
         read-arg            .initial:n  = ,
         read-arg            .value_required:n = true,
-        silent-cmd          .bool_set:c = { l_@@_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l_@@_command_name_str { sp #1 }
@@ -16046,12 +16058,12 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_spcircfig_intent_arg_tl| as
 %   \myhlc|\l_@@_spcircfig_op_tl|\myhlc|-|\mymeta{number word}, wrapped
 %   in bare |:prefix| (no reference — there is nothing to point to),
-%   or |_-| when \mykey{silent-cmd} is |true| or \mykey{concept} is
+%   or |_-| when \mykey{silent} is |true| or \mykey{concept} is
 %   |false|. Receives the short command name in `|#1|'.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcircfig_build_short:n
   {
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
         \tl_set:Nn \l_@@_spcircfig_intent_arg_tl { _- }
       }
@@ -16102,7 +16114,7 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_spcircfig_build_concept:nn}
 %   Builds \myhlc|\l_@@_spcircfig_intent_arg_tl|. |_-| when
-%   \mykey{silent-cmd} is |true|, or when |false| and \mykey{concept}
+%   \mykey{silent} is |true|, or when |false| and \mykey{concept}
 %   is |false| with \mykey{read-arg} empty (|_($pt)| instead when |#2|
 %   is non-empty — the center is still read either way). Otherwise
 %   \myhlc|\l_@@_spcircfig_intent_tl|\myhlc|:prefix| — with |($pt)|
@@ -16125,7 +16137,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcircfig_build_concept:nn
   {
-    \bool_if:cTF { l_@@_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
         \tl_if_empty:nTF {#2}
           { \tl_set:Nn \l_@@_spcircfig_intent_arg_tl { _- } }
@@ -16405,13 +16417,13 @@ end, "shekel_fallback_patch")
 %     read-sub,
 %     read-arg,
 %     concept,
-%     silent-cmd,
+%     silent,
 %     unknown,
 %   }
 %   We define the \mymeta{keys} \mykey[spVol]{read-cmd},
 %   \mykey[spVol]{sub-index}, \mykey[spVol]{read-sub},
 %   \mykey[spVol]{read-arg}, \mykey[spVol]{concept} and
-%   \mykey[spVol]{silent-cmd}.
+%   \mykey[spVol]{silent}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spVol }
   {
@@ -16442,9 +16454,9 @@ end, "shekel_fallback_patch")
     concept     .bool_set:N = \l_@@_spVol_concept_bool,
     concept     .initial:n  = true,
     concept     .value_required:n = true,
-    silent-cmd  .bool_set:N = \l_@@_spVol_silent_cmd_bool,
-    silent-cmd  .initial:n  = false,
-    silent-cmd  .value_required:n = true,
+    silent  .bool_set:N = \l_@@_spVol_silent_bool,
+    silent  .initial:n  = false,
+    silent  .value_required:n = true,
     unknown     .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spVol }
@@ -16458,13 +16470,13 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_spVol_print:}
 %   The function \myhlc|\@@_spVol_print:| dispatches to
-%   \myhlc|\@@_spVol_silent:| when \mykey{silent-cmd} is |true|, or to
+%   \myhlc|\@@_spVol_silent:| when \mykey{silent} is |true|, or to
 %   \myhlc|\@@_spVol_verbal:| otherwise.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spVol_print:
   {
     \@@_invisible_sep:
-    \bool_if:NTF \l_@@_spVol_silent_cmd_bool
+    \bool_if:NTF \l_@@_spVol_silent_bool
       { \@@_spVol_silent: }
       { \@@_spVol_verbal: }
   }
@@ -17372,7 +17384,7 @@ local spintent_units = {
     ["㎺"]   = "pW",       ["㎻"]   = "nW",       ["㎼"]   = "µW",
     ["㎍"]   = "µg",       ["㎎"]   = "mg",       ["㎏"]   = "kg",
     ["㎜"]   = "mm",       ["㎝"]   = "cm",       ["㎞"]   = "km",       ["㎛"]   = "µm",       ["㎕"]   = "µL",
-    ["㎖"]   = "mL",       ["㎗"]   = "dL",       ["㎘"]   = "kL",       ["¼"]   = "cm^3",     ["㎧"]   = "m/s",
+    ["㎖"]   = "mL",       ["㎗"]   = "dL",       ["㎘"]   = "kL",       ["㎧"]   = "m/s",
     ["㎨"]   = "m/s^2",    ["㎭"]   = "rad",      ["㎮"]   = "rad/s",    ["㎯"]   = "rad/s^2"
 }
 
@@ -17385,7 +17397,6 @@ local spintent_unit_compact_spoken_names = {
     ["㎣"]     = "milímetro-cúbico",
     ["㎤"]     = "centímetro-cúbico",
     ["㎦"]     = "kilómetro-cúbico",
-    ["¼"]      = "centímetro-cúbico",
     ["㎧"]     = "metros-por-segundo",
     ["㎨"]     = "metros-por-segundo-al-cuadrado",
     ["㎐"]     = "hercio",
@@ -17913,6 +17924,7 @@ end
 local spintent_spshort_digits       = spintent_digit^1
 local spintent_spshort_dot          = P(".")
 local spintent_spshort_raw_suffix   = C(P("er") + P("os") + P("as") + P("a") + P("o"))
+                                    + (P("ª") / "a") + (P("º") / "o")
 local spintent_spshort_illegal_suff = C((R("az") + R("AZ"))^1)
 
 local spintent_spshort_ord_grammar = P({
@@ -18053,7 +18065,7 @@ register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
 
   if s_match(clean, "^%d+$") then
     arabic_val = tonumber(clean)
-    if arabic_val > 0 and arabic_val <= 4000 then
+    if arabic_val > 0 and arabic_val < 4000 then
       roman_val = spintent_arabic_to_roman(arabic_val)
     else
       is_error = true
@@ -18062,7 +18074,7 @@ register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
     roman_val = clean
     arabic_val = spintent_roman_to_arabic(clean)
 
-    if spintent_arabic_to_roman(arabic_val) ~= clean then
+    if arabic_val >= 4000 or spintent_arabic_to_roman(arabic_val) ~= clean then
       is_error = true
     end
   else
@@ -18656,7 +18668,7 @@ local function spintent_geo_normalize_primes(str)
     return str
 end
 
--- cmd == "" (silent-cmd en modo school) envuelve el resultado en
+-- cmd == "" (silent en modo school) envuelve el resultado en
 -- guiones bajos ("_...-") para que MathCAT lo trate como literal por
 -- default-text y no aplique sus reglas de mayúsculas a un <mi> suelto.
 local function spintent_geo_build_intent(cmd, puntos)
