@@ -1654,14 +1654,15 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{dolar-math}{true \textnormal{\textcolor{lightgray}{\textbar}} false}{true}[spmoney]
+% \keyexampcmd{money-math}{true \textnormal{\textcolor{lightgray}{\textbar}} false}{true}[spmoney]
 % \smallskip
-% Establece si el \emph{símbolo} `|$|' se imprimirá en \emph{modo texto}
+% Establece si el \emph{símbolo moneda} se imprimirá en \emph{modo texto}
 % o en \emph{modo matemático}. Si se establece en |true|, se usará la
 % fuente tipográfica definida para el \emph{modo matemático} en curso
-% para imprimir `|$|' en la salida \texttt{PDF}; si se establece en |false|,
-% se usará la la fuente tipográfica definida para el \emph{modo texto}
-% para imprimir `|$|' en la salida \texttt{PDF}.
+% para imprimir el \emph{símbolo moneda} en la salida \texttt{PDF}; si se
+% establece en |false|, se usará la fuente tipográfica definida para el
+% \emph{modo texto} para imprimir el \emph{símbolo moneda} en la salida
+% \texttt{PDF}.
 %
 % \subsubsection{Monedas y alias para \cs[no-index]{spmoney}}\label{subsec:arg-spmoney}
 %
@@ -7470,7 +7471,7 @@ end, "shekel_fallback_patch")
   }
 \cs_new_protected:Nn \@@_spmoney_normalize_key:n
   {
-    \@@_luafun_spmoney_normalize_key:n { #1 }
+    \@@_luafun_spmoney_normalize_key:n { \exp_not:n { #1 } }
   }
 \cs_generate_variant:Nn \@@_spmoney_normalize_key:n { V }
 %    \end{macrocode}
@@ -7478,9 +7479,15 @@ end, "shekel_fallback_patch")
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spmoney}}
 %
-% \begin{macro}[int]{currency, sub-units, dolar-math, cifras-sep }
+% \begin{macro}[int]
+%   {
+%     currency,
+%     sub-units,
+%     money-math,
+%     cifras-sep,
+%   }
 %   Now we add the keys \mykey[spmoney]{currency}, \mykey[spmoney]{sub-units},
-%   \mykey[spmoney]{dolar-math} and \mykey[spmoney]{cifras-sep}.
+%   \mykey[spmoney]{money-math} and \mykey[spmoney]{cifras-sep}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spmoney }
   {
@@ -7489,9 +7496,9 @@ end, "shekel_fallback_patch")
     currency     .value_required:n = true,
     sub-units    .bool_set:N  = \l_@@_spmoney_sub_units_bool,
     sub-units    .value_required:n = true,
-    dolar-math   .bool_set:N  = \l_@@_spmoney_dolar_math_bool,
-    dolar-math   .initial:n   = { true },
-    dolar-math   .value_required:n = true,
+    money-math   .bool_set:N  = \l_@@_spmoney_money_math_bool,
+    money-math   .initial:n   = { true },
+    money-math   .value_required:n = true,
     cifras-sep   .meta:nn     = { spintent/spnum } { cifras-sep = {#1} },
     cifras-sep   .value_required:n = true,
     unknown      .code:n =
@@ -7536,10 +7543,10 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spmoney_print_symbol:}
 %   The function \myhlc|\@@_spmoney_print_symbol:| renders the \emph{\enquote{currency symbol}}.
 %   If \myhlc|\l_@@_spmoney_luaset_print_iso_str| is |true|, it outputs the ISO
-%   code using |\mathrm|. Otherwise, it prints the \emph{\enquote{standard symbol}}.
-%   For dollar signs `\$', it checks \myhlc|\l_@@_spmoney_dolar_math_bool| to
-%   determine whether to render it directly as a math character `\$' or
-%   wrap it inside |\text|.
+%   code using |\mathrm|. Otherwise, it prints the \emph{\enquote{standard symbol}},
+%   directly in math mode when \myhlc|\l_@@_spmoney_money_math_bool| is |true|,
+%   or wrapped inside |\text| when it is |false|. For dollar signs `\$', the
+%   symbol is typeset through the control sequence |\$| in both cases.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmoney_print_symbol:
   {
@@ -7548,10 +7555,14 @@ end, "shekel_fallback_patch")
       {
         \str_if_eq:VnTF \l_@@_spmoney_luaset_symbol_str { $ }
           {
-            \bool_if:NTF \l_@@_spmoney_dolar_math_bool
+            \bool_if:NTF \l_@@_spmoney_money_math_bool
               { \$ } { \text { \$ } }
           }
-          { \l_@@_spmoney_luaset_symbol_str }
+          {
+            \bool_if:NTF \l_@@_spmoney_money_math_bool
+              { \l_@@_spmoney_luaset_symbol_str }
+              { \text { \l_@@_spmoney_luaset_symbol_str } }
+          }
       }
   }
 %    \end{macrocode}
@@ -7675,7 +7686,7 @@ end, "shekel_fallback_patch")
           }
       }
     \@@_invisible_sep:
-    \MathMLintent { \l_@@_spmoney_intent_money_str :postfix($n) }
+    \MathMLintent { _ \l_@@_spmoney_intent_money_str :postfix($n) }
       {
         \@@_spmoney_render_layout:
       }
@@ -7687,7 +7698,9 @@ end, "shekel_fallback_patch")
 %   The function \myhlc|\@@_spmoney_check_sub_units:| verifies whether the
 %   selected currency supports \emph{\enquote{subunits}}. If the database returns empty
 %   subunit data, it triggers a warning and automatically disables the
-%   \emph{\enquote{subunit}} rendering flag.
+%   \emph{\enquote{subunit}} rendering flag. The flag is also disabled,
+%   without a warning, when the amount has no decimal part, since there
+%   are no \emph{\enquote{subunits}} to voice.
 %
 %   \smallskip
 %
@@ -7706,6 +7719,8 @@ end, "shekel_fallback_patch")
           { \l_@@_spmoney_luaset_currency_arg_str }
         \bool_set_false:N \l_@@_spmoney_sub_units_bool
       }
+    \tl_if_empty:NT \l_@@_luaset_dec_sep_tl
+      { \bool_set_false:N \l_@@_spmoney_sub_units_bool }
   }
 \cs_new_protected:Nn \@@_spmoney_set_and_print_sub_units:
   {
@@ -7723,11 +7738,11 @@ end, "shekel_fallback_patch")
     \int_compare:nTF { \l_@@_spmoney_subnum_int == 1 }
       {
         \str_set:Ne \l_@@_spmoney_intent_sub_unit_str
-          { \l_@@_spmoney_luaset_subsing_str :postfix($sub) }
+          { _ \l_@@_spmoney_luaset_subsing_str :postfix($sub) }
       }
       {
         \str_set:Ne \l_@@_spmoney_intent_sub_unit_str
-          { \l_@@_spmoney_luaset_subplur_str :postfix($sub) }
+          { _ \l_@@_spmoney_luaset_subplur_str :postfix($sub) }
       }
     \str_if_eq:VnTF \l_@@_luaset_only_part_int_str { 1 }
       {
@@ -7823,8 +7838,8 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmoney_parse_and_route:n
   {
-    \@@_luafun_spmoney_prepare_input:n { #1 }
-    \@@_luafun_clean_split_and_set:V \l_@@_spmoney_extracted_num_tl
+    \@@_luafun_spmoney_prepare_input:n { \exp_not:n { #1 } }
+    \@@_luafun_clean_split_and_set:n { \exp_not:V \l_@@_spmoney_extracted_num_tl }
     \str_if_empty:NF \l_@@_spmoney_extracted_curr_str
       {
         \str_set:Ne \l_@@_luaset_has_units_str { true }
@@ -17580,6 +17595,9 @@ local spintent_currency_grammatical_dict = {
     ["₽"]        = { sing = "rublo",                 plur = "rublos",                 conde = "de-rublos" },
     ["₺"]        = { sing = "lira",                  plur = "liras",                  conde = "de-liras" },
     ["₴"]        = { sing = "grivna",                plur = "grivnas",                conde = "de-grivnas" },
+    ["¢"]        = { sing = "centavo",               plur = "centavos",               conde = "de-centavos" },
+    ["centavo"]  = { sing = "centavo",               plur = "centavos",               conde = "de-centavos" },
+    ["centavos"] = { sing = "centavo",               plur = "centavos",               conde = "de-centavos" },
 }
 
 local spintent_currency_subunits_matrix = {
@@ -17629,16 +17647,30 @@ local spintent_currency_spoken_names = {
     ["₴"]        = "grivnas",
 }
 
+-- Clave de búsqueda de una moneda: sin espacios en los extremos, \$ igual
+-- que $, sin acentos y en minúsculas
+local spintent_money_accents = {
+    ["á"] = "a", ["é"] = "e", ["í"] = "i", ["ó"] = "o", ["ú"] = "u", ["ü"] = "u",
+    ["Á"] = "a", ["É"] = "e", ["Í"] = "i", ["Ó"] = "o", ["Ú"] = "u", ["Ü"] = "u",
+}
+
+local function spintent_money_key(str)
+    local key = spintent_trim(str)
+    key = s_gsub(key, "^\\%$", "$")
+    key = s_gsub(key, "[\xC3][\x80-\xBF]", spintent_money_accents)
+    return s_lower(key)
+end
+
 register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local trimmed = spintent_trim(currency_name)
-    local clean = s_lower(trimmed)
+    local clean = spintent_money_key(currency_name)
     local resolved_symbol = spintent_internal_currencies[clean] or "$"
 
     local gram_entry = spintent_currency_grammatical_dict[clean] or spintent_currency_grammatical_dict[resolved_symbol]
       or { sing = "peso", plur = "pesos", conde = "de-pesos" }
 
     local position = "pre"
-    if resolved_symbol == "€" then position = "post" end
+    if resolved_symbol == "€" or resolved_symbol == "¢" then position = "post" end
 
     if trimmed == s_upper(trimmed) and s_match(trimmed, "^%a+$") then
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "true")
@@ -17664,7 +17696,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
 end, { "string" })
 
 register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
-    local clean = spintent_normalize_key(raw_input)
+    local clean = spintent_money_key(raw_input)
     local resolved_symbol = spintent_internal_currencies[clean]
     local resolved_spoken = nil
 
@@ -17684,11 +17716,14 @@ register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
 end, { "string" })
 
 register_tex_cmd("luafun_spmoney_prepare_input", function(raw_input)
-    -- Extrae solo la moneda (borra dígitos, signos, espacios y separadores numéricos)
-    local curr_part = s_gsub(raw_input, "[%d%s%+%-%.,{}%:%;]", "")
+    -- Dígitos, signos, espacios, separadores numéricos y espacios matemáticos
+    local num_item = spintent_math_space + S"0123456789 \t\r\n+-.,{}:;"
 
-    -- Extrae solo el número matemático puro
-    local num_part  = s_gsub(raw_input, "[^%d%s%+%-%.,{}%:%;]", "")
+    -- Extrae solo la moneda (borra la parte numérica)
+    local curr_part = Cs(((num_item / "") + P(1))^0):match(raw_input)
+
+    -- Extrae solo el número matemático puro (conserva los espacios matemáticos)
+    local num_part  = Cs((num_item + (P(1) / ""))^0):match(raw_input)
 
     token_set_macro("l__spintent_spmoney_extracted_curr_str", curr_part)
     token_set_macro("l__spintent_spmoney_extracted_num_tl", num_part)

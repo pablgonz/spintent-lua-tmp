@@ -1,0 +1,419 @@
+% test-006.tex -- comando \spshort
+%
+% Compilar:  lualatex-dev test-006.tex
+% Validar:   show-pdf-tags --xml test-006.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-006.pdf
+%
+% \spshort trabaja solo en modo texto. Las secciones A a G se generaron a
+% partir de las tablas del manual de usuario: una entrada por cada
+% entrada y cada alias. Cada caso es un parrafo numerado, para poder
+% referirse a el al escuchar el PDF. Los comentarios "doc:" indican la
+% lectura que documenta el manual; en el resto, la lectura se revisa
+% escuchando. Las entradas invalidas (que detienen la compilacion) no van
+% aqui.
+%
+% Pendiente: los alias 1.ª y 2.º de la tabla de ordinales dan error en el
+% codigo, aunque el manual los lista, por eso no se incluyen. Tampoco
+% 12.er, que es invalido (er solo admite terminaciones 1 y 3).
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-006: spshort},
+  }
+\begin{document}
+
+\section*{A. Abreviaturas con letras voladas}
+
+% doc: «doctora»
+1. Entrada dr.a: \spshort{dr.a}.
+
+% doc: «doctora»
+2. Alias dr.ª: \spshort{dr.ª}.
+
+% doc: «doctoras»
+3. Entrada dr.as: \spshort{dr.as}.
+
+% doc: «profesora»
+4. Entrada prof.a: \spshort{prof.a}.
+
+% doc: «doña»
+5. Entrada d.a: \spshort{d.a}.
+
+% doc: «doña»
+6. Alias d.ª: \spshort{d.ª}.
+
+% doc: «maría»
+7. Entrada m.a: \spshort{m.a}.
+
+% doc: «número»
+8. Entrada n.o: \spshort{n.o}.
+
+% doc: «número»
+9. Alias n.º: \spshort{n.º}.
+
+% doc: «números»
+10. Entrada n.os: \spshort{n.os}.
+
+% doc: «compañía»
+11. Entrada c.ia: \spshort{c.ia}.
+
+\section*{B. Abreviaturas comunes y expresiones latinas}
+
+% doc: «página»
+12. Entrada pág.: \spshort{pág.}.
+
+% doc: «página»
+13. Alias pag.: \spshort{pag.}.
+
+% doc: «volumen»
+14. Entrada vol.: \spshort{vol.}.
+
+% doc: «etcétera»
+15. Entrada etc.: \spshort{etc.}.
+
+% doc: «y otros»
+16. Entrada et al.: \spshort{et al.}.
+
+% doc: «y otros»
+17. Alias et. al.: \spshort{et. al.}.
+
+% doc: «ibídem»
+18. Entrada ibíd.: \spshort{ibíd.}.
+
+% doc: «ibídem»
+19. Alias ibid.: \spshort{ibid.}.
+
+% doc: «obra citada»
+20. Entrada op. cit.: \spshort{op. cit.}.
+
+% doc: «obra citada»
+21. Alias op.cit.: \spshort{op.cit.}.
+
+% doc: «lugar citado»
+22. Entrada loc. cit.: \spshort{loc. cit.}.
+
+% doc: «lugar citado»
+23. Alias loc.cit.: \spshort{loc.cit.}.
+
+% doc: «verbigracia»
+24. Entrada v. gr.: \spshort{v. gr.}.
+
+% doc: «verbigracia»
+25. Alias v.gr.: \spshort{v.gr.}.
+
+% doc: «esto es»
+26. Entrada i. e.: \spshort{i. e.}.
+
+% doc: «esto es»
+27. Alias i.e.: \spshort{i.e.}.
+
+% doc: «por ejemplo»
+28. Entrada e. g.: \spshort{e. g.}.
+
+% doc: «por ejemplo»
+29. Alias e.g.: \spshort{e.g.}.
+
+% doc: «por ejemplo»
+30. Entrada p. ej.: \spshort{p. ej.}.
+
+% doc: «por ejemplo»
+31. Alias p.ej.: \spshort{p.ej.}.
+
+\section*{C. Títulos, profesiones y cargos}
+
+% doc: «señor»
+32. Entrada sr.: \spshort{sr.}.
+
+% doc: «señora»
+33. Entrada sra.: \spshort{sra.}.
+
+% doc: «señorita»
+34. Entrada srta.: \spshort{srta.}.
+
+% doc: «doctor»
+35. Entrada dr.: \spshort{dr.}.
+
+% doc: «doctora»
+36. Entrada dra.: \spshort{dra.}.
+
+% doc: «doctores»
+37. Entrada dres.: \spshort{dres.}.
+
+% doc: «doctoras»
+38. Entrada dras.: \spshort{dras.}.
+
+% doc: «profesor»
+39. Entrada prof.: \spshort{prof.}.
+
+% doc: «profesora»
+40. Entrada profa.: \spshort{profa.}.
+
+% doc: «profesores»
+41. Entrada profs.: \spshort{profs.}.
+
+% doc: «ingeniero»
+42. Entrada ing.: \spshort{ing.}.
+
+% doc: «ingenieros»
+43. Entrada ings.: \spshort{ings.}.
+
+% doc: «licenciado»
+44. Entrada lic.: \spshort{lic.}.
+
+% doc: «visto bueno»
+45. Entrada v. b.: \spshort{v. b.}.
+
+% doc: «visto bueno»
+46. Alias v.b.: \spshort{v.b.}.
+
+\section*{D. Abreviaturas compuestas e institucionales}
+
+% doc: «sociedad anónima»
+47. Entrada s. a.: \spshort{s. a.}.
+
+% doc: «sociedad anónima»
+48. Alias s.a.: \spshort{s.a.}.
+
+% doc: «estados unidos»
+49. Entrada ee. uu.: \spshort{ee. uu.}.
+
+% doc: «estados unidos»
+50. Alias ee.uu.: \spshort{ee.uu.}.
+
+% doc: «derechos humanos»
+51. Entrada dd. hh.: \spshort{dd. hh.}.
+
+% doc: «derechos humanos»
+52. Alias dd.hh.: \spshort{dd.hh.}.
+
+% doc: «juegos olímpicos»
+53. Entrada jj. oo.: \spshort{jj. oo.}.
+
+% doc: «juegos olímpicos»
+54. Alias jj.oo.: \spshort{jj.oo.}.
+
+% doc: «fuerzas armadas»
+55. Entrada ff. aa.: \spshort{ff. aa.}.
+
+% doc: «fuerzas armadas»
+56. Alias ff.aa.: \spshort{ff.aa.}.
+
+% doc: «relaciones exteriores»
+57. Entrada rr. ee.: \spshort{rr. ee.}.
+
+% doc: «relaciones exteriores»
+58. Alias rr.ee.: \spshort{rr.ee.}.
+
+% doc: «comunidades autónomas»
+59. Entrada cc. aa.: \spshort{cc. aa.}.
+
+% doc: «comunidades autónomas»
+60. Alias cc.aa.: \spshort{cc.aa.}.
+
+% doc: «posdata»
+61. Entrada p. d.: \spshort{p. d.}.
+
+% doc: «posdata»
+62. Alias p.d.: \spshort{p.d.}.
+
+% doc: «antes de Cristo»
+63. Entrada a. c.: \spshort{a. c.}.
+
+% doc: «antes de Cristo»
+64. Alias a.c.: \spshort{a.c.}.
+
+% doc: «después de Cristo»
+65. Entrada d. c.: \spshort{d. c.}.
+
+% doc: «después de Cristo»
+66. Alias d.c.: \spshort{d.c.}.
+
+% doc: «documento nacional de identidad»
+67. Entrada d. n. i.: \spshort{d. n. i.}.
+
+% doc: «documento nacional de identidad»
+68. Alias d.n.i.: \spshort{d.n.i.}.
+
+% doc: «rol único tributario»
+69. Entrada r. u. t.: \spshort{r. u. t.}.
+
+% doc: «rol único tributario»
+70. Alias r.u.t.: \spshort{r.u.t.}.
+
+% doc: «rol único nacional»
+71. Entrada r. u. n.: \spshort{r. u. n.}.
+
+% doc: «rol único nacional»
+72. Alias r.u.n.: \spshort{r.u.n.}.
+
+\section*{E. Siglas}
+
+% doc: «documento nacional de identidad»
+73. Entrada dni: \spshort{dni}.
+
+% doc: «rol único tributario»
+74. Entrada rut: \spshort{rut}.
+
+% doc: «rol único nacional»
+75. Entrada run: \spshort{run}.
+
+% doc: «organización de las naciones unidas»
+76. Entrada onu: \spshort{onu}.
+
+% doc: «real academia española»
+77. Entrada rae: \spshort{rae}.
+
+% doc: «organización no gubernamental»
+78. Entrada ong: \spshort{ong}.
+
+% doc: «organización no gubernamental» (el código lee el plural: «organizaciones no gubernamentales»)
+79. Alias ongs: \spshort{ongs}.
+
+% doc: «unión de repúblicas socialistas soviéticas»
+80. Entrada urss: \spshort{urss}.
+
+% doc: «organización de los estados americanos»
+81. Entrada oea: \spshort{oea}.
+
+% doc: «organización mundial de la salud»
+82. Entrada oms: \spshort{oms}.
+
+% doc: «fondo monetario internacional»
+83. Entrada fmi: \spshort{fmi}.
+
+% doc: «banco interamericano de desarrollo»
+84. Entrada bid: \spshort{bid}.
+
+% doc: «organización del tratado del atlántico norte»
+85. Entrada otan: \spshort{otan}.
+
+% doc: «unión europea»
+86. Entrada ue: \spshort{ue}.
+
+% doc: «reino unido»
+87. Entrada ru: \spshort{ru}.
+
+\section*{F. Acrónimos silábicos}
+
+% doc: «fondo de las naciones unidas para la infancia»
+88. Entrada unicef: \spshort{unicef}.
+
+% doc: «organización de las naciones unidas para la educación, la ciencia y la cultura»
+89. Entrada unesco: \spshort{unesco}.
+
+% doc: «mercado común del sur»
+90. Entrada mercosur: \spshort{mercosur}.
+
+% doc: «comisión económica para américa latina»
+91. Entrada cepal: \spshort{cepal}.
+
+% doc: «ministerio de educación»
+92. Entrada mineduc: \spshort{mineduc}.
+
+% doc: «consejo nacional de investigaciones»
+93. Entrada conicet: \spshort{conicet}.
+
+\section*{G. Números ordinales}
+
+% doc: «primera»
+94. Entrada 1.a: \spshort{1.a}.
+
+% doc: «segundo»
+95. Entrada 2.o: \spshort{2.o}.
+
+% doc: «tercer»
+96. Entrada 3.er: \spshort{3.er}.
+
+% doc: «cuartos»
+97. Entrada 4.os: \spshort{4.os}.
+
+% doc: «quintas»
+98. Entrada 5.as: \spshort{5.as}.
+
+\section*{H. Otros ordinales y escritura en mayúsculas}
+
+% código: «décimo»
+99. Décimo: \spshort{10.o}.
+
+% código: «undécima»
+100. Undécima: \spshort{11.a}.
+
+% código: «vigésimo primer»
+101. Vigésimo primer: \spshort{21.er}.
+
+% código: «trigésimo tercer»
+102. Trigésimo tercer: \spshort{33.er}.
+
+% código: «primeros»
+103. Plural: \spshort{1.os}.
+
+% código: «100º», sin lectura en palabras
+104. Centésimo: \spshort{100.o}.
+
+% código: «documento nacional de identidad»
+105. Sigla en mayúsculas: \spshort{DNI}.
+
+% código: «fondo de las naciones unidas para la infancia»
+106. Acrónimo con mayúscula inicial: \spshort{Unicef}.
+
+% código: «doctora»
+107. Abreviatura con letra volada en mayúscula: \spshort{Dr.A}.
+
+% código: «etcétera»
+108. Abreviatura con punto final y mayúscula: \spshort{Etc.}.
+
+\section*{I. Llave small-caps}
+
+109. Por defecto: \spshort{dr.a}.
+
+110. Con false: \spshort[small-caps=false]{dr.a}.
+
+% doc: «doctora», imprime Dr. con la a en versalita
+111. Letra volada con true: \spshort[small-caps=true]{dr.a}.
+
+112. Ordinal con true: \spshort[small-caps=true]{1.o}.
+
+113. Número con true: \spshort[small-caps=true]{n.o}.
+
+114. Sigla de tres letras con true: \spshort[small-caps=true]{onu}.
+
+115. Sigla de cuatro letras con true: \spshort[small-caps=true]{otan}.
+
+116. Acrónimo de cinco o más letras con true: \spshort[small-caps=true]{unicef}.
+
+117. Abreviatura en mayúsculas con true: \spshort[small-caps=true]{ee. uu.}.
+
+\section*{J. Llave read-arg}
+
+% doc: «octavo»
+118. Ejemplo del manual: \spshort[read-arg={octavo}]{8.\textsuperscript{\emph{avo}}}.
+
+119. Abreviatura nueva: \spshort[read-arg={profesor emérito}]{Prof.~em.}.
+
+120. Sigla nueva: \spshort[read-arg={instituto nacional de estadísticas}]{INE}.
+
+\section*{K. En contexto}
+
+121. Varias abreviaturas en una oración: La \spshort{dra.} Pérez y el \spshort{sr.} López, de la \spshort{onu}, citaron la \spshort{pág.} 12 del \spshort{vol.} 3.
+
+122. Ordinales en una oración: Quedó en el \spshort{3.er} lugar del \spshort{5.o} concurso.
+
+% doc: «primero»
+123. Con numerales de caja alta, como indica el manual: {\addfontfeatures{Numbers=Lining}\spshort{1.o}}.
+
+124. Sigla y abreviatura juntas: El \spshort{rut} del \spshort{ing.} Soto figura como \spshort{n.o} 5.
+
+\end{document}
