@@ -1,0 +1,226 @@
+% test-011.tex -- comandos \spnZ, \spmQ, \sprazon y \spProp
+%
+% Compilar:  lualatex-dev test-011.tex
+% Validar:   show-pdf-tags --xml test-011.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-011.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
+% el PDF. Los comentarios "doc:" indican lo que documenta el manual; en el
+% resto, la lectura se revisa escuchando. Todos trabajan en modo
+% matematico. \spnZ y el entero de \spmQ solo reciben enteros; en \spmQ el
+% numerador tambien debe ser entero (incluso con use-spnZ=false) y el
+% denominador distinto de cero. \sprazon y \spProp reciben cualquier
+% expresion matematica. Las entradas invalidas (que detienen la
+% compilacion) no van aqui. Las lecturas de \sprazon y \spProp se deducen
+% de sus intents y hay que confirmarlas escuchando.
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-011: spnZ, spmQ, sprazon y spProp},
+  }
+\begin{document}
+
+\section*{A. Comando spnZ: argumentos}
+
+1. Entero positivo: $\spnZ{23}$.
+
+2. Con signo negativo: $\spnZ{-23}$.
+
+3. Con signo positivo explícito: $\spnZ{+23}$.
+
+4. Cero: $\spnZ{0}$.
+
+5. Cien: $\spnZ{100}$.
+
+6. Un millón: $\spnZ{1000000}$.
+
+7. Siete cifras: $\spnZ{1234567}$.
+
+8. Negativo grande: $\spnZ{-1000}$.
+
+\section*{B. Comando spnZ: llaves}
+
+9. Con cifras-sep false: $\spnZ[cifras-sep=false]{1000000}$.
+
+10. Con cifras-sep false y espacios del usuario: $\spnZ[cifras-sep=false]{10\,00\,00}$.
+
+11. Con read-sign clear y signo negativo: $\spnZ[read-sign=clear]{-23}$.
+
+12. Con read-sign clear y signo positivo: $\spnZ[read-sign=clear]{+23}$.
+
+13. Con wrap-parens false, el valor por defecto: $\spnZ[wrap-parens=false]{-23}$.
+
+% doc: se imprimen paréntesis alrededor del entero
+14. Con wrap-parens true: $\spnZ[wrap-parens=true]{-23}$.
+
+% doc: se verbalizan los paréntesis
+15. Con wrap-parens true y read-parens true: $\spnZ[wrap-parens=true,read-parens=true]{-23}$.
+
+% doc: se imprimen pero no se verbalizan
+16. Con wrap-parens true y read-parens false: $\spnZ[wrap-parens=true,read-parens=false]{-23}$.
+
+17. Con wrap-parens false y read-parens false: $\spnZ[wrap-parens=false,read-parens=false]{-23}$.
+
+18. Con todas las llaves: $\spnZ[cifras-sep=false,read-sign=clear,wrap-parens=true,read-parens=false]{-1234567}$.
+
+\section*{C. Comando spnZ: en fórmulas}
+
+19. Suma de enteros: $\spnZ{-3} + \spnZ{5}$.
+
+20. Con paréntesis y producto: $\spnZ[wrap-parens=true]{-3} \spmsym \spnZ{4}$.
+
+21. División con igualdad: $\spnZ{12} \spdsym \spnZ{4} = \spnZ{3}$.
+
+22. En fórmula destacada:
+\[ \spnZ[wrap-parens=true]{-3} \spmsym \spnZ[wrap-parens=true]{-4} = \spnZ{12} \].
+
+\section*{D. Comando spmQ: ejemplos del manual y llave join-word}
+
+% doc: dos y cinco séptimos
+23. Por defecto: $\spmQ{2}{5}{7}$.
+
+% doc: un entero cinco séptimos
+24. Con join-word entero: $\spmQ[join-word=entero]{1}{5}{7}$.
+
+% doc: dos enteros cinco séptimos
+25. Con join-word enteros: $\spmQ[join-word=enteros]{2}{5}{7}$.
+
+% doc: dos y cinco séptimos
+26. Con join-word y: $\spmQ[join-word=y]{2}{5}{7}$.
+
+\section*{E. Comando spmQ: denominadores}
+
+27. Con denominador 2: $\spmQ{1}{1}{2}$.
+
+28. Con denominador 3: $\spmQ{1}{1}{3}$.
+
+29. Con denominador 4: $\spmQ{2}{3}{4}$.
+
+30. Con denominador 5: $\spmQ{3}{2}{5}$.
+
+31. Con denominador 6: $\spmQ{1}{1}{6}$.
+
+32. Con denominador 7: $\spmQ{4}{6}{7}$.
+
+33. Con denominador 8: $\spmQ{5}{3}{8}$.
+
+34. Con denominador 9: $\spmQ{6}{1}{9}$.
+
+35. Con denominador 10: $\spmQ{7}{3}{10}$.
+
+36. Con denominador 11: $\spmQ{8}{1}{11}$.
+
+37. Con denominador 12: $\spmQ{9}{5}{12}$.
+
+38. Con denominador 100: $\spmQ{3}{1}{100}$.
+
+\section*{F. Comando spmQ: enteros y llaves}
+
+39. Entero negativo: $\spmQ{-2}{5}{7}$.
+
+40. Entero con signo positivo explícito: $\spmQ{+2}{5}{7}$.
+
+41. Entero grande: $\spmQ{100}{1}{2}$.
+
+42. Entero de cuatro cifras: $\spmQ{1000}{1}{2}$.
+
+% doc: el numerador y el denominador se leen como ordinales
+43. Con use-spnZ true, el valor por defecto: $\spmQ[use-spnZ=true]{2}{5}{7}$.
+
+% doc: se tipografían directamente, sin procesamiento semántico
+44. Con use-spnZ false: $\spmQ[use-spnZ=false]{2}{5}{7}$.
+
+45. Con use-dfrac false, el valor por defecto: $\spmQ[use-dfrac=false]{2}{5}{7}$.
+
+% doc: la fracción se imprime con \dfrac
+46. Con use-dfrac true: $\spmQ[use-dfrac=true]{2}{5}{7}$.
+
+47. Con wrap-parens true: $\spmQ[wrap-parens=true]{2}{5}{7}$.
+
+48. Con wrap-parens true y read-parens false: $\spmQ[wrap-parens=true,read-parens=false]{2}{5}{7}$.
+
+49. Con join-word y use-dfrac: $\spmQ[join-word=enteros,use-dfrac=true]{2}{5}{7}$.
+
+50. Con todas las llaves: $\spmQ[join-word=entero,use-spnZ=false,use-dfrac=true,wrap-parens=true,read-parens=false]{1}{5}{7}$.
+
+51. Suma de números mixtos: $\spmQ{2}{5}{7} + \spmQ{1}{1}{2}$.
+
+\section*{G. Comando sprazon}
+
+% doc: tres es a cuatro
+52. Dos enteros: $\sprazon{3}{4}$.
+
+53. Con letras: $\sprazon{a}{b}$.
+
+54. Con una expresión: $\sprazon{x+1}{2}$.
+
+55. Con cifras grandes: $\sprazon{12}{18}$.
+
+56. Con silent false, el valor por defecto: $\sprazon[silent=false]{3}{4}$.
+
+% doc: no se verbaliza
+57. Con silent true: $\sprazon[silent=true]{3}{4}$.
+
+% doc: la fracción se imprime con \dfrac
+58. Con use-dfrac true: $\sprazon[use-dfrac=true]{3}{4}$.
+
+% doc: imprime 3:4; la lectura es la misma
+59. Con inline true: $\sprazon[inline=true]{3}{4}$.
+
+60. Con inline true y letras: $\sprazon[inline=true]{a}{b}$.
+
+% doc: use-dfrac no tiene efecto con inline
+61. Con inline y use-dfrac: $\sprazon[inline=true,use-dfrac=true]{3}{4}$.
+
+62. Con silent e inline: $\sprazon[silent=true,inline=true]{3}{4}$.
+
+63. Dos razones iguales: $\sprazon{3}{4} = \sprazon{6}{8}$.
+
+\section*{H. Comando spProp}
+
+% doc: tres es a cuatro como seis es a ocho
+64. Cuatro enteros: $\spProp{3}{4}{6}{8}$.
+
+65. Con letras: $\spProp{a}{b}{c}{d}$.
+
+66. Con expresiones: $\spProp{x}{2}{x+1}{3}$.
+
+67. Con silent false, el valor por defecto: $\spProp[silent=false]{3}{4}{6}{8}$.
+
+% doc: no se verbaliza
+68. Con silent true: $\spProp[silent=true]{3}{4}{6}{8}$.
+
+% doc: las fracciones se imprimen con \dfrac
+69. Con use-dfrac true: $\spProp[use-dfrac=true]{3}{4}{6}{8}$.
+
+% doc: imprime 3:4=6:8; la lectura es la misma
+70. Con inline true: $\spProp[inline=true]{3}{4}{6}{8}$.
+
+71. Con inline true y letras: $\spProp[inline=true]{a}{b}{c}{d}$.
+
+% doc: use-dfrac no tiene efecto con inline
+72. Con inline y use-dfrac: $\spProp[inline=true,use-dfrac=true]{3}{4}{6}{8}$.
+
+73. Con silent e inline: $\spProp[silent=true,inline=true]{3}{4}{6}{8}$.
+
+\section*{I. En contexto}
+
+74. Razón y proporción en una misma fórmula: $\sprazon{3}{4} \Rightarrow \spProp{3}{4}{6}{8}$.
+
+75. En fórmula destacada:
+\[ \spProp[use-dfrac=true]{a}{b}{c}{d} \].
+
+\end{document}

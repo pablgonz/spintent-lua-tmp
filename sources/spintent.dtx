@@ -1607,6 +1607,15 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
+%  Los \emph{«alias moneda»} se deben escribir en minúsculas y los códigos
+%  \texttt{ISO} en minúsculas o todo en mayúsculas. Cualquier otra
+%  escritura, por ejemplo |PESO| o |Usd|, devolverá un \enquote{error} y
+%  se detendrá la compilación del documento.
+% \end{important}
+%
+% \smallskip
+%
+% \begin{important}*
 %  La posición del \emph{«símbolo moneda»} a la izquierda o a la derecha
 %  de la \emph{«cifra numérica»} y la verbalización para \mynvmath{NVDA/MathCAT}
 %  se manejan desde el módulo Lua \myluamod{} y no se proveen llaves para
@@ -1987,6 +1996,15 @@ end, "shekel_fallback_patch")
 % \texttt{5.as} & --- & 5.$^{\text{as}}$ & \emph{«quintas»} \\
 % \end{longtable}
 %
+% \smallskip
+%
+% \begin{important}*
+%   Los números ordinales se verbalizan con palabras desde el |1| hasta
+%   el |99|. Desde el |100| el ordinal no se convierte en palabras y se
+%   entrega a \mynvmath{NVDA/MathCAT} tal como se imprime, por ejemplo
+%   |100.o| como \emph{«100º»}.
+% \end{important}
+%
 % \section{Utilidades generales}\label{sec:utilidades}
 %
 % Además de los \emph{«cuatro grandes»} y sus asociados, el paquete \mypkg*[no-index]{spintent}
@@ -2133,6 +2151,28 @@ end, "shekel_fallback_patch")
 % `|\cong|' y cuando se utilice |$\spread{\cong}$| se imprimirá
 % `$\cong$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«es congruente con»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%   El \mymarg{símbolo} debe ser un único comando, pero puede ser uno
+%   definido por el usuario. Por ejemplo, con |\newcommand{\xcuad}{x^2}|,
+%   |\spnewread{\xcuad}{x-al-cuadrado}| registrará `|\xcuad|' y cuando se
+%   utilice |$\spread{\xcuad}$| se imprimirá `$x^2$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«x al cuadrado»}.
+% \end{important}
+%
+% \smallskip
+%
+% \begin{important}*
+%   Los espacios y los guiones bajos de \mymarg{verbalización
+%   \textnormal{NVDA}} se convierten en guiones `|-|', por lo que
+%   |{es congruente con}| equivale a |{es-congruente-con}|. Los guiones
+%   repetidos se reducen a uno y se eliminan los del inicio y del final.
+%   Si el resultado queda vacío se devolverá un \enquote{error} y se
+%   detendrá la compilación del documento.
+% \end{important}
 %
 % \subsection*{El comando \cs[no-index]{spread}}\label{subsec:spread}
 %
@@ -2507,6 +2547,13 @@ end, "shekel_fallback_patch")
 % `$\mathrm{D}(m)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«divisores de eme»}.
 %
+% \smallskip
+%
+% \begin{important}*
+%   El número |0| no es válido: |$\spnD(0)$| devolverá un
+%   \enquote{error} y se detendrá la compilación del documento.
+% \end{important}
+%
 % \subsubsection*{Llaves para \cs[no-index]{spnD}}
 %
 % \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
@@ -2592,6 +2639,13 @@ end, "shekel_fallback_patch")
 % Si se usa el argumento \myparg{letra}, |$\spnM(m)$| imprimirá
 % `$\mathrm{M}(m)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«múltiplos de eme»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%   El número |0| no es válido: |$\spnM(0)$| devolverá un
+%   \enquote{error} y se detendrá la compilación del documento.
+% \end{important}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spnM}}
 %
@@ -2900,7 +2954,7 @@ end, "shekel_fallback_patch")
 % los paréntesis.
 %
 % \keyexampcmd{read-parens}{true \textnormal{%
-%   \textcolor{lightgray}{\textbar}} false}{false}[spnZ]
+%   \textcolor{lightgray}{\textbar}} false}{true}[spnZ]
 % \smallskip
 % Establece si \mynvmath{NVDA/MathCAT} \emph{verbalizará} los paréntesis redondos
 % `|(|\dots|)|' alrededor del \emph{argumento} \mymarg{número entero} pasado a
@@ -2974,12 +3028,12 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
-% \keyexampcmd{print-dfrac}{true \textnormal{\textcolor{lightgray}{\textbar}}
+% \keyexampcmd{use-dfrac}{true \textnormal{\textcolor{lightgray}{\textbar}}
 %   false}{false}[spmQ]
 % \smallskip
 % Establece si la fracción del \emph{número mixto} se imprime usando
 % |\dfrac| en lugar de |\frac|. Si se establece en |true|, al usar
-% |$\spmQ[print-dfrac=true]{2}{5}{7}$| imprimirá la fracción en tamaño
+% |$\spmQ[use-dfrac=true]{2}{5}{7}$| imprimirá la fracción en tamaño
 % \emph{display} `$\scalerel{2}{\dfrac{5}{7}}$' en la salida \texttt{PDF};
 % si se establece en |false|, la fracción se imprime con |\frac| siguiendo
 % el tamaño matemático del contexto en curso.
@@ -7600,7 +7654,9 @@ end, "shekel_fallback_patch")
 %   The first \enquote{error} warns the user if subunit rendering is requested
 %   for a currency that does not support fractional divisions (such as
 %   JPY or CLP), safely ignoring the flag. The second \enquote{error} is triggered
-%   if the provided currency identifier is not registered in the Lua database.
+%   if the provided currency identifier is not registered in the Lua database
+%   or is not written validly: an alias or symbol with any uppercase letter,
+%   or an \texttt{ISO} code that is neither all lowercase nor all uppercase.
 % \iffalse
 %% messages errors for \spmoney
 % \fi
@@ -9041,7 +9097,8 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{spnewread-empty-args, spnewread-duplicate, spread-unknown-sym}
 %   The \enquote{error} |spnewread-empty-args| is raised when
-%   |\spnewread| receives an empty or blank symbol or reading. The
+%   |\spnewread| receives a blank symbol or a reading that is empty
+%   once normalized. The
 %   \enquote{error} |spnewread-duplicate| is raised when it registers a
 %   symbol already in the dictionary. The \enquote{error}
 %   |spread-unknown-sym| is raised when |\spread| is given a symbol
@@ -9088,7 +9145,7 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_spread_luaset_reading_str| are set by
 %   \myhlc|\@@_luafun_spread_new:nn|/
 %   \myhlc|\@@_luafun_spread_lookup:n|.
-%   \myhlc|\l_@@_spread_read_arg_tl| stores \mykey{read-arg}.
+%   The variable \myhlc|\l_@@_spread_read_arg_tl| stores \mykey{read-arg}.
 %    \begin{macrocode}
 \str_new:N \l_@@_spread_luaset_status_str
 \str_new:N \l_@@_spread_luaset_reading_str
@@ -9181,7 +9238,11 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}{\spnewread}
 %   The public command |\spnewread| registers a new symbol/reading
-%   pair. It passes the symbol `|#1|' and its reading `|#2|' to Lua via
+%   pair. It first normalizes the reading `|#2|' with
+%   \myhlc|\@@_sanitize_affix:Nn|, storing the result in the scratch
+%   variable \myhlc|\l_tmpa_tl|, and reports |spnewread-empty-args|
+%   when the symbol `|#1|' is blank or the normalized reading is empty.
+%   Otherwise it passes the symbol and the normalized reading to Lua via
 %   \myhlc|\@@_luafun_spread_new:nn|, reporting
 %   |spnewread-duplicate| when the symbol is already registered.
 %    \begin{macrocode}
@@ -9192,10 +9253,11 @@ end, "shekel_fallback_patch")
         \msg_error:nnn { spintent } { need-text-mode } { \spnewread }
       }
       {
-        \bool_lazy_or:nnTF { \tl_if_blank_p:n { #1 } } { \tl_if_blank_p:n { #2 } }
+        \@@_sanitize_affix:Nn \l_tmpa_tl { #2 }
+        \bool_lazy_or:nnTF { \tl_if_blank_p:n { #1 } } { \tl_if_empty_p:N \l_tmpa_tl }
           { \msg_error:nn { spintent } { spnewread-empty-args } }
           {
-            \@@_luafun_spread_new:nn { \exp_not:n {#1} } { #2 }
+            \@@_luafun_spread_new:nn { \exp_not:n {#1} } { \exp_not:V \l_tmpa_tl }
             \str_if_eq:VnT \l_@@_spread_luaset_status_str { duplicate }
               {
                 \msg_error:nnn { spintent } { spnewread-duplicate } { #1 }
@@ -10245,7 +10307,9 @@ end, "shekel_fallback_patch")
 %   With `|#4|' given, \myhlc|\@@_luafun_spnmd_classify:n| decides
 %   whether it is wrapped through |\spnum| — and, when it is, whether
 %   \myhlc|\@@_spnM_spnD_result:nn| also prints the computed set, per
-%   \mykey{result} — or left verbatim, with no result attempted.
+%   \mykey{result} — or left verbatim, with no result attempted. A zero
+%   is flagged as an error by \myhlc|\@@_luafun_spnmd_classify:n| and
+%   rejected right away with |md-invalid-argument|.
 %
 %   \smallskip
 %
@@ -10277,6 +10341,8 @@ end, "shekel_fallback_patch")
       }
       {
         \@@_luafun_spnmd_classify:n { \exp_not:n { #4 } }
+        \str_if_eq:VnT \l_@@_spnM_spnD_luaset_error_str { true }
+          { \msg_error:nne { spintent } { md-invalid-argument } { \exp_not:c { sp #1 } } }
         \bool_if:cTF { l_@@_sp #1 _silent_bool }
           {
             \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
@@ -10814,10 +10880,10 @@ end, "shekel_fallback_patch")
 % \subsubsection{Definition of keys for \cs[no-index]{spmQ}}
 %
 % \begin{macro}[int]{join-word, use-spnZ, wrap-parens, read-parens,
-%                    print-dfrac, unknown}
+%                    use-dfrac, unknown}
 %   Now we add the keys \mykey[spmQ]{join-word}, \mykey[spmQ]{use-spnZ},
 %   \mykey[spmQ]{wrap-parens}, \mykey[spmQ]{read-parens} and
-%   \mykey[spmQ]{print-dfrac}.
+%   \mykey[spmQ]{use-dfrac}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spmQ }
   {
@@ -10839,9 +10905,9 @@ end, "shekel_fallback_patch")
     use-spnZ          .bool_set:N = \l_@@_spmQ_use_spnZ_bool,
     use-spnZ          .initial:n = true,
     use-spnZ          .value_required:n = true,
-    print-dfrac       .bool_set:N = \l_@@_spmQ_print_dfrac_bool,
-    print-dfrac       .initial:n = false,
-    print-dfrac       .value_required:n = true,
+    use-dfrac         .bool_set:N = \l_@@_spmQ_use_dfrac_bool,
+    use-dfrac         .initial:n = false,
+    use-dfrac         .value_required:n = true,
     wrap-parens       .bool_set:N = \l_@@_spnQ_wrap_parens_bool,
     wrap-parens       .initial:n  = false,
     wrap-parens       .value_required:n = true,
@@ -10871,7 +10937,7 @@ end, "shekel_fallback_patch")
 %
 %   \smallskip
 %
-%   If the key \mykey[spmQ]{print-dfrac} is active, the size is always
+%   If the key \mykey[spmQ]{use-dfrac} is active, the size is always
 %   forced to |\Bigl|/|\Bigr| regardless of the current mathematical style,
 %   since |\dfrac| always produces a display-height fraction.
 %    \begin{macrocode}
@@ -10905,11 +10971,11 @@ end, "shekel_fallback_patch")
         \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \rparen }
       }
 %    \end{macrocode}
-%   If the key \mykey[spmQ]{print-dfrac} is active, we must reset the
+%   If the key \mykey[spmQ]{use-dfrac} is active, we must reset the
 %   variables \cs{l_@@_spnQ_wrap_parens_l_tl} and
 %   \cs{l_@@_spnQ_wrap_parens_r_tl} to |\Bigl|/|\Bigr| unconditionally.
 %    \begin{macrocode}
-    \bool_if:NT \l_@@_spmQ_print_dfrac_bool
+    \bool_if:NT \l_@@_spmQ_use_dfrac_bool
       {
         \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
         \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
@@ -10998,7 +11064,7 @@ end, "shekel_fallback_patch")
 %
 %   The Lua function receives the integer digits from
 %   \cs{l_@@_luaset_part_int_tl} and the fraction command name
-%   (|\frac| or |\dfrac|, determined by the key \mykey[spmQ]{print-dfrac})
+%   (|\frac| or |\dfrac|, determined by the key \mykey[spmQ]{use-dfrac})
 %   as its two arguments, and inserts the appropriately scaled |sub_box|
 %   node directly into the current horizontal list.
 %    \begin{macrocode}
@@ -11006,7 +11072,7 @@ end, "shekel_fallback_patch")
   {
     \int_set_eq:Nc \l_@@_saved_luamml_flag_int { l__luamml_flag_int }
     \int_set:Nn \l__luamml_flag_int { 0 }
-    \bool_if:NTF \l_@@_spmQ_print_dfrac_bool
+    \bool_if:NTF \l_@@_spmQ_use_dfrac_bool
       { \@@_luafun_spmQ_scale_int:Vn \l_@@_luaset_part_int_tl { dfrac } }
       { \@@_luafun_spmQ_scale_int:Vn \l_@@_luaset_part_int_tl { frac  } }
     \int_set_eq:cN { l__luamml_flag_int } \l_@@_saved_luamml_flag_int
@@ -11084,13 +11150,13 @@ end, "shekel_fallback_patch")
 %
 %   If the validation passes, the function dispatches on the two boolean
 %   variables \cs{l_@@_spmQ_use_spnZ_bool} and
-%   \cs{l_@@_spmQ_print_dfrac_bool}, controlled respectively by the keys
-%   \mykey[spmQ]{use-spnZ} and \mykey[spmQ]{print-dfrac}. When
+%   \cs{l_@@_spmQ_use_dfrac_bool}, controlled respectively by the keys
+%   \mykey[spmQ]{use-spnZ} and \mykey[spmQ]{use-dfrac}. When
 %   \mykey[spmQ]{use-spnZ} is |true|, both the numerator and denominator
 %   are passed through |\spnZ| to gain \mynvmath{MathML} integer semantics;
 %   otherwise, the raw token lists `|#1|' and `|#2|' are used directly.
 %   In both branches, the fraction command is selected dynamically via
-%   |\use:c|: if \mykey[spmQ]{print-dfrac} is |true|, |dfrac| is
+%   |\use:c|: if \mykey[spmQ]{use-dfrac} is |true|, |dfrac| is
 %   assembled; otherwise, |frac| is used.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_print_spnZ_dfrac:nn
@@ -11102,11 +11168,11 @@ end, "shekel_fallback_patch")
       }
     \bool_if:NTF \l_@@_spmQ_use_spnZ_bool
       {
-        \use:c { \bool_if:NT \l_@@_spmQ_print_dfrac_bool { d } frac }
+        \use:c { \bool_if:NT \l_@@_spmQ_use_dfrac_bool { d } frac }
           { \spnZ { #1 } } { \spnZ { #2 } }
       }
       {
-        \use:c { \bool_if:NT \l_@@_spmQ_print_dfrac_bool { d } frac }
+        \use:c { \bool_if:NT \l_@@_spmQ_use_dfrac_bool { d } frac }
           { #1 } { #2 }
       }
   }
@@ -11122,7 +11188,7 @@ end, "shekel_fallback_patch")
 %   integer part. Next, it injects the grammatical connector between the
 %   integer and the fraction via \myhlc|\@@_spmQ_set_join_word:|. Then it
 %   calls \myhlc|\@@_spmQ_print_spnZ_dfrac:nn| to typeset the fraction
-%   using the keys \mykey[spmQ]{print-dfrac} and \mykey[spmQ]{use-spnZ}.
+%   using the keys \mykey[spmQ]{use-dfrac} and \mykey[spmQ]{use-spnZ}.
 %   Finally, it closes the optional parentheses via
 %   \myhlc|\@@_spmQ_stop_wrap_parens:|.
 %    \begin{macrocode}
@@ -14290,7 +14356,7 @@ end, "shekel_fallback_patch")
 %   |<mrow>| does not collapse into |<math>|, |luamml| issue
 %   \href{https://github.com/latex3/luamml/issues/26}{\#26}).
 %
-%   \mykey{print-sym} and \mykey{concept}/\mykey{silent} are
+%   The keys \mykey{print-sym} and \mykey{concept}/\mykey{silent} are
 %   independent: the former only decides whether the glyph
 %   (\myhlc|\@@_spPoly_sym:|, silenced with
 %   \myhlc|\@@_luafun_mrow_intent_arg:nn|) is attempted — it is
@@ -14372,7 +14438,7 @@ end, "shekel_fallback_patch")
 %   }
 %   Scratch variables used by \myhlc|\@@_spfig_process:nn| to assemble
 %   the visual and the |intent|.
-%   \myhlc|\l_@@_geo_final_print_tl| holds the final visual placed
+%   The variable \myhlc|\l_@@_geo_final_print_tl| holds the final visual placed
 %   under |\mathcal|'s subscript. The final literal |intent| and the
 %   concept forwarded when \mykey[spAfig,spPfig]{read-cmd} is |mathcat|.
 %    \begin{macrocode}
@@ -14596,7 +14662,7 @@ end, "shekel_fallback_patch")
 %     \l_@@_geo_print_sym_str,
 %   }
 %   The variable \myhlc|\l_@@_spfig_op_tl| holds |área| or |perímetro|.
-%   \myhlc|\l_@@_spfig_intent_tl| holds the concept word for the
+%   The variable \myhlc|\l_@@_spfig_intent_tl| holds the concept word for the
 %   vertices case (\mykey{read-arg} or the auto-detected figure name).
 %   The rest are scratch variables to split
 %   \myhlc|\l_@@_geo_luaset_points_clist| and build the
@@ -14840,7 +14906,7 @@ end, "shekel_fallback_patch")
 %   Handles the vertices case. Receives the short command name in
 %   `|#1|'. Must be called after \myhlc|\@@_spfig_build_refs:|.
 %
-%   \mykey{read-arg}, when given, overrides the auto-detected figure
+%   The key \mykey{read-arg}, when given, overrides the auto-detected figure
 %   name in \myhlc|\l_@@_spfig_intent_tl|: with \mykey{concept} |true|
 %   it is still prefixed with |área-del-|/|perímetro-del-|, with
 %   |concept| |false| it is used verbatim. With \mykey{read-arg}
@@ -14897,7 +14963,7 @@ end, "shekel_fallback_patch")
           }
       }
 %    \end{macrocode}
-%   \mykey{silent} sets \myhlc|\l_@@_spfig_intent_arg_tl| to
+%   The key \mykey{silent} sets \myhlc|\l_@@_spfig_intent_arg_tl| to
 %   |_(refs)|. Otherwise, with \mykey{read-arg} empty,
 %   \mykey{concept} chooses between
 %   \myhlc|_\l_@@_spfig_intent_tl|\myhlc|:prefix(refs)| (with
@@ -15458,7 +15524,7 @@ end, "shekel_fallback_patch")
 %   \l_@@_geo_luaset_circ_radio_type_str,
 %   \l_@@_geo_luaset_circ_radio_raw_str}
 %   Shared outputs of \myhlc|\@@_luafun_geo_circ_parse_and_set:n|.
-%   \myhlc|\l_@@_geo_luaset_circ_radio_type_str| holds one of
+%   The variable \myhlc|\l_@@_geo_luaset_circ_radio_type_str| holds one of
 %   |number|, |measure|, |label|, |segment|, or an empty string when
 %   no radius was given. \myhlc|\l_@@_geo_luaset_circ_radio_raw_str|
 %   holds the corresponding raw text, ready to be forwarded to the
@@ -15668,7 +15734,7 @@ end, "shekel_fallback_patch")
 %   neither a center nor a radius). \myhlc|\l_@@_spcirc_intent_tl|
 %   holds the word (|circunferencia| or |círculo|, with an optional
 %   \mykey{sub-index} suffix) paired with the symbol.
-%   \myhlc|\l_@@_spcirc_connector_tl| holds |de-centro-en|, paired
+%   The variable \myhlc|\l_@@_spcirc_connector_tl| holds |de-centro-en|, paired
 %   with the |(|center|)| group; the center is read through
 %   \myhlc|\@@_mathmlarg_point:nnn|, referenced as |$pt|, not
 %   concatenated into either word — it can be subscripted or primed
@@ -15787,7 +15853,7 @@ end, "shekel_fallback_patch")
     \tl_set:Nn \l_@@_spcirc_connector_tl { de-centro-en }
 %    \end{macrocode}
 %
-%   \mykey{silent} |true| overrides
+%   The key \mykey{silent}, when |true|, overrides
 %   \myhlc|\l_@@_spcirc_intent_arg_tl|/\myhlc|\l_@@_spcirc_radio_arg_tl|
 %   with |_-| and \myhlc|\l_@@_spcirc_connector_arg_tl| with |_($pt)|
 %   (the center is always read), regardless of \mykey{read-arg}.
@@ -16195,7 +16261,7 @@ end, "shekel_fallback_patch")
 %   \myhlc|\@@_luafun_geo_pfig_parse_and_set:n|, the same entry point
 %   \cs[no-index]{spAfig}/\cs[no-index]{spPfig} use) rather than a real
 %   circle. \myhlc|\l_@@_spcircfig_op_tl| holds |área| or |perímetro|.
-%   \myhlc|\l_@@_spcircfig_intent_tl| holds the full spoken phrase:
+%   The variable \myhlc|\l_@@_spcircfig_intent_tl| holds the full spoken phrase:
 %   \myhlc|\l_@@_spcircfig_del_word_tl| (via
 %   \myhlc|\@@_spcircfig_del_word:n|: the word, contracted with
 %   |del-|/|de-la-|, or \mykey{read-arg}), an optional \mykey{sub-index}
@@ -16625,7 +16691,7 @@ end, "shekel_fallback_patch")
 %   attach after it; \myhlc|\l_@@_spVol_native_bool| records whether
 %   that text should be combined natively with the subscript
 %   (silenced) or left for \mynvmath{MathCAT} to read on its own.
-%   \myhlc|\l_@@_spVol_read_arg_full_tl| holds the text to voice when
+%   The variable \myhlc|\l_@@_spVol_read_arg_full_tl| holds the text to voice when
 %   \mykey{read-arg} is given.
 %    \begin{macrocode}
 \str_new:N  \l_@@_spVol_mode_str
@@ -17901,6 +17967,22 @@ local function spintent_money_key(str)
     return s_lower(key)
 end
 
+-- Códigos ISO 4217 que se imprimen como código cuando se escriben en mayúsculas
+local spintent_money_iso_codes = {
+    clp = true, mxn = true, usd = true, eur = true, gbp = true, jpy = true, cny = true,
+    krw = true, ils = true, inr = true, rub = true, ["try"] = true, uah = true,
+}
+
+-- Escritura válida de una moneda: sin mayúsculas (símbolos y alias) o un
+-- código ISO escrito todo en mayúsculas; cualquier otra mezcla no es válida
+local function spintent_money_valid_case(raw, clean)
+    local trimmed = spintent_trim(raw)
+    if not (s_match(trimmed, "%u") or s_match(trimmed, "\xC3[\x80-\x9E]")) then
+        return true
+    end
+    return spintent_money_iso_codes[clean] and trimmed == s_upper(trimmed)
+end
+
 register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local trimmed = spintent_trim(currency_name)
     local clean = spintent_money_key(currency_name)
@@ -17912,7 +17994,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local position = "pre"
     if resolved_symbol == "€" or resolved_symbol == "¢" then position = "post" end
 
-    if trimmed == s_upper(trimmed) and s_match(trimmed, "^%a+$") then
+    if spintent_money_iso_codes[clean] and trimmed == s_upper(trimmed) then
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "true")
     else
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "false")
@@ -17946,7 +18028,7 @@ register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
         resolved_spoken = spintent_currency_spoken_names[clean]
     end
 
-    if resolved_spoken then
+    if resolved_spoken and spintent_money_valid_case(raw_input, clean) then
         token_set_macro("l__spintent_spmoney_luaset_currency_arg_str", resolved_spoken)
         token_set_macro("l__spintent_spmoney_luaset_status_str", "found")
     else
@@ -18524,7 +18606,8 @@ register_tex_cmd("luafun_mc_classify_args", function(raw_csv_list)
 end, { "string" })
 
 -- Clasifica un solo argumento (mismo chequeo que
--- spintent_execute_mcm_mcd_result) -- para \spnD/\spnM.
+-- spintent_execute_mcm_mcd_result) -- para \spnD/\spnM. Un cero se
+-- marca como error: el argumento debe ser un entero positivo.
 register_tex_cmd("luafun_spnmd_classify", function(raw_arg)
     local clean_item = spintent_trim(raw_arg)
     local result = spintent_number_pattern:match(clean_item) or {}
@@ -18533,7 +18616,10 @@ register_tex_cmd("luafun_spnmd_classify", function(raw_arg)
       and (not result.decimal or result.decimal == "") and (not result.period or result.period == "")
       and (not result.extra or s_gsub(result.extra, "%s+", "") == "")
 
-    token_set_macro("l__spintent_spnmd_luaset_is_number_str", es_natural and "true" or "false")
+    local es_cero = es_natural and s_match(result.integer, "^0+$") ~= nil
+
+    token_set_macro("l__spintent_spnmd_luaset_is_number_str", (es_natural and not es_cero) and "true" or "false")
+    token_set_macro("l__spintent_spnM_spnD_luaset_error_str", es_cero and "true" or "false")
 end, { "string" })
 
 -- 8. SÍSTEMA SEXAGESIMAL (\spang)
