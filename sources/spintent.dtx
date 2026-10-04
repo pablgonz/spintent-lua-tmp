@@ -6021,10 +6021,16 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_sanitize_affix:Nn, \@@_sanitize_affix:cn}
 %   The function \myhlc|\@@_sanitize_affix:Nn| checks if the \mymarg{argument}
 %   passed in `|#2|' is \emph{blank}. If so, it clears the target token list
-%   variable passed in `|#1|'. Otherwise, trimming bounds, converting spaces `\verb*+ +' to
-%   hyphens `|-|', collapsing multiple hyphens, and safely stripping
-%   leading/trailing hyphens. For example, if you pass a target variable and
-%   raw text:
+%   variable passed in `|#1|'. Otherwise, it converts the \mymarg{argument}
+%   into a string (so every character has category code~12 and it no longer
+%   matters how an underscore `|_|' was typed), trims the bounds, converts
+%   spaces `\verb*+ +' and underscores `|_|' to hyphens `|-|', collapses
+%   multiple hyphens, and safely strips leading/trailing hyphens. Because
+%   underscores are converted \emph{before} collapsing, any run mixing
+%   hyphens and underscores is reduced to a single hyphen, and the stored
+%   value never starts or ends with `|-|' or `|_|': the command that uses the
+%   value is the one that places the leading `|_|' of the intent name. For
+%   example, if you pass a target variable and raw text:
 %
 %   \begin{center}
 %     \myhlc|\@@_sanitize_affix:Nn| \myhlc|\l_@@_spsomesym_prefix_tl||{ foo bar baz }|
@@ -6032,23 +6038,35 @@ end, "shekel_fallback_patch")
 %
 %   The function will \emph{\enquote{store}} the normalized string
 %   |foo-bar-baz| inside \myhlc|\l_@@_spsomesym_prefix_tl|, ready to be
-%   conditionally appended.
+%   conditionally appended. In the same way, |{ __foo___bar__ }| is stored
+%   as |foo-bar|.
+%
+%   The only exception is the exact value `|_-|' (once the bounds are
+%   trimmed), which is stored as a single hyphen `|-|'. After the command
+%   prepends its own leading `|_|', this yields the \emph{silent} literal
+%   `|_-|' documented for \cs{spread}. Any other value made only of hyphens,
+%   underscores and spaces is stored as \emph{empty}.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_sanitize_affix:Nn
   {
     \tl_if_blank:nTF {#2}
       { \tl_clear:N #1 }
       {
-        \tl_set:Ne #1 {#2}
+        \tl_set:Ne #1 { \tl_to_str:e {#2} }
         \tl_trim_spaces:N #1
-        \tl_replace_all:Nnn #1 { ~ } { - }
-        \@@_collapse_hyphens:N #1
-        \tl_put_left:Nn  #1 { \q_mark }
-        \tl_put_right:Nn #1 { \q_stop }
-        \tl_replace_all:Nnn #1 { \q_mark - } { \q_mark }
-        \tl_replace_all:Nnn #1 { - \q_stop } { \q_stop }
-        \tl_remove_all:Nn #1 { \q_mark }
-        \tl_remove_all:Nn #1 { \q_stop }
+        \str_if_eq:VnTF #1 { _- }
+          { \tl_set:Nn #1 { - } }
+          {
+            \tl_replace_all:Nnn #1 { ~ } { - }
+            \tl_replace_all:Nee #1 { \tl_to_str:n { _ } } { - }
+            \@@_collapse_hyphens:N #1
+            \tl_put_left:Nn  #1 { \q_mark }
+            \tl_put_right:Nn #1 { \q_stop }
+            \tl_replace_all:Nnn #1 { \q_mark - } { \q_mark }
+            \tl_replace_all:Nnn #1 { - \q_stop } { \q_stop }
+            \tl_remove_all:Nn #1 { \q_mark }
+            \tl_remove_all:Nn #1 { \q_stop }
+          }
       }
   }
 \cs_generate_variant:Nn \@@_sanitize_affix:Nn { cn }
@@ -8938,8 +8956,10 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \keys_define:nn { spintent / spread }
   {
-    read-arg    .code:n =
-      { \@@_sanitize_affix:Nn \l_@@_spread_read_arg_tl {#1} },
+    read-arg .code:n =
+      {
+        \@@_sanitize_affix:Nn \l_@@_spread_read_arg_tl {#1}
+      },
     read-arg    .initial:n = ,
     read-arg    .value_required:n = true,
     silent      .bool_set:N = \l_@@_spread_silent_bool,
@@ -9090,9 +9110,9 @@ end, "shekel_fallback_patch")
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { _dividido       } }
-            {2} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { _dividido-por   } }
-            {3} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { _dividido-entre } }
+            {1} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { dividido       } }
+            {2} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { dividido-por   } }
+            {3} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { dividido-entre } }
           }
       },
     read-sym           .initial:n  = dividido,
@@ -9123,6 +9143,7 @@ end, "shekel_fallback_patch")
           \keys_set:nn { spintent / spdsym } { #1 }
           \MathMLintent
             {
+              _
               \tl_if_empty:NF \l_@@_spdsym_prefix_tl
                 { \l_@@_spdsym_prefix_tl - }
               \l_@@_spdsym_read_sym_tl
@@ -9188,9 +9209,9 @@ end, "shekel_fallback_patch")
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { _por } }
-            {2} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { _multiplicado-por } }
-            {3} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { _veces } }
+            {1} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { por } }
+            {2} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { multiplicado-por } }
+            {3} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { veces } }
           }
       },
     read-sym           .initial:n  = por,
@@ -9223,6 +9244,7 @@ end, "shekel_fallback_patch")
           \keys_set:nn { spintent / spmsym } { #1 }
           \MathMLintent
             {
+              _
               \tl_if_empty:NF \l_@@_spmsym_prefix_tl
                 { \l_@@_spmsym_prefix_tl - }
               \l_@@_spmsym_read_sym_tl
@@ -9311,7 +9333,7 @@ end, "shekel_fallback_patch")
 \cs_new_protected:Nn \@@_spdiv_render_op:nn
   {
     \spnum {#1}
-    \MathMLintent { \l_@@_spdsym_read_sym_tl }
+    \MathMLintent { _ \l_@@_spdsym_read_sym_tl }
       {
         \l_@@_spdsym_symbol_tl
       }
@@ -9445,7 +9467,7 @@ end, "shekel_fallback_patch")
 \cs_new_protected:Nn \@@_spmul_render_op:nn
   {
     \spnum {#1}
-    \MathMLintent { \l_@@_spmsym_read_sym_tl }
+    \MathMLintent { _ \l_@@_spmsym_read_sym_tl }
       {
         \l_@@_spmsym_symbol_tl
       }
@@ -10188,9 +10210,9 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \keys_define:nn { spintent / sprazon }
   {
-    silent .bool_set:N = \l_@@_sprazon_silent_bool,
-    silent .initial:n  = false,
-    silent .value_required:n = true,
+    silent     .bool_set:N = \l_@@_sprazon_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
     use-dfrac  .bool_set:N = \l_@@_sprazon_use_dfrac_bool,
     use-dfrac  .initial:n  = false,
     use-dfrac  .value_required:n = true,
