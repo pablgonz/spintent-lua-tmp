@@ -3006,6 +3006,152 @@ end, "shekel_fallback_patch")
 % \mynvmath{NVDA/MathCAT} verbalizará la lectura de los paréntesis; si se
 % establece en |false|, \mynvmath{NVDA/MathCAT} no los verbalizará.
 %
+% \subsection*{El comando \cs[no-index]{sprazon}}\label{subsec:sprazon}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\sprazon}
+%   \begin{syntax}
+%     |\sprazon|\mymarg{antecedente}\mymarg{consecuente} \hfill |\sprazon|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{antecedente}\mymarg{consecuente}
+%   \end{syntax}
+%   El comando \ics*{sprazon} trabaja en \emph{modo matemático} y recibe
+%   \emph{dos argumentos obligatorios}: \mymarg{antecedente} y
+%   \mymarg{consecuente}, los tipografía como una fracción y devuelve una
+%   \emph{«razón»}.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\sprazon{3}{4}$| imprimirá `$\frac{3}{4}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«tres es a cuatro»}.
+% \end{function}
+%
+% \smallskip
+%
+% \begin{important}*
+%   El \mymarg{antecedente} y el \mymarg{consecuente} se tipografían
+%   directamente, sin procesamiento semántico adicional.
+% \end{important}
+%
+% \subsubsection*{Llaves para \cs[no-index]{sprazon}}
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[sprazon]
+% \smallskip
+% Establece si se \emph{silencia} en \mynvmath{NVDA/MathCAT} la verbalización
+% de la \emph{razón} pasada al comando sin modificar la impresión de esta.
+% Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la
+% salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% sí verbalizará la salida del comando.
+%
+% \smallskip
+%
+% \keyexampcmd{use-dfrac}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[sprazon]
+% \smallskip
+% Establece si la fracción de la \emph{razón} se imprime usando |\dfrac| en
+% lugar de |\frac|. Si se establece en |true|, al usar
+% |$\sprazon[use-dfrac=true]{3}{4}$| imprimirá la fracción en tamaño
+% \emph{display} `$\dfrac{3}{4}$' en la salida \texttt{PDF}; si se establece
+% en |false|, la fracción se imprime con |\frac| siguiendo el tamaño
+% matemático del contexto en curso.
+%
+% \smallskip
+%
+% \keyexampcmd{inline}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[sprazon]
+% \smallskip
+% Establece si la \emph{razón} se imprime en línea con dos puntos `|:|' en
+% lugar de una fracción. Si se establece en |true|,
+% |$\sprazon[inline=true]{3}{4}$| imprimirá `$3:4$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«tres es a cuatro»}; si se establece en |false|, la razón se
+% imprime como una fracción.
+%
+% \smallskip
+%
+% \begin{important}*
+%   La llave \mykey[sprazon]{use-dfrac} no tiene efecto cuando la llave
+%   \mykey[sprazon]{inline} se establece en |true|, porque en ese caso no se
+%   imprime una fracción.
+% \end{important}
+%
+% \subsection*{El comando \cs[no-index]{spProp}}\label{subsec:spProp}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spProp}
+%   \begin{syntax}
+%     |\spProp|\mymarg{a}\mymarg{b}\mymarg{c}\mymarg{d} \hfill |\spProp|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{a}\mymarg{b}\mymarg{c}\mymarg{d}
+%   \end{syntax}
+%   El comando \ics*{spProp} trabaja en \emph{modo matemático} y recibe
+%   \emph{cuatro argumentos obligatorios}: \mymarg{a} y \mymarg{b} forman
+%   la primera \emph{razón}, \mymarg{c} y \mymarg{d} forman la segunda, y
+%   devuelve una \emph{«proporción»} con las dos razones unidas por el signo
+%   igual.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spProp{3}{4}{6}{8}$| imprimirá
+%   `$\frac{3}{4}=\frac{6}{8}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«tres es a cuatro como seis es a ocho»}.
+% \end{function}
+%
+% \smallskip
+%
+% \begin{important}*
+%   Los cuatro argumentos se tipografían directamente, sin procesamiento
+%   semántico adicional.
+% \end{important}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spProp}}
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spProp]
+% \smallskip
+% Establece si se \emph{silencia} en \mynvmath{NVDA/MathCAT} la verbalización
+% de la \emph{proporción} pasada al comando sin modificar la impresión de esta.
+% Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la
+% salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
+% sí verbalizará la salida del comando.
+%
+% \smallskip
+%
+% \keyexampcmd{use-dfrac}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spProp]
+% \smallskip
+% Establece si las fracciones de la \emph{proporción} se imprimen usando
+% |\dfrac| en lugar de |\frac|. Si se establece en |true|, al usar
+% |$\spProp[use-dfrac=true]{3}{4}{6}{8}$| imprimirá las fracciones en tamaño
+% \emph{display} `$\dfrac{3}{4}=\dfrac{6}{8}$' en la salida \texttt{PDF}; si se
+% establece en |false|, las fracciones se imprimen con |\frac| siguiendo el
+% tamaño matemático del contexto en curso.
+%
+% \smallskip
+%
+% \keyexampcmd{inline}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spProp]
+% \smallskip
+% Establece si las \emph{razones} de la \emph{proporción} se imprimen en línea
+% con dos puntos `|:|' en lugar de fracciones. Si se establece en |true|,
+% |$\spProp[inline=true]{3}{4}{6}{8}$| imprimirá `$3:4=6:8$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«tres es a cuatro como seis es a ocho»}; si se establece en |false|,
+% las razones se imprimen como fracciones.
+%
+% \smallskip
+%
+% \begin{important}*
+%   La llave \mykey[spProp]{use-dfrac} no tiene efecto cuando la llave
+%   \mykey[spProp]{inline} se establece en |true|, porque en ese caso no se
+%   imprimen fracciones.
+% \end{important}
+%
 % \section{Utilidades para geometría}
 %
 % El paquete \mypkg*[no-index]{spintent} provee comandos para trabajar
