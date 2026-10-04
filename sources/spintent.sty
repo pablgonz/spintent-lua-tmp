@@ -166,16 +166,21 @@
     \tl_if_blank:nTF {#2}
       { \tl_clear:N #1 }
       {
-        \tl_set:Ne #1 {#2}
+        \tl_set:Ne #1 { \tl_to_str:e {#2} }
         \tl_trim_spaces:N #1
-        \tl_replace_all:Nnn #1 { ~ } { - }
-        \__spintent_collapse_hyphens:N #1
-        \tl_put_left:Nn  #1 { \q_mark }
-        \tl_put_right:Nn #1 { \q_stop }
-        \tl_replace_all:Nnn #1 { \q_mark - } { \q_mark }
-        \tl_replace_all:Nnn #1 { - \q_stop } { \q_stop }
-        \tl_remove_all:Nn #1 { \q_mark }
-        \tl_remove_all:Nn #1 { \q_stop }
+        \str_if_eq:VnTF #1 { _- }
+          { \tl_set:Nn #1 { - } }
+          {
+            \tl_replace_all:Nnn #1 { ~ } { - }
+            \tl_replace_all:Nee #1 { \tl_to_str:n { _ } } { - }
+            \__spintent_collapse_hyphens:N #1
+            \tl_put_left:Nn  #1 { \q_mark }
+            \tl_put_right:Nn #1 { \q_stop }
+            \tl_replace_all:Nnn #1 { \q_mark - } { \q_mark }
+            \tl_replace_all:Nnn #1 { - \q_stop } { \q_stop }
+            \tl_remove_all:Nn #1 { \q_mark }
+            \tl_remove_all:Nn #1 { \q_stop }
+          }
       }
   }
 \cs_generate_variant:Nn \__spintent_sanitize_affix:Nn { cn }
@@ -1694,8 +1699,10 @@
 \tl_new:N  \l__spintent_spread_read_arg_tl
 \keys_define:nn { spintent / spread }
   {
-    read-arg    .code:n =
-      { \__spintent_sanitize_affix:Nn \l__spintent_spread_read_arg_tl {#1} },
+    read-arg .code:n =
+      {
+        \__spintent_sanitize_affix:Nn \l__spintent_spread_read_arg_tl {#1}
+      },
     read-arg    .initial:n = ,
     read-arg    .value_required:n = true,
     silent      .bool_set:N = \l__spintent_spread_silent_bool,
@@ -1798,9 +1805,9 @@
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { _dividido       } }
-            {2} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { _dividido-por   } }
-            {3} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { _dividido-entre } }
+            {1} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { dividido       } }
+            {2} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { dividido-por   } }
+            {3} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { dividido-entre } }
           }
       },
     read-sym           .initial:n  = dividido,
@@ -1823,6 +1830,7 @@
           \keys_set:nn { spintent / spdsym } { #1 }
           \MathMLintent
             {
+              _
               \tl_if_empty:NF \l__spintent_spdsym_prefix_tl
                 { \l__spintent_spdsym_prefix_tl - }
               \l__spintent_spdsym_read_sym_tl
@@ -1868,9 +1876,9 @@
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { _por } }
-            {2} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { _multiplicado-por } }
-            {3} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { _veces } }
+            {1} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { por } }
+            {2} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { multiplicado-por } }
+            {3} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { veces } }
           }
       },
     read-sym           .initial:n  = por,
@@ -1895,6 +1903,7 @@
           \keys_set:nn { spintent / spmsym } { #1 }
           \MathMLintent
             {
+              _
               \tl_if_empty:NF \l__spintent_spmsym_prefix_tl
                 { \l__spintent_spmsym_prefix_tl - }
               \l__spintent_spmsym_read_sym_tl
@@ -1940,7 +1949,7 @@
 \cs_new_protected:Nn \__spintent_spdiv_render_op:nn
   {
     \spnum {#1}
-    \MathMLintent { \l__spintent_spdsym_read_sym_tl }
+    \MathMLintent { _ \l__spintent_spdsym_read_sym_tl }
       {
         \l__spintent_spdsym_symbol_tl
       }
@@ -2011,7 +2020,7 @@
 \cs_new_protected:Nn \__spintent_spmul_render_op:nn
   {
     \spnum {#1}
-    \MathMLintent { \l__spintent_spmsym_read_sym_tl }
+    \MathMLintent { _ \l__spintent_spmsym_read_sym_tl }
       {
         \l__spintent_spmsym_symbol_tl
       }
@@ -2443,9 +2452,9 @@
   }
 \keys_define:nn { spintent / sprazon }
   {
-    silent .bool_set:N = \l__spintent_sprazon_silent_bool,
-    silent .initial:n  = false,
-    silent .value_required:n = true,
+    silent     .bool_set:N = \l__spintent_sprazon_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
     use-dfrac  .bool_set:N = \l__spintent_sprazon_use_dfrac_bool,
     use-dfrac  .initial:n  = false,
     use-dfrac  .value_required:n = true,
