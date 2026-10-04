@@ -11181,7 +11181,7 @@ end, "shekel_fallback_patch")
     silent  .bool_set:N = \l_@@_spcoord_silent_bool,
     silent  .initial:n  = false,
     silent  .value_required:n = true,
-    unknown     .code:n =
+    unknown .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spcoord }
         \@@_unknown_keys_cmd:n {#1}
@@ -11607,9 +11607,9 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_spPoint_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent          .bool_set:N = \l_@@_spPoint_silent_bool,
-    silent          .initial:n = false,
-    silent          .value_required:n = true,
+    silent              .bool_set:N = \l_@@_spPoint_silent_bool,
+    silent              .initial:n = false,
+    silent              .value_required:n = true,
     concept             .bool_set:N = \l_@@_spPoint_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -12843,9 +12843,9 @@ end, "shekel_fallback_patch")
           { \@@_sanitize_affix:cn { l_@@_sp #1 _prefix_tl } {##1} },
         prefix              .initial:n  = ,
         prefix              .value_required:n = true,
-        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
-        silent          .initial:n  = false,
-        silent          .value_required:n = true,
+        silent              .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent              .initial:n  = false,
+        silent              .value_required:n = true,
         concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -13235,9 +13235,9 @@ end, "shekel_fallback_patch")
         print-m             .bool_set:c = { l_@@_sp #1 _print_m_bool },
         print-m             .initial:n  = false,
         print-m             .value_required:n = true,
-        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
-        silent          .initial:n  = false,
-        silent          .value_required:n = true,
+        silent              .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent              .initial:n  = false,
+        silent              .value_required:n = true,
         concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -13373,7 +13373,7 @@ end, "shekel_fallback_patch")
 %
 %   For |nombre|, the symbol (\myhlc|\@@_spangle_sym:n|) is tagged
 %   through \myhlc|\@@_luafun_mrow_intent_arg:nn| on its own,
-%   with \myhlc|_\l_@@_spangle_intent_tl|\myhlc|:prefix| (no
+%   with \myhlc|_\l_@@_spangle_intent_tl| alone (bare, no
 %   |$|-reference: |nombre| never refers to more than one thing) —
 %   |_-| when \mykey{silent} is |true| \emph{or} \mykey{concept}
 %   is |false|. With \mykey{silent} |true|, the name that follows
@@ -13396,7 +13396,7 @@ end, "shekel_fallback_patch")
                     _
                     \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
                       { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-                    \l_@@_spangle_intent_tl :prefix
+                    \l_@@_spangle_intent_tl
                   }
               }
               {
@@ -13683,9 +13683,9 @@ end, "shekel_fallback_patch")
           { \@@_sanitize_affix:cn { l_@@_sp #1 _prefix_tl } {##1} },
         prefix              .initial:n  = ,
         prefix              .value_required:n = true,
-        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
-        silent          .initial:n  = false,
-        silent          .value_required:n = true,
+        silent              .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent              .initial:n  = false,
+        silent              .value_required:n = true,
         concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -13985,9 +13985,9 @@ end, "shekel_fallback_patch")
     print-sym           .bool_set:N = \l_@@_spPoly_print_sym_bool,
     print-sym           .initial:n  = true,
     print-sym           .value_required:n = true,
-    silent          .bool_set:N = \l_@@_spPoly_silent_bool,
-    silent          .initial:n  = false,
-    silent          .value_required:n = true,
+    silent              .bool_set:N = \l_@@_spPoly_silent_bool,
+    silent              .initial:n  = false,
+    silent              .value_required:n = true,
     concept             .bool_set:N = \l_@@_spPoly_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -14396,9 +14396,9 @@ end, "shekel_fallback_patch")
         read-sub            .bool_set:c = { l_@@_sp #1 _read_sub_bool },
         read-sub            .initial:n  = false,
         read-sub            .value_required:n = true,
-        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
-        silent          .initial:n  = false,
-        silent          .value_required:n = true,
+        silent              .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent              .initial:n  = false,
+        silent              .value_required:n = true,
         concept             .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -15015,9 +15015,9 @@ end, "shekel_fallback_patch")
         concept     .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept     .initial:n  = true,
         concept     .value_required:n = true,
-        silent  .bool_set:c = { l_@@_sp #1 _silent_bool },
-        silent  .initial:n  = false,
-        silent  .value_required:n = true,
+        silent      .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent      .initial:n  = false,
+        silent      .value_required:n = true,
         print-sym   .bool_set:c = { l_@@_sp #1 _print_sym_bool },
         print-sym   .initial:n  = false,
         print-sym   .value_required:n = true,
@@ -15488,9 +15488,9 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_spcirc_read_arg_tl {#1} },
     read-arg     .initial:n = ,
     read-arg     .value_required:n = true,
-    silent   .bool_set:N = \l_@@_spcirc_silent_bool,
-    silent   .initial:n = false,
-    silent   .value_required:n = true,
+    silent       .bool_set:N = \l_@@_spcirc_silent_bool,
+    silent       .initial:n = false,
+    silent       .value_required:n = true,
     concept      .bool_set:N = \l_@@_spcirc_concept_bool,
     concept      .initial:n  = true,
     concept      .value_required:n = true,
@@ -15657,7 +15657,7 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 %
 %   With \mykey{concept} |true|, \myhlc|\l_@@_spcirc_intent_arg_tl| is
-%   \myhlc|_\l_@@_spcirc_intent_tl|\myhlc|:prefix| (bare — the group it
+%   \myhlc|_\l_@@_spcirc_intent_tl| alone (bare — the group it
 %   wraps has nothing to reference, only a silenced symbol), with
 %   \mykey{prefix} placed after the leading |_| when given;
 %   \myhlc|\l_@@_spcirc_connector_arg_tl| is
@@ -15677,7 +15677,7 @@ end, "shekel_fallback_patch")
                 _
                 \tl_if_empty:NF \l_@@_spcirc_prefix_tl
                   { \tl_use:N \l_@@_spcirc_prefix_tl - }
-                \l_@@_spcirc_intent_tl :prefix
+                \l_@@_spcirc_intent_tl
               }
             \tl_set:Ne \l_@@_spcirc_connector_arg_tl
               { _ \l_@@_spcirc_connector_tl :prefix( $ pt ) }
@@ -16024,9 +16024,9 @@ end, "shekel_fallback_patch")
           { \@@_sanitize_affix:cn { l_@@_sp #1 _read_arg_tl } {##1} },
         read-arg            .initial:n  = ,
         read-arg            .value_required:n = true,
-        silent          .bool_set:c = { l_@@_sp #1 _silent_bool },
-        silent          .initial:n  = false,
-        silent          .value_required:n = true,
+        silent              .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent              .initial:n  = false,
+        silent              .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l_@@_command_name_str { sp #1 }
@@ -16540,9 +16540,9 @@ end, "shekel_fallback_patch")
     concept     .bool_set:N = \l_@@_spVol_concept_bool,
     concept     .initial:n  = true,
     concept     .value_required:n = true,
-    silent  .bool_set:N = \l_@@_spVol_silent_bool,
-    silent  .initial:n  = false,
-    silent  .value_required:n = true,
+    silent      .bool_set:N = \l_@@_spVol_silent_bool,
+    silent      .initial:n  = false,
+    silent      .value_required:n = true,
     unknown     .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spVol }
