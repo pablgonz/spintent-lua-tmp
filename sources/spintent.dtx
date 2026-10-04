@@ -3822,7 +3822,7 @@ end, "shekel_fallback_patch")
 % \mykey{concept}.
 %
 % Por ejemplo: |$\spmside[concept=false,read-arg={medida de la cuerda}]{AB}$|
-% imprimirá `$\overline{AB}$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% imprimirá `$AB$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
 % verbalizará \emph{«medida de la cuerda A B»}.
 %
 % \smallskip
@@ -4121,7 +4121,7 @@ end, "shekel_fallback_patch")
 %   \smallskip
 %
 % \begin{important}*
-%   El acento |\widearc| es propocionado por algunos paquetes como
+%   El acento |\widearc| es proporcionado por algunos paquetes como
 %   \mypkg[no-index]{fourier-otf} o \mypkg[no-index]{kpfonts-otf}, en caso
 %   de no estar disponible se utilizará una versión interna para este.
 % \end{important}
@@ -4267,7 +4267,7 @@ end, "shekel_fallback_patch")
 %   una lista de al menos tres \mymarg{puntos} con prima(s) `|'|' o
 %   subíndice(s) `|_{...}|' opcionales. El \emph{símbolo} usado en la
 %   impresión se maneja por medio de la llave \mykey{print-sym} y la
-%   verbalización del concepto asociado se determinan acorde al número
+%   verbalización del concepto asociado se determina acorde al número
 %   de puntos en el argumento y la llave \mykey{concept}.
 %
 %   \smallskip
@@ -4275,7 +4275,7 @@ end, "shekel_fallback_patch")
 %   Si son tres puntos se aplica |\triangle| y añade el concepto \emph{«triángulo»}
 %   a la verbalización; si son cuatro puntos se aplica |\mdlgwhtsquare|
 %   y añade el concepto \emph{«cuadrado»} a la verbalización; si son cinco
-%   o más puntos no se aplica níngún símbolo ni se añade verbalización.
+%   o más puntos no se aplica ningún símbolo ni se añade verbalización.
 %
 %   \smallskip
 %
@@ -4307,7 +4307,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spPoly]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el \mymarg{argumento} o los conceptos \emph{«tríangulo»} y
+% \emph{antes} de verbalizar el \mymarg{argumento} o los conceptos \emph{«triángulo»} y
 % \emph{«cuadrado»} establecido por la llave \mykey{concept}. El valor de esta
 % llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
@@ -4334,7 +4334,7 @@ end, "shekel_fallback_patch")
 % |$\spPoly[print-sym=true]{ABC}$| imprimirá `$\triangle ABC$' en la salida
 % \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«triángulo A B C»};
 % |$\spPoly[print-sym=true]{ABCD}$| imprimirá `$\mdlgwhtsquare ABCD$' en
-% la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«cuadrado A B C»};
+% la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«cuadrado A B C D»};
 % si se establece en |false|, solo se imprimirá el \mymarg{argumento} en
 % la salida \texttt{PDF} y la verbalización será la misma.
 %
@@ -4376,7 +4376,7 @@ end, "shekel_fallback_patch")
 %   o \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
 %   aplicando |\mathcal{A}| a la impresión. El \emph{símbolo} usado en
 %   la impresión se maneja por medio de la llave \mykey{print-sym} y la
-%   verbalización del concepto asociado se determinan acorde al \myparg{argumento}
+%   verbalización del concepto asociado se determina acorde al \myparg{argumento}
 %   y la llave \mykey{concept}.
 % \end{function}
 %
@@ -4460,7 +4460,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{read-arg}{nombre}{no usado}[spAfig]
 % \smallskip
 % Sobrescribe el término \emph{«área del»} y el concepto \emph{«nombre de la figura»}
-% cuando se utliza el argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+% cuando se utiliza el argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
 % que será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el comando
 % sin modificar la impresión de este. El valor de esta llave \emph{siempre}
 % debe pasarse entre llaves `|{ }|' y se debe usar en conjunto con la llave
@@ -4595,7 +4595,7 @@ end, "shekel_fallback_patch")
 %   o \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{L} \textnormal{\textcolor{lightgray}{\textbar}} \textnormal{T}}
 %   aplicando |\mathcal{P}| a la impresión. El \emph{símbolo} usado en
 %   la impresión se maneja por medio de la llave \mykey{print-sym} y la
-%   verbalización del concepto asociado se determinan acorde al \myparg{argumento}
+%   verbalización del concepto asociado se determina acorde al \myparg{argumento}
 %   y la llave \mykey{concept}.
 % \end{function}
 %
@@ -4679,7 +4679,7 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{read-arg}{nombre}{no usado}[spPfig]
 % \smallskip
 % Sobrescribe el término \emph{«perímetro del»} y el concepto \emph{«nombre de la figura»}
-% cuando se utliza el argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
+% cuando se utiliza el argumento \myparg{punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} punto\textnormal{\textcolor{gray}{,}} \ldots}
 % que será verbalizado por \mynvmath{NVDA/MathCAT} al ejecutar el comando
 % sin modificar la impresión de este. El valor de esta llave \emph{siempre}
 % debe pasarse entre llaves `|{ }|' y se debe usar en conjunto con la llave
@@ -10604,6 +10604,8 @@ end, "shekel_fallback_patch")
 %   \myhlc|\l_@@_spang_luaset_minuto_str|, and \myhlc|\l_@@_spang_luaset_segundo_str|.
 %   For each non-empty variable, it constructs the corresponding \mynvmath{MathML} |intent|
 %   structure with the correct measurement symbols and postfixes for \mynvmath{NVDA/MathCAT}.
+%   Each value is expanded with |\exp_args:Ne| before it reaches |\spunit|,
+%   which protects its \mymarg{argument} from expansion.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spang_process:n
   {
@@ -10616,7 +10618,7 @@ end, "shekel_fallback_patch")
       {
         \str_if_empty:NF \l_@@_spang_luaset_grado_str
           {
-            \spunit{ \l_@@_spang_luaset_grado_str °}
+            \exp_args:Ne \spunit { \l_@@_spang_luaset_grado_str ° }
           }
         \str_if_empty:NF \l_@@_spang_luaset_minuto_str
           {
@@ -10624,7 +10626,7 @@ end, "shekel_fallback_patch")
               {
                 \MathMLarg { m }
                   {
-                    \spunit{ \l_@@_spang_luaset_minuto_str ′}
+                    \exp_args:Ne \spunit { \l_@@_spang_luaset_minuto_str ′ }
                   }
               }
           }
@@ -10634,7 +10636,7 @@ end, "shekel_fallback_patch")
               {
                 \MathMLarg { s }
                   {
-                    \spunit { \l_@@_spang_luaset_segundo_str ″}
+                    \exp_args:Ne \spunit { \l_@@_spang_luaset_segundo_str ″ }
                   }
               }
           }
@@ -18624,8 +18626,12 @@ end, { "string" })
 
 -- 8. SÍSTEMA SEXAGESIMAL (\spang)
 
+-- Los minutos y los segundos son opcionales: "45", "45:30" y "45:30:15"
+-- son válidos; una entrada vacía no.
 local spintent_angle_sexag_pattern = Ct(
-    Cg(spintent_num_chunk^-1, "a") * P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1 * P(-1)
+    -P(-1) * Cg(spintent_num_chunk^-1, "a")
+    * (P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1)^-1
+    * P(-1)
 )
 
 register_tex_cmd("luafun_spang_parse", function(raw_sexag_str)
