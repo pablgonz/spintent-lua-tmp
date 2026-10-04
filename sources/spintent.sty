@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-10-01} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-10-04} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -618,8 +618,8 @@
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l__spintent_spunit_read_slash_str { por } }
-            {2} { \str_set:Nn \l__spintent_spunit_read_slash_str { partido-por } }
+            {1} { \str_set:Nn \l__spintent_spunit_read_slash_str { _por } }
+            {2} { \str_set:Nn \l__spintent_spunit_read_slash_str { _partido-por } }
           }
       },
     read-slash           .initial:n  = por,
@@ -661,12 +661,12 @@
             \bool_if:NTF \l__spintent_spunit_print_cdot_bool
               {
                 \bool_if:NTF \l__spintent_spunit_read_cdot_bool
-                  { \MathMLintent { por } { \cdot } }
+                  { \MathMLintent { _por } { \cdot } }
                   { \MathMLintent { :silent } { \cdot } }
               }
               {
                 \bool_if:NTF \l__spintent_spunit_read_cdot_bool
-                  { \MathMLintent { por } { \, } }
+                  { \MathMLintent { _por } { \, } }
                   { \, }
               }
           }
@@ -877,7 +877,7 @@
   }
 \cs_new_protected:Nn \__spintent_spmoney_normalize_key:n
   {
-    \__spintent_luafun_spmoney_normalize_key:n { #1 }
+    \__spintent_luafun_spmoney_normalize_key:n { \exp_not:n { #1 } }
   }
 \cs_generate_variant:Nn \__spintent_spmoney_normalize_key:n { V }
 \keys_define:nn { spintent / spmoney }
@@ -887,9 +887,9 @@
     currency     .value_required:n = true,
     sub-units    .bool_set:N  = \l__spintent_spmoney_sub_units_bool,
     sub-units    .value_required:n = true,
-    dolar-math   .bool_set:N  = \l__spintent_spmoney_dolar_math_bool,
-    dolar-math   .initial:n   = { true },
-    dolar-math   .value_required:n = true,
+    money-math   .bool_set:N  = \l__spintent_spmoney_money_math_bool,
+    money-math   .initial:n   = { true },
+    money-math   .value_required:n = true,
     cifras-sep   .meta:nn     = { spintent/spnum } { cifras-sep = {#1} },
     cifras-sep   .value_required:n = true,
     unknown      .code:n =
@@ -921,10 +921,14 @@
       {
         \str_if_eq:VnTF \l__spintent_spmoney_luaset_symbol_str { $ }
           {
-            \bool_if:NTF \l__spintent_spmoney_dolar_math_bool
+            \bool_if:NTF \l__spintent_spmoney_money_math_bool
               { \$ } { \text { \$ } }
           }
-          { \l__spintent_spmoney_luaset_symbol_str }
+          {
+            \bool_if:NTF \l__spintent_spmoney_money_math_bool
+              { \l__spintent_spmoney_luaset_symbol_str }
+              { \text { \l__spintent_spmoney_luaset_symbol_str } }
+          }
       }
   }
 \cs_new_protected:Nn \__spintent_spmoney_render_layout:
@@ -1007,7 +1011,7 @@
           }
       }
     \__spintent_invisible_sep:
-    \MathMLintent { \l__spintent_spmoney_intent_money_str :postfix($n) }
+    \MathMLintent { _ \l__spintent_spmoney_intent_money_str :postfix($n) }
       {
         \__spintent_spmoney_render_layout:
       }
@@ -1020,6 +1024,8 @@
           { \l__spintent_spmoney_luaset_currency_arg_str }
         \bool_set_false:N \l__spintent_spmoney_sub_units_bool
       }
+    \tl_if_empty:NT \l__spintent_luaset_dec_sep_tl
+      { \bool_set_false:N \l__spintent_spmoney_sub_units_bool }
   }
 \cs_new_protected:Nn \__spintent_spmoney_set_and_print_sub_units:
   {
@@ -1037,11 +1043,11 @@
     \int_compare:nTF { \l__spintent_spmoney_subnum_int == 1 }
       {
         \str_set:Ne \l__spintent_spmoney_intent_sub_unit_str
-          { \l__spintent_spmoney_luaset_subsing_str :postfix($sub) }
+          { _ \l__spintent_spmoney_luaset_subsing_str :postfix($sub) }
       }
       {
         \str_set:Ne \l__spintent_spmoney_intent_sub_unit_str
-          { \l__spintent_spmoney_luaset_subplur_str :postfix($sub) }
+          { _ \l__spintent_spmoney_luaset_subplur_str :postfix($sub) }
       }
     \str_if_eq:VnTF \l__spintent_luaset_only_part_int_str { 1 }
       {
@@ -1102,8 +1108,8 @@
   }
 \cs_new_protected:Nn \__spintent_spmoney_parse_and_route:n
   {
-    \__spintent_luafun_spmoney_prepare_input:n { #1 }
-    \__spintent_luafun_clean_split_and_set:V \l__spintent_spmoney_extracted_num_tl
+    \__spintent_luafun_spmoney_prepare_input:n { \exp_not:n { #1 } }
+    \__spintent_luafun_clean_split_and_set:n { \exp_not:V \l__spintent_spmoney_extracted_num_tl }
     \str_if_empty:NF \l__spintent_spmoney_extracted_curr_str
       {
         \str_set:Ne \l__spintent_luaset_has_units_str { true }
@@ -1309,7 +1315,7 @@
   {
     \str_if_eq:nnTF { #1 } { ac }
       {
-        \MathMLintent { antes-de-cristo:postfix($z) }
+        \MathMLintent { _antes-de-cristo:postfix($z) }
           {
             \__spintent_inner_sep:
             \MathMLarg { z }
@@ -1322,7 +1328,7 @@
           }
       }
       {
-        \MathMLintent { después-de-cristo:postfix($z) }
+        \MathMLintent { _después-de-cristo:postfix($z) }
           {
             \__spintent_inner_sep:
             \MathMLarg { z }
@@ -1692,9 +1698,9 @@
       { \__spintent_sanitize_affix:Nn \l__spintent_spread_read_arg_tl {#1} },
     read-arg    .initial:n = ,
     read-arg    .value_required:n = true,
-    silent-cmd  .bool_set:N = \l__spintent_spread_silent_cmd_bool,
-    silent-cmd  .initial:n  = false,
-    silent-cmd  .value_required:n = true,
+    silent      .bool_set:N = \l__spintent_spread_silent_bool,
+    silent      .initial:n  = false,
+    silent      .value_required:n = true,
     unknown     .code:n =
       {
         \str_set:Nn \l__spintent_command_name_str { spread }
@@ -1708,7 +1714,7 @@
       { \msg_error:nn { spintent } { spread-empty-sym } }
       {
         \__spintent_invisible_sep:
-        \bool_if:NTF \l__spintent_spread_silent_cmd_bool
+        \bool_if:NTF \l__spintent_spread_silent_bool
           {
             \MathMLintent { :silent } { #2 }
           }
@@ -1718,14 +1724,14 @@
                 \__spintent_luafun_spread_lookup:n { \exp_not:n {#2} }
                 \str_if_eq:VnTF \l__spintent_spread_luaset_status_str { found }
                   {
-                    \MathMLintent { \l__spintent_spread_luaset_reading_str } { #2 }
+                    \MathMLintent { _\l__spintent_spread_luaset_reading_str } { #2 }
                   }
                   {
                     \msg_error:nne { spintent } { spread-unknown-sym } { \exp_not:n {#2} }
                   }
               }
               {
-                \MathMLintent { \l__spintent_spread_read_arg_tl } { #2 }
+                \MathMLintent { _\l__spintent_spread_read_arg_tl } { #2 }
               }
           }
       }
@@ -1792,9 +1798,9 @@
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { dividido       } }
-            {2} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { dividido-por   } }
-            {3} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { dividido-entre } }
+            {1} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { _dividido       } }
+            {2} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { _dividido-por   } }
+            {3} { \tl_set:Nn \l__spintent_spdsym_read_sym_tl { _dividido-entre } }
           }
       },
     read-sym           .initial:n  = dividido,
@@ -1862,9 +1868,9 @@
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { por } }
-            {2} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { multiplicado-por } }
-            {3} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { veces } }
+            {1} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { _por } }
+            {2} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { _multiplicado-por } }
+            {3} { \tl_set:Nn \l__spintent_spmsym_read_sym_tl { _veces } }
           }
       },
     read-sym           .initial:n  = por,
@@ -2099,9 +2105,9 @@
         concept            .bool_set:c = { l__spintent_sp #1 _concept_bool },
         concept            .initial:n  = true,
         concept            .value_required:n = true,
-        silent-cmd         .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
-        silent-cmd         .initial:n  = false,
-        silent-cmd         .value_required:n = true,
+        silent             .bool_set:c = { l__spintent_sp #1 _silent_bool },
+        silent             .initial:n  = false,
+        silent             .value_required:n = true,
         unknown            .code:n =
           {
             \str_set:Nn \l__spintent_command_name_str { sp #1 }
@@ -2126,7 +2132,7 @@
           }
           { \seq_put_right:Nn \l__spintent_mc_args_seq {##1} }
       }
-    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       {
         \seq_set_map:NNn \l__spintent_mc_args_seq \l__spintent_mc_args_seq
           {
@@ -2166,7 +2172,7 @@
 \cs_new_protected:Nn \__spintent_spmc_process:nnnn
   {
     \keys_set:nn { spintent / sp #1 } { #3 }
-    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       {
         \MathMLintent { :silent }
           {
@@ -2182,6 +2188,7 @@
           {
             \MathMLintent
               {
+                _
                 \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
                   {
                     \tl_use:c { l__spintent_sp #1 _prefix_tl } -
@@ -2242,7 +2249,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \__spintent_spmc_process:nnnn { mcd } { _máximo-común-divisor } {#1} {#2}
+          \__spintent_spmc_process:nnnn { mcd } { máximo-común-divisor } {#1} {#2}
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmcd } }
@@ -2252,7 +2259,7 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \__spintent_spmc_process:nnnn { mcm } { _mínimo-común-múltiplo } {#1} {#2}
+          \__spintent_spmc_process:nnnn { mcm } { mínimo-común-múltiplo } {#1} {#2}
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmcm } }
@@ -2273,9 +2280,9 @@
         result     .bool_set:c = { l__spintent_sp #1 _print_result_bool },
         result     .initial:n  = false,
         result     .value_required:n = true,
-        silent-cmd .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
-        silent-cmd .initial:n  = false,
-        silent-cmd .value_required:n = true,
+        silent     .bool_set:c = { l__spintent_sp #1 _silent_bool },
+        silent     .initial:n  = false,
+        silent     .value_required:n = true,
         result-num .tl_set:c   = { l__spintent_sp #1 _print_result_num_tl },
         result-num .initial:n  = ,
         prefix     .code:n =
@@ -2313,9 +2320,10 @@
   }
 \cs_new:Nn \__spintent_spnM_spnD_intent:nn
   {
+    _
     \tl_if_empty:cF { l__spintent_sp #1 _prefix_tl }
       { \tl_use:c { l__spintent_sp #1 _prefix_tl } - }
-    \str_case:nnF { #2 } { { multiplos } { _múltiplos } }
+    \str_case:nnF { #2 } { { multiplos } { múltiplos } }
       { #2 }
     -de
   }
@@ -2363,7 +2371,7 @@
   {
     \tl_if_novalue:nTF { #4 }
       {
-        \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l__spintent_sp #1 _silent_bool }
           { \__spintent_spnM_spnD_silent:nn { #2 } { n } }
           {
             \bool_if:cTF { l__spintent_sp #1 _concept_bool }
@@ -2381,7 +2389,7 @@
       }
       {
         \__spintent_luafun_spnmd_classify:n { \exp_not:n { #4 } }
-        \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l__spintent_sp #1 _silent_bool }
           {
             \str_if_eq:VnTF \l__spintent_spnmd_luaset_is_number_str { true }
               { \__spintent_spnM_spnD_silent:nn { #2 } { \spnum { #4 } } }
@@ -2397,7 +2405,11 @@
               { \MathMLintent { :silent } { \operatorname { #2 } } }
             \MathMLintent { :silent } { ( }
             \str_if_eq:VnTF \l__spintent_spnmd_luaset_is_number_str { true }
-              { \spnum { #4 } } { #4 }
+              { \spnum { #4 } }
+              {
+                \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent doble "de"
+                #4
+              }
             \MathMLintent { :silent } { ) }
           }
         \str_if_eq:VnT \l__spintent_spnmd_luaset_is_number_str { true }
@@ -2424,16 +2436,16 @@
     \mode_if_math:TF
       {
         \group_begin:
-          \__spintent_spnM_spnD_process:nnnnn { nD } { D } { _divisores } {#1} {#2}
+          \__spintent_spnM_spnD_process:nnnnn { nD } { D } { divisores } {#1} {#2}
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spnD } }
   }
 \keys_define:nn { spintent / sprazon }
   {
-    silent-cmd .bool_set:N = \l__spintent_sprazon_silent_cmd_bool,
-    silent-cmd .initial:n  = false,
-    silent-cmd .value_required:n = true,
+    silent .bool_set:N = \l__spintent_sprazon_silent_bool,
+    silent .initial:n  = false,
+    silent .value_required:n = true,
     use-dfrac  .bool_set:N = \l__spintent_sprazon_use_dfrac_bool,
     use-dfrac  .initial:n  = false,
     use-dfrac  .value_required:n = true,
@@ -2450,7 +2462,7 @@
   {
     \keys_set:nn { spintent / sprazon } { #1 }
     \__spintent_invisible_sep:
-    \bool_if:NTF \l__spintent_sprazon_silent_cmd_bool
+    \bool_if:NTF \l__spintent_sprazon_silent_bool
       {
         \MathMLintent { _- }
           {
@@ -2503,7 +2515,7 @@
       {
         \group_begin:
           \__spintent_sprazon_exec:nnn { #1 } { #2 } { #3 }
-          \bool_if:NTF \l__spintent_sprazon_silent_cmd_bool
+          \bool_if:NTF \l__spintent_sprazon_silent_bool
             {
               \MathMLintent { :silent } { = }
             }
@@ -2862,9 +2874,9 @@
   }
 \keys_define:nn { spintent / spcoord }
   {
-    silent-cmd  .bool_set:N = \l__spintent_spcoord_silent_cmd_bool,
-    silent-cmd  .initial:n  = false,
-    silent-cmd  .value_required:n = true,
+    silent  .bool_set:N = \l__spintent_spcoord_silent_bool,
+    silent  .initial:n  = false,
+    silent  .value_required:n = true,
     unknown     .code:n =
       {
         \str_set:Nn \l__spintent_command_name_str { spcoord }
@@ -2964,7 +2976,7 @@
   }
 \cs_new_protected:Nn \__spintent_spcoord_mathml:
   {
-    \bool_if:NTF \l__spintent_spcoord_silent_cmd_bool
+    \bool_if:NTF \l__spintent_spcoord_silent_bool
       {
         \MathMLintent { _- }
           {
@@ -2983,7 +2995,7 @@
   {
     \keys_set:nn { spintent / spcoord } {#1}
     \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#2}
-    \bool_if:NTF \l__spintent_spcoord_silent_cmd_bool
+    \bool_if:NTF \l__spintent_spcoord_silent_bool
       {
         \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
         \str_set:Nn \l__spintent_spcoord_luaset_error_str { false }
@@ -3016,7 +3028,7 @@
   {
     \tl_set:Nn \l__spintent_mathmlarg_point_ref_tl {#1}
     \__spintent_luafun_geo_point_parse_and_set:n { \exp_not:n {#3} }
-    \bool_set_eq:Nc \l__spintent_mathmlarg_point_silent_bool { l__spintent_ #2 _silent_cmd_bool }
+    \bool_set_eq:Nc \l__spintent_mathmlarg_point_silent_bool { l__spintent_ #2 _silent_bool }
     \str_set_eq:Nc  \l__spintent_mathmlarg_point_mode_str  { l__spintent_ #2 _mode_str }
     \__spintent_invisible_sep:
     \str_case:VnF \l__spintent_geo_luaset_tipo_str
@@ -3127,9 +3139,9 @@
       { \__spintent_sanitize_affix:Nn \l__spintent_spPoint_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spPoint_silent_cmd_bool,
-    silent-cmd          .initial:n = false,
-    silent-cmd          .value_required:n = true,
+    silent          .bool_set:N = \l__spintent_spPoint_silent_bool,
+    silent          .initial:n = false,
+    silent          .value_required:n = true,
     concept             .bool_set:N = \l__spintent_spPoint_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -3149,12 +3161,12 @@
     \bool_if:nTF
       {
         \bool_lazy_or_p:nn
-          { \l__spintent_spPoint_silent_cmd_bool }
+          { \l__spintent_spPoint_silent_bool }
           { ! \l__spintent_spPoint_concept_bool }
       }
       {
         \tl_set:Nn \l__spintent_spPoint_intent_arg_tl { _($pt) }
-        \bool_if:NT \l__spintent_spPoint_silent_cmd_bool
+        \bool_if:NT \l__spintent_spPoint_silent_bool
           {
             \str_if_eq:VnF \l__spintent_spPoint_mode_str { school }
               {
@@ -3190,9 +3202,9 @@
     \tl_if_novalue:nF {#3}
       {
         \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % silencia el "por"
-        \bool_set_eq:NN \l__spintent_spcoord_silent_cmd_bool \l__spintent_spPoint_silent_cmd_bool
+        \bool_set_eq:NN \l__spintent_spcoord_silent_bool \l__spintent_spPoint_silent_bool
         \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l__spintent_spcoord_silent_cmd_bool
+        \bool_if:NTF \l__spintent_spcoord_silent_bool
           {
             \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
             \str_set:Nn \l__spintent_spcoord_luaset_error_str { false }
@@ -3231,9 +3243,9 @@
   }
 \keys_define:nn { spintent / spvec }
   {
-    silent-cmd    .bool_set:N = \l__spintent_spvec_silent_cmd_bool,
-    silent-cmd    .initial:n = false,
-    silent-cmd    .value_required:n = true,
+    silent    .bool_set:N = \l__spintent_spvec_silent_bool,
+    silent    .initial:n = false,
+    silent    .value_required:n = true,
     concept       .bool_set:N = \l__spintent_spvec_concept_bool,
     concept       .initial:n  = true,
     concept       .value_required:n = true,
@@ -3287,19 +3299,19 @@
         \bool_if:nTF
           {
             \bool_lazy_or_p:nn
-              { \l__spintent_spvec_silent_cmd_bool }
+              { \l__spintent_spvec_silent_bool }
               { ! \l__spintent_spvec_concept_bool }
           }
           {
             \tl_set:Nn \l__spintent_spvec_intent_arg_tl { _($pt) }
-            \bool_if:NT \l__spintent_spvec_silent_cmd_bool
+            \bool_if:NT \l__spintent_spvec_silent_bool
               {
                 \str_if_eq:VnF \l__spintent_spvec_mode_str { school }
                   { \tl_set:Nn \l__spintent_spvec_intent_arg_tl { _- } }
               }
           }
           {
-            \tl_set:Nn \l__spintent_spvec_intent_arg_tl { vector:prefix($pt) }
+            \tl_set:Nn \l__spintent_spvec_intent_arg_tl { _vector:prefix($pt) }
           }
         \str_case:VnF \l__spintent_geo_luaset_tipo_str
           {
@@ -3307,7 +3319,7 @@
               {
                 \str_if_eq:VnTF \l__spintent_spvec_mode_str { school }
                   {
-                    \bool_if:NTF \l__spintent_spvec_silent_cmd_bool
+                    \bool_if:NTF \l__spintent_spvec_silent_bool
                       { \tl_set:Nn \l__spintent_spvec_kv_tl { arg = "pt", intent = "_-" } }
                       {
                         \tl_set:Ne \l__spintent_spvec_kv_tl
@@ -3342,16 +3354,16 @@
                               { \vphantom{ b } }
                             \MathMLarg{ pt } { \l__spintent_geo_luaset_letra_str }
                           }
-                        \bool_if:NT \l__spintent_spvec_silent_cmd_bool
+                        \bool_if:NT \l__spintent_spvec_silent_bool
                           { \c_math_subscript_token { \l__spintent_geo_luaset_sub_str } }
                       }
-                    \bool_if:NF \l__spintent_spvec_silent_cmd_bool
+                    \bool_if:NF \l__spintent_spvec_silent_bool
                       { \c_math_subscript_token { \l__spintent_geo_luaset_sub_str } }
                   }
               }
           }
           {
-            \bool_if:NTF \l__spintent_spvec_silent_cmd_bool
+            \bool_if:NTF \l__spintent_spvec_silent_bool
               { \tl_set:Nn \l__spintent_spvec_kv_tl { arg = "pt", intent = "_-" } }
               {
                 \tl_set:Ne \l__spintent_spvec_kv_tl
@@ -3388,7 +3400,7 @@
         \bool_if:nTF
           {
             \bool_lazy_or_p:nn
-              { \l__spintent_spvec_silent_cmd_bool }
+              { \l__spintent_spvec_silent_bool }
               { ! \l__spintent_spvec_concept_bool }
           }
           {
@@ -3429,9 +3441,9 @@
       {
         \equal % notación de vector =( , )
         \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % previene lectura de intervalo
-        \bool_set_eq:NN \l__spintent_spcoord_silent_cmd_bool \l__spintent_spvec_silent_cmd_bool
+        \bool_set_eq:NN \l__spintent_spcoord_silent_bool \l__spintent_spvec_silent_bool
         \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l__spintent_spvec_silent_cmd_bool
+        \bool_if:NTF \l__spintent_spvec_silent_bool
           {
             \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
             \str_set:Nn \l__spintent_spcoord_luaset_error_str { false }
@@ -3490,9 +3502,9 @@
       { \__spintent_sanitize_affix:Nn \l__spintent_sprecta_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_sprecta_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
+    silent          .bool_set:N = \l__spintent_sprecta_silent_bool,
+    silent          .initial:n  = false,
+    silent          .value_required:n = true,
     concept             .bool_set:N = \l__spintent_sprecta_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -3519,7 +3531,7 @@
         \bool_if:nTF
           {
             \bool_lazy_or_p:nn
-              { \l__spintent_sprecta_silent_cmd_bool }
+              { \l__spintent_sprecta_silent_bool }
               { ! \l__spintent_sprecta_concept_bool }
           }
           {
@@ -3598,7 +3610,7 @@
               }
           }
           {
-            \bool_if:NTF \l__spintent_sprecta_silent_cmd_bool
+            \bool_if:NTF \l__spintent_sprecta_silent_bool
               {
                 \tl_set:Nn \l__spintent_sprecta_kv_tl { arg = "pt", intent = "_-" }
               }
@@ -3632,7 +3644,7 @@
         \bool_if:nTF
           {
             \bool_lazy_or_p:nn
-              { \l__spintent_sprecta_silent_cmd_bool }
+              { \l__spintent_sprecta_silent_bool }
               { ! \l__spintent_sprecta_concept_bool }
           }
           {
@@ -3710,9 +3722,9 @@
       { \__spintent_sanitize_affix:Nn \l__spintent_sprayo_prefix_tl {#1} },
     prefix              .initial:n  = ,
     prefix              .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_sprayo_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
+    silent          .bool_set:N = \l__spintent_sprayo_silent_bool,
+    silent          .initial:n  = false,
+    silent          .value_required:n = true,
     concept             .bool_set:N = \l__spintent_sprayo_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -3763,7 +3775,7 @@
     \bool_if:nTF
       {
         \bool_lazy_or_p:nn
-          { \l__spintent_sprayo_silent_cmd_bool }
+          { \l__spintent_sprayo_silent_bool }
           { ! \l__spintent_sprayo_concept_bool }
       }
       {
@@ -3849,9 +3861,9 @@
           { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
         prefix              .initial:n  = ,
         prefix              .value_required:n = true,
-        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l__spintent_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -3930,7 +3942,7 @@
           { \tl_put_right:Nn \l__spintent_spside_refs_tl { , } }
         \tl_put_right:Ne \l__spintent_spside_refs_tl { $ pts \int_use:N \l__spintent_spside_pt_idx_int }
       }
-    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       {
         \tl_set:Ne \l__spintent_spside_intent_arg_tl { _( \l__spintent_spside_refs_tl ) }
       }
@@ -4062,9 +4074,9 @@
         print-m             .bool_set:c = { l__spintent_sp #1 _print_m_bool },
         print-m             .initial:n  = false,
         print-m             .value_required:n = true,
-        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l__spintent_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -4141,7 +4153,7 @@
     \__spintent_invisible_sep: % (luamml issues #26)
     \str_if_eq:VnTF \l__spintent_geo_luaset_angulo_case_str { nombre }
       {
-        \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l__spintent_sp #1 _silent_bool }
           {
             \tl_set:Nn \l__spintent_spangle_intent_arg_tl { _- }
           }
@@ -4164,7 +4176,7 @@
         \__spintent_luafun_mrow_intent_arg:nn
           { } { \l__spintent_spangle_kv_tl }
         { \__spintent_spangle_sym:n {#1} }
-        \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l__spintent_sp #1 _silent_bool }
           {
             \__spintent_luafun_mrow_intent_arg:nn { } { intent = "_-" }
             { \l__spintent_geo_luaset_print_tl }
@@ -4230,7 +4242,7 @@
               { \tl_put_right:Nn \l__spintent_spangle_refs_tl { , } }
             \tl_put_right:Ne \l__spintent_spangle_refs_tl { $ pt \int_use:N \l__spintent_spangle_pt_idx_int }
           }
-        \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+        \bool_if:cTF { l__spintent_sp #1 _silent_bool }
           {
             \tl_set:Nn \l__spintent_spangle_intent_arg_tl { _- }
           }
@@ -4341,9 +4353,9 @@
           { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _prefix_tl } {##1} },
         prefix              .initial:n  = ,
         prefix              .value_required:n = true,
-        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l__spintent_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -4395,7 +4407,7 @@
           { \tl_put_right:Nn \l__spintent_sparc_refs_tl { , } }
         \tl_put_right:Ne \l__spintent_sparc_refs_tl { $ pt \int_use:N \l__spintent_sparc_pt_idx_int }
       }
-    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       {
         \tl_set:Nn \l__spintent_sparc_intent_arg_tl { _- }
       }
@@ -4495,9 +4507,9 @@
     print-sym           .bool_set:N = \l__spintent_spPoly_print_sym_bool,
     print-sym           .initial:n  = true,
     print-sym           .value_required:n = true,
-    silent-cmd          .bool_set:N = \l__spintent_spPoly_silent_cmd_bool,
-    silent-cmd          .initial:n  = false,
-    silent-cmd          .value_required:n = true,
+    silent          .bool_set:N = \l__spintent_spPoly_silent_bool,
+    silent          .initial:n  = false,
+    silent          .value_required:n = true,
     concept             .bool_set:N = \l__spintent_spPoly_concept_bool,
     concept             .initial:n  = true,
     concept             .value_required:n = true,
@@ -4534,7 +4546,7 @@
   }
 \cs_new_protected:Nn \__spintent_spPoly_build_concept:
   {
-    \bool_if:NTF \l__spintent_spPoly_silent_cmd_bool
+    \bool_if:NTF \l__spintent_spPoly_silent_bool
       {
         \tl_set:Ne \l__spintent_spPoly_intent_arg_tl { _( \l__spintent_spPoly_refs_tl ) }
       }
@@ -4700,9 +4712,9 @@
         read-sub            .bool_set:c = { l__spintent_sp #1 _read_sub_bool },
         read-sub            .initial:n  = false,
         read-sub            .value_required:n = true,
-        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l__spintent_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         concept             .bool_set:c = { l__spintent_sp #1 _concept_bool },
         concept             .initial:n  = true,
         concept             .value_required:n = true,
@@ -4863,7 +4875,7 @@
           { _ \l__spintent_spfig_op_tl - }
           { _ \l__spintent_spfig_op_tl - \l__spintent_spfig_desc_tl - }
       }
-    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       { \tl_set:Nn \l__spintent_spfig_intent_arg_tl { _- } }
       {
         \bool_if:cTF { l__spintent_sp #1 _concept_bool }
@@ -4924,7 +4936,7 @@
               { \c_backslash_str sp #1 }
           }
       }
-    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       {
         \tl_set:Ne \l__spintent_spfig_intent_arg_tl { _( \l__spintent_spfig_refs_tl ) }
       }
@@ -5074,9 +5086,9 @@
         concept     .bool_set:c = { l__spintent_sp #1 _concept_bool },
         concept     .initial:n  = true,
         concept     .value_required:n = true,
-        silent-cmd  .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
-        silent-cmd  .initial:n  = false,
-        silent-cmd  .value_required:n = true,
+        silent  .bool_set:c = { l__spintent_sp #1 _silent_bool },
+        silent  .initial:n  = false,
+        silent  .value_required:n = true,
         print-sym   .bool_set:c = { l__spintent_sp #1 _print_sym_bool },
         print-sym   .initial:n  = false,
         print-sym   .value_required:n = true,
@@ -5106,7 +5118,7 @@
         \bool_if:NT \l__spintent_spdiam_print_sym_bool
           { \MathMLintent { :silent } { \diameter } }
       }
-    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       {
         \str_if_empty:cTF { l__spintent_sp #1 _sub_index_str }
           {
@@ -5368,9 +5380,9 @@
       { \__spintent_sanitize_affix:Nn \l__spintent_spcirc_read_arg_tl {#1} },
     read-arg     .initial:n = ,
     read-arg     .value_required:n = true,
-    silent-cmd   .bool_set:N = \l__spintent_spcirc_silent_cmd_bool,
-    silent-cmd   .initial:n = false,
-    silent-cmd   .value_required:n = true,
+    silent   .bool_set:N = \l__spintent_spcirc_silent_bool,
+    silent   .initial:n = false,
+    silent   .value_required:n = true,
     concept      .bool_set:N = \l__spintent_spcirc_concept_bool,
     concept      .initial:n  = true,
     concept      .value_required:n = true,
@@ -5450,7 +5462,7 @@
           }
       }
     \tl_set:Nn \l__spintent_spcirc_connector_tl { de-centro-en }
-    \bool_if:NTF \l__spintent_spcirc_silent_cmd_bool
+    \bool_if:NTF \l__spintent_spcirc_silent_bool
       {
         \tl_set:Nn \l__spintent_spcirc_intent_arg_tl     { _- }
         \tl_set:Ne \l__spintent_spcirc_connector_arg_tl  { _( $ pt ) }
@@ -5644,9 +5656,9 @@
           { \__spintent_sanitize_affix:cn { l__spintent_sp #1 _read_arg_tl } {##1} },
         read-arg            .initial:n  = ,
         read-arg            .value_required:n = true,
-        silent-cmd          .bool_set:c = { l__spintent_sp #1 _silent_cmd_bool },
-        silent-cmd          .initial:n  = false,
-        silent-cmd          .value_required:n = true,
+        silent          .bool_set:c = { l__spintent_sp #1 _silent_bool },
+        silent          .initial:n  = false,
+        silent          .value_required:n = true,
         unknown             .code:n =
           {
             \str_set:Nn \l__spintent_command_name_str { sp #1 }
@@ -5696,7 +5708,7 @@
   }
 \cs_new_protected:Nn \__spintent_spcircfig_build_short:n
   {
-    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       {
         \tl_set:Nn \l__spintent_spcircfig_intent_arg_tl { _- }
       }
@@ -5734,7 +5746,7 @@
   }
 \cs_new_protected:Nn \__spintent_spcircfig_build_concept:nn
   {
-    \bool_if:cTF { l__spintent_sp #1 _silent_cmd_bool }
+    \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       {
         \tl_if_empty:nTF {#2}
           { \tl_set:Nn \l__spintent_spcircfig_intent_arg_tl { _- } }
@@ -5932,9 +5944,9 @@
     concept     .bool_set:N = \l__spintent_spVol_concept_bool,
     concept     .initial:n  = true,
     concept     .value_required:n = true,
-    silent-cmd  .bool_set:N = \l__spintent_spVol_silent_cmd_bool,
-    silent-cmd  .initial:n  = false,
-    silent-cmd  .value_required:n = true,
+    silent  .bool_set:N = \l__spintent_spVol_silent_bool,
+    silent  .initial:n  = false,
+    silent  .value_required:n = true,
     unknown     .code:n =
       {
         \str_set:Nn \l__spintent_command_name_str { spVol }
@@ -5944,7 +5956,7 @@
 \cs_new_protected:Nn \__spintent_spVol_print:
   {
     \__spintent_invisible_sep:
-    \bool_if:NTF \l__spintent_spVol_silent_cmd_bool
+    \bool_if:NTF \l__spintent_spVol_silent_bool
       { \__spintent_spVol_silent: }
       { \__spintent_spVol_verbal: }
   }

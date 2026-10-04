@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-10-01]
+     Lua module spintent.lua for spintent package - v0.99 [2026-10-04]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -661,7 +661,7 @@ local spintent_units = {
     ["㎺"]   = "pW",       ["㎻"]   = "nW",       ["㎼"]   = "µW",
     ["㎍"]   = "µg",       ["㎎"]   = "mg",       ["㎏"]   = "kg",
     ["㎜"]   = "mm",       ["㎝"]   = "cm",       ["㎞"]   = "km",       ["㎛"]   = "µm",       ["㎕"]   = "µL",
-    ["㎖"]   = "mL",       ["㎗"]   = "dL",       ["㎘"]   = "kL",       ["¼"]   = "cm^3",     ["㎧"]   = "m/s",
+    ["㎖"]   = "mL",       ["㎗"]   = "dL",       ["㎘"]   = "kL",       ["㎧"]   = "m/s",
     ["㎨"]   = "m/s^2",    ["㎭"]   = "rad",      ["㎮"]   = "rad/s",    ["㎯"]   = "rad/s^2"
 }
 
@@ -674,7 +674,6 @@ local spintent_unit_compact_spoken_names = {
     ["㎣"]     = "milímetro-cúbico",
     ["㎤"]     = "centímetro-cúbico",
     ["㎦"]     = "kilómetro-cúbico",
-    ["¼"]      = "centímetro-cúbico",
     ["㎧"]     = "metros-por-segundo",
     ["㎨"]     = "metros-por-segundo-al-cuadrado",
     ["㎐"]     = "hercio",
@@ -711,7 +710,7 @@ local function spintent_sanitize_for_screen_reader(raw_string)
 end
 
 register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
-    if spintent_units[unit_symbol] or spintent_custom_spunit_spoken_names[unit_symbol] then
+    if spintent_units[unit_symbol] or spintent_custom_spunit_spoken_names[unit_symbol] or spintent_custom_spunit_aliases[unit_symbol] then
         token_set_macro("l__spintent_spunit_luaset_status_str", "duplicate")
         return
     end
@@ -719,8 +718,9 @@ register_tex_cmd("luafun_define_custom_unit", function(unit_symbol, spoken_name)
     -- Sanitizamos y aglutinamos para MathCAT
     local clean_spoken_name = spintent_sanitize_for_screen_reader(spoken_name)
 
-    spintent_custom_spunit_spoken_names[unit_symbol] = clean_spoken_name
-    spintent_custom_spunit_aliases[unit_symbol] = true
+    -- El prefijo _ marca un intent propio, no reconocido por MathCAT
+    spintent_custom_spunit_spoken_names[unit_symbol] = "_" .. clean_spoken_name
+    spintent_units[unit_symbol] = unit_symbol
 
     token_set_macro("l__spintent_spunit_luaset_status_str", "success")
 end, { "string", "string" })
@@ -883,6 +883,9 @@ local spintent_currency_grammatical_dict = {
     ["₽"]        = { sing = "rublo",                 plur = "rublos",                 conde = "de-rublos" },
     ["₺"]        = { sing = "lira",                  plur = "liras",                  conde = "de-liras" },
     ["₴"]        = { sing = "grivna",                plur = "grivnas",                conde = "de-grivnas" },
+    ["¢"]        = { sing = "centavo",               plur = "centavos",               conde = "de-centavos" },
+    ["centavo"]  = { sing = "centavo",               plur = "centavos",               conde = "de-centavos" },
+    ["centavos"] = { sing = "centavo",               plur = "centavos",               conde = "de-centavos" },
 }
 
 local spintent_currency_subunits_matrix = {
@@ -932,16 +935,30 @@ local spintent_currency_spoken_names = {
     ["₴"]        = "grivnas",
 }
 
+-- Clave de búsqueda de una moneda: sin espacios en los extremos, \$ igual
+-- que $, sin acentos y en minúsculas
+local spintent_money_accents = {
+    ["á"] = "a", ["é"] = "e", ["í"] = "i", ["ó"] = "o", ["ú"] = "u", ["ü"] = "u",
+    ["Á"] = "a", ["É"] = "e", ["Í"] = "i", ["Ó"] = "o", ["Ú"] = "u", ["Ü"] = "u",
+}
+
+local function spintent_money_key(str)
+    local key = spintent_trim(str)
+    key = s_gsub(key, "^\\%$", "$")
+    key = s_gsub(key, "[\xC3][\x80-\xBF]", spintent_money_accents)
+    return s_lower(key)
+end
+
 register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local trimmed = spintent_trim(currency_name)
-    local clean = s_lower(trimmed)
+    local clean = spintent_money_key(currency_name)
     local resolved_symbol = spintent_internal_currencies[clean] or "$"
 
     local gram_entry = spintent_currency_grammatical_dict[clean] or spintent_currency_grammatical_dict[resolved_symbol]
       or { sing = "peso", plur = "pesos", conde = "de-pesos" }
 
     local position = "pre"
-    if resolved_symbol == "€" then position = "post" end
+    if resolved_symbol == "€" or resolved_symbol == "¢" then position = "post" end
 
     if trimmed == s_upper(trimmed) and s_match(trimmed, "^%a+$") then
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "true")
@@ -967,7 +984,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
 end, { "string" })
 
 register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
-    local clean = spintent_normalize_key(raw_input)
+    local clean = spintent_money_key(raw_input)
     local resolved_symbol = spintent_internal_currencies[clean]
     local resolved_spoken = nil
 
@@ -987,11 +1004,14 @@ register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
 end, { "string" })
 
 register_tex_cmd("luafun_spmoney_prepare_input", function(raw_input)
-    -- Extrae solo la moneda (borra dígitos, signos, espacios y separadores numéricos)
-    local curr_part = s_gsub(raw_input, "[%d%s%+%-%.,{}%:%;]", "")
+    -- Dígitos, signos, espacios, separadores numéricos y espacios matemáticos
+    local num_item = spintent_math_space + S"0123456789 \t\r\n+-.,{}:;"
 
-    -- Extrae solo el número matemático puro
-    local num_part  = s_gsub(raw_input, "[^%d%s%+%-%.,{}%:%;]", "")
+    -- Extrae solo la moneda (borra la parte numérica)
+    local curr_part = Cs(((num_item / "") + P(1))^0):match(raw_input)
+
+    -- Extrae solo el número matemático puro (conserva los espacios matemáticos)
+    local num_part  = Cs((num_item + (P(1) / ""))^0):match(raw_input)
 
     token_set_macro("l__spintent_spmoney_extracted_curr_str", curr_part)
     token_set_macro("l__spintent_spmoney_extracted_num_tl", num_part)
@@ -1181,6 +1201,7 @@ end
 local spintent_spshort_digits       = spintent_digit^1
 local spintent_spshort_dot          = P(".")
 local spintent_spshort_raw_suffix   = C(P("er") + P("os") + P("as") + P("a") + P("o"))
+                                    + (P("ª") / "a") + (P("º") / "o")
 local spintent_spshort_illegal_suff = C((R("az") + R("AZ"))^1)
 
 local spintent_spshort_ord_grammar = P({
@@ -1321,7 +1342,7 @@ register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
 
   if s_match(clean, "^%d+$") then
     arabic_val = tonumber(clean)
-    if arabic_val > 0 and arabic_val <= 4000 then
+    if arabic_val > 0 and arabic_val < 4000 then
       roman_val = spintent_arabic_to_roman(arabic_val)
     else
       is_error = true
@@ -1330,7 +1351,7 @@ register_tex_cmd("luafun_spsiglo_parse", function(raw_siglo_input)
     roman_val = clean
     arabic_val = spintent_roman_to_arabic(clean)
 
-    if spintent_arabic_to_roman(arabic_val) ~= clean then
+    if arabic_val >= 4000 or spintent_arabic_to_roman(arabic_val) ~= clean then
       is_error = true
     end
   else
@@ -1626,7 +1647,7 @@ local function spintent_execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
     token_set_macro("l__spintent_spnM_spnD_luaset_error_str", "false")
 
     local num_n = tonumber(raw_n)
-    if not num_n then
+    if not num_n or num_n < 1 then
         token_set_macro("l__spintent_spnM_spnD_luaset_error_str", "true")
         return
     end
@@ -1924,7 +1945,7 @@ local function spintent_geo_normalize_primes(str)
     return str
 end
 
--- cmd == "" (silent-cmd en modo school) envuelve el resultado en
+-- cmd == "" (silent en modo school) envuelve el resultado en
 -- guiones bajos ("_...-") para que MathCAT lo trate como literal por
 -- default-text y no aplique sus reglas de mayúsculas a un <mi> suelto.
 local function spintent_geo_build_intent(cmd, puntos)

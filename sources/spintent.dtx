@@ -207,7 +207,7 @@ end, "shekel_fallback_patch")
 \definecolor{catgray}{rgb}{0.4, 0.4, 0.4}            % Gris para "CAT" o "ML"
 % File info
 \def\fileversion{v0.99}
-\def\filedate{2026-10-01}
+\def\filedate{2026-10-04}
 \def\fileinfo{Spanish parse intents}
 
 % Config hyperref
@@ -2401,7 +2401,7 @@ end, "shekel_fallback_patch")
 %
 %   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
 %   |$\spdiv{20}{26}$| imprimirá `$20:26$' en la salida \texttt{PDF}
-%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veinte dividido veinte y seis»}
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veinte dividido veintiséis»}
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spdiv}}
@@ -2445,7 +2445,7 @@ end, "shekel_fallback_patch")
 %
 %   Si no se proporciona el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val},
 %   |$\spmul{20}{26}$| imprimirá `$20 \cdot 26$' en la salida \texttt{PDF}
-%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veinte por veinte y seis»}.
+%   y \mynvmath{NVDA/MathCAT} verbalizará \emph{«veinte por veintiséis»}.
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spmul}}
@@ -2622,7 +2622,7 @@ end, "shekel_fallback_patch")
 % del argumento \myparg{número}. Si se establece en |true|, |$\spnM[result=true](6)$|
 % imprimirá `$\mathrm{M}(6) = \{6, 12, 18, 24, 30, \dots\}$' en la salida
 % \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«múltiplos de seis son seis,
-% doce, dieciocho, veinticuatro, treinta puntos suspencivos»}; si se
+% doce, dieciocho, veinticuatro, treinta puntos suspensivos»}; si se
 % establece en |false|, no se imprimirá ni verbalizará el resultado de
 % calcular los \emph{múltiplos}.
 %
@@ -2642,7 +2642,7 @@ end, "shekel_fallback_patch")
 %   false}{false}[spnM]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% del concepto \emph{«multiplos de»} y del \myparg{argumento} pasado al comando
+% del concepto \emph{«múltiplos de»} y del \myparg{argumento} pasado al comando
 % sin modificar la impresión de este. Si se establece en |true|,
 % \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se establece
 % en |false|, \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
@@ -2819,7 +2819,7 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará
 % el \emph{concepto} asociado al comando sin modificar la impresión de este.
-% Si se establece en |terse|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«m c d»};
+% Si se establece en |terse|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«m c m»};
 % si se establece en |clear|, \mynvmath{NVDA/MathCAT} verbalizará \emph{«mínimo común múltiplo»}.
 %
 % \smallskip
@@ -2848,9 +2848,9 @@ end, "shekel_fallback_patch")
 % Establece si se \emph{imprime} el resultado de calcular el \emph{«mínimo
 % común múltiplo»} del argumento \myparg{número\textnormal{\textcolor{gray}{,}} número\textnormal{\textcolor{gray}{,}} \dots}.
 % Si se establece en |true|: |$\spmcm[result=true](2, 3, 6)$| imprimirá
-% `$\mathrm{mcm}(2, 3, 6) = 1$' en la salida \texttt{PDF} y
+% `$\mathrm{mcm}(2, 3, 6) = 6$' en la salida \texttt{PDF} y
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«mínimo común múltiplo entre
-% dos, tres y seis es igual a uno»}; si se establece en |false| no se
+% dos, tres y seis es igual a seis»}; si se establece en |false| no se
 % imprimirá ni verbalizará el resultado el resultado de calcular el
 % \emph{«mínimo común múltiplo»}.
 %
@@ -5637,7 +5637,7 @@ end, "shekel_fallback_patch")
 % keys: \mykey{mathcal} and \mykey{AFghost}, which can be passed as package
 % options.
 %    \begin{macrocode}
-\ProvidesExplPackage {spintent} {2026-10-01} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-10-04} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -7001,8 +7001,8 @@ end, "shekel_fallback_patch")
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \str_set:Nn \l_@@_spunit_read_slash_str { por } }
-            {2} { \str_set:Nn \l_@@_spunit_read_slash_str { partido-por } }
+            {1} { \str_set:Nn \l_@@_spunit_read_slash_str { _por } }
+            {2} { \str_set:Nn \l_@@_spunit_read_slash_str { _partido-por } }
           }
       },
     read-slash           .initial:n  = por,
@@ -7071,12 +7071,12 @@ end, "shekel_fallback_patch")
             \bool_if:NTF \l_@@_spunit_print_cdot_bool
               {
                 \bool_if:NTF \l_@@_spunit_read_cdot_bool
-                  { \MathMLintent { por } { \cdot } }
+                  { \MathMLintent { _por } { \cdot } }
                   { \MathMLintent { :silent } { \cdot } }
               }
               {
                 \bool_if:NTF \l_@@_spunit_read_cdot_bool
-                  { \MathMLintent { por } { \, } }
+                  { \MathMLintent { _por } { \, } }
                   { \, }
               }
           }
@@ -8283,7 +8283,7 @@ end, "shekel_fallback_patch")
   {
     \str_if_eq:nnTF { #1 } { ac }
       {
-        \MathMLintent { antes-de-cristo:postfix($z) }
+        \MathMLintent { _antes-de-cristo:postfix($z) }
           {
             \@@_inner_sep:
             \MathMLarg { z }
@@ -8296,7 +8296,7 @@ end, "shekel_fallback_patch")
           }
       }
       {
-        \MathMLintent { después-de-cristo:postfix($z) }
+        \MathMLintent { _después-de-cristo:postfix($z) }
           {
             \@@_inner_sep:
             \MathMLarg { z }
@@ -8942,9 +8942,9 @@ end, "shekel_fallback_patch")
       { \@@_sanitize_affix:Nn \l_@@_spread_read_arg_tl {#1} },
     read-arg    .initial:n = ,
     read-arg    .value_required:n = true,
-    silent  .bool_set:N = \l_@@_spread_silent_bool,
-    silent  .initial:n  = false,
-    silent  .value_required:n = true,
+    silent      .bool_set:N = \l_@@_spread_silent_bool,
+    silent      .initial:n  = false,
+    silent      .value_required:n = true,
     unknown     .code:n =
       {
         \str_set:Nn \l_@@_command_name_str { spread }
@@ -8981,14 +8981,14 @@ end, "shekel_fallback_patch")
                 \@@_luafun_spread_lookup:n { \exp_not:n {#2} }
                 \str_if_eq:VnTF \l_@@_spread_luaset_status_str { found }
                   {
-                    \MathMLintent { \l_@@_spread_luaset_reading_str } { #2 }
+                    \MathMLintent { _\l_@@_spread_luaset_reading_str } { #2 }
                   }
                   {
                     \msg_error:nne { spintent } { spread-unknown-sym } { \exp_not:n {#2} }
                   }
               }
               {
-                \MathMLintent { \l_@@_spread_read_arg_tl } { #2 }
+                \MathMLintent { _\l_@@_spread_read_arg_tl } { #2 }
               }
           }
       }
@@ -9090,9 +9090,9 @@ end, "shekel_fallback_patch")
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { dividido       } }
-            {2} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { dividido-por   } }
-            {3} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { dividido-entre } }
+            {1} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { _dividido       } }
+            {2} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { _dividido-por   } }
+            {3} { \tl_set:Nn \l_@@_spdsym_read_sym_tl { _dividido-entre } }
           }
       },
     read-sym           .initial:n  = dividido,
@@ -9188,9 +9188,9 @@ end, "shekel_fallback_patch")
       {
         \int_case:nn { \l_keys_choice_int }
           {
-            {1} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { por } }
-            {2} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { multiplicado-por } }
-            {3} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { veces } }
+            {1} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { _por } }
+            {2} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { _multiplicado-por } }
+            {3} { \tl_set:Nn \l_@@_spmsym_read_sym_tl { _veces } }
           }
       },
     read-sym           .initial:n  = por,
@@ -9612,9 +9612,9 @@ end, "shekel_fallback_patch")
         concept            .bool_set:c = { l_@@_sp #1 _concept_bool },
         concept            .initial:n  = true,
         concept            .value_required:n = true,
-        silent         .bool_set:c = { l_@@_sp #1 _silent_bool },
-        silent         .initial:n  = false,
-        silent         .value_required:n = true,
+        silent             .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent             .initial:n  = false,
+        silent             .value_required:n = true,
         unknown            .code:n =
           {
             \str_set:Nn \l_@@_command_name_str { sp #1 }
@@ -9749,6 +9749,7 @@ end, "shekel_fallback_patch")
           {
             \MathMLintent
               {
+                _
                 \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
                   {
                     \tl_use:c { l_@@_sp #1 _prefix_tl } -
@@ -9830,7 +9831,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \@@_spmc_process:nnnn { mcd } { _máximo-común-divisor } {#1} {#2}
+          \@@_spmc_process:nnnn { mcd } { máximo-común-divisor } {#1} {#2}
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmcd } }
@@ -9840,7 +9841,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \@@_spmc_process:nnnn { mcm } { _mínimo-común-múltiplo } {#1} {#2}
+          \@@_spmc_process:nnnn { mcm } { mínimo-común-múltiplo } {#1} {#2}
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmcm } }
@@ -9909,9 +9910,9 @@ end, "shekel_fallback_patch")
         result     .bool_set:c = { l_@@_sp #1 _print_result_bool },
         result     .initial:n  = false,
         result     .value_required:n = true,
-        silent .bool_set:c = { l_@@_sp #1 _silent_bool },
-        silent .initial:n  = false,
-        silent .value_required:n = true,
+        silent     .bool_set:c = { l_@@_sp #1 _silent_bool },
+        silent     .initial:n  = false,
+        silent     .value_required:n = true,
         result-num .tl_set:c   = { l_@@_sp #1 _print_result_num_tl },
         result-num .initial:n  = ,
         prefix     .code:n =
@@ -9988,9 +9989,10 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \cs_new:Nn \@@_spnM_spnD_intent:nn
   {
+    _
     \tl_if_empty:cF { l_@@_sp #1 _prefix_tl }
       { \tl_use:c { l_@@_sp #1 _prefix_tl } - }
-    \str_case:nnF { #2 } { { multiplos } { _múltiplos } }
+    \str_case:nnF { #2 } { { multiplos } { múltiplos } }
       { #2 }
     -de
   }
@@ -10123,7 +10125,11 @@ end, "shekel_fallback_patch")
               { \MathMLintent { :silent } { \operatorname { #2 } } }
             \MathMLintent { :silent } { ( }
             \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
-              { \spnum { #4 } } { #4 }
+              { \spnum { #4 } }
+              {
+                \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
+                #4
+              }
             \MathMLintent { :silent } { ) }
           }
         \str_if_eq:VnT \l_@@_spnmd_luaset_is_number_str { true }
@@ -10160,7 +10166,7 @@ end, "shekel_fallback_patch")
     \mode_if_math:TF
       {
         \group_begin:
-          \@@_spnM_spnD_process:nnnnn { nD } { D } { _divisores } {#1} {#2}
+          \@@_spnM_spnD_process:nnnnn { nD } { D } { divisores } {#1} {#2}
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spnD } }
@@ -11885,7 +11891,7 @@ end, "shekel_fallback_patch")
               }
           }
           {
-            \tl_set:Nn \l_@@_spvec_intent_arg_tl { vector:prefix($pt) }
+            \tl_set:Nn \l_@@_spvec_intent_arg_tl { _vector:prefix($pt) }
           }
         \str_case:VnF \l_@@_geo_luaset_tipo_str
           {
@@ -16722,7 +16728,7 @@ end, "shekel_fallback_patch")
 %<*spintentlua>
 % \fi
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-10-01]
+     Lua module spintent.lua for spintent package - v0.99 [2026-10-04]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -18370,7 +18376,7 @@ local function spintent_execute_spnM_spnD_result(raw_n, raw_limit, is_multiple)
     token_set_macro("l__spintent_spnM_spnD_luaset_error_str", "false")
 
     local num_n = tonumber(raw_n)
-    if not num_n then
+    if not num_n or num_n < 1 then
         token_set_macro("l__spintent_spnM_spnD_luaset_error_str", "true")
         return
     end
