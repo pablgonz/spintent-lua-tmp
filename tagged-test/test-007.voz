@@ -45,13 +45,10 @@ encabezado    nivel 1  B.
 Comando spsiglo en modo matemático
 20.
 Arábigo:        21
-.
 21.
 Romano:        21
-.
 22.
 Con print-era ac:        5 antes de cristo
-.
 encabezado    nivel 1  C.
 Llave print-era
 23. Por defecto:21.
@@ -70,69 +67,48 @@ encabezado    nivel 1  D.
 Comando sptime (modo matemático)
 29.
 Horas y minutos:        23:45   minutos
-.
 30.
 Con segundos:        23:45   minutos con   30 segundos
-.
 31.
 Medianoche:        00:00   minutos
-.
 página 2  32.
 Medianoche con segundos:        00:00   minutos con   00 segundos
-.
 33.
 Hora con cero inicial:        01:05   minutos
-.
 34.
 Mediodía:        12:00   minutos
-.
 35.
 Y media:        12:30
-.
 36.
 Hora de la tarde:        13:00   minutos
-.
 37.
 Y cuarto:        18:15   minutos
-.
 38.
 Con segundos y ceros:        09:07   minutos con   03 segundos
-.
 39.
 Último segundo del día:        23:59   minutos con   59 segundos
-.
 40.
 Sin cero inicial:        1:05   minutos
-.
 encabezado    nivel 1  E.
 Comando spdate (modo matemático)
 41.
 Formato DD/MM/YYYY:        02/01/1981
-.
 42.
 Formato YYYY-MM-DD:        1981-01-02
-.
 43.
 Formato DD-MM-YYYY:        02-01-1981
-.
 44.
 Formato YYYY/MM/DD, que se convierte:        02/01/1981
-.
 45.
 Primero de enero:        01/01/2000
-.
 46.
 Fin de año:        31/12/1999
-.
 47.
 Año bisiesto con DD/MM/YYYY:        29/02/2024
-.
 48.
 Año bisiesto con YYYY-MM-DD:        2024-02-29
-.
 49.
 Sin ceros iniciales:        1/1/2000
-.
 encabezado    nivel 1  F.
 En contexto y dentro de fórmulas
 50. Siglo en una oración: Nació en el siglo19 en Valparaíso.
@@ -142,18 +118,13 @@ En contexto y dentro de fórmulas
 52.
 Hora y fecha en una misma oración: Salió a las        23:45   minutos
 del        31/12/1999
-.
 53.
 Comparación de horas:        09:30  es menor que  23:45          minutos
-.
 54.
 La misma fecha en dos formatos:        02/01/1981  es igual a  1981-01-02
-.
 55.
 Fecha en fórmula destacada:
      31/12/1999
-.
 56.
 Siglos en una fórmula:        20  es menor que  21
-.
 
