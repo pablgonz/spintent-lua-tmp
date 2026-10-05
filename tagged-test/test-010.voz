@@ -1,294 +1,294 @@
 test-010: spnD - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado    nivel 1  página 1  Comando spnD
+encabezado  nivel 1  página 1  Comando spnD
 1.
-Sin argumento:        divisores de             n
+Sin argumento:  divisores de  n
 2.
-Con un número:        divisores de     6
+Con un número:  divisores de  6
 3.
-Con una letra:        divisores de             m
+Con una letra:  divisores de  m
 4.
-Con el número 12:        divisores de     12
+Con el número 12:  divisores de  12
 5.
-Con el número 100:        divisores de     100
+Con el número 100:  divisores de  100
 6.
-Con el número 1:        divisores de     1
+Con el número 1:  divisores de  1
 7.
-Con el número 7:        divisores de     7
+Con el número 7:  divisores de  7
 8.
-Con la letra n:        divisores de             n
+Con la letra n:  divisores de  n
 9.
-Con la letra a:        divisores de             a
+Con la letra a:  divisores de  a
 10.
-Con concept true, el valor por defecto:        divisores de     6
+Con concept true, el valor por defecto:  divisores de  6
 11.
-Con concept false:        6
+Con concept false:  6
 12.
-Con concept false y una letra:        m
+Con concept false y una letra:  m
 13.
-Con prefix:        los divisores de     6
+Con prefix:  los divisores de  6
 14.
-Con prefix y una letra:        los divisores de             m
+Con prefix y una letra:  los divisores de  m
 15.
-Con result true:        divisores de     6     son   1   2   3    y   6
+Con result true:  divisores de  6  son  1  2  3  y  6
 16.
-Con result true y el 12:        divisores de     12            son   1   2   3   4   6    y   12
+Con result true y el 12:  divisores de  12  son  1  2  3  4  6  y  12
 17.
-Con result true y el 7:        divisores de     7     son   1    y   7
+Con result true y el 7:  divisores de  7  son  1  y  7
 18.
-Con result true y el 1:        divisores de     1     son   1
+Con result true y el 1:  divisores de  1  son  1
 19.
-Con result-num 2 y el 12:        divisores de     12            son   1    y   2   puntos suspensivos
+Con result-num 2 y el 12:  divisores de  12  son  1  y  2  puntos suspensivos
 20.
-Con result-num 10 y el 100:        divisores de     100          son   1   2   4   5   10   20   25   50    y   100
+Con result-num 10 y el 100:  divisores de  100  son  1  2  4  5  10  20  25  50  y  100
 21.
-Con result-num 1 y el 12:        divisores de     12            son   1   puntos suspensivos
+Con result-num 1 y el 12:  divisores de  12  son  1  puntos suspensivos
 22.
-Con result false explícito:        divisores de     6
+Con result false explícito:  divisores de  6
 23.
 Con silent true:
 24.
-Con silent false explícito:        divisores de     6
+Con silent false explícito:  divisores de  6
 25.
 Con silent true y una letra:
 26.
-Con silent y result:        multiplicado por
+Con silent y result:  multiplicado por
 27.
-Con concept false y result:        6     son   1   2   3    y   6
+Con concept false y result:  6  son  1  2  3  y  6
 28.
-Con prefix y result:        los divisores de     6            son   1   2   3    y   6
+Con prefix y result:  los divisores de  6  son  1  2  3  y  6
 29.
-Con prefix y concept false:        6
+Con prefix y concept false:  6
 30.
-Con todas las llaves:        los divisores de     12            son   1   2   3   puntos suspensivos
-encabezado    nivel 1  Comando spnM
+Con todas las llaves:  los divisores de  12  son  1  2  3  puntos suspensivos
+encabezado  nivel 1  Comando spnM
 31.
-Sin argumento:        múltiplos de             n
+Sin argumento:  múltiplos de  n
 32.
-Con un número:        múltiplos de     6
+Con un número:  múltiplos de  6
 33.
-Con una letra:        múltiplos de             m
+Con una letra:  múltiplos de  m
 34.
-Con el número 12:        múltiplos de     12
+Con el número 12:  múltiplos de  12
 35.
-Con el número 100:        múltiplos de     100
+Con el número 100:  múltiplos de  100
 36.
-Con el número 1:        múltiplos de     1
+Con el número 1:  múltiplos de  1
 37.
-Con el número 7:        múltiplos de     7
+Con el número 7:  múltiplos de  7
 38.
-Con la letra n:        múltiplos de             n
+Con la letra n:  múltiplos de  n
 39.
-Con la letra a:        múltiplos de             a
+Con la letra a:  múltiplos de  a
 40.
-Con concept true, el valor por defecto:        múltiplos de     6
+Con concept true, el valor por defecto:  múltiplos de  6
 página 2  41.
-Con concept false:        6
+Con concept false:  6
 42.
-Con concept false y una letra:        m
+Con concept false y una letra:  m
 43.
-Con prefix:        los múltiplos de     6
+Con prefix:  los múltiplos de  6
 44.
-Con prefix y una letra:        los múltiplos de             m
+Con prefix y una letra:  los múltiplos de  m
 45.
-Con result true:        múltiplos de     6            son   6    y   12   puntos suspensivos
+Con result true:  múltiplos de  6  son  6  y  12  puntos suspensivos
 46.
-Con result true y el 12:        múltiplos de     12            son   12    y   24   puntos suspensivos
+Con result true y el 12:  múltiplos de  12  son  12  y  24  puntos suspensivos
 47.
-Con result true y el 1:        múltiplos de     1            son   1    y   2   puntos suspensivos
+Con result true y el 1:  múltiplos de  1  son  1  y  2  puntos suspensivos
 48.
-Con result true y el 7:        múltiplos de     7            son   7    y   14   puntos suspensivos
+Con result true y el 7:  múltiplos de  7  son  7  y  14  puntos suspensivos
 49.
-Con result-num 2 y el 6:        múltiplos de     6            son   6    y   12   puntos suspensivos
+Con result-num 2 y el 6:  múltiplos de  6  son  6  y  12  puntos suspensivos
 50.
-Con result-num 3 y el 12:        múltiplos de     12            son   12   24   36   puntos suspensivos
+Con result-num 3 y el 12:  múltiplos de  12  son  12  24  36  puntos suspensivos
 51.
-Con result-num 10 y el 6:        múltiplos de     6          son   6   12   18   24   30   36   42   48   54   60   puntos suspensivos
+Con result-num 10 y el 6:  múltiplos de  6  son  6  12  18  24  30  36  42  48  54  60  puntos suspensivos
 52.
-Con result false explícito:        múltiplos de     6
+Con result false explícito:  múltiplos de  6
 53.
 Con silent true:
 54.
-Con silent false explícito:        múltiplos de     6
+Con silent false explícito:  múltiplos de  6
 55.
 Con silent true y una letra:
 56.
-Con silent y result:        multiplicado por
+Con silent y result:  multiplicado por
 57.
-Con concept false y result:        6     son   6    y   12   puntos suspensivos
+Con concept false y result:  6  son  6  y  12  puntos suspensivos
 58.
-Con prefix y result:        los múltiplos de     6            son   6    y   12   puntos suspensivos
+Con prefix y result:  los múltiplos de  6  son  6  y  12  puntos suspensivos
 59.
-Con prefix y concept false:        6
+Con prefix y concept false:  6
 60.
-Con todas las llaves:        los múltiplos de     12            son   12   24   36   puntos suspensivos
-encabezado    nivel 1  Comando spmcd
+Con todas las llaves:  los múltiplos de  12  son  12  24  36  puntos suspensivos
+encabezado  nivel 1  Comando spmcd
 61.
-Sin argumento:        máximo común divisor
+Sin argumento:  máximo común divisor
 62.
-Con tres números:        máximo común divisor           entre   2   3    y   6
+Con tres números:  máximo común divisor  entre  2  3  y  6
 63.
-Con dos letras:        máximo común divisor           entre           m           y           n
+Con dos letras:  máximo común divisor  entre  m  y  n
 64.
-Con los números 12, 18:        máximo común divisor           entre   12    y   18
+Con los números 12, 18:  máximo común divisor  entre  12  y  18
 65.
-Con los números 100, 75:        máximo común divisor           entre   100    y   75
+Con los números 100, 75:  máximo común divisor  entre  100  y  75
 66.
-Con los números 7, 13:        máximo común divisor           entre   7    y   13
+Con los números 7, 13:  máximo común divisor  entre  7  y  13
 67.
-Con los números 8, 12, 20:        máximo común divisor           entre   8   12    y   20
+Con los números 8, 12, 20:  máximo común divisor  entre  8  12  y  20
 68.
-Con los números 2, 3, 6, 12:        máximo común divisor           entre   2   3   6    y   12
+Con los números 2, 3, 6, 12:  máximo común divisor  entre  2  3  6  y  12
 69.
-Con los números 48, 36:        máximo común divisor           entre   48    y   36
+Con los números 48, 36:  máximo común divisor  entre  48  y  36
 70.
-Con los números 6, 6:        máximo común divisor           entre   6    y   6
+Con los números 6, 6:  máximo común divisor  entre  6  y  6
 71.
-Sin espacios entre los números:        máximo común divisor           entre   12    y   18
+Sin espacios entre los números:  máximo común divisor  entre  12  y  18
 72.
-Con las letras m, n, p:        máximo común divisor           entre           m                  n           y           p
+Con las letras m, n, p:  máximo común divisor  entre  m  n  y  p
 73.
-Con las letras a, b:        máximo común divisor           entre           a           y           b
+Con las letras a, b:  máximo común divisor  entre  a  y  b
 74.
-Con un número y una letra:        máximo común divisor           entre   2    y           m
+Con un número y una letra:  máximo común divisor  entre  2  y  m
 75.
-Con concept false:        12    y   18
+Con concept false:  12  y  18
 76.
-Con concept true explícito:        máximo común divisor           entre   12    y   18
+Con concept true explícito:  máximo común divisor  entre  12  y  18
 77.
-Con read-cmd clear, el valor por defecto:        máximo común divisor           entre   12    y   18
+Con read-cmd clear, el valor por defecto:  máximo común divisor  entre  12  y  18
 78.
-Con read-cmd terse:        mcd    entre   12    y   18
+Con read-cmd terse:  mcd  entre  12  y  18
 79.
-Con read-cmd terse y letras:        mcd    entre           m           y           n
+Con read-cmd terse y letras:  mcd  entre  m  y  n
 80.
-Con upper-case false, el valor por defecto:        máximo común divisor           entre   12    y   18
+Con upper-case false, el valor por defecto:  máximo común divisor  entre  12  y  18
 81.
-Con upper-case true:        máximo común divisor           entre   12    y   18
+Con upper-case true:  máximo común divisor  entre  12  y  18
 82.
-Con upper-case true sin argumento:        máximo común divisor
+Con upper-case true sin argumento:  máximo común divisor
 página 3  83.
-Con prefix:        el máximo común divisor           entre   12    y   18
+Con prefix:  el máximo común divisor  entre  12  y  18
 84.
-Con prefix y read-cmd terse:        el mcd    entre   12    y   18
+Con prefix y read-cmd terse:  el mcd  entre  12  y  18
 85.
-Con result true:        máximo común divisor           entre   2   3    y   6           es igual a  1
+Con result true:  máximo común divisor  entre  2  3  y  6  es igual a  1
 86.
-Con result true y dos números:        máximo común divisor           entre   12    y   18           es igual a  6
+Con result true y dos números:  máximo común divisor  entre  12  y  18  es igual a  6
 87.
-Con result true y cuatro números:        máximo común divisor           entre   2   3   6    y   12           es igual a  1
+Con result true y cuatro números:  máximo común divisor  entre  2  3  6  y  12  es igual a  1
 88.
-Con result true y números primos entre sí:        máximo común divisor           entre   7    y   13           es igual a  1
+Con result true y números primos entre sí:  máximo común divisor  entre  7  y  13  es igual a  1
 89.
-Con result true y tres números:        máximo común divisor           entre   8   12    y   20           es igual a  4
+Con result true y tres números:  máximo común divisor  entre  8  12  y  20  es igual a  4
 90.
-Con result false explícito:        máximo común divisor           entre   2   3    y   6
+Con result false explícito:  máximo común divisor  entre  2  3  y  6
 91.
 Con silent true:
 92.
-Con silent false explícito:        máximo común divisor           entre   12    y   18
+Con silent false explícito:  máximo común divisor  entre  12  y  18
 93.
 Con silent true y letras:
 94.
-Con silent y result:        el intervalo de    a            no incluyendo    o
+Con silent y result:  el intervalo de  a  no incluyendo  o
 95.
-Con concept false y result:        12    y   18    es igual a  6
+Con concept false y result:  12  y  18  es igual a  6
 96.
-Con read-cmd terse y result:        mcd    entre   12    y   18           es igual a  6
+Con read-cmd terse y result:  mcd  entre  12  y  18  es igual a  6
 97.
-Con upper-case y result:        máximo común divisor           entre   12    y   18           es igual a  6
+Con upper-case y result:  máximo común divisor  entre  12  y  18  es igual a  6
 98.
-Con todas las llaves:        el mcd    entre   12    y   18           es igual a  6
-encabezado    nivel 1  Comando spmcm
+Con todas las llaves:  el mcd  entre  12  y  18  es igual a  6
+encabezado  nivel 1  Comando spmcm
 99.
-Sin argumento:        mínimo común múltiplo
+Sin argumento:  mínimo común múltiplo
 100.
-Con tres números:        mínimo común múltiplo           entre   2   3    y   6
+Con tres números:  mínimo común múltiplo  entre  2  3  y  6
 101.
-Con dos letras:        mínimo común múltiplo           entre           m           y           n
+Con dos letras:  mínimo común múltiplo  entre  m  y  n
 102.
-Con los números 12, 18:        mínimo común múltiplo           entre   12    y   18
+Con los números 12, 18:  mínimo común múltiplo  entre  12  y  18
 103.
-Con los números 100, 75:        mínimo común múltiplo           entre   100    y   75
+Con los números 100, 75:  mínimo común múltiplo  entre  100  y  75
 104.
-Con los números 7, 13:        mínimo común múltiplo           entre   7    y   13
+Con los números 7, 13:  mínimo común múltiplo  entre  7  y  13
 105.
-Con los números 8, 12, 20:        mínimo común múltiplo           entre   8   12    y   20
+Con los números 8, 12, 20:  mínimo común múltiplo  entre  8  12  y  20
 106.
-Con los números 2, 3, 6, 12:        mínimo común múltiplo           entre   2   3   6    y   12
+Con los números 2, 3, 6, 12:  mínimo común múltiplo  entre  2  3  6  y  12
 107.
-Con los números 48, 36:        mínimo común múltiplo           entre   48    y   36
+Con los números 48, 36:  mínimo común múltiplo  entre  48  y  36
 108.
-Con los números 6, 6:        mínimo común múltiplo           entre   6    y   6
+Con los números 6, 6:  mínimo común múltiplo  entre  6  y  6
 109.
-Sin espacios entre los números:        mínimo común múltiplo           entre   12    y   18
+Sin espacios entre los números:  mínimo común múltiplo  entre  12  y  18
 110.
-Con las letras m, n, p:        mínimo común múltiplo           entre           m                  n           y           p
+Con las letras m, n, p:  mínimo común múltiplo  entre  m  n  y  p
 111.
-Con las letras a, b:        mínimo común múltiplo           entre           a           y           b
+Con las letras a, b:  mínimo común múltiplo  entre  a  y  b
 112.
-Con un número y una letra:        mínimo común múltiplo           entre   2    y           m
+Con un número y una letra:  mínimo común múltiplo  entre  2  y  m
 113.
-Con concept false:        12    y   18
+Con concept false:  12  y  18
 114.
-Con concept true explícito:        mínimo común múltiplo           entre   12    y   18
+Con concept true explícito:  mínimo común múltiplo  entre  12  y  18
 115.
-Con read-cmd clear, el valor por defecto:        mínimo común múltiplo           entre   12    y   18
+Con read-cmd clear, el valor por defecto:  mínimo común múltiplo  entre  12  y  18
 116.
-Con read-cmd terse:        mcm    entre   12    y   18
+Con read-cmd terse:  mcm  entre  12  y  18
 117.
-Con read-cmd terse y letras:        mcm    entre           m           y           n
+Con read-cmd terse y letras:  mcm  entre  m  y  n
 118.
-Con upper-case false, el valor por defecto:        mínimo común múltiplo           entre   12    y   18
+Con upper-case false, el valor por defecto:  mínimo común múltiplo  entre  12  y  18
 119.
-Con upper-case true:        mínimo común múltiplo           entre   12    y   18
+Con upper-case true:  mínimo común múltiplo  entre  12  y  18
 120.
-Con upper-case true sin argumento:        mínimo común múltiplo
+Con upper-case true sin argumento:  mínimo común múltiplo
 121.
-Con prefix:        el mínimo común múltiplo           entre   12    y   18
+Con prefix:  el mínimo común múltiplo  entre  12  y  18
 122.
-Con prefix y read-cmd terse:        el mcm    entre   12    y   18
+Con prefix y read-cmd terse:  el mcm  entre  12  y  18
 123.
-Con result true:        mínimo común múltiplo           entre   2   3    y   6           es igual a  6
+Con result true:  mínimo común múltiplo  entre  2  3  y  6  es igual a  6
 124.
-Con result true y dos números:        mínimo común múltiplo           entre   12    y   18           es igual a  36
+Con result true y dos números:  mínimo común múltiplo  entre  12  y  18  es igual a  36
 página 4  125.
-Con result true y cuatro números:        mínimo común múltiplo           entre   2   3   6    y   12           es igual a  12
+Con result true y cuatro números:  mínimo común múltiplo  entre  2  3  6  y  12  es igual a  12
 126.
-Con result true y números primos entre sí:        mínimo común múltiplo           entre   7    y   13           es igual a  91
+Con result true y números primos entre sí:  mínimo común múltiplo  entre  7  y  13  es igual a  91
 127.
-Con result true y tres números:        mínimo común múltiplo           entre   8   12    y   20           es igual a  120
+Con result true y tres números:  mínimo común múltiplo  entre  8  12  y  20  es igual a  120
 128.
-Con result false explícito:        mínimo común múltiplo           entre   2   3    y   6
+Con result false explícito:  mínimo común múltiplo  entre  2  3  y  6
 129.
 Con silent true:
 130.
-Con silent false explícito:        mínimo común múltiplo           entre   12    y   18
+Con silent false explícito:  mínimo común múltiplo  entre  12  y  18
 131.
 Con silent true y letras:
 132.
-Con silent y result:        el intervalo de    a            no incluyendo    o
+Con silent y result:  el intervalo de  a  no incluyendo  o
 133.
-Con concept false y result:        12    y   18    es igual a  36
+Con concept false y result:  12  y  18  es igual a  36
 134.
-Con read-cmd terse y result:        mcm    entre   12    y   18           es igual a  36
+Con read-cmd terse y result:  mcm  entre  12  y  18  es igual a  36
 135.
-Con upper-case y result:        mínimo común múltiplo           entre   12    y   18           es igual a  36
+Con upper-case y result:  mínimo común múltiplo  entre  12  y  18  es igual a  36
 136.
-Con todas las llaves:        el mcm    entre   12    y   18           es igual a  36
-encabezado    nivel 1  En fórmulas
+Con todas las llaves:  el mcm  entre  12  y  18  es igual a  36
+encabezado  nivel 1  En fórmulas
 137.
-Divisores incluidos:        divisores de     6          es un subconjunto de          divisores de  de  12
+Divisores incluidos:  divisores de  6  es un subconjunto de  divisores de  de  12
 138.
-Divisores con resultado:        divisores de     6     son   1   2   3    y   6          es un subconjunto de          divisores de  de  12           son   1   2   3   4   6    y   12
+Divisores con resultado:  divisores de  6  son  1  2  3  y  6  es un subconjunto de  divisores de  de  12  son  1  2  3  4  6  y  12
 139.
-Múltiplos con resultado:        múltiplos de     4            son   4   8   12   puntos suspensivos          intersección   múltiplos de  de  6           son   6   12   18   puntos suspensivos
+Múltiplos con resultado:  múltiplos de  4  son  4  8  12  puntos suspensivos  intersección  múltiplos de  de  6  son  6  12  18  puntos suspensivos
 140.
-Relación entre mcd y mcm:        máximo común divisor         entre           m           y           n           por   mínimo común múltiplo           entre           m           y           n                 es igual a          m          por          n
+Relación entre mcd y mcm:  máximo común divisor  entre  m  y  n  por  mínimo común múltiplo  entre  m  y  n  es igual a  m  por  n
 141.
-Con números y resultado:        máximo común divisor         entre   12    y   18           es igual a         6  más   mínimo común múltiplo           entre   12    y   18           es igual a  36
+Con números y resultado:  máximo común divisor  entre  12  y  18  es igual a  6  más  mínimo común múltiplo  entre  12  y  18  es igual a  36
 142.
-Con otros comandos de la serie:        máximo común divisor         entre   12    y   18           por   mínimo común múltiplo         entre   12    y   18          es igual a  12   por  18
+Con otros comandos de la serie:  máximo común divisor  entre  12  y  18  por  mínimo común múltiplo  entre  12  y  18  es igual a  12  por  18
 143.
 En fórmula destacada:
-     divisores de     100          son   1   2   4   5   10   20   25   50    y   100
+  divisores de  100  son  1  2  4  5  10  20  25  50  y  100

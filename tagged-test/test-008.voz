@@ -1,175 +1,175 @@
 test-008: utilidades de simbolos - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado    nivel 1  página 1  A.
+encabezado  nivel 1  página 1  A.
 Comandos spnewread y spread: símbolos registrados
 1.
-Símbolo registrado:        es congruente con
+Símbolo registrado:  es congruente con
 2.
-Otro símbolo registrado:        es semejante a
+Otro símbolo registrado:  es semejante a
 3.
-Perpendicular:        es perpendicular a
+Perpendicular:  es perpendicular a
 4.
-Aproximadamente igual:        es aproximadamente igual a
+Aproximadamente igual:  es aproximadamente igual a
 5.
-En una fórmula:        triángulo blanco apuntando hacia arriba                    a                   b                    c        es congruente con         triángulo blanco apuntando hacia arriba                    d                   e                    f
+En una fórmula:  triángulo blanco apuntando hacia arriba  a  b  c  es congruente con  triángulo blanco apuntando hacia arriba  d  e  f
 6.
-Perpendicularidad:        a                    b           es perpendicular a            c                    d
+Perpendicularidad:  a  b  es perpendicular a  c  d
 7.
-Aproximación:        x           es aproximadamente igual a  3
+Aproximación:  x  es aproximadamente igual a  3
 8.
-Dos símbolos en una misma fórmula:        triángulo blanco apuntando hacia arriba                    a                   b                    c        es semejante a         triángulo blanco apuntando hacia arriba                    d                   e                    f         es semejante a         triángulo blanco apuntando hacia arriba                    g                   h                    i
-encabezado    nivel 1  B.
+Dos símbolos en una misma fórmula:  triángulo blanco apuntando hacia arriba  a  b  c  es semejante a  triángulo blanco apuntando hacia arriba  d  e  f  es semejante a  triángulo blanco apuntando hacia arriba  g  h  i
+encabezado  nivel 1  B.
 Llave read-arg
 9.
-Ejemplo del manual:        es paralela a
+Ejemplo del manual:  es paralela a
 10.
-Sobrescribe un símbolo registrado:        es equivalente a
+Sobrescribe un símbolo registrado:  es equivalente a
 11.
-Otro comando sin registrar:        es menor o igual que
+Otro comando sin registrar:  es menor o igual que
 12.
-En una fórmula:        a                    b           es paralela a            c                    d
+En una fórmula:  a  b  es paralela a  c  d
 13.
-Con un símbolo de ángulo:        ángulo            a                    b                    c
-encabezado    nivel 1  C.
+Con un símbolo de ángulo:  ángulo  a  b  c
+encabezado  nivel 1  C.
 Llave silent
 14.
 Con true y un símbolo registrado:
 15.
-Con false explícito:        es congruente con
+Con false explícito:  es congruente con
 16.
 Con true y un símbolo sin registrar:
 17.
-Con true en una fórmula:        a                    b                     c                    d
+Con true en una fórmula:  a  b  c  d
 18.
 Alternativa documentada con read-arg:
 19.
 Con silent y read-arg a la vez:
-encabezado    nivel 1  D.
+encabezado  nivel 1  D.
 Comando spusep
 20.
-Paréntesis que abre:        se abren paréntesis
+Paréntesis que abre:  se abren paréntesis
 21.
-Paréntesis que cierra:        se cierran paréntesis
+Paréntesis que cierra:  se cierran paréntesis
 22.
-Corchete que abre:        abrir corchetes
+Corchete que abre:  abrir corchetes
 23.
-Corchete que cierra:        cerrar corchetes
+Corchete que cierra:  cerrar corchetes
 24.
-Llave que abre:        abrir llaves
+Llave que abre:  abrir llaves
 25.
-Llave que cierra:        cerrar llaves
+Llave que cierra:  cerrar llaves
 26.
-Par de paréntesis:        se abren paréntesis         a         más          b         se cierran paréntesis
+Par de paréntesis:  se abren paréntesis  a  más  b  se cierran paréntesis
 27.
-Par de corchetes:        abrir corchetes          a         más          b         cerrar corchetes
+Par de corchetes:  abrir corchetes  a  más  b  cerrar corchetes
 28.
-Par de llaves:        el conjunto         a         coma                  b
+Par de llaves:  el conjunto  a  coma  b
 29.
-Con size none, el valor por defecto:        se abren paréntesis         a         más          b         se cierran paréntesis
+Con size none, el valor por defecto:  se abren paréntesis  a  más  b  se cierran paréntesis
 30.
-Con size big sobre una fracción:        se abren paréntesis         a        partido por         b        se cierran paréntesis
+Con size big sobre una fracción:  se abren paréntesis  a  partido por  b  se cierran paréntesis
 31.
-Con size Big sobre una fracción:        se abren paréntesis         a        partido por         b        se cierran paréntesis
+Con size Big sobre una fracción:  se abren paréntesis  a  partido por  b  se cierran paréntesis
 página 2  32.
-Con size bigg sobre una fracción:        se abren paréntesis         a        partido por         b        se cierran paréntesis
+Con size bigg sobre una fracción:  se abren paréntesis  a  partido por  b  se cierran paréntesis
 33.
-Con size Bigg sobre una fracción:        se abren paréntesis         a        partido por         b        se cierran paréntesis
+Con size Bigg sobre una fracción:  se abren paréntesis  a  partido por  b  se cierran paréntesis
 34.
-Corchetes grandes:        abrir corchetes          a         más          b         cerrar corchetes
+Corchetes grandes:  abrir corchetes  a  más  b  cerrar corchetes
 35.
-Llaves grandes:        el conjunto         a         coma                  b
+Llaves grandes:  el conjunto  a  coma  b
 36.
-Con silent true:        a         más          b
+Con silent true:  a  más  b
 37.
-Con silent false explícito:        se abren paréntesis         a         más          b         se cierran paréntesis
+Con silent false explícito:  se abren paréntesis  a  más  b  se cierran paréntesis
 38.
-Con size y silent:        a        partido por         b
-encabezado    nivel 1  E.
+Con size y silent:  a  partido por  b
+encabezado  nivel 1  E.
 Comando spdsym
 39.
-Por defecto:        a          dividido          b
+Por defecto:  a  dividido  b
 40.
-Con set-sym old-style:        a          dividido          b
+Con set-sym old-style:  a  dividido  b
 41.
-Con set-sym two-dots:        a          dividido          b
+Con set-sym two-dots:  a  dividido  b
 42.
-Con set-sym slash:        a          dividido          b
+Con set-sym slash:  a  dividido  b
 43.
-Con read-sym dividido:        a          dividido          b
+Con read-sym dividido:  a  dividido  b
 44.
-Con read-sym dividido-por:        a          dividido por          b
+Con read-sym dividido-por:  a  dividido por  b
 45.
-Con read-sym dividido-entre:        a          dividido entre          b
+Con read-sym dividido-entre:  a  dividido entre  b
 46.
-Con old-style y dividido-por:        a          dividido por          b
+Con old-style y dividido-por:  a  dividido por  b
 47.
-Con slash y dividido-entre:        a          dividido entre          b
+Con slash y dividido-entre:  a  dividido entre  b
 48.
-Con prefix:        a          se lee dividido          b
+Con prefix:  a  se lee dividido  b
 49.
-Con suffix:        a          dividido entre          b
+Con suffix:  a  dividido entre  b
 50.
-Con prefix y suffix:        a          se lee dividido entre          b
+Con prefix y suffix:  a  se lee dividido entre  b
 51.
-Con números:        12   dividido  4  es igual a  3
-encabezado    nivel 1  F.
+Con números:  12  dividido  4  es igual a  3
+encabezado  nivel 1  F.
 Comando spmsym
 52.
-Por defecto:        a          por          b
+Por defecto:  a  por  b
 53.
-Con set-sym cross:        a          por          b
+Con set-sym cross:  a  por  b
 54.
-Con set-sym dot:        a          por          b
+Con set-sym dot:  a  por  b
 55.
-Con set-sym asterisk:        a          por          b
+Con set-sym asterisk:  a  por  b
 56.
-Con read-sym por:        a          por          b
+Con read-sym por:  a  por  b
 57.
-Con read-sym multiplicado-por:        a          multiplicado por          b
+Con read-sym multiplicado-por:  a  multiplicado por  b
 58.
-Con read-sym veces:        a          veces          b
+Con read-sym veces:  a  veces  b
 59.
-Con cross y multiplicado-por:        a          multiplicado por          b
+Con cross y multiplicado-por:  a  multiplicado por  b
 60.
-Con asterisk y veces:        a          veces          b
+Con asterisk y veces:  a  veces  b
 61.
-Con not-print true:        2           x
+Con not-print true:  2  x
 62.
-Con not-print false explícito:        2   por          x
+Con not-print false explícito:  2  por  x
 63.
-Con not-print y read-sym:        2           x
+Con not-print y read-sym:  2  x
 64.
-Con prefix:        a          se lee por          b
+Con prefix:  a  se lee por  b
 65.
-Con suffix:        a          por entre          b
+Con suffix:  a  por entre  b
 página 3  66.
-Con números:        3   por  4  es igual a  12
-encabezado    nivel 1  G.
+Con números:  3  por  4  es igual a  12
+encabezado  nivel 1  G.
 Combinaciones
 67.
-División y multiplicación:        12   dividido  4   por  2
+División y multiplicación:  12  dividido  4  por  2
 68.
-Con delimitadores:        se abren paréntesis         6   por  2  se cierran paréntesis          dividido  3
+Con delimitadores:  se abren paréntesis  6  por  2  se cierran paréntesis  dividido  3
 69.
-Con un símbolo registrado:        se abren paréntesis         a          por          b         se cierran paréntesis           es aproximadamente igual a          c
+Con un símbolo registrado:  se abren paréntesis  a  por  b  se cierran paréntesis  es aproximadamente igual a  c
 70.
 En fórmula destacada:
-     se abren paréntesis         a          por          b         se cierran paréntesis          dividido          c
-encabezado    nivel 1  H.
+  se abren paréntesis  a  por  b  se cierran paréntesis  dividido  c
+encabezado  nivel 1  H.
 Comando spnewread: espacios, guiones bajos y comandos propios
 71.
-Lectura registrada con espacios:        a           es distinto de          b
+Lectura registrada con espacios:  a  es distinto de  b
 72.
-Lectura registrada con guiones bajos:        a           es mayor o igual que          b
+Lectura registrada con guiones bajos:  a  es mayor o igual que  b
 73.
-Lectura registrada con un guion bajo al inicio:        a           es subconjunto de            b
+Lectura registrada con un guion bajo al inicio:  a  es subconjunto de  b
 74.
-Otra lectura con espacios:        x           pertenece a            a
+Otra lectura con espacios:  x  pertenece a  a
 75.
-Un comando definido por el usuario:        x        cuadrado
+Un comando definido por el usuario:  x  cuadrado
 76.
-El comando definido por el usuario en una fórmula:        y         es igual a           x        cuadrado  más  1
+El comando definido por el usuario en una fórmula:  y  es igual a  x  cuadrado  más  1
 77.
-El mismo comando con silent true:        x        cuadrado
+El mismo comando con silent true:  x  cuadrado
 78.
-El mismo comando con read-arg:        x        cuadrado
+El mismo comando con read-arg:  x  cuadrado

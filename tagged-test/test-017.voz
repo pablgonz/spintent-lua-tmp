@@ -1,6 +1,6 @@
 test-017: silent true en todos los comandos - Adobe Acrobat Reader (32-bit)
 desconocido
-encabezado    nivel 1  página 1  A.
+encabezado  nivel 1  página 1  A.
 Comando spPoint
 1.
 Con silent true y un punto:
@@ -16,7 +16,7 @@ Con silent true y un punto con subíndice y coordenadas:
 Con silent true y un punto con prima y coordenadas:
 7.
 Con silent true, read-cmd mathcat y subíndice:
-encabezado    nivel 1  B.
+encabezado  nivel 1  B.
 Comando spvec
 8.
 Con silent true y un nombre:
@@ -36,15 +36,15 @@ Con silent true y dos puntos y coordenadas:
 Con silent true y dos puntos con subíndices y coordenadas:
 16.
 Con silent true, read-cmd mathcat y un nombre con subíndice:
-encabezado    nivel 1  C.
+encabezado  nivel 1  C.
 Comando sprecta
 17.
 Con silent true y dos puntos:
 18.
 Con silent true y una letra con subíndice:
 19.
-Con silent true y dos puntos con subíndices:        A sub uno   B sub dos
-encabezado    nivel 1  D.
+Con silent true y dos puntos con subíndices:  A sub uno  B sub dos
+encabezado  nivel 1  D.
 Comando sprayo
 20.
 Con silent true y dos puntos:
@@ -54,7 +54,7 @@ Con silent true y dos puntos con subíndices:
 Con silent true y dos puntos con primas:
 23.
 Con silent true y read-sty semirrecta:
-encabezado    nivel 1  E.
+encabezado  nivel 1  E.
 Comandos spside y spmside
 24.
 Con silent true y dos puntos:
@@ -72,7 +72,7 @@ Con silent true y dos puntos con primas:
 Con silent true, read-arg y subíndices:
 31.
 Con silent true, print-m y subíndices:
-encabezado    nivel 1  F.
+encabezado  nivel 1  F.
 Comandos spangle, spmangle, sparc y spmarc
 32.
 Con silent true en spangle con subíndice:
@@ -84,7 +84,7 @@ Con silent true en spmangle con tres puntos con subíndices:
 Con silent true en sparc con subíndices:
 36.
 Con silent true en spmarc con subíndices:
-encabezado    nivel 1  G.
+encabezado  nivel 1  G.
 Comando spPoly
 37.
 Con silent true y tres puntos:
@@ -96,7 +96,7 @@ Con silent true y tres puntos con primas:
 Con silent true y cuatro puntos con subíndices:
 41.
 Con silent true y cinco puntos:
-encabezado    nivel 1  H.
+encabezado  nivel 1  H.
 Comandos spAfig y spPfig
 42.
 Con silent true y tres puntos:
@@ -114,30 +114,30 @@ Con silent true y tres puntos con subíndices:
 Con silent true y un número:
 49.
 Con silent true y la figura con subíndice:
-encabezado    nivel 1  I.
+encabezado  nivel 1  I.
 Comandos spAcirc y spPcirc
 50.
 Con silent true y un centro:
 51.
-Con silent true y un centro con subíndice:        O sub uno
+Con silent true y un centro con subíndice:  O sub uno
 52.
-Con silent true y un centro con prima:        O prima
+Con silent true y un centro con prima:  O prima
 53.
 Con silent true y un número:
 54.
 Con silent true y un centro:
 55.
-Con silent true y un centro con subíndice:        O sub uno
+Con silent true y un centro con subíndice:  O sub uno
 56.
-Con silent true y un centro con prima:        O prima
+Con silent true y un centro con prima:  O prima
 57.
 Con silent true y un número:
-encabezado    nivel 1  página 3  J.
+encabezado  nivel 1  página 3  J.
 Comando spcirc
 58.
 Con silent true y un centro:
 59.
-Con silent true y un centro con subíndice:        O sub uno
+Con silent true y un centro con subíndice:  O sub uno
 60.
 Con silent true y centro y radio entero:
 61.
@@ -152,7 +152,7 @@ Con silent true y centro y radio con segmento con subíndices:
 Con silent true y radio-sty side:
 66.
 Con silent true y diameter true:
-encabezado    nivel 1  K.
+encabezado  nivel 1  K.
 Comandos spnD y spnM
 67.
 Con silent true y un número:
@@ -161,9 +161,9 @@ Con silent true y un número de dos cifras:
 69.
 Con silent true y la letra n:
 70.
-Con silent true y result true:        multiplicado por
+Con silent true y result true:  multiplicado por
 71.
-Con silent true, result true y result-num:        multiplicado por
+Con silent true, result true y result-num:  multiplicado por
 72.
 Con silent true y un número:
 73.
@@ -171,10 +171,10 @@ Con silent true y un número de dos cifras:
 74.
 Con silent true y la letra n:
 75.
-Con silent true y result true:        multiplicado por
+Con silent true y result true:  multiplicado por
 76.
-Con silent true, result true y result-num:        multiplicado por
-encabezado    nivel 1  L.
+Con silent true, result true y result-num:  multiplicado por
+encabezado  nivel 1  L.
 Comandos spmcd y spmcm
 77.
 Con silent true y dos números:
@@ -183,7 +183,7 @@ Con silent true y tres números:
 79.
 Con silent true y dos letras:
 80.
-Con silent true y result true:        el intervalo de    a            no incluyendo    o
+Con silent true y result true:  el intervalo de  a  no incluyendo  o
 81.
 Con silent true y dos números:
 82.
@@ -191,8 +191,8 @@ Con silent true y tres números:
 83.
 Con silent true y dos letras:
 84.
-Con silent true y result true:        el intervalo de    a            no incluyendo    o
-encabezado    nivel 1  M.
+Con silent true y result true:  el intervalo de  a  no incluyendo  o
+encabezado  nivel 1  M.
 Comandos sprad, spdiam y spVol
 85.
 Con silent true y sub-index en sprad:
@@ -200,31 +200,31 @@ Con silent true y sub-index en sprad:
 Con silent true y sub-index en spdiam:
 87.
 Con silent true y sub-index en spVol:
-encabezado    nivel 1  página 4  N.
+encabezado  nivel 1  página 4  N.
 Comandos sprazon y spProp
 88.
 Con silent true en sprazon:
 89.
 Con silent true en spProp:
-encabezado    nivel 1  O.
+encabezado  nivel 1  O.
 Controles sin silent (deben leerse como antes)
 90.
-Control de spPoint:        punto  A sub uno        menos 3 coma  4
+Control de spPoint:  punto  A sub uno  menos 3 coma  4
 91.
-Control de spvec:        vector  a     es igual a            menos 3 coma  4
+Control de spvec:  vector  a  es igual a  menos 3 coma  4
 92.
-Control de sprayo:        rayo  A sub uno   B sub dos
+Control de sprayo:  rayo  A sub uno  B sub dos
 93.
-Control de spside:        lado  A sub uno   B sub dos
+Control de spside:  lado  A sub uno  B sub dos
 94.
-Control de spPoly:        triángulo  A sub uno   B sub dos   C sub tres
+Control de spPoly:  triángulo  A sub uno  B sub dos  C sub tres
 95.
-Control de spcirc con radio entero:         circunferencia   de centro en  O             y radio   3
+Control de spcirc con radio entero:  circunferencia  de centro en  O  y radio  3
 96.
-Control de spcirc con radio segmento:         circunferencia   de centro en  O             y radio   medida del lado  A   B
+Control de spcirc con radio segmento:  circunferencia  de centro en  O  y radio  medida del lado  A  B
 97.
-Control de spnD con resultado:        divisores de     6     son   1   2   3    y   6
+Control de spnD con resultado:  divisores de  6  son  1  2  3  y  6
 98.
-Control de spmcd con resultado:        máximo común divisor           entre   12    y   18           es igual a  6
+Control de spmcd con resultado:  máximo común divisor  entre  12  y  18  es igual a  6
 99.
-Control de spmcm con resultado:        mínimo común múltiplo           entre   12    y   18           es igual a  36
+Control de spmcm con resultado:  mínimo común múltiplo  entre  12  y  18  es igual a  36
