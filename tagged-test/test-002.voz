@@ -1,117 +1,166 @@
+test-002: spunit - Adobe Acrobat Reader (32-bit)
+AVPageView  marco de texto
 encabezado    nivel 1  página 1  A.
 Formas del argumento
 1.
 Solo la unidad:        metro
+.
 2.
 Número y unidad:        23   metros
+.
 3.
 Producto de unidades con potencia:        23   metros   segundos cuadrado
+.
 4.
 Fracción lineal:        23   metros   por  segundos cuadrado
+.
 5.
 Producto de dos unidades:        2   newtons   metros
+.
 6.
 Producto de tres unidades:        3   kilogramos   metros   segundos
+.
 7.
 Producto y fracción:        3   kilogramos   metros cuadrado   por  segundos cuadrado
+.
 8.
 Número decimal:        9 coma  8       metros   por  segundos cuadrado
+.
 9.
 Número negativo:        menos 3 coma  5                metros
+.
 10.
 Número periódico:        1 coma  2     con 3 periódico              metros
+.
 11.
 Notación científica:        3   por         10 a la octavo potencia          metros   por  segundos
+.
 12.
 Sin número, con potencia:        metro cuadrado
+.
 13.
 Sin número, con fracción:        metros   por  segundos
+.
 14.
 Con alias de la tabla:        23   metros
+.
 15.
 Con alias de temperatura:        20   grados Celsius
+.
 encabezado    nivel 1  B.
 Llave cifras-sep
 16.
 Por defecto:        100000   metros
+.
 17.
 Con false y espacios del usuario:        100000   metros
+.
 18.
 Con false y sin espacios:        100000   metros
+.
 encabezado    nivel 1  C.
 Llave read-period-sep
 19.
 Con coma:        3 coma 4 periódico              metros
+.
 20.
 Con punto:        3 punto 4 periódico              metros
+.
 encabezado    nivel 1  D.
 Llave notation-sym
 21.
 Con cdot:        3   por         10 a la octavo potencia          metros   por  segundos
+.
 22.
 Con times:        3   por  10 a la octavo potencia          metros   por  segundos
+.
 encabezado    nivel 1  E.
 Llave print-cdot
 23.
 Por defecto:        23   metros   segundos cuadrado
+.
 24.
 Con false:        23   metros   segundos cuadrado
+.
 25.
 Con true:        23   metros   segundos cuadrado
+.
 26.
 Con true y dos unidades:        2   newtons   metros
+.
 encabezado    nivel 1  página 2  F.
 Llave read-cdot
 27.
 Por defecto:        23   metros   segundos cuadrado
+.
 28.
 Con false:        23   metros   segundos cuadrado
+.
 29.
 Con true:        23   metros   segundos cuadrado
+.
 30.
 Con true y print-cdot true:        2   newtons   por  metros
+.
 encabezado    nivel 1  G.
 Llave read-slash
 31.
 Por defecto:        23   metros   por  segundos cuadrado
+.
 32.
 Con por:        23   metros   por  segundos cuadrado
+.
 33.
 Con partido-por:        23   metros   partido por  segundos cuadrado
+.
 34.
 Con partido-por y sin número:        metros   partido por  segundos
+.
 encabezado    nivel 1  H.
 Combinaciones de llaves
 35.
 Todas las de unidades:        9 coma  8              kilogramos   por  metros   partido por  segundos cuadrado
+.
 36.
 Llaves de número y de unidades:        3   por  10 a la octavo potencia          metros   partido por  segundos
+.
 encabezado    nivel 1  I.
 Unidades y alias nuevos
 37.
 Unidad nueva:        100    píxeles
+.
 38.
 Otra unidad nueva:        5    partes por millón
+.
 39.
 Unidad nueva en un producto:        3    píxeles   segundos
+.
 40.
 Alias nuevo:        50   metros al cubo   por  segundos
+.
 41.
 Otro alias nuevo:        30   metros   por  segundos
+.
 42.
 Alias nuevo con read-slash:        50   metros al cubo   partido por  segundos
+.
 encabezado    nivel 1  J.
 Dentro de fórmulas
 43.
 Suma e igualdad:        3   metros  más  2   metros         es igual a  5   metros
+.
 44.
 Con una variable:        g         es igual a   9 coma  8       metros   por  segundos cuadrado
+.
 45.
 Con un número aparte:        3 coma  5      punto  2   metros
+.
 46.
 Llaves distintas en una misma fórmula:        2   metros   por  segundos         es menor que         3   metros   partido por  segundos
+.
 47.
 En fórmula destacada:
      3   kilogramos   metros cuadrado   por  segundos cuadrado
 48.
 En una fracción:        la fracción con numerador          10   metros         y denominador 2   segundos
+.

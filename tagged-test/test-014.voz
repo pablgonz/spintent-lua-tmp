@@ -3,312 +3,483 @@ AVPageView  marco de texto
 encabezado    nivel 1  página 1  Comando spangle: argumentos
 1.
 Un punto:        ángulo  A
+.
 2.
 Una letra griega:        ángulo  alfa
+.
 3.
 Un número:        ángulo   1
+.
 4.
 Tres puntos:        ángulo  A   O   B
+.
 5.
 Un punto con prima:        ángulo  A prima
+.
 6.
 Un punto con subíndice:        ángulo  A sub uno
+.
 7.
 Otro punto:        ángulo  B
+.
 8.
 Con la letra beta:        ángulo  beta
+.
 9.
 Con la letra gamma:        ángulo  gamma
+.
 10.
 Con la letra theta:        ángulo  theta
+.
 11.
 Con la letra varphi:        ángulo  phi
+.
 12.
 Un número de dos cifras:        ángulo   12
+.
 13.
 Tres puntos con comas:        ángulo  A   O   B
+.
 14.
 Tres puntos con comas y espacios:        ángulo  A   O   B
+.
 15.
 Con primas:        ángulo  A prima   O   B prima
+.
 16.
 Con subíndices:        ángulo  A sub uno   O   B sub dos
+.
 17.
 Con subíndices y comas:        ángulo  A sub uno   O   B sub dos
+.
 18.
 Con otras letras:        ángulo  P   Q   R
+.
 19.
 Con tres vértices:        ángulo  A   B   C
+.
 encabezado    nivel 1  Comando spangle: llaves
 20.
 Con read-cmd school, el valor por defecto:        ángulo  A   O   B
+.
 21.
 Con read-cmd mathcat:        ángulo           a                  o                  b
+.
 22.
 Con read-cmd mathcat y un punto:        ángulo           a
+.
 23.
 Con prefix y un punto:        el ángulo  A
+.
 24.
 Con prefix y tres puntos:        el ángulo  A   O   B
+.
 25.
 Con prefix y una letra griega:        el ángulo  alfa
+.
 26.
 Con prefix y un número:        el ángulo   1
+.
 27.
 Con recto true y un punto:        ángulo recto  A
+.
 28.
 Con recto true y tres puntos:        ángulo recto  A   O   B
+.
 29.
 Con recto true y una letra griega:        ángulo recto  alfa
+.
 30.
 Con recto true y un número:        ángulo recto   1
+.
 31.
 Con recto false, el valor por defecto:        ángulo  A   O   B
+.
 32.
 Con concept true, el valor por defecto:        ángulo  A   O   B
+.
 33.
 Con concept false y un punto:        A
+.
 34.
 Con concept false y tres puntos:        A   O   B
+.
 35.
 Con concept false y una letra griega:        alfa
+.
 36.
 Con concept false y un número:        1
+.
 37.
 Con silent false, el valor por defecto:        ángulo  A   O   B
+.
 38.
 Con silent true y un punto:
+.
 39.
 Con silent true y tres puntos:
+.
 40.
 Con silent true y una letra griega:
+.
 página 2  41.
 Con silent true y un número:
+.
 42.
 Con todas las llaves:        el ángulo recto           a        subíndice 1           o                  b        subíndice 2
+.
 encabezado    nivel 1  Comando spmangle: argumentos
 43.
 Un punto:        medida del ángulo  A
+.
 44.
 Una letra griega:        medida del ángulo  alfa
+.
 45.
 Un número:        medida del ángulo   1
+.
 46.
 Tres puntos:        medida del ángulo  A   O   B
+.
 47.
 Un punto con prima:        medida del ángulo  A prima
+.
 48.
 Un punto con subíndice:        medida del ángulo  A sub uno
+.
 49.
 Otro punto:        medida del ángulo  B
+.
 50.
 Con la letra beta:        medida del ángulo  beta
+.
 51.
 Con la letra gamma:        medida del ángulo  gamma
+.
 52.
 Con la letra theta:        medida del ángulo  theta
+.
 53.
 Con la letra varphi:        medida del ángulo  phi
+.
 54.
 Un número de dos cifras:        medida del ángulo   12
+.
 55.
 Tres puntos con comas:        medida del ángulo  A   O   B
+.
 56.
 Tres puntos con comas y espacios:        medida del ángulo  A   O   B
+.
 57.
 Con primas:        medida del ángulo  A prima   O   B prima
+.
 58.
 Con subíndices:        medida del ángulo  A sub uno   O   B sub dos
+.
 59.
 Con subíndices y comas:        medida del ángulo  A sub uno   O   B sub dos
+.
 60.
 Con otras letras:        medida del ángulo  P   Q   R
+.
 61.
 Con tres vértices:        medida del ángulo  A   B   C
+.
 encabezado    nivel 1  Comando spmangle: llaves
 62.
 Con read-cmd school, el valor por defecto:        medida del ángulo  A   O   B
+.
 63.
 Con read-cmd mathcat:        medida del ángulo           a                  o                  b
+.
 64.
 Con read-cmd mathcat y un punto:        medida del ángulo           a
+.
 65.
-Con prefix y un punto:        el medida del ángulo  A
+Con prefix y un punto:        la medida del ángulo  A
+.
 66.
-Con prefix y tres puntos:        el medida del ángulo  A   O   B
+Con prefix y tres puntos:        la medida del ángulo  A   O   B
+.
 67.
-Con prefix y una letra griega:        el medida del ángulo         alfa
+Con prefix y una letra griega:        la medida del ángulo         alfa
+.
 68.
-Con prefix y un número:        el medida del ángulo   1
+Con prefix y un número:        la medida del ángulo   1
+.
 69.
 Con recto true y un punto:        medida del ángulo recto  A
+.
 70.
 Con recto true y tres puntos:        medida del ángulo recto  A   O   B
+.
 71.
 Con recto true y una letra griega:        medida del ángulo recto         alfa
+.
 72.
 Con recto true y un número:        medida del ángulo recto          1
+.
 73.
 Con recto false, el valor por defecto:        medida del ángulo  A   O   B
+.
 74.
 Con concept true, el valor por defecto:        medida del ángulo  A   O   B
+.
 75.
 Con concept false y un punto:        A
+.
 76.
 Con concept false y tres puntos:        A   O   B
+.
 77.
 Con concept false y una letra griega:        alfa
+.
 78.
 Con concept false y un número:        1
+.
 página 3  79.
 Con silent false, el valor por defecto:        medida del ángulo  A   O   B
+.
 80.
 Con silent true y un punto:
+.
 81.
 Con silent true y tres puntos:
+.
 82.
 Con silent true y una letra griega:
+.
 83.
 Con silent true y un número:
+.
 84.
 Con print-m false, el valor por defecto:        medida del ángulo  A   O   B
+.
 85.
 Con print-m true:        medida del ángulo  A   O   B
+.
 86.
 Con print-m true y recto true:        medida del ángulo recto  A   O   B
+.
 87.
 Con print-m true y un número:        medida del ángulo   1
+.
 88.
-Con todas las llaves:        el medida del ángulo recto           a        subíndice 1           o                  b        subíndice 2
+Con todas las llaves:        la medida del ángulo recto           a        subíndice 1           o                  b        subíndice 2
+.
 encabezado    nivel 1  Comando spang
 89.
 Con grados, minutos y segundos:        45   grados   30 minutos           15   segundos
+.
 90.
 Con grados y minutos:        45   grados   30 minutos
+.
 91.
 Solo grados:        45   grados
+.
 92.
 Solo grados, ángulo llano:        180   grados
+.
 93.
-Un segundo:        0   grados   0 minutos           1   segundos
+Un segundo:        0   grados   0 minutos           1    segundo
+.
 94.
 Ángulo recto:        90   grados   0 minutos           0   segundos
+.
 95.
 Con grados de tres cifras y minutos:        120   grados   15 minutos
+.
 96.
 Una vuelta completa:        360   grados   0 minutos           0   segundos
+.
 97.
-Con unos y dos:        1   grados   2 minutos           3   segundos
+Con unos y dos:        1    grado   2 minutos           3   segundos
+.
 98.
 Con cifras sueltas:        7   grados   5 minutos
+.
 99.
-Suma de ángulos:        45   grados   30 minutos           15   segundos         más         10   grados   20 minutos           30   segundos
+Con el valor uno en las tres partes:        1    grado   1  minuto           1    segundo
+.
 100.
-Medida igual a un ángulo:        medida del ángulo  A   O   B            es igual a  90   grados
-encabezado    nivel 1  Comando sparc
+Con un solo grado:        1    grado
+.
 101.
-Dos puntos juntos:        arco  A   B
+Con cero grados y un minuto:        0   grados   1  minuto
+.
 102.
-Dos puntos con coma:        arco  A   B
+Con un grado y ceros:        1    grado   0 minutos           0   segundos
+.
 103.
-Dos puntos con coma y espacio:        arco  A   B
+Control con el valor dos:        2   grados   2 minutos           2   segundos
+.
 104.
-Tres puntos:        arco  A   B   C
+Con spunit y un grado:        1    grado
+.
 105.
-Tres puntos con comas:        arco  A   B   C
+Control con un grado y medio, que sigue en plural:        1 coma  5       grados
+.
 106.
-Con primas:        arco  A prima   B prima
+Suma de ángulos:        45   grados   30 minutos           15   segundos         más         10   grados   20 minutos           30   segundos
+.
 107.
-Con subíndices:        arco  A sub uno   B sub dos
+Medida igual a un ángulo:        medida del ángulo  A   O   B            es igual a  90   grados
+.
+encabezado    nivel 1  Comando sparc
 108.
-Tres puntos con subíndices:        arco  A sub uno   B sub dos   C sub tres
+Dos puntos juntos:        arco  A   B
+.
 109.
-Con el centro en medio:        arco  A   O   B
+Dos puntos con coma:        arco  A   B
+.
 110.
-Con read-cmd school, el valor por defecto:        arco  A   B
+Dos puntos con coma y espacio:        arco  A   B
+.
 111.
-Con read-cmd mathcat:        arco           a                  b
+Tres puntos:        arco  A   B   C
+.
 112.
-Con prefix y dos puntos:        el arco  A   B
+Tres puntos con comas:        arco  A   B   C
+.
 113.
-Con prefix y tres puntos:        el arco  A   B   C
+Con primas:        arco  A prima   B prima
+.
 114.
-Con concept true, el valor por defecto:        arco  A   B
+Con subíndices:        arco  A sub uno   B sub dos
+.
 115.
-Con concept false y dos puntos:        A   B
+Tres puntos con subíndices:        arco  A sub uno   B sub dos   C sub tres
+.
 página 4  116.
-Con concept false y tres puntos:        A   B   C
+Con el centro en medio:        arco  A   O   B
+.
 117.
-Con concept false y subíndices:        A sub uno   B sub dos
+Con read-cmd school, el valor por defecto:        arco  A   B
+.
 118.
-Con silent false, el valor por defecto:        arco  A   B
+Con read-cmd mathcat:        arco           a                  b
+.
 119.
-Con silent true y dos puntos:
+Con prefix y dos puntos:        el arco  A   B
+.
 120.
-Con silent true y tres puntos:
+Con prefix y tres puntos:        el arco  A   B   C
+.
 121.
-Con silent true y subíndices:
+Con concept true, el valor por defecto:        arco  A   B
+.
 122.
-Con todas las llaves:        el arco           a        subíndice 1           b        subíndice 2           c        subíndice 3
-encabezado    nivel 1  Comando spmarc
-123.
-Dos puntos juntos:        medida del arco  A   B
-124.
-Dos puntos con coma:        medida del arco  A   B
-125.
-Dos puntos con coma y espacio:        medida del arco  A   B
-126.
-Tres puntos:        medida del arco  A   B   C
-127.
-Tres puntos con comas:        medida del arco  A   B   C
-128.
-Con primas:        medida del arco  A prima   B prima
-129.
-Con subíndices:        medida del arco  A sub uno   B sub dos
-130.
-Tres puntos con subíndices:        medida del arco  A sub uno   B sub dos   C sub tres
-131.
-Con el centro en medio:        medida del arco  A   O   B
-132.
-Con read-cmd school, el valor por defecto:        medida del arco  A   B
-133.
-Con read-cmd mathcat:        medida del arco           a                  b
-134.
-Con prefix y dos puntos:        el medida del arco  A   B
-135.
-Con prefix y tres puntos:        el medida del arco  A   B   C
-136.
-Con concept true, el valor por defecto:        medida del arco  A   B
-137.
 Con concept false y dos puntos:        A   B
-138.
+.
+123.
 Con concept false y tres puntos:        A   B   C
-139.
+.
+124.
 Con concept false y subíndices:        A sub uno   B sub dos
-140.
-Con silent false, el valor por defecto:        medida del arco  A   B
-141.
+.
+125.
+Con silent false, el valor por defecto:        arco  A   B
+.
+126.
 Con silent true y dos puntos:
-142.
+.
+127.
 Con silent true y tres puntos:
-143.
+.
+128.
 Con silent true y subíndices:
+.
+129.
+Con todas las llaves:        el arco           a        subíndice 1           b        subíndice 2           c        subíndice 3
+.
+encabezado    nivel 1  Comando spmarc
+130.
+Dos puntos juntos:        medida del arco  A   B
+.
+131.
+Dos puntos con coma:        medida del arco  A   B
+.
+132.
+Dos puntos con coma y espacio:        medida del arco  A   B
+.
+133.
+Tres puntos:        medida del arco  A   B   C
+.
+134.
+Tres puntos con comas:        medida del arco  A   B   C
+.
+135.
+Con primas:        medida del arco  A prima   B prima
+.
+136.
+Con subíndices:        medida del arco  A sub uno   B sub dos
+.
+137.
+Tres puntos con subíndices:        medida del arco  A sub uno   B sub dos   C sub tres
+.
+138.
+Con el centro en medio:        medida del arco  A   O   B
+.
+139.
+Con read-cmd school, el valor por defecto:        medida del arco  A   B
+.
+140.
+Con read-cmd mathcat:        medida del arco           a                  b
+.
+141.
+Con prefix y dos puntos:        la medida del arco  A   B
+.
+142.
+Con prefix y tres puntos:        la medida del arco  A   B   C
+.
+143.
+Con concept true, el valor por defecto:        medida del arco  A   B
+.
 144.
-Con todas las llaves:        el medida del arco           a        subíndice 1           b        subíndice 2           c        subíndice 3
-encabezado    nivel 1  En fórmulas
+Con concept false y dos puntos:        A   B
+.
 145.
-Ángulos iguales:        ángulo  A   B   C            es igual a  ángulo  D   E   F
+Con concept false y tres puntos:        A   B   C
+.
 146.
-Suma de medidas:        medida del ángulo  A   O   B            más  medida del ángulo  B   O   C            es igual a         medida del ángulo  A   O   C
+Con concept false y subíndices:        A sub uno   B sub dos
+.
 147.
-Medida de un ángulo en grados:        medida del ángulo  A   O   B            es igual a  45   grados   30 minutos
+Con silent false, el valor por defecto:        medida del arco  A   B
+.
 148.
-Arcos iguales:        arco  A   B     es igual a  arco  C   D
+Con silent true y dos puntos:
+.
 149.
-Medida de un arco en grados:        medida del arco  A   B            es igual a         45   grados   30 minutos           15   segundos
+Con silent true y tres puntos:
+.
 150.
+Con silent true y subíndices:
+.
+151.
+Con todas las llaves:        la medida del arco           a        subíndice 1           b        subíndice 2           c        subíndice 3
+.
+encabezado    nivel 1  página 5  En fórmulas
+152.
+Ángulos iguales:        ángulo  A   B   C            es igual a  ángulo  D   E   F
+.
+153.
+Suma de medidas:        medida del ángulo  A   O   B            más  medida del ángulo  B   O   C            es igual a         medida del ángulo  A   O   C
+.
+154.
+Medida de un ángulo en grados:        medida del ángulo  A   O   B            es igual a  45   grados   30 minutos
+.
+155.
+Arcos iguales:        arco  A   B     es igual a  arco  C   D
+.
+156.
+Medida de un arco en grados:        medida del arco  A   B            es igual a         45   grados   30 minutos           15   segundos
+.
+157.
 Ángulo y arco que lo subtiende:        medida del ángulo  A   O   B            es igual a  medida del arco  A   B
-página 5  151.
+.
+158.
 En fórmula destacada:
      medida del ángulo  A   O   B            es igual a  medida del arco  A   B
-
+.

@@ -1,179 +1,254 @@
 test-004: spmoney - Adobe Acrobat Reader (32-bit)
-desconocido
-1/3 C:\Users\pablg\spintent-lua-tmp\tagged-test\test-004.pdf, 3 páginas
+AVPageView  marco de texto
 encabezado    nivel 1  página 1  A.
 Formas del argumento
 1.
 Solo la cifra:        500 pesos
+.
 2.
 Cifra y alias:        500 dólares
+.
 3.
 Alias ISO en mayúsculas:        500 pesos chilenos
+.
 4.
 Alias ISO en minúsculas:        500 pesos chilenos
+.
 5.
 Alias de otra moneda:        500 euros
+.
 6.
 Símbolo del euro:        500 euros
+.
 7.
 Símbolo de la libra:        500 libras
+.
 8.
 Alias de la libra:        500 libras
+.
 9.
 Dólar en formato ISO mayúsculas:        500 dólares estadounidenses
+.
 10.
 Dólar en formato ISO minúsculas:        500 dólares estadounidenses
+.
 11.
 Cifra negativa:        menos 500 pesos
+.
 12.
 Cifra decimal:        1234   coma  56   pesos
+.
 13.
 Cifra decimal con alias:        1234   coma  56   euros
+.
 14.
 Cifra menor que uno:        0   coma  5   pesos
+.
 encabezado    nivel 1  B.
 Singular, plural y millones
 15.
 Uno:        1 peso
+.
 16.
 Uno con alias:        1 euro
+.
 17.
 Dos:        2 pesos
+.
 18.
 Cero:        0 pesos
+.
 19.
 Uno negativo:        menos 1 peso
+.
 20.
 Uno con decimales:        1   coma  5   pesos
+.
 21.
 Mil:        1000 pesos
+.
 22.
 Un millón exacto:        1000000 de pesos
+.
 23.
 Dos millones exactos:        2000000 de pesos
+.
 24.
 Un millón con alias:        1000000 de dólares
+.
 25.
 Un millón con alias ISO:        1000000 de pesos chilenos
+.
 26.
 Un millón y medio:        1500000 pesos
+.
 encabezado    nivel 1  C.
 Llave cifras-sep
 27.
 Por defecto:        100000 pesos
+.
 28.
 Con false:        100000 pesos
+.
 29.
 Con false y espacios del usuario:        100000 pesos
+.
 30.
 Decimales por defecto:        1234567   coma  89   pesos
+.
 31.
 Decimales con false:        1234567   coma  89   pesos
+.
 encabezado    nivel 1  D.
 Llave currency
 32.
 Peso, el valor por defecto:        500 pesos
+.
 33.
 Euro por alias:        500 euros
+.
 página 2  34.
 Euro por símbolo:        500 euros
+.
 35.
 Libra por alias:        500 libras
+.
 36.
 Yen por alias:        500 yenes
+.
 37.
 Peso chileno en formato ISO:        500 pesos chilenos
+.
 38.
 Dólar en minúsculas:        500 dólares estadounidenses
+.
 39.
 Dólar en mayúsculas:        500 dólares estadounidenses
+.
 40.
 Prioridad del argumento:        500 libras
+.
 41.
 Prioridad del argumento con ISO:        500 dólares estadounidenses
+.
 encabezado    nivel 1  E.
 Llave sub-units
 42.
 Con true:        100 dólares   con  50 centavos
+.
 43.
 Con false:        100   coma  5   dólares
+.
 44.
 Euro con true:        100 euros   con  25 céntimos
+.
 45.
 Subunidad de una sola cifra:        100 dólares   con  05 centavos
+.
 46.
 Subunidad en singular:        1 dólar   con  01 centavo
+.
 47.
 Sin decimales:        100 dólares
+.
 48.
 Peso por defecto:        500 pesos   con  75 centavos
+.
 49.
 Libra:        100 libras   con  50 peniques
+.
 50.
 Dólar en formato ISO:        100 dólares estadounidenses          con  50 centavos
+.
 51.
 Cifra negativa:        menos 100 dólares   con  50 centavos
+.
 encabezado    nivel 1  F.
 Llave money-math
 52.
 Con true, el valor por defecto:        500 pesos
+.
 53.
 Con false:        500 pesos
+.
 54.
 Con false y alias de dólar:        500 dólares
+.
 55.
 Con false y otra moneda:        500 euros
+.
 56.
 Con false y el won:        500 wons
+.
 57.
 Con false y código ISO, que no cambia:        500 pesos chilenos
+.
 58.
 Con false y subunidades:        100 euros   con  50 céntimos   euro
+.
 encabezado    nivel 1  G.
 Combinaciones de llaves
 59.
 Euro con subunidades:        1234 euros   con  50 céntimos
+.
 60.
 Euro, subunidades y sin separador de cifras:        1234 euros   con  50 céntimos
+.
 61.
 Subunidades y money-math false:        100 dólares   con  50 centavos
+.
 62.
 Peso chileno negativo con millones:        menos 1500000 pesos chilenos
+.
 63.
 Libra con millones y subunidades:        1000000 de libras   con  25 peniques
+.
 encabezado    nivel 1  página 3  H.
 Dentro de fórmulas
 64.
 Suma e igualdad:        500 pesos  más  250 pesos         es igual a  750 pesos
+.
 65.
 Monedas distintas:        500 euros  es menor que  600 dólares
+.
 66.
 Llaves distintas en una misma fórmula:        1 dólar   con  50 centavos  más   2 dólares
+.
 67.
 En fórmula destacada:
      100 dólares   con  50 centavos
 68.
 En una fracción:        la fracción con numerador          500 pesos         y denominador 2 pesos
+.
 69.
 Con una variable:        p         es igual a   1500 pesos chilenos
+.
 encabezado    nivel 1  I.
 Alias con tilde y símbolo escapado
 70.
 Alias con tilde:        500 dólares
+.
 71.
 Alias con tilde en singular:        1 dólar
+.
 72.
 Símbolo escapado:        500 pesos
+.
 73.
 Símbolo escapado con money-math false:        500 pesos
+.
 74.
 Llave currency con símbolo escapado:        500 pesos
+.
 75.
 Llave currency con tilde:        500 dólares
+.
 76.
 Alias con tilde y subunidades:        100 dólares   con  50 centavos
+.
 77.
 Símbolo escapado y subunidades:        100 pesos   con  50 centavos
+.
 78.
 Alias con tilde y espacios matemáticos:        100000 dólares
-
+.
