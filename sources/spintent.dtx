@@ -4275,7 +4275,10 @@ end, "shekel_fallback_patch")
 %   Si son tres puntos se aplica |\triangle| y añade el concepto \emph{«triángulo»}
 %   a la verbalización; si son cuatro puntos se aplica |\mdlgwhtsquare|
 %   y añade el concepto \emph{«cuadrado»} a la verbalización; si son cinco
-%   o más puntos no se aplica ningún símbolo ni se añade verbalización.
+%   o más puntos no se aplica ningún símbolo y se añade a la verbalización
+%   el nombre del polígono: \emph{«pentágono»}, \emph{«hexágono»},
+%   \emph{«heptágono»} u \emph{«octágono»} de cinco a ocho puntos, y
+%   \emph{«polígono»} desde nueve puntos.
 %
 %   \smallskip
 %
@@ -4286,7 +4289,7 @@ end, "shekel_fallback_patch")
 %   \emph{«triángulo A B C»}; |$\spPoly{ABCD}$| imprimirá
 %   `$\square ABCD$' y verbalizará \emph{«cuadrado A B C D»};
 %   |$\spPoly{ABCDE}$| imprimirá `$ABCDE$' y verbalizará
-%   \emph{«A B C D E»}.
+%   \emph{«pentágono A B C D E»}.
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spPoly}}
@@ -4307,9 +4310,10 @@ end, "shekel_fallback_patch")
 % \keyexampcmd{prefix}{prefijo}{no usado}[spPoly]
 % \smallskip
 % Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
-% \emph{antes} de verbalizar el \mymarg{argumento} o los conceptos \emph{«triángulo»} y
-% \emph{«cuadrado»} establecido por la llave \mykey{concept}. El valor de esta
-% llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+% \emph{antes} de verbalizar el \mymarg{argumento} o el concepto \emph{«triángulo»},
+% \emph{«cuadrado»}, \emph{«pentágono»}, \emph{«hexágono»}, \emph{«heptágono»},
+% \emph{«octágono»} o \emph{«polígono»} establecido por la llave \mykey{concept}.
+% El valor de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
 %
 % \smallskip
 %
@@ -4317,10 +4321,12 @@ end, "shekel_fallback_patch")
 %   false}{true}[spPoly]
 % \smallskip
 % Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
-% de los conceptos \emph{«triángulo»} y \emph{«cuadrado»} acorde al número
-% de puntos en el \mymarg{argumento} al ejecutar el comando sin modificar
-% la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«triángulo»} o \emph{«cuadrado»} y el \mymarg{argumento};
+% del concepto (\emph{«triángulo»}, \emph{«cuadrado»}, \emph{«pentágono»},
+% \emph{«hexágono»}, \emph{«heptágono»}, \emph{«octágono»} o
+% \emph{«polígono»}) acorde al número de puntos en el \mymarg{argumento} al
+% ejecutar el comando sin modificar la impresión de este. Si se establece en
+% |true|, \mynvmath{NVDA/MathCAT} verbalizará el concepto y el
+% \mymarg{argumento};
 % si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
 % \mymarg{argumento} acorde al valor establecido por la llave \mykey{read-cmd}.
 %
@@ -4337,6 +4343,13 @@ end, "shekel_fallback_patch")
 % la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«cuadrado A B C D»};
 % si se establece en |false|, solo se imprimirá el \mymarg{argumento} en
 % la salida \texttt{PDF} y la verbalización será la misma.
+%
+% \smallskip
+%
+% \begin{important}*
+%   Esta llave no tiene efecto con cinco o más puntos, porque no hay un
+%   símbolo definido para ellos.
+% \end{important}
 %
 % \smallskip
 %
