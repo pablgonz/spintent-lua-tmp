@@ -4970,10 +4970,12 @@ end, "shekel_fallback_patch")
 %
 % La forma en la que se procesa el \mymeta{radio} junto a su impresión y
 % verbalización se establece de manera interna: Si es un \mymeta{número}
-% se usa |\spnum|; si es una \mymeta{medida} se usa |\spunit| y si es
-% un segmento \mymeta{punto punto} se usa |\spside| o |\spmside| acorde
-% al valor establecido por la llave \mykey{radio-sty}. En cualquier otro
-% caso no se procesa de manera interna.
+% entero o decimal se usa |\spnum|; si es una \mymeta{medida} se usa
+% |\spunit|; si es un segmento \mymeta{punto punto} se usa |\spside| o
+% |\spmside| acorde al valor establecido por la llave
+% \mykey{radio-sty}; y si es una letra se imprime tal cual. Cualquier otra
+% forma devuelve un \enquote{error} y se detiene la compilación del
+% documento.
 %
 % \smallskip
 %
@@ -7396,7 +7398,10 @@ end, "shekel_fallback_patch")
 %   If the unit is valid, it checks if it is a sexagesimal angle (degrees,
 %   minutes, or seconds). For sexagesimal \emph{\enquote{units}}, it prints
 %   the number and the symbol \emph{\enquote{without any space in between}},
-%   applying a slight negative space `|\!|' for |arcseconds|. For standard units,
+%   applying a slight negative space `|\!|' for |arcseconds|. When the number is
+%   exactly |1|, with no decimal part, the reading becomes the singular literal
+%   |_grado|, |_minuto| or |_segundo|, since neither the fixed plural names
+%   nor |MathCAT| can see the number. For standard units,
 %   it prints the number followed by a thin space `|\,|' and then processes
 %   the unit sequence.
 %    \begin{macrocode}
@@ -7420,6 +7425,20 @@ end, "shekel_fallback_patch")
                     \tl_if_empty:NF \l_@@_luaset_part_int_tl
                       {
                         \@@_spnum_print_number_core:
+                      }
+                    \bool_lazy_and:nnT
+                      { \str_if_eq_p:ee { \l_@@_luaset_part_int_tl } { 1 } }
+                      { \tl_if_empty_p:N \l_@@_luaset_part_dec_tl }
+                      {
+                        \str_set:Ne \l_@@_spunit_luaset_read_str
+                          {
+                            \str_case:Vn \l_@@_spunit_luaset_canonical_str
+                              {
+                                { ° } { _grado   }
+                                { ′ } { _minuto  }
+                                { ″ } { _segundo }
+                              }
+                          }
                       }
                     \MathMLintent { \l_@@_spunit_luaset_read_str }
                       {
@@ -9906,7 +9925,7 @@ end, "shekel_fallback_patch")
       {
         \seq_set_map:NNn \l_@@_mc_args_seq \l_@@_mc_args_seq
           {
-            \MathMLintent { :silent } { ##1 }
+            \MathMLintent { _- } { \@@_inner_sep: ##1 }
           }
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent "por"
         \MathMLintent { :silent } { ( }
@@ -9951,7 +9970,8 @@ end, "shekel_fallback_patch")
 %   \smallskip
 %
 %   The operator name is silenced with \mykey{silent}|=true| — \myhlc|\@@_mc_process_args:nn|
-%   silences the arguments too, in that case — or with \mykey{concept}|=false|
+%   silences the arguments too, in that case, each wrapped in a literal |_-|
+%   intent, and the printed result is silenced as well — or with \mykey{concept}|=false|
 %   alone, leaving the arguments untouched. With \mykey{concept}|=true|,
 %   it carries the literal |intent| instead — |#1| or |#2| per \mykey{read-cmd},
 %   prefixed with \mykey{prefix} when given.
@@ -10052,8 +10072,19 @@ end, "shekel_fallback_patch")
               {
                 \bool_if:cT { l_@@_sp #1 _print_result_bool }
                   {
-                    \MathMLintent { _es-igual-a } { = }
-                    \tl_use:c { l_@@_sp #1 _luaset_ #1 _value_tl }
+                    \bool_if:cTF { l_@@_sp #1 _silent_bool }
+                      {
+                        \MathMLintent { :silent } { = }
+                        \MathMLintent { _- }
+                          {
+                            \@@_inner_sep:
+                            \tl_use:c { l_@@_sp #1 _luaset_ #1 _value_tl }
+                          }
+                      }
+                      {
+                        \MathMLintent { _es-igual-a } { = }
+                        \tl_use:c { l_@@_sp #1 _luaset_ #1 _value_tl }
+                      }
                   }
               }
           }
@@ -10248,14 +10279,16 @@ end, "shekel_fallback_patch")
 %   `|#1|' (such as ``D'' or ``M'') and the variable or explicit argument `|#2|'.
 %   Every component is wrapped in a silent intent, and an invisible separator
 %   is injected between the parentheses to prevent assistive technologies from
-%   applying default contextual reading rules.
+%   applying default contextual reading rules. The argument is wrapped in a
+%   literal |_-| intent, not in |:silent|, so that intents of its own (such as
+%   those of |\spnum|) are silenced too.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spnM_spnD_silent:nn
   {
     \MathMLintent { :silent } { \operatorname { #1 } }
     \MathMLintent { :silent } { ( }
     \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
-    \MathMLintent { :silent } { #2 }
+    \MathMLintent { _- } { \@@_inner_sep: #2 }
     \MathMLintent { :silent } { ) }
   }
 %    \end{macrocode}
@@ -10322,7 +10355,9 @@ end, "shekel_fallback_patch")
 %   \myhlc|\@@_spnM_spnD_result:nn| also prints the computed set, per
 %   \mykey{result} — or left verbatim, with no result attempted. A zero
 %   is flagged as an error by \myhlc|\@@_luafun_spnmd_classify:n| and
-%   rejected right away with |md-invalid-argument|.
+%   rejected right away with |md-invalid-argument|. With
+%   \mykey{silent}|=true| the printed result is wrapped in a literal |_-|
+%   intent, so it stays on the page but is not verbalized.
 %
 %   \smallskip
 %
@@ -10383,7 +10418,17 @@ end, "shekel_fallback_patch")
           {
             \bool_if:cT { l_@@_sp #1 _print_result_bool }
               {
-                \@@_spnM_spnD_result:nn { #1 } { #4 }
+                \bool_if:cTF { l_@@_sp #1 _silent_bool }
+                  {
+                    \MathMLintent { _- }
+                      {
+                        \@@_inner_sep:
+                        \@@_spnM_spnD_result:nn { #1 } { #4 }
+                      }
+                  }
+                  {
+                    \@@_spnM_spnD_result:nn { #1 } { #4 }
+                  }
               }
           }
       }
@@ -11858,9 +11903,9 @@ end, "shekel_fallback_patch")
 %   |spPoint-invalid-point| on error. If \mykey{silent} is |true|
 %   or \mykey{concept} is |false|, sets
 %   \myhlc|\l_@@_spPoint_intent_arg_tl| to |_($pt)| — forced further to
-%   |_-| when \mykey{silent} is |true| and |read-cmd| is not
-%   |school|, since \myhlc|\@@_spPoint_mathml:n| then tags through a
-%   native |\MathMLarg| that needs the concept silenced too. Otherwise
+%   |_-| when \mykey{silent} is |true|, whatever |read-cmd| is: a
+%   composite point (one with a subscript) is not reliably silenced by
+%   the per-point |:silent| alone. Otherwise
 %   sets it to |_punto:prefix($pt)|, with \mykey{prefix} placed after the
 %   leading |_| when given. Finally calls \myhlc|\@@_spPoint_mathml:n|.
 %    \begin{macrocode}
@@ -11881,10 +11926,7 @@ end, "shekel_fallback_patch")
         \tl_set:Nn \l_@@_spPoint_intent_arg_tl { _($pt) }
         \bool_if:NT \l_@@_spPoint_silent_bool
           {
-            \str_if_eq:VnF \l_@@_spPoint_mode_str { school }
-              {
-                \tl_set:Nn \l_@@_spPoint_intent_arg_tl { _- }
-              }
+            \tl_set:Nn \l_@@_spPoint_intent_arg_tl { _- }
           }
       }
       {
@@ -12111,7 +12153,7 @@ end, "shekel_fallback_patch")
 %   For a proper name (a single letter, no prime), the concept
 %   |intent| is |_($pt)| when \mykey{silent} is |true| \emph{or}
 %   \mykey{concept} is |false| — forced further to |_-| when
-%   \mykey{silent} is |true| and |read-cmd| is not |school|;
+%   \mykey{silent} is |true|, whatever |read-cmd| is;
 %   otherwise |_vector:prefix($pt)|, with \mykey{prefix} placed after the
 %   leading |_| when given. With
 %   \myhlc|\l_@@_geo_luaset_tipo_str| equal to |sub|, |read-cmd=school|
@@ -12136,10 +12178,7 @@ end, "shekel_fallback_patch")
           {
             \tl_set:Nn \l_@@_spvec_intent_arg_tl { _($pt) }
             \bool_if:NT \l_@@_spvec_silent_bool
-              {
-                \str_if_eq:VnF \l_@@_spvec_mode_str { school }
-                  { \tl_set:Nn \l_@@_spvec_intent_arg_tl { _- } }
-              }
+              { \tl_set:Nn \l_@@_spvec_intent_arg_tl { _- } }
           }
           {
             \tl_set:Ne \l_@@_spvec_intent_arg_tl
@@ -12227,8 +12266,9 @@ end, "shekel_fallback_patch")
 %   For a pair of points, \myhlc|\l_@@_geo_luaset_points_clist| is
 %   split into \myhlc|\l_@@_spvec_pt_seq| and walked to build
 %   \myhlc|\l_@@_spvec_refs_tl|, the |$pts1,$pts2| reference list.
-%   The concept |intent| is |_(refs)| or |_vector:prefix(refs)|, same
-%   conditions as above, applied with a native |\MathMLintent| wrapping
+%   The concept |intent| is |_-| when \mykey{silent} is |true|,
+%   |_(refs)| when \mykey{concept} is |false| or
+%   |_vector:prefix(refs)| otherwise, applied with a native |\MathMLintent| wrapping
 %   |\overrightarrow|. The sequence is walked again, calling
 %   \myhlc|\@@_mathmlarg_point:nnn| once per point.
 %    \begin{macrocode}
@@ -12251,6 +12291,8 @@ end, "shekel_fallback_patch")
           }
           {
             \tl_set:Ne \l_@@_spvec_intent_arg_tl { _( \l_@@_spvec_refs_tl ) }
+            \bool_if:NT \l_@@_spvec_silent_bool
+              { \tl_set:Nn \l_@@_spvec_intent_arg_tl { _- } }
           }
           {
             \tl_set:Ne \l_@@_spvec_intent_arg_tl
@@ -12302,7 +12344,9 @@ end, "shekel_fallback_patch")
     \@@_spvec_print:n { #2 }
     \tl_if_novalue:nF {#3}
       {
-        \equal % notación de vector =( , )
+        \bool_if:NTF \l_@@_spvec_silent_bool
+      { \MathMLintent { :silent } { \equal } }
+      { \equal } % notación de vector =( , )
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % previene lectura de intervalo
         \bool_set_eq:NN \l_@@_spcoord_silent_bool \l_@@_spvec_silent_bool
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
@@ -12854,8 +12898,8 @@ end, "shekel_fallback_patch")
 %   build \myhlc|\l_@@_sprayo_refs_tl|, the comma-separated
 %   |$pts1,$pts2,...| reference list, naming each point by position.
 %
-%   The concept |intent| is |_(refs)| when \mykey{silent} is
-%   |true| \emph{or} \mykey{concept} is |false|; otherwise it is
+%   The concept |intent| is |_-| when \mykey{silent} is |true|,
+%   |_(refs)| when \mykey{concept} is |false|; otherwise it is
 %   \myhlc|_\l_@@_sprayo_read_sty_str|\myhlc|:prefix(refs)| — the concept
 %   word itself (|rayo| or |semirrecta|) comes from the
 %   \mykey{read-sty} key, not a literal, since |\sprayo| verbalizes
@@ -12889,6 +12933,8 @@ end, "shekel_fallback_patch")
       }
       {
         \tl_set:Ne \l_@@_sprayo_intent_arg_tl { _( \l_@@_sprayo_refs_tl ) }
+        \bool_if:NT \l_@@_sprayo_silent_bool
+          { \tl_set:Nn \l_@@_sprayo_intent_arg_tl { _- } }
       }
       {
         \tl_set:Ne \l_@@_sprayo_intent_arg_tl
@@ -13204,7 +13250,7 @@ end, "shekel_fallback_patch")
       }
 %    \end{macrocode}
 %
-%   The concept |intent| is |_(refs)| when \mykey{silent} is |true|;
+%   The concept |intent| is |_-| when \mykey{silent} is |true|;
 %   otherwise, if \mykey{read-arg} is empty, it is |_(refs)| when
 %   \mykey{concept} is |false| or
 %   \myhlc|_\l_@@_spside_intent_tl|\myhlc|:prefix(refs)| when |true|; if
@@ -13216,7 +13262,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
     \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
-        \tl_set:Ne \l_@@_spside_intent_arg_tl { _( \l_@@_spside_refs_tl ) }
+        \tl_set:Nn \l_@@_spside_intent_arg_tl { _- }
       }
       {
         \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
@@ -14286,8 +14332,8 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_spPoly_build_concept:}
 %   Builds \myhlc|\l_@@_spPoly_intent_arg_tl|, independently of
-%   \mykey{print-sym}: |_(refs)| when \mykey{silent} is |true| or
-%   \mykey{concept} is |false|; otherwise
+%   \mykey{print-sym}: |_-| when \mykey{silent} is |true|,
+%   |_(refs)| when \mykey{concept} is |false|; otherwise
 %   \myhlc|_\l_@@_geo_luaset_concept_str|\myhlc|:prefix(refs)|, with
 %   \mykey{prefix} placed after the leading |_| when given. Must be
 %   called after \myhlc|\@@_spPoly_build_refs:|.
@@ -14296,7 +14342,7 @@ end, "shekel_fallback_patch")
   {
     \bool_if:NTF \l_@@_spPoly_silent_bool
       {
-        \tl_set:Ne \l_@@_spPoly_intent_arg_tl { _( \l_@@_spPoly_refs_tl ) }
+        \tl_set:Nn \l_@@_spPoly_intent_arg_tl { _- }
       }
       {
         \bool_if:NTF \l_@@_spPoly_concept_bool
@@ -14979,7 +15025,7 @@ end, "shekel_fallback_patch")
       }
 %    \end{macrocode}
 %   The key \mykey{silent} sets \myhlc|\l_@@_spfig_intent_arg_tl| to
-%   |_(refs)|. Otherwise, with \mykey{read-arg} empty,
+%   |_-|. Otherwise, with \mykey{read-arg} empty,
 %   \mykey{concept} chooses between
 %   \myhlc|_\l_@@_spfig_intent_tl|\myhlc|:prefix(refs)| (with
 %   \mykey{prefix} placed after the leading |_| when given) and
@@ -14989,7 +15035,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
     \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
-        \tl_set:Ne \l_@@_spfig_intent_arg_tl { _( \l_@@_spfig_refs_tl ) }
+        \tl_set:Nn \l_@@_spfig_intent_arg_tl { _- }
       }
       {
         \tl_if_empty:cTF { l_@@_sp #1 _read_arg_tl }
@@ -15987,7 +16033,9 @@ end, "shekel_fallback_patch")
 %   delimiter after the center carries \myhlc|\l_@@_spcirc_radio_arg_tl|
 %   directly (replacing its own reading, not paired with any group),
 %   and \myhlc|\@@_spcirc_radio_print:| follows as an ordinary sibling
-%   right after — wrapping it in another |\MathMLintent| would lose
+%   right after — except with \mykey{silent}|=true|, when it is wrapped in a
+%   literal |_-| |\MathMLintent|, which silences whatever it produces.
+%   Otherwise, wrapping it in another |\MathMLintent| would lose
 %   the reading of whatever it produces (itself a native
 %   |\MathMLintent|, from |\spnum|/|\spunit|, nested inside another
 %   one does not compose).
@@ -16057,7 +16105,15 @@ end, "shekel_fallback_patch")
                 \@@_mathmlarg_point:nnV { pt } { spcirc } \l_@@_geo_luaset_points_clist
               }
             \MathMLintent { \l_@@_spcirc_radio_arg_tl } { , }
-            \@@_spcirc_radio_print:
+            \bool_if:NTF \l_@@_spcirc_silent_bool
+              {
+                \MathMLintent { _- }
+                  {
+                    \@@_inner_sep:
+                    \@@_spcirc_radio_print:
+                  }
+              }
+              { \@@_spcirc_radio_print: }
             \MathMLintent { :silent } { \rparen }
           }
       }
@@ -19456,15 +19512,18 @@ end, { "string" })
 -- ------------------------------------------------------------
 -- §12.5  CÍRCULO/CIRCUNFERENCIA — \spcirc
 --
--- El radio se clasifica por forma (nunca por llave): número puro,
--- medida (número+unidad, delegada a spnum/spunit desde expl3), letra
--- suelta, o segmento de dos letras (side/mside según radio-sty,
--- decidido en expl3). Lua solo clasifica y extrae; no arma intent de
--- medida (eso es trabajo ya existente de \spnum/\spunit en expl3).
+-- El radio se clasifica por forma (nunca por llave): número (entero o
+-- decimal, con coma o punto), medida (número+unidad, delegada a
+-- spnum/spunit desde expl3), letra suelta, o segmento de dos letras
+-- (side/mside según radio-sty, decidido en expl3). Lua solo clasifica
+-- y extrae; no arma intent de medida (eso es trabajo ya existente de
+-- \spnum/\spunit en expl3).
 -- ------------------------------------------------------------
 local spintent_geo_single_point = spintent_geo_punto * P(-1)
 
-local spintent_geo_radio_number  = C(R"09"^1) * P(-1)
+-- "number": entero o decimal. "2.5 cm" no coincide (tiene unidad) y
+-- sigue siendo "measure".
+local spintent_geo_radio_number  = C(R"09"^1 * (S".," * R"09"^1)^-1) * P(-1)
 local spintent_geo_radio_label   = C(R"az" + R"AZ") * P(-1)
 local spintent_geo_radio_segment = Ct( spintent_geo_punto * spintent_geo_punto ) * P(-1)
 

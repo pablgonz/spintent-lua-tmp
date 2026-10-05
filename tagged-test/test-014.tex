@@ -11,7 +11,8 @@
 % numero o tres puntos; \sparc y \spmarc, dos o tres puntos; \spang, un
 % angulo sexagesimal y no tiene llaves. Todos los casos de \spang
 % requieren spang-expand.patch, y los de solo grados (45, 180 y el 90
-% de la formula) ademas spang-grados.patch. Las entradas invalidas
+% de la formula) ademas spang-grados.patch. Los casos con el valor 1
+% (singular: un grado, un minuto, un segundo) requieren spang-singular.patch. Las entradas invalidas
 % (que detienen la compilacion) no van aqui. \spangle acepta sin error
 % entradas que el manual no documenta (AB, ABCD, a, x, 1.5): tampoco van.
 %
@@ -201,16 +202,16 @@
 64. Con read-cmd mathcat y un punto: $\spmangle[read-cmd=mathcat]{A}$.
 
 % doc: el prefijo se verbaliza antes del concepto
-65. Con prefix y un punto: $\spmangle[prefix={el}]{A}$.
+65. Con prefix y un punto: $\spmangle[prefix={la}]{A}$.
 
 % doc: el prefijo se verbaliza antes del concepto
-66. Con prefix y tres puntos: $\spmangle[prefix={el}]{AOB}$.
+66. Con prefix y tres puntos: $\spmangle[prefix={la}]{AOB}$.
 
 % doc: el prefijo se verbaliza antes del concepto
-67. Con prefix y una letra griega: $\spmangle[prefix={el}]{\alpha}$.
+67. Con prefix y una letra griega: $\spmangle[prefix={la}]{\alpha}$.
 
 % doc: el prefijo se verbaliza antes del concepto
-68. Con prefix y un número: $\spmangle[prefix={el}]{1}$.
+68. Con prefix y un número: $\spmangle[prefix={la}]{1}$.
 
 % doc: medida del ángulo recto en A
 69. Con recto true y un punto: $\spmangle[recto=true]{A}$.
@@ -262,7 +263,7 @@
 
 87. Con print-m true y un número: $\spmangle[print-m=true]{1}$.
 
-88. Con todas las llaves: $\spmangle[read-cmd=mathcat,prefix={el},recto=true,concept=true,silent=false,print-m=true]{A_{1}OB_{2}}$.
+88. Con todas las llaves: $\spmangle[read-cmd=mathcat,prefix={la},recto=true,concept=true,silent=false,print-m=true]{A_{1}OB_{2}}$.
 
 \section*{Comando spang}
 
@@ -289,128 +290,143 @@
 
 98. Con cifras sueltas: $\spang{7:5}$.
 
-99. Suma de ángulos: $\spang{45:30:15} + \spang{10:20:30}$.
+% doc: «un grado, un minuto, un segundo» (requiere spang-singular.patch)
+99. Con el valor uno en las tres partes: $\spang{1:1:1}$.
+
+100. Con un solo grado: $\spang{1}$.
+
+101. Con cero grados y un minuto: $\spang{0:1}$.
+
+102. Con un grado y ceros: $\spang{1:0:0}$.
+
+103. Control con el valor dos: $\spang{2:2:2}$.
+
+104. Con spunit y un grado: $\spunit{1°}$.
+
+105. Control con un grado y medio, que sigue en plural: $\spunit{1,5°}$.
+
+106. Suma de ángulos: $\spang{45:30:15} + \spang{10:20:30}$.
 
 % doc: requiere spang-grados.patch
-100. Medida igual a un ángulo: $\spmangle{AOB} = \spang{90}$.
+107. Medida igual a un ángulo: $\spmangle{AOB} = \spang{90}$.
 
 \section*{Comando sparc}
 
 % doc: arco A B
-101. Dos puntos juntos: $\sparc{AB}$.
+108. Dos puntos juntos: $\sparc{AB}$.
 
-102. Dos puntos con coma: $\sparc{A,B}$.
+109. Dos puntos con coma: $\sparc{A,B}$.
 
-103. Dos puntos con coma y espacio: $\sparc{A, B}$.
+110. Dos puntos con coma y espacio: $\sparc{A, B}$.
 
-104. Tres puntos: $\sparc{ABC}$.
+111. Tres puntos: $\sparc{ABC}$.
 
-105. Tres puntos con comas: $\sparc{A,B,C}$.
+112. Tres puntos con comas: $\sparc{A,B,C}$.
 
-106. Con primas: $\sparc{A'B'}$.
+113. Con primas: $\sparc{A'B'}$.
 
-107. Con subíndices: $\sparc{A_{1}B_{2}}$.
+114. Con subíndices: $\sparc{A_{1}B_{2}}$.
 
-108. Tres puntos con subíndices: $\sparc{A_{1}B_{2}C_{3}}$.
+115. Tres puntos con subíndices: $\sparc{A_{1}B_{2}C_{3}}$.
 
-109. Con el centro en medio: $\sparc{AOB}$.
+116. Con el centro en medio: $\sparc{AOB}$.
 
-110. Con read-cmd school, el valor por defecto: $\sparc[read-cmd=school]{AB}$.
+117. Con read-cmd school, el valor por defecto: $\sparc[read-cmd=school]{AB}$.
 
 % doc: MathCAT aplica sus propias reglas
-111. Con read-cmd mathcat: $\sparc[read-cmd=mathcat]{AB}$.
+118. Con read-cmd mathcat: $\sparc[read-cmd=mathcat]{AB}$.
 
 % doc: el prefijo se verbaliza antes del concepto
-112. Con prefix y dos puntos: $\sparc[prefix={el}]{AB}$.
+119. Con prefix y dos puntos: $\sparc[prefix={el}]{AB}$.
 
-113. Con prefix y tres puntos: $\sparc[prefix={el}]{ABC}$.
+120. Con prefix y tres puntos: $\sparc[prefix={el}]{ABC}$.
 
-114. Con concept true, el valor por defecto: $\sparc[concept=true]{AB}$.
+121. Con concept true, el valor por defecto: $\sparc[concept=true]{AB}$.
 
 % doc: solo se verbaliza el argumento: A B
-115. Con concept false y dos puntos: $\sparc[concept=false]{AB}$.
+122. Con concept false y dos puntos: $\sparc[concept=false]{AB}$.
 
-116. Con concept false y tres puntos: $\sparc[concept=false]{ABC}$.
+123. Con concept false y tres puntos: $\sparc[concept=false]{ABC}$.
 
-117. Con concept false y subíndices: $\sparc[concept=false]{A_{1}B_{2}}$.
+124. Con concept false y subíndices: $\sparc[concept=false]{A_{1}B_{2}}$.
 
-118. Con silent false, el valor por defecto: $\sparc[silent=false]{AB}$.
+125. Con silent false, el valor por defecto: $\sparc[silent=false]{AB}$.
 
 % doc: no se verbaliza
-119. Con silent true y dos puntos: $\sparc[silent=true]{AB}$.
+126. Con silent true y dos puntos: $\sparc[silent=true]{AB}$.
 
-120. Con silent true y tres puntos: $\sparc[silent=true]{ABC}$.
+127. Con silent true y tres puntos: $\sparc[silent=true]{ABC}$.
 
-121. Con silent true y subíndices: $\sparc[silent=true]{A_{1}B_{2}}$.
+128. Con silent true y subíndices: $\sparc[silent=true]{A_{1}B_{2}}$.
 
-122. Con todas las llaves: $\sparc[read-cmd=mathcat,prefix={el},concept=true,silent=false]{A_{1}B_{2}C_{3}}$.
+129. Con todas las llaves: $\sparc[read-cmd=mathcat,prefix={el},concept=true,silent=false]{A_{1}B_{2}C_{3}}$.
 
 \section*{Comando spmarc}
 
 % doc: medida del arco A B
-123. Dos puntos juntos: $\spmarc{AB}$.
+130. Dos puntos juntos: $\spmarc{AB}$.
 
-124. Dos puntos con coma: $\spmarc{A,B}$.
+131. Dos puntos con coma: $\spmarc{A,B}$.
 
-125. Dos puntos con coma y espacio: $\spmarc{A, B}$.
+132. Dos puntos con coma y espacio: $\spmarc{A, B}$.
 
-126. Tres puntos: $\spmarc{ABC}$.
+133. Tres puntos: $\spmarc{ABC}$.
 
-127. Tres puntos con comas: $\spmarc{A,B,C}$.
+134. Tres puntos con comas: $\spmarc{A,B,C}$.
 
-128. Con primas: $\spmarc{A'B'}$.
+135. Con primas: $\spmarc{A'B'}$.
 
-129. Con subíndices: $\spmarc{A_{1}B_{2}}$.
+136. Con subíndices: $\spmarc{A_{1}B_{2}}$.
 
-130. Tres puntos con subíndices: $\spmarc{A_{1}B_{2}C_{3}}$.
+137. Tres puntos con subíndices: $\spmarc{A_{1}B_{2}C_{3}}$.
 
-131. Con el centro en medio: $\spmarc{AOB}$.
+138. Con el centro en medio: $\spmarc{AOB}$.
 
-132. Con read-cmd school, el valor por defecto: $\spmarc[read-cmd=school]{AB}$.
+139. Con read-cmd school, el valor por defecto: $\spmarc[read-cmd=school]{AB}$.
 
 % doc: MathCAT aplica sus propias reglas
-133. Con read-cmd mathcat: $\spmarc[read-cmd=mathcat]{AB}$.
+140. Con read-cmd mathcat: $\spmarc[read-cmd=mathcat]{AB}$.
 
 % doc: el prefijo se verbaliza antes del concepto
-134. Con prefix y dos puntos: $\spmarc[prefix={el}]{AB}$.
+141. Con prefix y dos puntos: $\spmarc[prefix={la}]{AB}$.
 
-135. Con prefix y tres puntos: $\spmarc[prefix={el}]{ABC}$.
+142. Con prefix y tres puntos: $\spmarc[prefix={la}]{ABC}$.
 
-136. Con concept true, el valor por defecto: $\spmarc[concept=true]{AB}$.
+143. Con concept true, el valor por defecto: $\spmarc[concept=true]{AB}$.
 
 % doc: solo se verbaliza el argumento: A B
-137. Con concept false y dos puntos: $\spmarc[concept=false]{AB}$.
+144. Con concept false y dos puntos: $\spmarc[concept=false]{AB}$.
 
-138. Con concept false y tres puntos: $\spmarc[concept=false]{ABC}$.
+145. Con concept false y tres puntos: $\spmarc[concept=false]{ABC}$.
 
-139. Con concept false y subíndices: $\spmarc[concept=false]{A_{1}B_{2}}$.
+146. Con concept false y subíndices: $\spmarc[concept=false]{A_{1}B_{2}}$.
 
-140. Con silent false, el valor por defecto: $\spmarc[silent=false]{AB}$.
+147. Con silent false, el valor por defecto: $\spmarc[silent=false]{AB}$.
 
 % doc: no se verbaliza
-141. Con silent true y dos puntos: $\spmarc[silent=true]{AB}$.
+148. Con silent true y dos puntos: $\spmarc[silent=true]{AB}$.
 
-142. Con silent true y tres puntos: $\spmarc[silent=true]{ABC}$.
+149. Con silent true y tres puntos: $\spmarc[silent=true]{ABC}$.
 
-143. Con silent true y subíndices: $\spmarc[silent=true]{A_{1}B_{2}}$.
+150. Con silent true y subíndices: $\spmarc[silent=true]{A_{1}B_{2}}$.
 
-144. Con todas las llaves: $\spmarc[read-cmd=mathcat,prefix={el},concept=true,silent=false]{A_{1}B_{2}C_{3}}$.
+151. Con todas las llaves: $\spmarc[read-cmd=mathcat,prefix={la},concept=true,silent=false]{A_{1}B_{2}C_{3}}$.
 
 \section*{En fórmulas}
 
-145. Ángulos iguales: $\spangle{ABC} = \spangle{DEF}$.
+152. Ángulos iguales: $\spangle{ABC} = \spangle{DEF}$.
 
-146. Suma de medidas: $\spmangle{AOB} + \spmangle{BOC} = \spmangle{AOC}$.
+153. Suma de medidas: $\spmangle{AOB} + \spmangle{BOC} = \spmangle{AOC}$.
 
-147. Medida de un ángulo en grados: $\spmangle{AOB} = \spang{45:30}$.
+154. Medida de un ángulo en grados: $\spmangle{AOB} = \spang{45:30}$.
 
-148. Arcos iguales: $\sparc{AB} = \sparc{CD}$.
+155. Arcos iguales: $\sparc{AB} = \sparc{CD}$.
 
-149. Medida de un arco en grados: $\spmarc{AB} = \spang{45:30:15}$.
+156. Medida de un arco en grados: $\spmarc{AB} = \spang{45:30:15}$.
 
-150. Ángulo y arco que lo subtiende: $\spmangle{AOB} = \spmarc{AB}$.
+157. Ángulo y arco que lo subtiende: $\spmangle{AOB} = \spmarc{AB}$.
 
-151. En fórmula destacada:
+158. En fórmula destacada:
 \[ \spmangle[print-m=true]{AOB} = \spmarc{AB} \].
 
 \end{document}
