@@ -4,354 +4,240 @@ encabezado    nivel 1  página 1  A.
 Comando sprecta: argumentos
 1.
 Dos puntos juntos:        recta  A   B
-.
 2.
 Una letra minúscula:        recta  m
-.
 3.
 Dos puntos con coma y espacio:        recta  A   B
-.
 4.
 Dos puntos con coma:        recta  A   B
-.
 5.
 Con primas:        recta  A prima   B prima
-.
 6.
 Con subíndices:        recta  A sub uno   B sub dos
-.
 7.
 Con subíndices y coma:        recta  A sub uno   B sub dos
-.
 8.
 Con dos primas:        recta  A doble prima   B
-.
 9.
 Con subíndices de dos cifras:        recta  A sub 12
-.
 10.
 Una letra mayúscula:        recta  L
-.
 11.
 Una letra con subíndice:        recta  r sub uno
-.
 12.
 Una mayúscula con subíndice:        recta  L sub uno
-.
 13.
 Una letra con prima:        recta  m prima
-.
 14.
 Una letra con dos primas:        recta  l doble prima
-.
 encabezado    nivel 1  B.
 Comando sprecta: llaves
 15.
 Con read-cmd school, el valor por defecto:        recta  A   B
-.
 16.
 Con read-cmd mathcat:        recta           a                  b
-.
 17.
 Con read-cmd mathcat y una mayúscula:        recta           l
-.
 18.
 Con prefix y dos puntos:        la recta  A   B
-.
 19.
 Con prefix y una letra:        la recta  m
-.
 20.
 Con prefix y una letra con subíndice:        la recta  r sub uno
-.
 21.
 Con prefix y una letra con prima:        la recta  m prima
-.
 22.
 Con concept true, el valor por defecto:        recta  A   B
-.
 23.
 Con concept false y dos puntos:        A   B
-.
 24.
 Con concept false y una letra:        m
-.
 25.
 Con concept false y una letra con subíndice:        r sub uno
-.
 26.
 Con concept false y una letra con prima:        m prima
-.
 27.
 Con silent false, el valor por defecto:        recta  A   B
-.
 28.
 Con silent true y dos puntos:
-.
 29.
 Con silent true y una letra:
-.
 30.
 Con silent true y una letra con subíndice:
-.
 31.
 Con silent true y una letra con prima:
-.
 32.
 Con silent true y una letra con dos primas:
-.
 33.
 Con silent true y read-cmd mathcat:
-.
 34.
 Con todas las llaves:        la recta           a        subíndice 1           b        subíndice 2
-.
 encabezado    nivel 1  C.
 Comando sprayo
 35.
 Dos puntos juntos:        rayo  A   B
-.
 36.
 Dos puntos con coma y espacio:        rayo  A   B
-.
 página 2  37.
 Dos puntos con coma:        rayo  A   B
-.
 38.
 Con primas:        rayo  A prima   B prima
-.
 39.
 Con subíndices:        rayo  A sub uno   B sub dos
-.
 40.
 Con subíndices y coma:        rayo  A sub uno   B sub dos
-.
 41.
 Con el origen:        rayo  O   A
-.
 42.
 Con read-cmd school, el valor por defecto:        rayo  A   B
-.
 43.
 Con read-cmd mathcat:        rayo           a                  b
-.
 44.
 Con read-sty rayo, el valor por defecto:        rayo  A   B
-.
 45.
 Con read-sty semirrecta:        semirrecta  A   B
-.
 46.
 Con prefix y read-sty rayo:        el rayo  A   B
-.
 47.
 Con prefix y read-sty semirrecta:        la semirrecta  A   B
-.
 48.
 Con concept true, el valor por defecto:        rayo  A   B
-.
 49.
 Con concept false:        A   B
-.
 50.
 Con concept false y semirrecta:        A   B
-.
 51.
 Con silent false, el valor por defecto:        rayo  A   B
-.
 52.
 Con silent true:
-.
 53.
 Con silent true y subíndices:
-.
 54.
 Con todas las llaves:        la semirrecta           a        subíndice 1           b        subíndice 2
-.
 encabezado    nivel 1  D.
 Comando spside
 55.
 Dos puntos juntos:        lado  A   B
-.
 56.
 Dos puntos con coma y espacio:        lado  A   B
-.
 57.
 Dos puntos con coma:        lado  A   B
-.
 58.
 Con primas:        lado  A prima   B prima
-.
 59.
 Con subíndices:        lado  A sub uno   B sub dos
-.
 60.
 Con subíndices y coma:        lado  A sub uno   B sub dos
-.
 61.
 Con el vértice:        lado  B   C
-.
 62.
 Con read-cmd school, el valor por defecto:        lado  A   B
-.
 63.
 Con read-cmd mathcat:        lado           a                  b
-.
 64.
 Con read-sty lado:        lado  A   B
-.
 65.
 Con read-sty segmento:        segmento  A   B
-.
 66.
 Con read-sty trazo:        trazo  A   B
-.
 67.
 Con prefix:        el lado  A   B
-.
 68.
 Con prefix y read-sty segmento:        el segmento  A   B
-.
 69.
 Con concept true, el valor por defecto:        lado  A   B
-.
 70.
 Con concept false:        A   B
-.
 71.
 Con concept false y trazo:        A   B
-.
 72.
 Con read-arg:        hipotenusa  A   B
-.
 73.
 Con read-arg de varias palabras:        lado opuesto  A   B
-.
 74.
 Con read-arg y prefix:        la hipotenusa  A   B
-.
 75.
 Con read-arg y concept false:        hipotenusa  A   B
-.
 76.
 Con silent false, el valor por defecto:        lado  A   B
-.
 77.
 Con silent true:
-.
 78.
 Con silent true y subíndices:
-.
 página 3  79.
 Con todas las llaves:        el segmento           a        subíndice 1           b        subíndice 2
-.
 encabezado    nivel 1  E.
 Comando spmside
 80.
 Dos puntos juntos:        medida del lado  A   B
-.
 81.
 Dos puntos con coma y espacio:        medida del lado  A   B
-.
 82.
 Dos puntos con coma:        medida del lado  A   B
-.
 83.
 Con primas:        medida del lado  A prima   B prima
-.
 84.
 Con subíndices:        medida del lado  A sub uno   B sub dos
-.
 85.
 Con subíndices y coma:        medida del lado  A sub uno   B sub dos
-.
 86.
 Con el vértice:        medida del lado  B   C
-.
 87.
 Con read-cmd school, el valor por defecto:        medida del lado  A   B
-.
 88.
 Con read-cmd mathcat:        medida del lado           a                  b
-.
 89.
 Con read-sty lado:        medida del lado  A   B
-.
 90.
 Con read-sty segmento:        medida del segmento  A   B
-.
 91.
 Con read-sty trazo:        medida del trazo  A   B
-.
 92.
 Con prefix:        el medida del lado  A   B
-.
 93.
 Con prefix y read-sty segmento:        el medida del segmento  A   B
-.
 94.
 Con concept true, el valor por defecto:        medida del lado  A   B
-.
 95.
 Con concept false:        A   B
-.
 96.
 Con concept false y trazo:        A   B
-.
 97.
 Con read-arg y concept false:        medida de la cuerda  A   B
-.
 98.
 Con read-arg y concept true:        medida del hipotenusa  A   B
-.
 99.
 Con read-arg y prefix:        la medida de la cuerda  A   B
-.
 100.
 Con print-m false, el valor por defecto:        medida del lado  A   B
-.
 101.
 Con print-m true:        medida del lado  A   B
-.
 102.
 Con print-m true y subíndices:        medida del lado  A sub uno   B sub dos
-.
 103.
 Con silent false, el valor por defecto:        medida del lado  A   B
-.
 104.
 Con silent true:
-.
 105.
 Con silent true y subíndices:
-.
 106.
 Con todas las llaves:        el medida del segmento           a        subíndice 1           b        subíndice 2
-.
 encabezado    nivel 1  F.
 En fórmulas
 107.
 Rectas paralelas:        recta  A   B     es paralelo a  recta  C   D
-.
 108.
 Rectas perpendiculares:        recta  m     es perpendicular a  recta  n
-.
 109.
 Dos rayos con origen común:        rayo  O   A     unión  rayo  O   B
-.
 110.
 Segmentos iguales:        lado  A   B     es igual a  lado  C   D
-.
 111.
 Medidas iguales:        medida del lado  A   B            es igual a  medida del lado  C   D
-.
 112.
 Desigualdad triangular:        medida del lado  A   B            más  medida del lado  B   C            es mayor que         medida del lado  A   C
-.
 113.
 Medida con m impresa:        medida del lado  A   B            es igual a  medida del lado  C   D
-.
 114.
 En fórmula destacada:
      medida del lado  A   B            más  medida del lado  B   C            es igual a  medida del lado  A   C
-.

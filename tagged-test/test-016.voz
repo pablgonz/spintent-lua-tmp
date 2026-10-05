@@ -4,663 +4,446 @@ Cargando documento...
 encabezado    nivel 1  página 1  Comando sprad
 1.
 Sin llaves:        radio
-.
 2.
 Con concept true, el valor por defecto:        radio
-.
 3.
 Con concept false:        r
-.
 4.
 Con concept false y read-cmd school:        r
-.
 5.
 Con concept false y read-cmd mathcat:        r
-.
 6.
 Con upper-case false, el valor por defecto:        radio
-.
 7.
 Con upper-case true:        radio
-.
 8.
 Con upper-case true y concept false:        R
-.
 9.
 Con upper-case true, concept false y read-cmd mathcat:        r
-.
 10.
 Con print-sym false, el valor por defecto:        radio
-.
 11.
 Con print-sym true:        radio
-.
 12.
 Con sub-index:        radio 1
-.
 13.
 Con sub-index de dos cifras:        radio 12
-.
 14.
 Con sub-index y read-sub true:        radio sub 1
-.
 15.
 Con sub-index y read-sub false:        radio 1
-.
 16.
 Con sub-index y concept false:        r 1
-.
 17.
 Con read-arg:        radio medida exacta
-.
 18.
 Con read-arg y concept false:        medida exacta
-.
 19.
 Con read-arg y sub-index:        radio medida exacta
-.
 20.
 Con silent false, el valor por defecto:        radio
-.
 21.
 Con silent true:
-.
 22.
 Con silent true y sub-index:
-.
 23.
 Con todas las llaves:        radio subíndice 1
-.
 encabezado    nivel 1  Comando spdiam
 24.
 Sin llaves:        diámetro
-.
 25.
 Con concept true, el valor por defecto:        diámetro
-.
 26.
 Con concept false:        d
-.
 27.
 Con concept false y read-cmd school:        d
-.
 28.
 Con concept false y read-cmd mathcat:        d
-.
 29.
 Con upper-case false, el valor por defecto:        diámetro
-.
 30.
 Con upper-case true:        diámetro
-.
 31.
 Con upper-case true y concept false:        D
-.
 32.
 Con upper-case true, concept false y read-cmd mathcat:        d
-.
 33.
 Con print-sym false, el valor por defecto:        diámetro
-.
 34.
 Con print-sym true:        diámetro
-.
 35.
 Con sub-index:        diámetro 1
-.
 36.
 Con sub-index de dos cifras:        diámetro 12
-.
 37.
 Con sub-index y read-sub true:        diámetro sub 1
-.
 38.
 Con sub-index y read-sub false:        diámetro 1
-.
 39.
 Con sub-index y concept false:        d 1
-.
 40.
 Con read-arg:        diámetro medida exacta
-.
 página 2  41.
 Con read-arg y concept false:        medida exacta
-.
 42.
 Con read-arg y sub-index:        diámetro medida exacta
-.
 43.
 Con silent false, el valor por defecto:        diámetro
-.
 44.
 Con silent true:
-.
 45.
 Con silent true y sub-index:
-.
 46.
 Con todas las llaves:        diámetro subíndice 1
-.
 encabezado    nivel 1  Comando spcirc: argumentos
 47.
 Sin argumentos:        circunferencia
-.
 48.
 Con un centro:        circunferencia   de centro en  O
-.
 49.
 Con centro y radio entero:         circunferencia   de centro en  O             y radio   3
-.
 50.
 Con centro y radio, con espacio:         circunferencia   de centro en  O             y radio   3
-.
 51.
 Con un centro con prima:        circunferencia   de centro en  O prima
-.
 52.
 Con un centro con subíndice:        circunferencia   de centro en  O sub uno
-.
 53.
 Con otra letra como centro:        circunferencia   de centro en  P
-.
 54.
 Con un radio de dos cifras:         circunferencia   de centro en  O             y radio   12
-.
 55.
 Con un radio decimal con punto:         circunferencia   de centro en  O             y radio   2 punto  5
-.
 56.
 Con un radio decimal con coma:         circunferencia   de centro en  O             y radio   2 coma  5
-.
 57.
 Con un radio dado por una letra:         circunferencia   de centro en  O             y radio           r
-.
 58.
 Con un radio dado por una mayúscula:         circunferencia   de centro en  O             y radio             r
-.
 59.
 Con un radio con medida:         circunferencia   de centro en  O             y radio   3   centímetros
-.
 60.
 Con la unidad pegada:         circunferencia   de centro en  O             y radio   3   centímetros
-.
 61.
 Con una medida decimal:         circunferencia   de centro en  O             y radio   2 punto  5       centímetros
-.
 62.
 Con otra unidad:         circunferencia   de centro en  O             y radio   10   metros
-.
 63.
 Con un radio dado por un segmento:         circunferencia   de centro en  O             y radio   medida del lado  A   B
-.
 64.
 Con un segmento con primas:         circunferencia   de centro en  O             y radio          medida del lado  A prima   B prima
-.
 65.
 Con un segmento con subíndices:         circunferencia   de centro en  O             y radio          medida del lado  A sub uno   B sub dos
-.
 66.
 Con centro con prima y radio:         circunferencia   de centro en  O prima             y radio   3
-.
 encabezado    nivel 1  Comando spcirc: llaves
 67.
 Con read-cmd school, el valor por defecto y un centro:        circunferencia   de centro en  O
-.
 68.
 Con read-cmd school, el valor por defecto y un segmento:         circunferencia   de centro en  O             y radio   medida del lado  A   B
-.
 69.
 Con read-cmd mathcat y un centro:        circunferencia   de centro en           o
-.
 70.
 Con read-cmd mathcat y un segmento:         circunferencia   de centro en           o         y radio   medida del lado           a                  b
-.
 71.
 Con prefix y sin argumentos:        la circunferencia
-.
 72.
 Con prefix y un centro:        la circunferencia   de centro en  O
-.
 73.
 Con prefix y centro y radio:         la circunferencia   de centro en  O             y radio   3
-.
 74.
 Con print-sym odot, el valor por defecto:        circunferencia   de centro en  O
-.
 75.
 Con print-sym usual:        circunferencia   de centro en  O
-.
 76.
 Con print-sym usual y radio:         circunferencia   de centro en  O             y radio   3
-.
 77.
 Con print-sym usual y sin argumentos:        circunferencia
-.
 78.
 Con read-sty circun, el valor por defecto:        circunferencia   de centro en  O
-.
 página 3  79.
 Con read-sty circle:        círculo   de centro en  O
-.
 80.
 Con read-sty circle y radio:        círculo   de centro en  O             y radio   3
-.
 81.
 Con read-sty circle y sin argumentos:        círculo
-.
 82.
 Con diameter false, el valor por defecto:         circunferencia   de centro en  O             y radio   3
-.
 83.
 Con diameter true:         circunferencia   de centro en  O             y diámetro   3
-.
 84.
 Con diameter true y un segmento:         circunferencia   de centro en  O             y diámetro          medida del lado  A   B
-.
 85.
 Con diameter true y una medida:         circunferencia   de centro en  O             y diámetro   3   centímetros
-.
 86.
 Con radio-sty mside, el valor por defecto:         circunferencia   de centro en  O             y radio   medida del lado  A   B
-.
 87.
 Con radio-sty side:         circunferencia   de centro en  O             y radio   lado  A   B
-.
 88.
 Con radio-sty side y primas:         circunferencia   de centro en  O             y radio   lado  A prima   B prima
-.
 89.
 Con la meta-llave spside:         circunferencia   de centro en  O             y radio   segmento  A   B
-.
 90.
 Con la meta-llave spmside:         circunferencia   de centro en  O             y radio   medida del lado  A   B
-.
 91.
 Con la meta-llave spmside y read-sty:         circunferencia   de centro en  O             y radio   medida del trazo  A   B
-.
 92.
 Con concept true, el valor por defecto:         circunferencia   de centro en  O             y radio   3
-.
 93.
 Con concept false y sin argumentos:
-.
 94.
 Con concept false y un centro:        O
-.
 95.
 Con concept false y centro y radio:        O       3
-.
 96.
 Con concept false y centro y segmento:        O       medida del lado  A   B
-.
 97.
 Con sub-index y un segmento:         circunferencia 1   de centro en  O             y radio   medida del lado  A   B
-.
 98.
 Con sub-index y un centro:        circunferencia 1   de centro en  O
-.
 99.
 Con sub-index y sin argumentos:        circunferencia 1
-.
 100.
 Con sub-index y read-sub true:        circunferencia sub 1          de centro en  O
-.
 101.
 Con sub-index y read-sub false:        circunferencia 1   de centro en  O
-.
 102.
 Con read-arg:        disco   de centro en  O
-.
 103.
 Con read-arg y radio:        disco   de centro en  O             y radio   3
-.
 104.
 Con read-arg y sin argumentos:        disco
-.
 105.
 Con read-arg y concept false:        disco   de centro en  O
-.
 106.
 Con read-arg y prefix:        el disco   de centro en  O
-.
 107.
 Con silent false, el valor por defecto:        circunferencia   de centro en  O
-.
 108.
 Con silent true y sin argumentos:
-.
 109.
 Con silent true y un centro:
-.
 110.
 Con silent true y centro y radio:
-.
 111.
 Con silent true y centro y segmento:
-.
 112.
 Con todas las llaves:         el círculo sub 1   de centro en           o        subíndice 1            y diámetro          medida del lado           a                  b
-.
 encabezado    nivel 1  Comando spAcirc: argumentos
 113.
 Sin argumentos:        área de la circunferencia
-.
 114.
 Con un centro:        área de la circunferencia con centro en  O
-.
 115.
 Con un número:        área de la circunferencia uno
-.
 116.
 Con un centro con prima:        área de la circunferencia con centro en  O prima
-.
 117.
 Con un centro con subíndice:        área de la circunferencia con centro en  O sub uno
-.
 118.
 Con otra letra como centro:        área de la circunferencia con centro en  P
-.
 119.
 Con otro número:        área de la circunferencia dos
-.
 120.
 Con un número de dos cifras:        área de la circunferencia 12
-.
 página 4  121.
 Con la letra n:        área de la circunferencia n
-.
 encabezado    nivel 1  Comando spAcirc: llaves
 122.
 Con read-cmd school, el valor por defecto:        área de la circunferencia con centro en  O
-.
 123.
 Con read-cmd mathcat:        área de la circunferencia con centro en           o
-.
 124.
 Con prefix y sin argumentos:        el área de la circunferencia
-.
 125.
 Con prefix y un centro:        el área de la circunferencia con centro en  O
-.
 126.
 Con prefix y un número:        el área de la circunferencia uno
-.
 127.
 Con read-sty circun, el valor por defecto:        área de la circunferencia con centro en  O
-.
 128.
 Con read-sty circle:        área del círculo con centro en  O
-.
 129.
 Con read-sty circle y sin argumentos:        área del círculo
-.
 130.
 Con read-sty circle y un número:        área del círculo uno
-.
 131.
 Con concept true, el valor por defecto:        área de la circunferencia con centro en  O
-.
 132.
 Con concept false y un centro:        O
-.
 133.
 Con read-arg:        área de la esfera con centro en  O
-.
 134.
 Con read-arg y concept false:        esfera con centro en  O
-.
 135.
 Con read-arg y un centro con prima:        área de la esfera con centro en  O prima
-.
 136.
 Con read-arg y prefix:        el área de la esfera con centro en  O
-.
 137.
 Con read-arg y read-sty circle:        área del disco con centro en  O
-.
 138.
 Con read-arg y concept false, con otra palabra:        disco con centro en  O
-.
 139.
 Con print-sym odot, el valor por defecto:        área de la circunferencia con centro en  O
-.
 140.
 Con print-sym usual:        área de la circunferencia con centro en  O
-.
 141.
 Con print-sym usual y un número:        área de la circunferencia uno
-.
 142.
 Con print-sym usual y sin argumentos:        área de la circunferencia
-.
 143.
 Con sub-index y un centro:        área de la circunferencia 1 con centro en  O
-.
 144.
 Con sub-index y un centro con prima:        área de la circunferencia 1 con centro en  O prima
-.
 145.
 Con read-sub true y un número:        área de la circunferencia sub uno
-.
 146.
 Con read-sub false y un número:        área de la circunferencia uno
-.
 147.
 Con sub-index y read-sub true:        área de la circunferencia sub 1 con centro en  O
-.
 148.
 Con silent false, el valor por defecto:        área de la circunferencia con centro en  O
-.
 149.
 Con silent true y sin argumentos:
-.
 150.
 Con silent true y un centro:
-.
 151.
 Con silent true y un número:
-.
 152.
 Con todas las llaves:        el área del círculo sub 1 con centro en           o
-.
 encabezado    nivel 1  Comando spPcirc: argumentos
 153.
 Sin argumentos:        perímetro de la circunferencia
-.
 154.
 Con un centro:        perímetro de la circunferencia con centro en  O
-.
 155.
 Con un número:        perímetro de la circunferencia uno
-.
 156.
 Con un centro con prima:        perímetro de la circunferencia con centro en  O prima
-.
 157.
 Con un centro con subíndice:        perímetro de la circunferencia con centro en  O sub uno
-.
 página 5  158.
 Con otra letra como centro:        perímetro de la circunferencia con centro en  P
-.
 159.
 Con otro número:        perímetro de la circunferencia dos
-.
 160.
 Con un número de dos cifras:        perímetro de la circunferencia 12
-.
 161.
 Con la letra n:        perímetro de la circunferencia n
-.
 encabezado    nivel 1  Comando spPcirc: llaves
 162.
 Con read-cmd school, el valor por defecto:        perímetro de la circunferencia con centro en  O
-.
 163.
 Con read-cmd mathcat:        perímetro de la circunferencia con centro en           o
-.
 164.
 Con prefix y sin argumentos:        el perímetro de la circunferencia
-.
 165.
 Con prefix y un centro:        el perímetro de la circunferencia con centro en  O
-.
 166.
 Con prefix y un número:        el perímetro de la circunferencia uno
-.
 167.
 Con read-sty circun, el valor por defecto:        perímetro de la circunferencia con centro en  O
-.
 168.
 Con read-sty circle:        perímetro del círculo con centro en  O
-.
 169.
 Con read-sty circle y sin argumentos:        perímetro del círculo
-.
 170.
 Con read-sty circle y un número:        perímetro del círculo uno
-.
 171.
 Con concept true, el valor por defecto:        perímetro de la circunferencia con centro en  O
-.
 172.
 Con concept false y un centro:        O
-.
 173.
 Con read-arg:        perímetro de la esfera con centro en  O
-.
 174.
 Con read-arg y concept false:        esfera con centro en  O
-.
 175.
 Con read-arg y un centro con prima:        perímetro de la esfera con centro en  O prima
-.
 176.
 Con read-arg y prefix:        el perímetro de la esfera con centro en  O
-.
 177.
 Con read-arg y read-sty circle:        perímetro del disco con centro en  O
-.
 178.
 Con read-arg y concept false, con otra palabra:        disco con centro en  O
-.
 179.
 Con print-sym odot, el valor por defecto:        perímetro de la circunferencia con centro en  O
-.
 180.
 Con print-sym usual:        perímetro de la circunferencia con centro en  O
-.
 181.
 Con print-sym usual y un número:        perímetro de la circunferencia uno
-.
 182.
 Con print-sym usual y sin argumentos:        perímetro de la circunferencia
-.
 183.
 Con sub-index y un centro:        perímetro de la circunferencia 1 con centro en  O
-.
 184.
 Con sub-index y un centro con prima:        perímetro de la circunferencia 1 con centro en  O prima
-.
 185.
 Con read-sub true y un número:        perímetro de la circunferencia sub uno
-.
 186.
 Con read-sub false y un número:        perímetro de la circunferencia uno
-.
 187.
 Con sub-index y read-sub true:        perímetro de la circunferencia sub 1 con centro en  O
-.
 188.
 Con silent false, el valor por defecto:        perímetro de la circunferencia con centro en  O
-.
 189.
 Con silent true y sin argumentos:
-.
 190.
 Con silent true y un centro:
-.
 191.
 Con silent true y un número:
-.
 192.
 Con todas las llaves:        el perímetro del círculo sub 1 con centro en           o
-.
 encabezado    nivel 1  Comando spVol
 193.
 Sin llaves:        volumen
-.
 194.
 Con concept true, el valor por defecto:        volumen
-.
 página 6  195.
 Con concept false:        V
-.
 196.
 Con concept false y read-cmd school:        V
-.
 197.
 Con concept false y read-cmd mathcat:        guión           v
-.
 198.
 Con sub-index:        volumen 1
-.
 199.
 Con sub-index de dos cifras:        volumen 12
-.
 200.
 Con sub-index y read-sub true:        volumen sub 1
-.
 201.
 Con sub-index y read-sub false:        volumen 1
-.
 202.
 Con sub-index y concept false:        V 1
-.
 203.
 Con read-arg:        volumen medida exacta
-.
 204.
 Con read-arg y concept false:        medida exacta
-.
 205.
 Con read-arg y sub-index:        volumen medida exacta
-.
 206.
 Con silent false, el valor por defecto:        volumen
-.
 207.
 Con silent true:
-.
 208.
 Con todas las llaves:        volumen subíndice 1
-.
 encabezado    nivel 1  En fórmulas
 209.
 Diámetro y radio:        diámetro  es igual a  2  punto   radio
-.
 210.
 Área y perímetro de la misma circunferencia:        área de la circunferencia con centro en  O            perímetro de la circunferencia con centro en  O
-.
 211.
 Una circunferencia y su radio:         circunferencia   de centro en  O             y radio   3          flecha doble derecha   radio         es igual a  3
-.
 212.
 Perímetro en función del radio:        perímetro de la circunferencia con centro en  O            es igual a  2  punto  pi  punto   radio
-.
 213.
 En fórmula destacada:
      área de la circunferencia con centro en  O            es igual a  pi  punto   radio
-.
 214.
 Volumen de una esfera sin potencias:         volumen  es igual a         4 tercios  punto  pi  punto   radio  punto   radio  punto   radio
-.
 encabezado    nivel 1  Casos con potencias (al final, por precaución)
 215.
 Área con exponente:        área de la circunferencia con centro en  O            es igual a  pi    radio cuadrado
-.
 216.
 Volumen con exponente:         volumen  es igual a         4 tercios   pi    radio al cubo
-.
 217.
 Diámetro al cuadrado:         diámetro cuadrado         es igual a  4    radio cuadrado
-.
