@@ -1,0 +1,594 @@
+% test-016.tex -- comandos \sprad, \spdiam, \spcirc, \spAcirc, \spPcirc y \spVol
+%
+% Compilar:  lualatex-dev test-016.tex
+% Validar:   show-pdf-tags --xml test-016.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-016.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
+% el PDF. Los comentarios "doc:" indican lo que documenta el manual; en el
+% resto, la lectura se revisa escuchando. Todos trabajan en modo
+% matematico. \sprad, \spdiam y \spVol no llevan argumento, solo llaves.
+% \spcirc recibe, entre parentesis, un centro o un centro y un radio (un
+% entero, una letra, una medida con unidad o dos puntos). \spAcirc y
+% \spPcirc reciben un centro o un numero, nunca una coma.
+%
+% Entradas que no van aqui porque detienen la compilacion: un radio
+% decimal sin unidad (2.5), una expresion como radio (\sqrt{2}, r+1, \pi)
+% y una coma en \spAcirc o \spPcirc. El manual dice que un radio de otra
+% forma "no se procesa de manera interna", pero el codigo da error.
+%
+% Los casos con potencias (\sprad^{2}) van al final, en su propia seccion,
+% porque combinan un comando de este paquete con un exponente.
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-016: sprad, spdiam, spcirc, spAcirc, spPcirc y spVol},
+  }
+\begin{document}
+
+\section*{Comando sprad}
+
+% doc: imprime r -- «radio»
+1. Sin llaves: $\sprad$.
+
+2. Con concept true, el valor por defecto: $\sprad[concept=true]$.
+
+% doc: se verbaliza la letra r
+3. Con concept false: $\sprad[concept=false]$.
+
+4. Con concept false y read-cmd school: $\sprad[concept=false,read-cmd=school]$.
+
+% doc: MathCAT aplica sus propias reglas
+5. Con concept false y read-cmd mathcat: $\sprad[concept=false,read-cmd=mathcat]$.
+
+6. Con upper-case false, el valor por defecto: $\sprad[upper-case=false]$.
+
+% doc: imprime R
+7. Con upper-case true: $\sprad[upper-case=true]$.
+
+8. Con upper-case true y concept false: $\sprad[upper-case=true,concept=false]$.
+
+% doc: MathCAT puede agregar «mayúscula»
+9. Con upper-case true, concept false y read-cmd mathcat: $\sprad[upper-case=true,concept=false,read-cmd=mathcat]$.
+
+10. Con print-sym false, el valor por defecto: $\sprad[print-sym=false]$.
+
+% doc: sin efecto en sprad
+11. Con print-sym true: $\sprad[print-sym=true]$.
+
+% doc: imprime r_1 -- «radio uno»
+12. Con sub-index: $\sprad[sub-index={1}]$.
+
+13. Con sub-index de dos cifras: $\sprad[sub-index={12}]$.
+
+% doc: «radio sub uno»
+14. Con sub-index y read-sub true: $\sprad[sub-index={1},read-sub=true]$.
+
+% doc: «radio uno»
+15. Con sub-index y read-sub false: $\sprad[sub-index={1},read-sub=false]$.
+
+16. Con sub-index y concept false: $\sprad[sub-index={1},concept=false]$.
+
+% doc: imprime r -- «radio medida exacta»
+17. Con read-arg: $\sprad[read-arg={medida exacta}]$.
+
+% doc: «medida exacta»
+18. Con read-arg y concept false: $\sprad[concept=false,read-arg={medida exacta}]$.
+
+% doc: sub-index y read-sub no tienen efecto con read-arg
+19. Con read-arg y sub-index: $\sprad[read-arg={medida exacta},sub-index={1},read-sub=true]$.
+
+20. Con silent false, el valor por defecto: $\sprad[silent=false]$.
+
+% doc: no se verbaliza
+21. Con silent true: $\sprad[silent=true]$.
+
+22. Con silent true y sub-index: $\sprad[silent=true,sub-index={1}]$.
+
+23. Con todas las llaves: $\sprad[concept=true,read-cmd=mathcat,upper-case=true,sub-index={1},read-sub=true,silent=false]$.
+
+\section*{Comando spdiam}
+
+% doc: imprime d -- «diámetro»
+24. Sin llaves: $\spdiam$.
+
+25. Con concept true, el valor por defecto: $\spdiam[concept=true]$.
+
+% doc: se verbaliza la letra d
+26. Con concept false: $\spdiam[concept=false]$.
+
+27. Con concept false y read-cmd school: $\spdiam[concept=false,read-cmd=school]$.
+
+% doc: MathCAT aplica sus propias reglas
+28. Con concept false y read-cmd mathcat: $\spdiam[concept=false,read-cmd=mathcat]$.
+
+29. Con upper-case false, el valor por defecto: $\spdiam[upper-case=false]$.
+
+% doc: imprime D
+30. Con upper-case true: $\spdiam[upper-case=true]$.
+
+31. Con upper-case true y concept false: $\spdiam[upper-case=true,concept=false]$.
+
+% doc: MathCAT puede agregar «mayúscula»
+32. Con upper-case true, concept false y read-cmd mathcat: $\spdiam[upper-case=true,concept=false,read-cmd=mathcat]$.
+
+33. Con print-sym false, el valor por defecto: $\spdiam[print-sym=false]$.
+
+% doc: imprime \diameter d en spdiam; sin efecto en sprad
+34. Con print-sym true: $\spdiam[print-sym=true]$.
+
+% doc: imprime d_1 -- «diámetro uno»
+35. Con sub-index: $\spdiam[sub-index={1}]$.
+
+36. Con sub-index de dos cifras: $\spdiam[sub-index={12}]$.
+
+% doc: «diámetro sub uno»
+37. Con sub-index y read-sub true: $\spdiam[sub-index={1},read-sub=true]$.
+
+% doc: «diámetro uno»
+38. Con sub-index y read-sub false: $\spdiam[sub-index={1},read-sub=false]$.
+
+39. Con sub-index y concept false: $\spdiam[sub-index={1},concept=false]$.
+
+% doc: imprime d -- «diámetro medida exacta»
+40. Con read-arg: $\spdiam[read-arg={medida exacta}]$.
+
+% doc: «medida exacta»
+41. Con read-arg y concept false: $\spdiam[concept=false,read-arg={medida exacta}]$.
+
+% doc: sub-index y read-sub no tienen efecto con read-arg
+42. Con read-arg y sub-index: $\spdiam[read-arg={medida exacta},sub-index={1},read-sub=true]$.
+
+43. Con silent false, el valor por defecto: $\spdiam[silent=false]$.
+
+% doc: no se verbaliza
+44. Con silent true: $\spdiam[silent=true]$.
+
+45. Con silent true y sub-index: $\spdiam[silent=true,sub-index={1}]$.
+
+46. Con todas las llaves: $\spdiam[concept=true,read-cmd=mathcat,upper-case=true,print-sym=true,sub-index={1},read-sub=true,silent=false]$.
+
+\section*{Comando spcirc: argumentos}
+
+% doc: imprime \bigodot -- «circunferencia»
+47. Sin argumentos: $\spcirc$.
+
+% doc: imprime \bigodot(O) -- «circunferencia de centro en O»
+48. Con un centro: $\spcirc(O)$.
+
+% doc: imprime \bigodot(O,3) -- «circunferencia de centro en O y radio tres»
+49. Con centro y radio entero: $\spcirc(O,3)$.
+
+50. Con centro y radio, con espacio: $\spcirc(O, 3)$.
+
+51. Con un centro con prima: $\spcirc(O')$.
+
+52. Con un centro con subíndice: $\spcirc(O_{1})$.
+
+53. Con otra letra como centro: $\spcirc(P)$.
+
+54. Con un radio de dos cifras: $\spcirc(O,12)$.
+
+55. Con un radio dado por una letra: $\spcirc(O,r)$.
+
+56. Con un radio dado por una mayúscula: $\spcirc(O,R)$.
+
+57. Con un radio con medida: $\spcirc(O,3 cm)$.
+
+58. Con la unidad pegada: $\spcirc(O,3cm)$.
+
+59. Con una medida decimal: $\spcirc(O,2.5 cm)$.
+
+60. Con otra unidad: $\spcirc(O,10 m)$.
+
+61. Con un radio dado por un segmento: $\spcirc(O,AB)$.
+
+62. Con un segmento con primas: $\spcirc(O,A'B')$.
+
+63. Con un segmento con subíndices: $\spcirc(O,A_{1}B_{2})$.
+
+64. Con centro con prima y radio: $\spcirc(O',3)$.
+
+\section*{Comando spcirc: llaves}
+
+65. Con read-cmd school, el valor por defecto y un centro: $\spcirc[read-cmd=school](O)$.
+
+% doc: tiene efecto sobre el radio con forma de segmento
+66. Con read-cmd school, el valor por defecto y un segmento: $\spcirc[read-cmd=school](O,AB)$.
+
+67. Con read-cmd mathcat y un centro: $\spcirc[read-cmd=mathcat](O)$.
+
+% doc: tiene efecto sobre el radio con forma de segmento
+68. Con read-cmd mathcat y un segmento: $\spcirc[read-cmd=mathcat](O,AB)$.
+
+% doc: el prefijo se verbaliza antes del concepto
+69. Con prefix y sin argumentos: $\spcirc[prefix={la}]$.
+
+% doc: el prefijo se verbaliza antes del concepto
+70. Con prefix y un centro: $\spcirc[prefix={la}](O)$.
+
+% doc: el prefijo se verbaliza antes del concepto
+71. Con prefix y centro y radio: $\spcirc[prefix={la}](O,3)$.
+
+% doc: imprime \bigodot(O)
+72. Con print-sym odot, el valor por defecto: $\spcirc[print-sym=odot](O)$.
+
+% doc: imprime C(O)
+73. Con print-sym usual: $\spcirc[print-sym=usual](O)$.
+
+74. Con print-sym usual y radio: $\spcirc[print-sym=usual](O,3)$.
+
+75. Con print-sym usual y sin argumentos: $\spcirc[print-sym=usual]$.
+
+% doc: circunferencia de centro en O
+76. Con read-sty circun, el valor por defecto: $\spcirc[read-sty=circun](O)$.
+
+% doc: círculo de centro en O
+77. Con read-sty circle: $\spcirc[read-sty=circle](O)$.
+
+78. Con read-sty circle y radio: $\spcirc[read-sty=circle](O,3)$.
+
+79. Con read-sty circle y sin argumentos: $\spcirc[read-sty=circle]$.
+
+% doc: radio tres
+80. Con diameter false, el valor por defecto: $\spcirc[diameter=false](O, 3)$.
+
+% doc: diámetro tres
+81. Con diameter true: $\spcirc[diameter=true](O, 3)$.
+
+82. Con diameter true y un segmento: $\spcirc[diameter=true](O, AB)$.
+
+83. Con diameter true y una medida: $\spcirc[diameter=true](O, 3 cm)$.
+
+% doc: imprime \bigodot(O, AB) -- radio medida del lado A B
+84. Con radio-sty mside, el valor por defecto: $\spcirc[radio-sty=mside](O, AB)$.
+
+% doc: imprime \bigodot(O, \overline{AB}) -- radio lado A B
+85. Con radio-sty side: $\spcirc[radio-sty=side](O, AB)$.
+
+86. Con radio-sty side y primas: $\spcirc[radio-sty=side](O, A'B')$.
+
+% doc: el radio se lee «segmento A B»
+87. Con la meta-llave spside: $\spcirc[radio-sty=side,spside={read-sty=segmento}](O, AB)$.
+
+% doc: el radio se imprime con la m
+88. Con la meta-llave spmside: $\spcirc[radio-sty=mside,spmside={print-m=true}](O, AB)$.
+
+89. Con la meta-llave spmside y read-sty: $\spcirc[spmside={read-sty=trazo}](O, AB)$.
+
+90. Con concept true, el valor por defecto: $\spcirc[concept=true](O,3)$.
+
+% doc: solo se verbaliza el argumento
+91. Con concept false y sin argumentos: $\spcirc[concept=false]$.
+
+% doc: solo se verbaliza el argumento
+92. Con concept false y un centro: $\spcirc[concept=false](O)$.
+
+% doc: solo se verbaliza el argumento
+93. Con concept false y centro y radio: $\spcirc[concept=false](O,3)$.
+
+% doc: solo se verbaliza el argumento
+94. Con concept false y centro y segmento: $\spcirc[concept=false](O,AB)$.
+
+% doc: imprime \bigodot_1(O, AB) -- «circunferencia uno de centro en O y radio medida del lado A B»
+95. Con sub-index y un segmento: $\spcirc[sub-index={1},radio-sty=mside](O, AB)$.
+
+96. Con sub-index y un centro: $\spcirc[sub-index={1}](O)$.
+
+97. Con sub-index y sin argumentos: $\spcirc[sub-index={1}]$.
+
+% doc: circunferencia sub uno de centro en O
+98. Con sub-index y read-sub true: $\spcirc[sub-index={1},read-sub=true](O)$.
+
+% doc: circunferencia uno de centro en O
+99. Con sub-index y read-sub false: $\spcirc[sub-index={1},read-sub=false](O)$.
+
+% doc: imprime \bigodot(O) -- «disco de centro en O»
+100. Con read-arg: $\spcirc[read-arg={disco}](O)$.
+
+101. Con read-arg y radio: $\spcirc[read-arg={disco}](O,3)$.
+
+102. Con read-arg y sin argumentos: $\spcirc[read-arg={disco}]$.
+
+103. Con read-arg y concept false: $\spcirc[concept=false,read-arg={disco}](O)$.
+
+104. Con read-arg y prefix: $\spcirc[prefix={el},read-arg={disco}](O)$.
+
+105. Con silent false, el valor por defecto: $\spcirc[silent=false](O)$.
+
+% doc: no se verbaliza
+106. Con silent true y sin argumentos: $\spcirc[silent=true]$.
+
+% doc: no se verbaliza
+107. Con silent true y un centro: $\spcirc[silent=true](O)$.
+
+% doc: no se verbaliza
+108. Con silent true y centro y radio: $\spcirc[silent=true](O,3)$.
+
+% doc: no se verbaliza
+109. Con silent true y centro y segmento: $\spcirc[silent=true](O,AB)$.
+
+110. Con todas las llaves: $\spcirc[read-cmd=mathcat,prefix={la},print-sym=usual,read-sty=circle,diameter=true,radio-sty=mside,concept=true,sub-index={1},read-sub=true,silent=false](O_{1},AB)$.
+
+\section*{Comando spAcirc: argumentos}
+
+% doc: imprime \mathcal{A} -- «área de la circunferencia»
+111. Sin argumentos: $\spAcirc$.
+
+% doc: imprime \mathcal{A}_{\bigodot(O)} -- «área de la circunferencia con centro en O»
+112. Con un centro: $\spAcirc(O)$.
+
+% doc: imprime \mathcal{A}_{\bigodot_1} -- «área de la circunferencia uno»
+113. Con un número: $\spAcirc(1)$.
+
+114. Con un centro con prima: $\spAcirc(O')$.
+
+115. Con un centro con subíndice: $\spAcirc(O_{1})$.
+
+116. Con otra letra como centro: $\spAcirc(P)$.
+
+117. Con otro número: $\spAcirc(2)$.
+
+118. Con un número de dos cifras: $\spAcirc(12)$.
+
+119. Con la letra n: $\spAcirc(n)$.
+
+\section*{Comando spAcirc: llaves}
+
+120. Con read-cmd school, el valor por defecto: $\spAcirc[read-cmd=school](O)$.
+
+% doc: MathCAT aplica sus propias reglas
+121. Con read-cmd mathcat: $\spAcirc[read-cmd=mathcat](O)$.
+
+% doc: el prefijo se verbaliza antes del término
+122. Con prefix y sin argumentos: $\spAcirc[prefix={el}]$.
+
+% doc: el prefijo se verbaliza antes del término
+123. Con prefix y un centro: $\spAcirc[prefix={el}](O)$.
+
+% doc: el prefijo se verbaliza antes del término
+124. Con prefix y un número: $\spAcirc[prefix={el}](1)$.
+
+% doc: área de la circunferencia con centro en O
+125. Con read-sty circun, el valor por defecto: $\spAcirc[read-sty=circun](O)$.
+
+% doc: área del círculo con centro en O
+126. Con read-sty circle: $\spAcirc[read-sty=circle](O)$.
+
+127. Con read-sty circle y sin argumentos: $\spAcirc[read-sty=circle]$.
+
+128. Con read-sty circle y un número: $\spAcirc[read-sty=circle](1)$.
+
+129. Con concept true, el valor por defecto: $\spAcirc[concept=true](O)$.
+
+% doc: solo se verbaliza el argumento
+130. Con concept false y un centro: $\spAcirc[concept=false](O)$.
+
+% doc: «área de la esfera con centro en O»
+131. Con read-arg: $\spAcirc[read-arg={esfera}](O)$.
+
+% doc: «esfera con centro en O»
+132. Con read-arg y concept false: $\spAcirc[concept=false,read-arg={esfera}](O)$.
+
+133. Con read-arg y un centro con prima: $\spAcirc[read-arg={esfera}](O')$.
+
+134. Con read-arg y prefix: $\spAcirc[prefix={el},read-arg={esfera}](O)$.
+
+% doc: imprime \mathcal{A}_{\bigodot(O)}
+135. Con print-sym odot, el valor por defecto: $\spAcirc[print-sym=odot](O)$.
+
+% doc: imprime \mathcal{A}_{C(O)}
+136. Con print-sym usual: $\spAcirc[print-sym=usual](O)$.
+
+137. Con print-sym usual y un número: $\spAcirc[print-sym=usual](1)$.
+
+138. Con print-sym usual y sin argumentos: $\spAcirc[print-sym=usual]$.
+
+% doc: «área de la circunferencia uno con centro en O»
+139. Con sub-index y un centro: $\spAcirc[sub-index={1}](O)$.
+
+140. Con sub-index y un centro con prima: $\spAcirc[sub-index={1}](O')$.
+
+% doc: «área de la circunferencia sub uno»
+141. Con read-sub true y un número: $\spAcirc[read-sub=true](1)$.
+
+% doc: «área de la circunferencia uno»
+142. Con read-sub false y un número: $\spAcirc[read-sub=false](1)$.
+
+143. Con sub-index y read-sub true: $\spAcirc[sub-index={1},read-sub=true](O)$.
+
+144. Con silent false, el valor por defecto: $\spAcirc[silent=false](O)$.
+
+% doc: no se verbaliza
+145. Con silent true y sin argumentos: $\spAcirc[silent=true]$.
+
+% doc: no se verbaliza
+146. Con silent true y un centro: $\spAcirc[silent=true](O)$.
+
+% doc: no se verbaliza
+147. Con silent true y un número: $\spAcirc[silent=true](1)$.
+
+148. Con todas las llaves: $\spAcirc[read-cmd=mathcat,prefix={el},read-sty=circle,concept=true,print-sym=usual,sub-index={1},read-sub=true,silent=false](O)$.
+
+\section*{Comando spPcirc: argumentos}
+
+% doc: imprime \mathcal{P} -- «perímetro de la circunferencia»
+149. Sin argumentos: $\spPcirc$.
+
+% doc: imprime \mathcal{P}_{\bigodot(O)} -- «perímetro de la circunferencia con centro en O»
+150. Con un centro: $\spPcirc(O)$.
+
+% doc: imprime \mathcal{P}_{\bigodot_1} -- «perímetro de la circunferencia uno»
+151. Con un número: $\spPcirc(1)$.
+
+152. Con un centro con prima: $\spPcirc(O')$.
+
+153. Con un centro con subíndice: $\spPcirc(O_{1})$.
+
+154. Con otra letra como centro: $\spPcirc(P)$.
+
+155. Con otro número: $\spPcirc(2)$.
+
+156. Con un número de dos cifras: $\spPcirc(12)$.
+
+157. Con la letra n: $\spPcirc(n)$.
+
+\section*{Comando spPcirc: llaves}
+
+158. Con read-cmd school, el valor por defecto: $\spPcirc[read-cmd=school](O)$.
+
+% doc: MathCAT aplica sus propias reglas
+159. Con read-cmd mathcat: $\spPcirc[read-cmd=mathcat](O)$.
+
+% doc: el prefijo se verbaliza antes del término
+160. Con prefix y sin argumentos: $\spPcirc[prefix={el}]$.
+
+% doc: el prefijo se verbaliza antes del término
+161. Con prefix y un centro: $\spPcirc[prefix={el}](O)$.
+
+% doc: el prefijo se verbaliza antes del término
+162. Con prefix y un número: $\spPcirc[prefix={el}](1)$.
+
+% doc: perímetro de la circunferencia con centro en O
+163. Con read-sty circun, el valor por defecto: $\spPcirc[read-sty=circun](O)$.
+
+% doc: perímetro del círculo con centro en O
+164. Con read-sty circle: $\spPcirc[read-sty=circle](O)$.
+
+165. Con read-sty circle y sin argumentos: $\spPcirc[read-sty=circle]$.
+
+166. Con read-sty circle y un número: $\spPcirc[read-sty=circle](1)$.
+
+167. Con concept true, el valor por defecto: $\spPcirc[concept=true](O)$.
+
+% doc: solo se verbaliza el argumento
+168. Con concept false y un centro: $\spPcirc[concept=false](O)$.
+
+% doc: «perímetro de la esfera con centro en O»
+169. Con read-arg: $\spPcirc[read-arg={esfera}](O)$.
+
+% doc: «esfera con centro en O»
+170. Con read-arg y concept false: $\spPcirc[concept=false,read-arg={esfera}](O)$.
+
+171. Con read-arg y un centro con prima: $\spPcirc[read-arg={esfera}](O')$.
+
+172. Con read-arg y prefix: $\spPcirc[prefix={el},read-arg={esfera}](O)$.
+
+% doc: imprime \mathcal{P}_{\bigodot(O)}
+173. Con print-sym odot, el valor por defecto: $\spPcirc[print-sym=odot](O)$.
+
+% doc: imprime \mathcal{P}_{C(O)}
+174. Con print-sym usual: $\spPcirc[print-sym=usual](O)$.
+
+175. Con print-sym usual y un número: $\spPcirc[print-sym=usual](1)$.
+
+176. Con print-sym usual y sin argumentos: $\spPcirc[print-sym=usual]$.
+
+% doc: «perímetro de la circunferencia uno con centro en O»
+177. Con sub-index y un centro: $\spPcirc[sub-index={1}](O)$.
+
+178. Con sub-index y un centro con prima: $\spPcirc[sub-index={1}](O')$.
+
+% doc: «perímetro de la circunferencia sub uno»
+179. Con read-sub true y un número: $\spPcirc[read-sub=true](1)$.
+
+% doc: «perímetro de la circunferencia uno»
+180. Con read-sub false y un número: $\spPcirc[read-sub=false](1)$.
+
+181. Con sub-index y read-sub true: $\spPcirc[sub-index={1},read-sub=true](O)$.
+
+182. Con silent false, el valor por defecto: $\spPcirc[silent=false](O)$.
+
+% doc: no se verbaliza
+183. Con silent true y sin argumentos: $\spPcirc[silent=true]$.
+
+% doc: no se verbaliza
+184. Con silent true y un centro: $\spPcirc[silent=true](O)$.
+
+% doc: no se verbaliza
+185. Con silent true y un número: $\spPcirc[silent=true](1)$.
+
+186. Con todas las llaves: $\spPcirc[read-cmd=mathcat,prefix={el},read-sty=circle,concept=true,print-sym=usual,sub-index={1},read-sub=true,silent=false](O)$.
+
+\section*{Comando spVol}
+
+% doc: imprime \mathcal{V} -- «volumen»
+187. Sin llaves: $\spVol$.
+
+188. Con concept true, el valor por defecto: $\spVol[concept=true]$.
+
+% doc: se verbaliza la letra V
+189. Con concept false: $\spVol[concept=false]$.
+
+% doc: solo la letra V
+190. Con concept false y read-cmd school: $\spVol[concept=false,read-cmd=school]$.
+
+% doc: MathCAT aplica sus propias reglas sobre \mathcal{V}
+191. Con concept false y read-cmd mathcat: $\spVol[concept=false,read-cmd=mathcat]$.
+
+% doc: imprime \mathcal{V}_1 -- «volumen uno»
+192. Con sub-index: $\spVol[sub-index={1}]$.
+
+193. Con sub-index de dos cifras: $\spVol[sub-index={12}]$.
+
+% doc: «volumen sub uno»
+194. Con sub-index y read-sub true: $\spVol[sub-index={1},read-sub=true]$.
+
+% doc: «volumen uno»
+195. Con sub-index y read-sub false: $\spVol[sub-index={1},read-sub=false]$.
+
+196. Con sub-index y concept false: $\spVol[sub-index={1},concept=false]$.
+
+% doc: «volumen medida exacta»
+197. Con read-arg: $\spVol[read-arg={medida exacta}]$.
+
+% doc: «medida exacta»
+198. Con read-arg y concept false: $\spVol[concept=false,read-arg={medida exacta}]$.
+
+% doc: sub-index y read-sub no tienen efecto con read-arg
+199. Con read-arg y sub-index: $\spVol[read-arg={medida exacta},sub-index={1},read-sub=true]$.
+
+200. Con silent false, el valor por defecto: $\spVol[silent=false]$.
+
+% doc: no se verbaliza
+201. Con silent true: $\spVol[silent=true]$.
+
+202. Con todas las llaves: $\spVol[concept=true,read-cmd=mathcat,sub-index={1},read-sub=true,silent=false]$.
+
+\section*{En fórmulas}
+
+203. Diámetro y radio: $\spdiam = 2 \cdot \sprad$.
+
+204. Área y perímetro de la misma circunferencia: $\spAcirc(O) \quad \spPcirc(O)$.
+
+205. Una circunferencia y su radio: $\spcirc(O,3) \Rightarrow \sprad = 3$.
+
+206. Perímetro en función del radio: $\spPcirc(O) = 2 \cdot \pi \cdot \sprad$.
+
+207. En fórmula destacada:
+\[ \spAcirc(O) = \pi \cdot \sprad \].
+
+208. Volumen de una esfera sin potencias: $\spVol = \frac{4}{3} \cdot \pi \cdot \sprad \cdot \sprad \cdot \sprad$.
+
+\section*{Casos con potencias (al final, por precaución)}
+
+209. Área con exponente: $\spAcirc(O) = \pi \sprad^{2}$.
+
+210. Volumen con exponente: $\spVol = \frac{4}{3} \pi \sprad^{3}$.
+
+211. Diámetro al cuadrado: $\spdiam^{2} = 4 \sprad^{2}$.
+
+\end{document}

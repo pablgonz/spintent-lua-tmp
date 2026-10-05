@@ -1,0 +1,129 @@
+Formas del argumento
+1.
+Entero sin signo:        23
+.
+2.
+Entero con signo positivo:        más 23
+.
+3.
+Entero con signo negativo:        menos 23
+.
+4.
+Decimal con coma:        3 coma  14
+.
+5.
+Decimal con punto:        3 punto  14
+.
+6.
+Decimal negativo:        menos 3 coma  14
+.
+7.
+Periódico puro:        3 coma 4 periódico
+.
+8.
+Periódico mixto:        3 coma  1     con 4 periódico
+.
+9.
+Periódico de dos cifras:        0 coma  1     con 23 periódico
+.
+10.
+Periódico mixto negativo:        menos 3 coma  1     con 4 periódico
+.
+encabezado    nivel 1  B.
+Notación científica
+11.
+Con e minúscula:        3 coma  14       por  10 al cubo
+.
+12.
+Con E mayúscula:        3 coma  14       por  10 al cubo
+.
+13.
+Exponente negativo:        3 coma  14       por  10 a la menos 3 potencia
+.
+14.
+Exponente con signo positivo:        3 coma  14       por  10 elevado a la positivo 3 potencia
+.
+15.
+Entero con exponente:        5   por  10 cuadrado
+.
+16.
+Número negativo con exponente:        menos 3 coma  14                por  10 al cubo
+.
+encabezado    nivel 1  C.
+Llave cifras-sep
+17.
+Por defecto:        100000
+.
+18.
+Con true explícito:        100000
+.
+19.
+Parte entera y parte decimal:        1234567 coma  891234
+.
+20.
+Con false y espacios del usuario:        100000
+.
+21.
+Con false y sin espacios:        100000
+.
+encabezado    nivel 1  D.
+Llave read-sign
+22.
+Terse con signo negativo:        menos 23
+.
+23.
+Clear con signo negativo:        23 negativo
+.
+24.
+Terse con signo positivo:        más 23
+.
+25.
+Clear con signo positivo:        23 positivo
+.
+26.
+Clear con decimal negativo:        3 coma  14     negativo
+.
+encabezado    nivel 1  E.
+Llave read-period-sep
+27.
+Con coma:        3 coma 4 periódico
+.
+28.
+Con punto:        3 punto 4 periódico
+.
+29.
+Con punto y parte decimal finita:        3 coma  1     con 4 periódico
+.
+encabezado    nivel 1  página 2  F.
+Llave notation-sym
+30.
+Con cdot:        3 coma  14       por  10 al cubo
+.
+31.
+Con times:        3 coma  14       por  10 al cubo
+.
+encabezado    nivel 1  G.
+Combinaciones de llaves
+32.
+Clear y times:        3 coma  14     negativo          por  10 al cubo
+.
+33.
+Clear y punto:        3 punto 4 periódico     negativo
+.
+34.
+Clear y cifras-sep false:        100000 negativo
+.
+encabezado    nivel 1  H.
+Dentro de fórmulas
+35.
+Suma e igualdad:        3 coma  14      más  2 coma  5             es igual a  5 coma  64
+.
+36.
+Llaves distintas en una misma fórmula:        2 negativo  es menor que  más 3
+.
+37.
+En fórmula destacada:
+     3 coma  14       por  10 al cubo
+38.
+En una fracción:        la fracción con numerador          1 coma  5             y denominador 2
+.

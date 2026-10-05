@@ -1,0 +1,251 @@
+test-011: spnZ - Adobe Acrobat Reader (32-bit)
+AVPageView  marco de texto
+encabezado    nivel 1  página 1  A.
+Comando spnZ: argumentos
+1.
+Entero positivo:        23
+.
+2.
+Con signo negativo:        menos 23
+.
+3.
+Con signo positivo explícito:        más 23
+.
+4.
+Cero:        0
+.
+5.
+Cien:        100
+.
+6.
+Un millón:        1000000
+.
+7.
+Siete cifras:        1234567
+.
+8.
+Negativo grande:        menos 1000
+.
+encabezado    nivel 1  B.
+Comando spnZ: llaves
+9.
+Con cifras-sep false:        1000000
+.
+10.
+Con cifras-sep false y espacios del usuario:        100000
+.
+11.
+Con read-sign clear y signo negativo:        23 negativo
+.
+12.
+Con read-sign clear y signo positivo:        23 positivo
+.
+13.
+Con wrap-parens false, el valor por defecto:        menos 23
+.
+14.
+Con wrap-parens true:        se abren paréntesis          menos 23  se cierran paréntesis
+.
+15.
+Con wrap-parens true y read-parens true:        se abren paréntesis          menos 23  se cierran paréntesis
+.
+16.
+Con wrap-parens true y read-parens false:        menos 23
+.
+17.
+Con wrap-parens false y read-parens false:        menos 23
+.
+18.
+Con todas las llaves:        1234567 negativo
+.
+encabezado    nivel 1  C.
+Comando spnZ: en fórmulas
+19.
+Suma de enteros:        menos 3  más  5
+.
+20.
+Con paréntesis y producto:        se abren paréntesis          menos 3  se cierran paréntesis          por  4
+.
+21.
+División con igualdad:        12   dividido  4  es igual a  3
+.
+22.
+En fórmula destacada:
+     se abren paréntesis          menos 3  se cierran paréntesis          por         se abren paréntesis  menos 4  se cierran paréntesis         es igual a  12
+.
+encabezado    nivel 1  D.
+Comando spmQ: ejemplos del manual y llave join-word
+23.
+Por defecto:        2   y          la fracción con numerador          5         y denominador 7
+.
+24.
+Con join-word entero:        1   entero         la fracción con numerador          5         y denominador 7
+.
+25.
+Con join-word enteros:        2   enteros         la fracción con numerador          5         y denominador 7
+.
+26.
+Con join-word y:        2   y          la fracción con numerador          5         y denominador 7
+.
+encabezado    nivel 1  página 2  E.
+Comando spmQ: denominadores
+27.
+Con denominador 2:        1   y          la fracción con numerador          1         y denominador 2
+.
+28.
+Con denominador 3:        1   y          la fracción con numerador          1         y denominador 3
+.
+29.
+Con denominador 4:        2   y          la fracción con numerador          3         y denominador 4
+.
+30.
+Con denominador 5:        3   y          la fracción con numerador          2         y denominador 5
+.
+31.
+Con denominador 6:        1   y          la fracción con numerador          1         y denominador 6
+.
+32.
+Con denominador 7:        4   y          la fracción con numerador          6         y denominador 7
+.
+33.
+Con denominador 8:        5   y          la fracción con numerador          3         y denominador 8
+.
+34.
+Con denominador 9:        6   y          la fracción con numerador          1         y denominador 9
+.
+35.
+Con denominador 10:        7   y          la fracción con numerador          3         y denominador 10
+.
+36.
+Con denominador 11:        8   y          la fracción con numerador          1         y denominador 11
+.
+37.
+Con denominador 12:        9   y          la fracción con numerador          5         y denominador 12
+.
+38.
+Con denominador 100:        3   y          la fracción con numerador          1         y denominador 100
+.
+encabezado    nivel 1  F.
+Comando spmQ: enteros y llaves
+39.
+Entero negativo:        menos   2   y          la fracción con numerador          5         y denominador 7
+.
+40.
+Entero con signo positivo explícito:        más   2   y          la fracción con numerador          5         y denominador 7
+.
+41.
+Entero grande:        100   y          la fracción con numerador          1         y denominador 2
+.
+42.
+Entero de cuatro cifras:        1000   y          la fracción con numerador          1         y denominador 2
+.
+43.
+Con use-spnZ true, el valor por defecto:        2   y          la fracción con numerador          5         y denominador 7
+.
+44.
+Con use-spnZ false:        2   y   5 séptimos
+.
+45.
+Con use-dfrac false, el valor por defecto:        2   y          la fracción con numerador          5         y denominador 7
+.
+46.
+Con use-dfrac true:        2   y          la fracción con numerador          5         y denominador 7
+.
+47.
+Con wrap-parens true:        se abren paréntesis         2   y          la fracción con numerador          5         y denominador 7         se cierran paréntesis
+.
+48.
+Con wrap-parens true y read-parens false:        2   y          la fracción con numerador          5         y denominador 7
+.
+49.
+Con join-word y use-dfrac:        2   enteros         la fracción con numerador          5         y denominador 7
+.
+50.
+Con todas las llaves:        1   entero  5 séptimos
+.
+51.
+Suma de números mixtos:        2   y          la fracción con numerador          5         y denominador 7         más  1          y          la fracción con numerador          1         y denominador 2
+.
+encabezado    nivel 1  página 3  G.
+Comando sprazon
+52.
+Dos enteros:        3 es a  4
+.
+53.
+Con letras:        a        es a          b
+.
+54.
+Con una expresión:        x         más  1 es a  2
+.
+55.
+Con cifras grandes:        12 es a  18
+.
+56.
+Con silent false, el valor por defecto:        3 es a  4
+.
+57.
+Con silent true:
+.
+58.
+Con use-dfrac true:        3 es a  4
+.
+59.
+Con inline true:        3 es a  4
+.
+60.
+Con inline true y letras:        a        es a          b
+.
+61.
+Con inline y use-dfrac:        3 es a  4
+.
+62.
+Con silent e inline:
+.
+63.
+Dos razones iguales:        3 es a  4  es igual a  6 es a  8
+.
+encabezado    nivel 1  H.
+Comando spProp
+64.
+Cuatro enteros:        3 es a  4   como  6 es a  8
+.
+65.
+Con letras:        a        es a          b          como          c        es a          d
+.
+66.
+Con expresiones:        x        es a  2   como            x         más  1 es a  3
+.
+67.
+Con silent false, el valor por defecto:        3 es a  4   como  6 es a  8
+.
+68.
+Con silent true:
+.
+69.
+Con use-dfrac true:        3 es a  4   como  6 es a  8
+.
+70.
+Con inline true:        3 es a  4   como  6 es a  8
+.
+71.
+Con inline true y letras:        a        es a          b          como          c        es a          d
+.
+72.
+Con inline y use-dfrac:        3 es a  4   como  6 es a  8
+.
+73.
+Con silent e inline:
+.
+encabezado    nivel 1  I.
+En contexto
+74.
+Razón y proporción en una misma fórmula:        3 es a  4  flecha doble derecha         3 es a  4          como  6 es a  8
+.
+75.
+En fórmula destacada:
+     a        es a          b          como          c        es a          d
+.
+
+A. Comando spnZ: argumentos
+ 1
+

@@ -1,0 +1,278 @@
+test-012: spcoord - Adobe Acrobat Reader (32-bit)
+AVPageView  marco de texto
+encabezado    nivel 1  página 1  A.
+Comando spcoord
+1.
+Enteros con signo:        menos  3   coma  4
+.
+2.
+Con subíndices:        x        subíndice 1           y        subíndice 1
+.
+3.
+Enteros positivos:        3 coma  4
+.
+4.
+El origen:        0 coma  0
+.
+5.
+Sin espacio tras la coma:        menos  3   coma  4
+.
+6.
+Decimales con punto:        3 punto  5     coma  4 punto  2
+.
+7.
+Decimales con coma y punto y coma:        3 coma  5     punto y coma  4 coma  2
+.
+8.
+Con signo y punto y coma:        menos  1 coma  5       punto y coma  2
+.
+9.
+Dos letras:        x        coma          y
+.
+10.
+Otras letras:        a        coma          b
+.
+11.
+Con expresiones:        a         más  1 coma          b         menos  1
+.
+12.
+Con cocientes en línea:          1  barra oblicua  2 coma  3  barra oblicua  4
+.
+13.
+Con una fracción:        1 mitad coma   3
+.
+14.
+Con una raíz:        el raíz cuadrada de 2         1
+.
+15.
+Con pi:        pi coma   2
+.
+16.
+Con un múltiplo de pi:        2   pi coma   0
+.
+17.
+Con silent false, el valor por defecto:        menos  3   coma  4
+.
+18.
+Con silent true:
+.
+19.
+Con silent true y letras:
+.
+encabezado    nivel 1  B.
+Comando spPoint: el punto
+20.
+Una letra:        punto  A
+.
+21.
+Con subíndice:        punto  A sub uno
+.
+22.
+Con una prima:        punto  A prima
+.
+23.
+Con dos primas:        punto  A doble prima
+.
+24.
+Con subíndice de dos cifras:        punto  A sub 12
+.
+25.
+Con subíndice literal:        punto  A sub n
+.
+26.
+Otra letra:        punto  B
+.
+27.
+La última letra:        punto  Z
+.
+28.
+Dos puntos seguidos, el primero con subíndice:        punto  A sub uno      punto  B
+.
+29.
+Dos puntos seguidos con coma:        punto  A     coma          punto  B
+.
+encabezado    nivel 1  C.
+Comando spPoint: con coordenadas
+30.
+Con coordenadas:        punto  A        menos 3 coma  4
+.
+31.
+Con subíndice y coordenadas:        punto  A sub uno        menos 3 coma  4
+.
+32.
+Con prima y coordenadas:        punto  A prima        menos 3 coma  4
+.
+33.
+Con decimales con punto:        punto  A        3 punto   5     coma  4 punto   2
+.
+34.
+Con decimales con coma y punto y coma:        punto  A        3 coma   5     punto y coma  4 coma   2
+.
+35.
+Con coordenadas literales:        punto  P              x        coma          y
+.
+36.
+El origen:        punto  O      0 coma  0
+.
+encabezado    nivel 1  página 2  D.
+Comando spPoint: llaves
+37.
+Con read-cmd school, el valor por defecto:        punto  A
+.
+38.
+Con read-cmd mathcat:        punto           a
+.
+39.
+Con read-cmd mathcat y subíndice:        punto           a        subíndice 1
+.
+40.
+Con concept true, el valor por defecto:        punto  A
+.
+41.
+Con concept false:        A
+.
+42.
+Con concept false y subíndice:        A sub uno
+.
+43.
+Con concept false y coordenadas:        A      menos 3 coma  4
+.
+44.
+Con prefix:        el punto  A
+.
+45.
+Con prefix y coordenadas:        el punto  A        menos 3 coma  4
+.
+46.
+Con silent false, el valor por defecto:        punto  A
+.
+47.
+Con silent true:
+.
+48.
+Con silent true y coordenadas:        A sub uno
+.
+49.
+Con read-cmd mathcat y concept false:        a
+.
+50.
+Con todas las llaves:        el punto           a        subíndice 1              3 coma   5     punto y coma  4 coma   2
+.
+encabezado    nivel 1  E.
+Comando spvec: vector con nombre
+51.
+Una letra:        vector  a
+.
+52.
+Con subíndice:        vector  a sub uno
+.
+53.
+Otra letra:        vector  u
+.
+54.
+Con coordenadas:        vector  a     es igual a            menos 3 coma  4
+.
+55.
+Con subíndice y coordenadas:        vector  a sub uno            es igual a          2 coma  5
+.
+56.
+Con decimales y coordenadas:        vector  v     es igual a            3 coma   5     punto y coma  4 coma   2
+.
+encabezado    nivel 1  F.
+Comando spvec: vector definido por dos puntos
+57.
+Dos puntos seguidos:        vector  A   B
+.
+58.
+Dos puntos con coma:        vector  A   B
+.
+59.
+Dos puntos con coma y espacio:        vector  A   B
+.
+60.
+Con primas:        vector  A prima   B prima
+.
+61.
+Con subíndices:        vector  A sub uno   B sub dos
+.
+62.
+Con subíndices y coma:        vector  A sub uno   B sub dos
+.
+63.
+Con coordenadas:        vector  A   B     es igual a            menos 3 coma  4
+.
+64.
+Con coordenadas literales:        vector  M   N     es igual a                  x        coma          y
+.
+encabezado    nivel 1  G.
+Comando spvec: llaves
+65.
+Con read-cmd school, el valor por defecto:        vector  A   B
+.
+66.
+Con read-cmd mathcat:        vector           a                  b
+.
+67.
+Con prefix y un nombre:        el vector  a
+.
+68.
+Con prefix y dos puntos:        el vector  A   B
+.
+69.
+Con prefix y coordenadas:        el vector  a     es igual a            menos 3 coma  4
+.
+página 3  70.
+Con autofit false, el valor por defecto:        vector  a
+.
+71.
+Con autofit true:        vector         a
+.
+72.
+Con concept true, el valor por defecto:        vector  a
+.
+73.
+Con concept false y un nombre:        a
+.
+74.
+Con concept false y dos puntos:        A   B
+.
+75.
+Con concept false y coordenadas:        A   B   es igual a     menos 3 coma  4
+.
+76.
+Con silent false, el valor por defecto:        vector  a
+.
+77.
+Con silent true y un nombre:
+.
+78.
+Con silent true y dos puntos:
+.
+79.
+Con silent true y coordenadas:        es igual a
+.
+80.
+Con todas las llaves:        el vector         a        subíndice 1         es igual a         3 coma   5     punto y coma  4 coma   2
+.
+encabezado    nivel 1  H.
+En fórmulas
+81.
+Suma de vectores:        vector  a     más  vector  b            es igual a  vector  c
+.
+82.
+Igualdad de vectores:        vector  A   B     es igual a  vector  C   D
+.
+83.
+Vectores con coordenadas:        vector  a      b    1 coma  2          más  vector  c            es igual a         el intervalo de 3 a 4         no incluyendo 3 o 4         es igual a   vector         c         es igual a           4 coma  6
+.
+84.
+Un punto y un vector:        punto  A      1 coma  2           vector  A   B            es igual a           3 coma  4
+.
+85.
+Punto y coordenadas por separado:        punto  A     es igual a         el intervalo de 1 a 2         no incluyendo 1 o 2
+.
+86.
+En fórmula destacada:
+     vector  A   B      B             menos 3 coma  4          es igual a             b          1 coma  2   menos             a          4 coma  menos 2
+.
+
