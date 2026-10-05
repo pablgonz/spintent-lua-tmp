@@ -7433,8 +7433,8 @@ end, "shekel_fallback_patch")
 %   the number and the symbol \emph{\enquote{without any space in between}},
 %   applying a slight negative space `|\!|' for |arcseconds|. When the number is
 %   exactly |1|, with no decimal part, the reading becomes the singular literal
-%   |_grado|, |_minuto| or |_segundo|, since neither the fixed plural names
-%   nor |MathCAT| can see the number. For standard units,
+%   |_grado:unit|, |_minuto:unit| or |_segundo:unit|, since neither the fixed
+%   plural names nor \mynvmath{MathCAT} can see the number. For standard units,
 %   it prints the number followed by a thin space `|\,|' and then processes
 %   the unit sequence.
 %    \begin{macrocode}
@@ -7467,9 +7467,9 @@ end, "shekel_fallback_patch")
                           {
                             \str_case:Vn \l_@@_spunit_luaset_canonical_str
                               {
-                                { ° } { _grado   }
-                                { ′ } { _minuto  }
-                                { ″ } { _segundo }
+                                { ° } { _grado:unit   }
+                                { ′ } { _minuto:unit  }
+                                { ″ } { _segundo:unit }
                               }
                           }
                       }
