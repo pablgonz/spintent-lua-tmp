@@ -1,5 +1,4 @@
 test-010: spnD - Adobe Acrobat Reader (32-bit)
-AVPageView  marco de texto
 encabezado    nivel 1  página 1  Comando spnD
 1.
 Sin argumento:        divisores de             n
@@ -68,7 +67,7 @@ Con result-num 1 y el 12:        divisores de     12            son   1   puntos
 Con result false explícito:        divisores de     6
 .
 23.
-Con silent true:        6
+Con silent true:
 .
 24.
 Con silent false explícito:        divisores de     6
@@ -77,7 +76,7 @@ Con silent false explícito:        divisores de     6
 Con silent true y una letra:
 .
 26.
-Con silent y result:        6     son   1   2   3    y   6
+Con silent y result:        multiplicado por
 .
 27.
 Con concept false y result:        6     son   1   2   3    y   6
@@ -159,7 +158,7 @@ Con result-num 10 y el 6:        múltiplos de     6          son   6   12   18 
 Con result false explícito:        múltiplos de     6
 .
 53.
-Con silent true:        6
+Con silent true:
 .
 54.
 Con silent false explícito:        múltiplos de     6
@@ -168,7 +167,7 @@ Con silent false explícito:        múltiplos de     6
 Con silent true y una letra:
 .
 56.
-Con silent y result:        6     son   6   y   12   puntos suspensivos
+Con silent y result:        multiplicado por
 .
 57.
 Con concept false y result:        6     son   6   y   12   puntos suspensivos
@@ -274,7 +273,7 @@ Con result true y tres números:        máximo común divisor           entre  
 Con result false explícito:        máximo común divisor           entre   2   3    y   6
 .
 91.
-Con silent true:        12   18
+Con silent true:
 .
 92.
 Con silent false explícito:        máximo común divisor           entre   12    y   18
@@ -283,7 +282,7 @@ Con silent false explícito:        máximo común divisor           entre   12 
 Con silent true y letras:
 .
 94.
-Con silent y result:        el intervalo de  12 a 18         no incluyendo  12 o 18          es igual a  6
+Con silent y result:        el intervalo de    a            no incluyendo    o
 .
 95.
 Con concept false y result:        12    y   18    es igual a  6
@@ -389,7 +388,7 @@ Con result true y tres números:        mínimo común múltiplo           entre
 Con result false explícito:        mínimo común múltiplo           entre   2   3    y   6
 .
 129.
-Con silent true:        12   18
+Con silent true:
 .
 130.
 Con silent false explícito:        mínimo común múltiplo           entre   12    y   18
@@ -398,7 +397,7 @@ Con silent false explícito:        mínimo común múltiplo           entre   1
 Con silent true y letras:
 .
 132.
-Con silent y result:        el intervalo de  12 a 18         no incluyendo  12 o 18          es igual a  36
+Con silent y result:        el intervalo de    a            no incluyendo    o
 .
 133.
 Con concept false y result:        12    y   18    es igual a  36
@@ -435,3 +434,4 @@ Con otros comandos de la serie:        máximo común divisor         entre   12
 En fórmula destacada:
      divisores de     100          son   1   2   4   5   10   20   25   50    y   100
 .
+
