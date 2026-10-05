@@ -949,6 +949,22 @@ local function spintent_money_key(str)
     return s_lower(key)
 end
 
+-- Códigos ISO 4217 que se imprimen como código cuando se escriben en mayúsculas
+local spintent_money_iso_codes = {
+    clp = true, mxn = true, usd = true, eur = true, gbp = true, jpy = true, cny = true,
+    krw = true, ils = true, inr = true, rub = true, ["try"] = true, uah = true,
+}
+
+-- Escritura válida de una moneda: sin mayúsculas (símbolos y alias) o un
+-- código ISO escrito todo en mayúsculas; cualquier otra mezcla no es válida
+local function spintent_money_valid_case(raw, clean)
+    local trimmed = spintent_trim(raw)
+    if not (s_match(trimmed, "%u") or s_match(trimmed, "\xC3[\x80-\x9E]")) then
+        return true
+    end
+    return spintent_money_iso_codes[clean] and trimmed == s_upper(trimmed)
+end
+
 register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local trimmed = spintent_trim(currency_name)
     local clean = spintent_money_key(currency_name)
@@ -960,7 +976,7 @@ register_tex_cmd("luafun_spmoney_lookup_data", function(currency_name)
     local position = "pre"
     if resolved_symbol == "€" or resolved_symbol == "¢" then position = "post" end
 
-    if trimmed == s_upper(trimmed) and s_match(trimmed, "^%a+$") then
+    if spintent_money_iso_codes[clean] and trimmed == s_upper(trimmed) then
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "true")
     else
         token_set_macro("l__spintent_spmoney_luaset_print_iso_str", "false")
@@ -994,7 +1010,7 @@ register_tex_cmd("luafun_spmoney_normalize_key", function(raw_input)
         resolved_spoken = spintent_currency_spoken_names[clean]
     end
 
-    if resolved_spoken then
+    if resolved_spoken and spintent_money_valid_case(raw_input, clean) then
         token_set_macro("l__spintent_spmoney_luaset_currency_arg_str", resolved_spoken)
         token_set_macro("l__spintent_spmoney_luaset_status_str", "found")
     else
@@ -1572,7 +1588,8 @@ register_tex_cmd("luafun_mc_classify_args", function(raw_csv_list)
 end, { "string" })
 
 -- Clasifica un solo argumento (mismo chequeo que
--- spintent_execute_mcm_mcd_result) -- para \spnD/\spnM.
+-- spintent_execute_mcm_mcd_result) -- para \spnD/\spnM. Un cero se
+-- marca como error: el argumento debe ser un entero positivo.
 register_tex_cmd("luafun_spnmd_classify", function(raw_arg)
     local clean_item = spintent_trim(raw_arg)
     local result = spintent_number_pattern:match(clean_item) or {}
@@ -1581,13 +1598,20 @@ register_tex_cmd("luafun_spnmd_classify", function(raw_arg)
       and (not result.decimal or result.decimal == "") and (not result.period or result.period == "")
       and (not result.extra or s_gsub(result.extra, "%s+", "") == "")
 
-    token_set_macro("l__spintent_spnmd_luaset_is_number_str", es_natural and "true" or "false")
+    local es_cero = es_natural and s_match(result.integer, "^0+$") ~= nil
+
+    token_set_macro("l__spintent_spnmd_luaset_is_number_str", (es_natural and not es_cero) and "true" or "false")
+    token_set_macro("l__spintent_spnM_spnD_luaset_error_str", es_cero and "true" or "false")
 end, { "string" })
 
 -- 8. SÍSTEMA SEXAGESIMAL (\spang)
 
+-- Los minutos y los segundos son opcionales: "45", "45:30" y "45:30:15"
+-- son válidos; una entrada vacía no.
 local spintent_angle_sexag_pattern = Ct(
-    Cg(spintent_num_chunk^-1, "a") * P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1 * P(-1)
+    -P(-1) * Cg(spintent_num_chunk^-1, "a")
+    * (P ":" * Cg(spintent_num_chunk^-1, "b") * (P ":" * Cg(spintent_num_chunk^-1, "c"))^-1)^-1
+    * P(-1)
 )
 
 register_tex_cmd("luafun_spang_parse", function(raw_sexag_str)
@@ -2399,15 +2423,18 @@ end, { "string" })
 -- ------------------------------------------------------------
 -- §12.5  CÍRCULO/CIRCUNFERENCIA — \spcirc
 --
--- El radio se clasifica por forma (nunca por llave): número puro,
--- medida (número+unidad, delegada a spnum/spunit desde expl3), letra
--- suelta, o segmento de dos letras (side/mside según radio-sty,
--- decidido en expl3). Lua solo clasifica y extrae; no arma intent de
--- medida (eso es trabajo ya existente de \spnum/\spunit en expl3).
+-- El radio se clasifica por forma (nunca por llave): número (entero o
+-- decimal, con coma o punto), medida (número+unidad, delegada a
+-- spnum/spunit desde expl3), letra suelta, o segmento de dos letras
+-- (side/mside según radio-sty, decidido en expl3). Lua solo clasifica
+-- y extrae; no arma intent de medida (eso es trabajo ya existente de
+-- \spnum/\spunit en expl3).
 -- ------------------------------------------------------------
 local spintent_geo_single_point = spintent_geo_punto * P(-1)
 
-local spintent_geo_radio_number  = C(R"09"^1) * P(-1)
+-- "number": entero o decimal. "2.5 cm" no coincide (tiene unidad) y
+-- sigue siendo "measure".
+local spintent_geo_radio_number  = C(R"09"^1 * (S".," * R"09"^1)^-1) * P(-1)
 local spintent_geo_radio_label   = C(R"az" + R"AZ") * P(-1)
 local spintent_geo_radio_segment = Ct( spintent_geo_punto * spintent_geo_punto ) * P(-1)
 

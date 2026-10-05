@@ -9976,6 +9976,7 @@ end, "shekel_fallback_patch")
           {
             \MathMLintent { :silent } { ( }
           }
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent "intervalo"
         \seq_use:Nnnn \l_@@_mc_args_seq
           {
             \MathMLintent { :silent } { , }
@@ -10355,7 +10356,10 @@ end, "shekel_fallback_patch")
         \seq_set_from_clist:Ne
           \l_@@_md_out_seq { \tl_use:c { l_@@_sp #1 _luaset_result_tl } }
         \seq_use:Nnnn \l_@@_md_out_seq
-          { \MathMLintent { _y- }     { , } }
+          {
+            \MathMLintent { :silent } { , }
+            \MathMLintent { _y- } { \c_@@_invisible_sep_int } % "y" (solo dos)
+          }
           { \MathMLintent { :silent } { , } }
           {
             \MathMLintent { :silent } { , }
@@ -10902,9 +10906,9 @@ end, "shekel_fallback_patch")
 %
 % \begin{variable}[int]{
 %   \l_@@_spmQ_join_word_str,
-%   \l_@@_spnQ_intent_read_sign_str,
-%   \l_@@_spnQ_wrap_parens_l_tl,
-%   \l_@@_spnQ_wrap_parens_r_tl,
+%   \l_@@_spmQ_intent_read_sign_str,
+%   \l_@@_spmQ_wrap_parens_l_tl,
+%   \l_@@_spmQ_wrap_parens_r_tl,
 %   \l_@@_saved_luamml_flag_int}
 %   The variable \myhlc|\l_@@_spmQ_join_word_str| stores the value set by
 %   the key \mykey[spmQ]{join-word} which will be verbalized by
@@ -10913,15 +10917,15 @@ end, "shekel_fallback_patch")
 %
 %   \smallskip
 %
-%   The variable \myhlc|\l_@@_spnQ_intent_read_sign_str| stores the
+%   The variable \myhlc|\l_@@_spmQ_intent_read_sign_str| stores the
 %   |:intent| passed to |\MathMLintent| when the signs
 %   `$\mathcolor{red}{+}$' or `$\mathcolor{red}{-}$' are present in the
 %   integer part, used by the function \myhlc|\@@_spmQ_print_scale_int:n|.
 %
 %   \smallskip
 %
-%   The variables \myhlc|\l_@@_spnQ_wrap_parens_l_tl| and
-%   \myhlc|\l_@@_spnQ_wrap_parens_r_tl| store the sized parentheses set
+%   The variables \myhlc|\l_@@_spmQ_wrap_parens_l_tl| and
+%   \myhlc|\l_@@_spmQ_wrap_parens_r_tl| store the sized parentheses set
 %   by the function \myhlc|\@@_spmQ_set_wrap_parens_size:| and used by the
 %   key \mykey[spmQ]{wrap-parens}.
 %
@@ -10935,9 +10939,9 @@ end, "shekel_fallback_patch")
 %   before |\frac| has expanded.
 %    \begin{macrocode}
 \str_new:N \l_@@_spmQ_join_word_str
-\str_new:N \l_@@_spnQ_intent_read_sign_str
-\tl_new:N  \l_@@_spnQ_wrap_parens_l_tl
-\tl_new:N  \l_@@_spnQ_wrap_parens_r_tl
+\str_new:N \l_@@_spmQ_intent_read_sign_str
+\tl_new:N  \l_@@_spmQ_wrap_parens_l_tl
+\tl_new:N  \l_@@_spmQ_wrap_parens_r_tl
 \int_new:N \l_@@_saved_luamml_flag_int
 %    \end{macrocode}
 % \end{variable}
@@ -11001,10 +11005,10 @@ end, "shekel_fallback_patch")
     use-dfrac         .bool_set:N = \l_@@_spmQ_use_dfrac_bool,
     use-dfrac         .initial:n = false,
     use-dfrac         .value_required:n = true,
-    wrap-parens       .bool_set:N = \l_@@_spnQ_wrap_parens_bool,
+    wrap-parens       .bool_set:N = \l_@@_spmQ_wrap_parens_bool,
     wrap-parens       .initial:n  = false,
     wrap-parens       .value_required:n = true,
-    read-parens       .bool_set:N = \l_@@_spnQ_read_parens_bool,
+    read-parens       .bool_set:N = \l_@@_spmQ_read_parens_bool,
     read-parens       .initial:n  = true,
     read-parens       .value_required:n = true,
     unknown           .code:n =
@@ -11021,8 +11025,8 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spmQ_set_wrap_parens_size:}
 %   The function \myhlc|\@@_spmQ_set_wrap_parens_size:| captures the
 %   current mathematical style using the primitive |\mathstyle| from
-%   \hologo{LuaTeX} and sets the variables \cs{l_@@_spnQ_wrap_parens_l_tl}
-%   and \cs{l_@@_spnQ_wrap_parens_r_tl} with the appropriate size for the
+%   \hologo{LuaTeX} and sets the variables \cs{l_@@_spmQ_wrap_parens_l_tl}
+%   and \cs{l_@@_spmQ_wrap_parens_r_tl} with the appropriate size for the
 %   parentheses. Display styles (|0| and |1|) receive |\Bigl\lparen| and
 %   |\Bigr\rparen|; text styles (|2| and |3|) receive |\bigl\lparen| and
 %   |\bigr\rparen|; any other style falls back to unsized |\lparen| and
@@ -11040,38 +11044,38 @@ end, "shekel_fallback_patch")
       {
         { 0 }
           {
-            \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
-            \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
+            \tl_set:Nn \l_@@_spmQ_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn \l_@@_spmQ_wrap_parens_r_tl { \Bigr \rparen }
           }
         { 1 }
           {
-            \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
-            \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
+            \tl_set:Nn \l_@@_spmQ_wrap_parens_l_tl { \Bigl \lparen }
+            \tl_set:Nn \l_@@_spmQ_wrap_parens_r_tl { \Bigr \rparen }
           }
         { 2 }
           {
-            \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
-            \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
+            \tl_set:Nn \l_@@_spmQ_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn \l_@@_spmQ_wrap_parens_r_tl { \bigr \rparen }
           }
         { 3 }
           {
-            \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \bigl \lparen }
-            \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \bigr \rparen }
+            \tl_set:Nn \l_@@_spmQ_wrap_parens_l_tl { \bigl \lparen }
+            \tl_set:Nn \l_@@_spmQ_wrap_parens_r_tl { \bigr \rparen }
           }
       }
       {
-        \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \lparen }
-        \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \rparen }
+        \tl_set:Nn \l_@@_spmQ_wrap_parens_l_tl { \lparen }
+        \tl_set:Nn \l_@@_spmQ_wrap_parens_r_tl { \rparen }
       }
 %    \end{macrocode}
 %   If the key \mykey[spmQ]{use-dfrac} is active, we must reset the
-%   variables \cs{l_@@_spnQ_wrap_parens_l_tl} and
-%   \cs{l_@@_spnQ_wrap_parens_r_tl} to |\Bigl|/|\Bigr| unconditionally.
+%   variables \cs{l_@@_spmQ_wrap_parens_l_tl} and
+%   \cs{l_@@_spmQ_wrap_parens_r_tl} to |\Bigl|/|\Bigr| unconditionally.
 %    \begin{macrocode}
     \bool_if:NT \l_@@_spmQ_use_dfrac_bool
       {
-        \tl_set:Nn \l_@@_spnQ_wrap_parens_l_tl { \Bigl \lparen }
-        \tl_set:Nn \l_@@_spnQ_wrap_parens_r_tl { \Bigr \rparen }
+        \tl_set:Nn \l_@@_spmQ_wrap_parens_l_tl { \Bigl \lparen }
+        \tl_set:Nn \l_@@_spmQ_wrap_parens_r_tl { \Bigr \rparen }
       }
   }
 %    \end{macrocode}
@@ -11084,34 +11088,34 @@ end, "shekel_fallback_patch")
 %   \mykey[spmQ]{wrap-parens} is active. They first call
 %   \myhlc|\@@_spmQ_set_wrap_parens_size:| to determine the correct size
 %   for the current mathematical style, then print the appropriate
-%   parenthesis stored in \cs{l_@@_spnQ_wrap_parens_l_tl} or
-%   \cs{l_@@_spnQ_wrap_parens_r_tl}.
+%   parenthesis stored in \cs{l_@@_spmQ_wrap_parens_l_tl} or
+%   \cs{l_@@_spmQ_wrap_parens_r_tl}.
 %
 %   \smallskip
 %
-%   If the variable \cs{l_@@_spnQ_read_parens_bool}, controlled by the
+%   If the variable \cs{l_@@_spmQ_read_parens_bool}, controlled by the
 %   key \mykey[spmQ]{read-parens}, is \emph{false}, each parenthesis is
 %   wrapped inside |\MathMLintent{:silent}| so that
 %   \mynvmath{NVDA/MathCAT} does not verbalize them.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spmQ_start_wrap_parens:
   {
-    \bool_if:NT \l_@@_spnQ_wrap_parens_bool
+    \bool_if:NT \l_@@_spmQ_wrap_parens_bool
       {
         \@@_spmQ_set_wrap_parens_size:
-        \bool_if:NTF \l_@@_spnQ_read_parens_bool
-          { \l_@@_spnQ_wrap_parens_l_tl }
-          { \MathMLintent { :silent } { \l_@@_spnQ_wrap_parens_l_tl } }
+        \bool_if:NTF \l_@@_spmQ_read_parens_bool
+          { \l_@@_spmQ_wrap_parens_l_tl }
+          { \MathMLintent { :silent } { \l_@@_spmQ_wrap_parens_l_tl } }
       }
   }
 \cs_new_protected:Nn \@@_spmQ_stop_wrap_parens:
   {
-    \bool_if:NT \l_@@_spnQ_wrap_parens_bool
+    \bool_if:NT \l_@@_spmQ_wrap_parens_bool
       {
         \@@_spmQ_set_wrap_parens_size:
-        \bool_if:NTF \l_@@_spnQ_read_parens_bool
-          { \l_@@_spnQ_wrap_parens_r_tl }
-          { \MathMLintent { :silent } { \l_@@_spnQ_wrap_parens_r_tl } }
+        \bool_if:NTF \l_@@_spmQ_read_parens_bool
+          { \l_@@_spmQ_wrap_parens_r_tl }
+          { \MathMLintent { :silent } { \l_@@_spmQ_wrap_parens_r_tl } }
       }
   }
 %    \end{macrocode}
@@ -11185,7 +11189,7 @@ end, "shekel_fallback_patch")
 %   If the status is |true|, it inspects \cs{l_@@_luaset_sign_tl}. When
 %   the sign is \emph{empty}, it delegates directly to
 %   \myhlc|\@@_spmQ_print_scale_int:| to render the scaled integer. When
-%   a sign is present, it sets \myhlc|\l_@@_spnQ_intent_read_sign_str| to
+%   a sign is present, it sets \myhlc|\l_@@_spmQ_intent_read_sign_str| to
 %   either |_más:prefix($e)| or |_menos:prefix($e)| and wraps the sign
 %   glyph together with a \mynvmath{MathML} argument |($e)| containing the
 %   scaled integer inside a |\MathMLintent|, so that
@@ -11213,13 +11217,13 @@ end, "shekel_fallback_patch")
             \str_if_eq:VnTF \l_@@_luaset_sign_tl { + }
               {
                 \str_set:Nn
-                  \l_@@_spnQ_intent_read_sign_str { _más:prefix($e) }
+                  \l_@@_spmQ_intent_read_sign_str { _más:prefix($e) }
               }
               {
                 \str_set:Nn
-                  \l_@@_spnQ_intent_read_sign_str { _menos:prefix($e) }
+                  \l_@@_spmQ_intent_read_sign_str { _menos:prefix($e) }
               }
-            \MathMLintent { \l_@@_spnQ_intent_read_sign_str }
+            \MathMLintent { \l_@@_spmQ_intent_read_sign_str }
               {
                 \l_@@_luaset_sign_tl \c_@@_invisible_sep_int % \@@_invisible_sep:
                 \MathMLarg { e } { \@@_spmQ_print_scale_int: }
