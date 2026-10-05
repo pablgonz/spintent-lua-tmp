@@ -2981,7 +2981,7 @@ end, "shekel_fallback_patch")
 %   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
 %   |$\spmQ{2}{5}{7}$| imprimirá `$\scalerel{2}{\frac{5}{7}}$'
 %   en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
-%   \emph{«dos y cinco séptimos»}.
+%   \emph{«dos y la fracción con numerador cinco y denominador siete»}.
 % \end{function}
 %
 % \smallskip
@@ -3004,13 +3004,16 @@ end, "shekel_fallback_patch")
 % conexión entre el entero y la fracción que forman el \emph{número mixto}.
 % Si se establece en |entero|, |$\spmQ[join-word=entero]{1}{5}{7}$|
 % imprimirá `$\scalerel{1}{\frac{5}{7}}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«un entero cinco séptimos»};
+% \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«un entero la fracción con numerador cinco y denominador siete»};
 % si se establece en |enteros|,|$\spmQ[join-word=enteros]{2}{5}{7}$|
 % imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«dos enteros cinco séptimos»};
+% \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«dos enteros la fracción con numerador cinco y denominador siete»};
 % si se establece en |y|, |$\spmQ[join-word=y]{2}{5}{7}$|
 % imprimirá `$\scalerel{2}{\frac{5}{7}}$' en la salida \texttt{PDF} y
-% \mynvmath{NVDA/MathCAT} verbalizará \emph{«dos y cinco séptimos»}.
+% \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«dos y la fracción con numerador cinco y denominador siete»}.
 %
 % \smallskip
 %
@@ -3022,9 +3025,12 @@ end, "shekel_fallback_patch")
 % comando |\spnZ|, añadiendo así \emph{semántica de entero} en la
 % estructura \mynvmath{MathML} de la salida \texttt{PDF}. Si se establece
 % en |true|, \mymarg{numerador} y \mymarg{denominador} se pasarán a |\spnZ|
-% y \mynvmath{NVDA/MathCAT} los verbalizará correctamente como
-% \emph{números ordinales}; si se establece en |false|, los argumentos
-% se tipografían directamente sin procesamiento semántico adicional.
+% y, por ejemplo, |$\spmQ{2}{5}{7}$| se verbalizará
+% \emph{«dos y la fracción con numerador cinco y denominador siete»}; si se
+% establece en |false|, los argumentos se tipografían directamente sin
+% procesamiento semántico adicional y \mynvmath{NVDA/MathCAT} aplica sus
+% propias reglas a la fracción: |$\spmQ[use-spnZ=false]{2}{5}{7}$| se
+% verbalizará \emph{«dos y cinco séptimos»}.
 %
 % \smallskip
 %
@@ -4406,6 +4412,12 @@ end, "shekel_fallback_patch")
 % \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del triángulo A B C»};
 % |$\spAfig(ABCD)$| imprimirá `$\mathcal{A}_{\mdlgwhtsquare ABCD}$' en la salida
 % \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del cuadrado A B C D»};
+% |$\spAfig(ABCDE)$| imprimirá `$\mathcal{A}_{ABCDE}$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«área del pentágono A B C D E»}.
+% Con cinco o más puntos no se imprime ningún símbolo y se añade a la
+% verbalización el nombre del polígono: \emph{«pentágono»}, \emph{«hexágono»},
+% \emph{«heptágono»} u \emph{«octágono»} de cinco a ocho puntos, y
+% \emph{«polígono»} desde nueve puntos.
 %
 % \smallskip
 %
@@ -4467,6 +4479,11 @@ end, "shekel_fallback_patch")
 % y el \myparg{argumento}; si se establece en |false|, \mynvmath{NVDA/MathCAT}
 % solo verbalizará el \myparg{argumento} acorde al valor establecido por
 % la llave \mykey{read-cmd}.
+%
+% \begin{important}*
+%   Utilizar |concept=false| sin el \myparg{argumento} es equivalente a usar
+%   |silent=true|.
+% \end{important}
 %
 % \smallskip
 %
@@ -4625,6 +4642,12 @@ end, "shekel_fallback_patch")
 % \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del triángulo A B C»};
 % |$\spPfig(ABCD)$| imprimirá `$\mathcal{P}_{\mdlgwhtsquare ABCD}$' en la salida
 % \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del cuadrado A B C D»};
+% |$\spPfig(ABCDE)$| imprimirá `$\mathcal{P}_{ABCDE}$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«perímetro del pentágono A B C D E»}.
+% Con cinco o más puntos no se imprime ningún símbolo y se añade a la
+% verbalización el nombre del polígono: \emph{«pentágono»}, \emph{«hexágono»},
+% \emph{«heptágono»} u \emph{«octágono»} de cinco a ocho puntos, y
+% \emph{«polígono»} desde nueve puntos.
 %
 % \smallskip
 %
@@ -4686,6 +4709,11 @@ end, "shekel_fallback_patch")
 % y el \myparg{argumento}; si se establece en |false|, \mynvmath{NVDA/MathCAT}
 % solo verbalizará el \myparg{argumento} acorde al valor establecido por
 % la llave \mykey{read-cmd}.
+%
+% \begin{important}*
+%   Utilizar |concept=false| sin el \myparg{argumento} es equivalente a usar
+%   |silent=true|.
+% \end{important}
 %
 % \smallskip
 %
@@ -5110,6 +5138,11 @@ end, "shekel_fallback_patch")
 % si se establece en |false|, \mynvmath{NVDA/MathCAT} solo verbalizará el
 % argumento \myparg{centro} o \myparg{centro\textnormal{\textcolor{red}{,}} radio}
 % acorde al valor establecido por la llave \mykey{read-cmd}.
+%
+% \begin{important}*
+%   Utilizar |concept=false| sin el argumento \myparg{centro} es equivalente a
+%   usar |silent=true|.
+% \end{important}
 %
 % \smallskip
 %

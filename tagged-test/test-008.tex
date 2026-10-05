@@ -218,4 +218,39 @@
 70. En fórmula destacada:
 \[ \spusep[size=Big]{(} a \spmsym b \spusep[size=Big]{)} \spdsym c \].
 
+\section*{H. Comando spnewread: espacios, guiones bajos y comandos propios}
+
+% Requiere spnewread-sanitize.patch. La lectura se normaliza: los espacios
+% y los guiones bajos pasan a guiones, y se quitan los del inicio y del final.
+\newcommand{\xcuad}{x^2}%
+\spnewread{\neq}{es distinto de}%
+\spnewread{\geq}{es_mayor_o_igual_que}%
+\spnewread{\subset}{_es-subconjunto-de}%
+\spnewread{\in}{pertenece a}%
+\spnewread{\xcuad}{x al cuadrado}%
+
+% doc: «a es distinto de b»
+71. Lectura registrada con espacios: $a \spread{\neq} b$.
+
+% doc: «a es mayor o igual que b»
+72. Lectura registrada con guiones bajos: $a \spread{\geq} b$.
+
+% doc: «A es subconjunto de B»
+73. Lectura registrada con un guion bajo al inicio: $A \spread{\subset} B$.
+
+% doc: «x pertenece a A»
+74. Otra lectura con espacios: $x \spread{\in} A$.
+
+% doc: imprime x^2 -- «x al cuadrado»
+75. Un comando definido por el usuario: $\spread{\xcuad}$.
+
+% doc: «y es igual a x al cuadrado más 1»
+76. El comando definido por el usuario en una fórmula: $y = \spread{\xcuad} + 1$.
+
+% doc: no se verbaliza
+77. El mismo comando con silent true: $\spread[silent=true]{\xcuad}$.
+
+% doc: «equis al cuadrado»
+78. El mismo comando con read-arg: $\spread[read-arg={equis al cuadrado}]{\xcuad}$.
+
 \end{document}
