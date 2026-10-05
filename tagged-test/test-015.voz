@@ -4,303 +4,448 @@ encabezado    nivel 1  página 1  A.
 Comando spPoly: argumentos
 1.
 Tres puntos:        triángulo  A   B   C
+.
 2.
 Cuatro puntos:        cuadrado  A   B   C   D
+.
 3.
 Cinco puntos:        pentágono  A   B   C   D   E
+.
 4.
 Seis puntos:        hexágono  A   B   C   D   E   F
+.
 5.
 Siete puntos:        heptágono  A   B   C   D   E   F   G
+.
 6.
 Ocho puntos:        octágono  A   B   C   D   E   F   G   H
+.
 7.
 Nueve puntos:        polígono  A   B   C   D   E   F   G   H   I
+.
 8.
 Tres puntos con comas:        triángulo  A   B   C
+.
 9.
 Tres puntos con comas y espacios:        triángulo  A   B   C
+.
 10.
 Con primas:        triángulo  A prima   B prima   C prima
+.
 11.
 Con subíndices:        triángulo  A sub uno   B sub dos   C sub tres
+.
 12.
 Cuatro puntos con subíndices:        cuadrado  A sub uno   B sub dos   C sub tres   D sub cuatro
+.
 13.
 Con otras letras:        triángulo  P   Q   R
+.
 14.
 Cuatro puntos con otras letras:        cuadrado  M   N   O   P
+.
 encabezado    nivel 1  B.
 Comando spPoly: llaves
 15.
 Con read-cmd school, el valor por defecto:        triángulo  A   B   C
+.
 16.
 Con read-cmd mathcat:        triángulo           a                  b                  c
+.
 17.
 Con prefix y tres puntos:        el triángulo  A   B   C
+.
 18.
 Con prefix y cuatro puntos:        el cuadrado  A   B   C   D
+.
 19.
 Con prefix y cinco puntos:        el pentágono  A   B   C   D   E
+.
 20.
 Con concept true, el valor por defecto:        triángulo  A   B   C
+.
 21.
 Con concept false y tres puntos:        A   B   C
+.
 22.
 Con concept false y cuatro puntos:        A   B   C   D
+.
 23.
 Con concept false y cinco puntos:        A   B   C   D   E
+.
 24.
 Con print-sym true, el valor por defecto:        triángulo  A   B   C
+.
 25.
 Con print-sym true y cuatro puntos:        cuadrado  A   B   C   D
+.
 26.
 Con print-sym false y tres puntos:        triángulo  A   B   C
+.
 27.
 Con print-sym false y cuatro puntos:        cuadrado  A   B   C   D
+.
 28.
 Con silent false, el valor por defecto:        triángulo  A   B   C
+.
 29.
 Con silent true y tres puntos:
+.
 30.
 Con silent true y cuatro puntos:
+.
 31.
 Con silent true y cinco puntos:
+.
 32.
 Con todas las llaves:        el triángulo           a        subíndice 1           b        subíndice 2           c        subíndice 3
+.
 encabezado    nivel 1  C.
 Comando spAfig: argumentos
 33.
 Sin argumentos:        área
+.
 34.
 Un número:        área uno
+.
 35.
 La letra n:        área n
+.
 36.
 Otro número:        área dos
+.
 37.
 Un número de dos cifras:        área 12
+.
 página 2  38.
 Tres puntos:        área del triángulo  A   B   C
+.
 39.
 Cuatro puntos:        área del cuadrado  A   B   C   D
+.
 40.
 Cinco puntos:        área del pentágono  A   B   C   D   E
+.
 41.
 Tres puntos con comas:        área del triángulo  A   B   C
+.
 42.
 Con primas:        área del triángulo  A prima   B prima   C prima
+.
 43.
 Con subíndices:        área del triángulo  A sub uno   B sub dos   C sub tres
+.
 44.
 La figura:        área de la figura
+.
 45.
 La figura con subíndice:        área de la figura uno
+.
 46.
 El polígono:        área del polígono
+.
 47.
 El polígono con subíndice:        área del polígono uno
+.
 48.
 La parte basal:        área basal
+.
 49.
 La parte lateral:        área lateral
+.
 50.
 La parte total:        área total
+.
 51.
 El total con subíndice literal:        área total n
+.
 encabezado    nivel 1  C.
 Comando spAfig: llaves
 52.
 Con read-cmd school, el valor por defecto:        área del triángulo  A   B   C
+.
 53.
 Con read-cmd mathcat:        área del triángulo           a                  b                  c
+.
 54.
 Con prefix y sin argumentos:        el área
+.
 55.
 Con prefix y un número:        el área uno
+.
 56.
 Con prefix y tres puntos:        el área del triángulo  A   B   C
+.
 57.
 Con prefix y la figura:        el área de la figura
+.
 58.
 Con concept true, el valor por defecto:        área del triángulo  A   B   C
+.
 59.
 Con concept false y sin argumentos:
+.
 60.
 Con concept false y un número:        uno
+.
 61.
 Con concept false y tres puntos:        A   B   C
+.
 62.
 Con concept false y cuatro puntos:        A   B   C   D
+.
 63.
 Con concept false y la figura:        de la figura
+.
 64.
 Con concept false y el polígono con subíndice:        del polígono uno
+.
 65.
 Con read-arg y cuatro puntos:        área del trapecio  A   B   C   D
+.
 66.
 Con read-arg y tres puntos:        área del prisma  A   B   C
+.
 67.
 Con read-arg de varias palabras:        área del triángulo isósceles  A   B   C
+.
 68.
 Con read-arg y concept false:        trapecio  A   B   C   D
+.
 69.
 Con read-arg y prefix:        el área del trapecio  A   B   C   D
+.
 70.
 Con read-sub false, el valor por defecto:        área uno
+.
 71.
 Con read-sub true y un número:        área sub uno
+.
 72.
 Con read-sub true y la figura:        área de la figura sub uno
+.
 73.
 Con read-sub false y la figura:        área de la figura uno
+.
 74.
 Con read-sub true y el total:        área total sub n
+.
 75.
 Con print-sym auto, el valor por defecto:        área del triángulo  A   B   C
+.
 76.
 Con print-sym none y tres puntos:        área del triángulo  A   B   C
+.
 77.
 Con print-sym none y cuatro puntos:        área del cuadrado  A   B   C   D
+.
 78.
 Con print-sym triangle y un número:        área del triángulo uno
+.
 79.
 Con print-sym square y un número:        área del cuadrado uno
+.
 página 3  80.
 Con silent false, el valor por defecto:        área del triángulo  A   B   C
+.
 81.
 Con silent true y sin argumentos:
+.
 82.
 Con silent true y un número:
+.
 83.
 Con silent true y tres puntos:
+.
 84.
 Con silent true y la figura:
+.
 85.
 Con todas las llaves:        el área del trapecio           a                  b                  c                  d
+.
 encabezado    nivel 1  D.
 Comando spPfig: argumentos
 86.
 Sin argumentos:        perímetro
+.
 87.
 Un número:        perímetro uno
+.
 88.
 La letra n:        perímetro n
+.
 89.
 Otro número:        perímetro dos
+.
 90.
 Un número de dos cifras:        perímetro 12
+.
 91.
 Tres puntos:        perímetro del triángulo  A   B   C
+.
 92.
 Cuatro puntos:        perímetro del cuadrado  A   B   C   D
+.
 93.
 Cinco puntos:        perímetro del pentágono  A   B   C   D   E
+.
 94.
 Tres puntos con comas:        perímetro del triángulo  A   B   C
+.
 95.
 Con primas:        perímetro del triángulo  A prima   B prima   C prima
+.
 96.
 Con subíndices:        perímetro del triángulo  A sub uno   B sub dos   C sub tres
+.
 97.
 La figura:        perímetro de la figura
+.
 98.
 La figura con subíndice:        perímetro de la figura uno
+.
 99.
 El polígono:        perímetro del polígono
+.
 100.
 El polígono con subíndice:        perímetro del polígono uno
+.
 101.
 La parte basal:        perímetro basal
+.
 102.
 La parte lateral:        perímetro lateral
+.
 103.
 La parte total:        perímetro total
+.
 104.
 El total con subíndice literal:        perímetro total n
+.
 encabezado    nivel 1  D.
 Comando spPfig: llaves
 105.
 Con read-cmd school, el valor por defecto:        perímetro del triángulo  A   B   C
+.
 106.
 Con read-cmd mathcat:        perímetro del triángulo           a                  b                  c
+.
 107.
 Con prefix y sin argumentos:        el perímetro
+.
 108.
 Con prefix y un número:        el perímetro uno
+.
 109.
 Con prefix y tres puntos:        el perímetro del triángulo  A   B   C
+.
 110.
 Con prefix y la figura:        el perímetro de la figura
+.
 111.
 Con concept true, el valor por defecto:        perímetro del triángulo  A   B   C
+.
 112.
 Con concept false y sin argumentos:
+.
 113.
 Con concept false y un número:        uno
+.
 114.
 Con concept false y tres puntos:        A   B   C
+.
 115.
 Con concept false y cuatro puntos:        A   B   C   D
+.
 116.
 Con concept false y la figura:        de la figura
+.
 117.
 Con concept false y el polígono con subíndice:        del polígono uno
+.
 página 4  118.
 Con read-arg y cuatro puntos:        perímetro del trapecio  A   B   C   D
+.
 119.
 Con read-arg y tres puntos:        perímetro del prisma  A   B   C
+.
 120.
 Con read-arg de varias palabras:        perímetro del triángulo isósceles  A   B   C
+.
 121.
 Con read-arg y concept false:        trapecio  A   B   C   D
+.
 122.
 Con read-arg y prefix:        el perímetro del trapecio  A   B   C   D
+.
 123.
 Con read-sub false, el valor por defecto:        perímetro uno
+.
 124.
 Con read-sub true y un número:        perímetro sub uno
+.
 125.
 Con read-sub true y la figura:        perímetro de la figura sub uno
+.
 126.
 Con read-sub false y la figura:        perímetro de la figura uno
+.
 127.
 Con read-sub true y el total:        perímetro total sub n
+.
 128.
 Con print-sym auto, el valor por defecto:        perímetro del triángulo  A   B   C
+.
 129.
 Con print-sym none y tres puntos:        perímetro del triángulo  A   B   C
+.
 130.
 Con print-sym none y cuatro puntos:        perímetro del cuadrado  A   B   C   D
+.
 131.
 Con print-sym triangle y un número:        perímetro del triángulo uno
+.
 132.
 Con print-sym square y un número:        perímetro del cuadrado uno
+.
 133.
 Con silent false, el valor por defecto:        perímetro del triángulo  A   B   C
+.
 134.
 Con silent true y sin argumentos:
+.
 135.
 Con silent true y un número:
+.
 136.
 Con silent true y tres puntos:
+.
 137.
 Con silent true y la figura:
+.
 138.
 Con todas las llaves:        el perímetro del trapecio           a                  b                  c                  d
+.
 encabezado    nivel 1  E.
 En fórmulas
 139.
 Área de un triángulo:        área del triángulo  A   B   C            es igual a          área uno   más   área dos
+.
 140.
 Área total, basal y lateral:         área total   es igual a          área basal   más   área lateral
+.
 141.
 Perímetro de un cuadrado:        perímetro del cuadrado  A   B   C   D            es igual a         4  punto  medida del lado  A   B
+.
 142.
 Área y perímetro de la misma figura:        área del cuadrado  A   B   C   D             perímetro del cuadrado  A   B   C   D
+.
 143.
 Un polígono y su área:        triángulo  A   B   C            flecha doble derecha         área del triángulo  A   B   C
+.
 144.
 En fórmula destacada:
      perímetro del triángulo  A   B   C            es igual a         medida del lado  A   B            más  medida del lado  B   C            más  medida del lado  C   A
+.
+
 
