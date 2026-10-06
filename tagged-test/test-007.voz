@@ -1,15 +1,12 @@
 test-007: spsiglo - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
 1/2 C:\Users\pablg\spintent-lua-tmp\tagged-test\test-007.pdf, 2 páginas
-encabezado  nivel 1  página 1  A.
-Comando spsiglo, argumento arábigo y romano (modo texto)
-1. Arábigo 21:21. 2. Romano XXI:21. 3. Arábigo 1:1. 4. Romano I:1. 5. Arábigo 4:4. 6. Romano IV:4. 7. Arábigo 9:9. 8. Arábigo 14:14. 9. Arábigo 19:19. 10. Romano XIX:19. 11. Arábigo 40:40. 12. Arábigo 99:99. 13. Arábigo 400:400. 14. Arábigo 1999:1999. 15. Romano MCMXCIX:1999. 16. Arábigo 2000:2000. 17. Arábigo 3999, el máximo:3999. 18. Romano MMMCMXCIX:3999. 19. Romano en minúsculas:21. encabezado  nivel 1  B.
-Comando spsiglo en modo matemático
+encabezado  nivel 1  página 1  A. Comando spsiglo, argumento arábigo y romano (modo texto)
+1. Arábigo 21:21. 2. Romano XXI:21. 3. Arábigo 1:1. 4. Romano I:1. 5. Arábigo 4:4. 6. Romano IV:4. 7. Arábigo 9:9. 8. Arábigo 14:14. 9. Arábigo 19:19. 10. Romano XIX:19. 11. Arábigo 40:40. 12. Arábigo 99:99. 13. Arábigo 400:400. 14. Arábigo 1999:1999. 15. Romano MCMXCIX:1999. 16. Arábigo 2000:2000. 17. Arábigo 3999, el máximo:3999. 18. Romano MMMCMXCIX:3999. 19. Romano en minúsculas:21. encabezado  nivel 1  B. Comando spsiglo en modo matemático
 20. Arábigo: 21
 21. Romano: 21
 22. Con print-era ac: 5 antes de cristo
-encabezado  nivel 1  C.
-Llave print-era
+encabezado  nivel 1  C. Llave print-era
 23. Por defecto:21. 24. Con none:21. 25. Con ac:21antes de cristo.
 
 26. Con dc:21después de cristo.
@@ -18,8 +15,7 @@ Llave print-era
 
 28. Con dc y número romano:15después de cristo.
 
-encabezado  nivel 1  D.
-Comando sptime (modo matemático)
+encabezado  nivel 1  D. Comando sptime (modo matemático)
 29. Horas y minutos: 23:45  minutos
 30. Con segundos: 23:45  minutos con  30 segundos
 31. Medianoche: 00:00  minutos
@@ -32,8 +28,7 @@ Comando sptime (modo matemático)
 38. Con segundos y ceros: 09:07  minutos con  03 segundos
 39. Último segundo del día: 23:59  minutos con  59 segundos
 40. Sin cero inicial: 1:05  minutos
-encabezado  nivel 1  E.
-Comando spdate (modo matemático)
+encabezado  nivel 1  E. Comando spdate (modo matemático)
 41. Formato DD/MM/YYYY: 02/01/1981
 42. Formato YYYY-MM-DD: 1981-01-02
 43. Formato DD-MM-YYYY: 02-01-1981
@@ -44,8 +39,7 @@ Comando spdate (modo matemático)
 48. Año bisiesto con YYYY-MM-DD: 2024-02-29
 49. (ESTA SALIDA NO ES CORRECTA)
 Sin ceros iniciales: 1/1/2000
-encabezado  nivel 1  F.
-En contexto y dentro de fórmulas
+encabezado  nivel 1  F. En contexto y dentro de fórmulas
 50. Siglo en una oración: Nació en el siglo19 en Valparaíso.
 
 51. Siglo antes de Cristo en una oración: Ocurrió en el siglo5antes de cristo.

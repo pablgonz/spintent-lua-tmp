@@ -1,7 +1,6 @@
 test-015: spPoly - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado  nivel 1  página 1  A.
-Comando spPoly: argumentos
+encabezado  nivel 1  página 1  A. Comando spPoly: argumentos
 1. Tres puntos: triángulo  A  B  C
 2. Cuatro puntos: cuadrado  A  B  C  D
 3. Cinco puntos: pentágono  A  B  C  D  E
@@ -16,8 +15,7 @@ Comando spPoly: argumentos
 12. Cuatro puntos con subíndices: cuadrado  A sub uno  B sub dos  C sub tres  D sub cuatro
 13. Con otras letras: triángulo  P  Q  R
 14. Cuatro puntos con otras letras: cuadrado  M  N  O  P
-encabezado  nivel 1  B.
-Comando spPoly: llaves
+encabezado  nivel 1  B. Comando spPoly: llaves
 15. Con read-cmd school, el valor por defecto: triángulo  A  B  C
 16. Con read-cmd mathcat: triángulo  a  b  c
 17. Con prefix y tres puntos: el triángulo  A  B  C
@@ -36,8 +34,7 @@ Comando spPoly: llaves
 30. Con silent true y cuatro puntos:
 31. Con silent true y cinco puntos:
 32. Con todas las llaves: el triángulo  a  subíndice 1  b  subíndice 2  c  subíndice 3
-encabezado  nivel 1  C.
-Comando spAfig: argumentos
+encabezado  nivel 1  C. Comando spAfig: argumentos
 33. Sin argumentos: área
 34. Un número: área uno
 35. La letra n: área n
@@ -57,8 +54,7 @@ Comando spAfig: argumentos
 49. La parte lateral: área lateral
 50. La parte total: área total
 51. El total con subíndice literal: área total n
-encabezado  nivel 1  C.
-Comando spAfig: llaves
+encabezado  nivel 1  C. Comando spAfig: llaves
 52. Con read-cmd school, el valor por defecto: área del triángulo  A  B  C
 53. Con read-cmd mathcat: área del triángulo  a  b  c
 54. Con prefix y sin argumentos: el área
@@ -93,8 +89,7 @@ Comando spAfig: llaves
 83. Con silent true y tres puntos:
 84. Con silent true y la figura:
 85. Con todas las llaves: el área del trapecio  a  b  c  d
-encabezado  nivel 1  D.
-Comando spPfig: argumentos
+encabezado  nivel 1  D. Comando spPfig: argumentos
 86. Sin argumentos: perímetro
 87. Un número: perímetro uno
 88. La letra n: perímetro n
@@ -114,8 +109,7 @@ Comando spPfig: argumentos
 102. La parte lateral: perímetro lateral
 103. La parte total: perímetro total
 104. El total con subíndice literal: perímetro total n
-encabezado  nivel 1  D.
-Comando spPfig: llaves
+encabezado  nivel 1  D. Comando spPfig: llaves
 105. Con read-cmd school, el valor por defecto: perímetro del triángulo  A  B  C
 106. Con read-cmd mathcat: perímetro del triángulo  a  b  c
 107. Con prefix y sin argumentos: el perímetro
@@ -150,8 +144,7 @@ Comando spPfig: llaves
 136. Con silent true y tres puntos:
 137. Con silent true y la figura:
 138. Con todas las llaves: el perímetro del trapecio  a  b  c  d
-encabezado  nivel 1  E.
-En fórmulas
+encabezado  nivel 1  E. En fórmulas
 139. Área de un triángulo: área del triángulo  A  B  C  es igual a  área uno  más  área dos
 140. Área total, basal y lateral: área total  es igual a  área basal  más  área lateral
 141. Perímetro de un cuadrado: perímetro del cuadrado  A  B  C  D  es igual a  4  punto  medida del lado  A  B
