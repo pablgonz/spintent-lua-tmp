@@ -1,0 +1,1809 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+============================================================
+TEST 1: Show PDF Tags
+============================================================
+-------- test-007.xml (start) ---------
+<PDF version="2.0">
+ <StructTreeRoot>
+  <Document xmlns="http://iso.org/pdf2/ssn"
+     id="ID.00002"
+    >
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00006"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00007"
+       title="A. Comando spsiglo, argumento arábigo y romano (modo texto)"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="1" ?>A. Comando spsiglo, argumento arábigo y romano (modo texto)
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00008"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00009"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>1. Arábigo 21:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00010"
+         alt="21"
+        >
+       <?MarkedContent page="1" ?> xxi
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00011"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00012"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>2. Romano XXI:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00013"
+         alt="21"
+        >
+       <?MarkedContent page="1" ?> xxi
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00014"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00015"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>3. Arábigo 1:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00016"
+         alt="1"
+        >
+       <?MarkedContent page="1" ?> i
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00017"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00018"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>4. Romano I:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00019"
+         alt="1"
+        >
+       <?MarkedContent page="1" ?> i
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00020"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00021"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>5. Arábigo 4:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00022"
+         alt="4"
+        >
+       <?MarkedContent page="1" ?> iv
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00023"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00024"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>6. Romano IV:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00025"
+         alt="4"
+        >
+       <?MarkedContent page="1" ?> iv
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00026"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00027"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>7. Arábigo 9:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00028"
+         alt="9"
+        >
+       <?MarkedContent page="1" ?> ix
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00029"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00030"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>8. Arábigo 14:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00031"
+         alt="14"
+        >
+       <?MarkedContent page="1" ?> xiv
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00032"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00033"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>9. Arábigo 19:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00034"
+         alt="19"
+        >
+       <?MarkedContent page="1" ?> xix
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00035"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00036"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>10. Romano XIX:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00037"
+         alt="19"
+        >
+       <?MarkedContent page="1" ?> xix
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00038"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00039"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>11. Arábigo 40:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00040"
+         alt="40"
+        >
+       <?MarkedContent page="1" ?> xl
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00041"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00042"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>12. Arábigo 99:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00043"
+         alt="99"
+        >
+       <?MarkedContent page="1" ?> xcix
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00044"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00045"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>13. Arábigo 400:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00046"
+         alt="400"
+        >
+       <?MarkedContent page="1" ?> cd
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00047"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00048"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>14. Arábigo 1999:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00049"
+         alt="1999"
+        >
+       <?MarkedContent page="1" ?> mcmxcix
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00050"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00051"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>15. Romano MCMXCIX:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00052"
+         alt="1999"
+        >
+       <?MarkedContent page="1" ?> mcmxcix
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00053"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00054"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>16. Arábigo 2000:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00055"
+         alt="2000"
+        >
+       <?MarkedContent page="1" ?> mm
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00056"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00057"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>17. Arábigo 3999, el máximo:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00058"
+         alt="3999"
+        >
+       <?MarkedContent page="1" ?> mmmcmxcix
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00059"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00060"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>18. Romano MMMCMXCIX:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00061"
+         alt="3999"
+        >
+       <?MarkedContent page="1" ?> mmmcmxcix
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00062"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00063"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>19. Romano en minúsculas:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00064"
+         alt="21"
+        >
+       <?MarkedContent page="1" ?> xxi
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00065"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00066"
+       title="B. Comando spsiglo en modo matemático"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="1" ?>B. Comando spsiglo en modo matemático
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00067"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00068"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>20. Arábigo: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00069"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00071"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00070"
+           intent="21:number"
+          >
+         <?MarkedContent page="1" ?>xxi
+        </mtext>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00072"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00073"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>21. Romano: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00074"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00076"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00075"
+           intent="21:number"
+          >
+         <?MarkedContent page="1" ?>xxi
+        </mtext>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00077"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00078"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>22. Con print-era ac: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00079"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00081"
+          intent="_antes-de-cristo:postfix($z)"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00082"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00080"
+           arg="z"
+           intent="5:number"
+          >
+         <?MarkedContent page="1" ?>v a. C.
+        </mtext>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00083"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00084"
+       title="C. Llave print-era"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="1" ?>C. Llave print-era
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00085"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00086"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>23. Por defecto:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00087"
+         alt="21"
+        >
+       <?MarkedContent page="1" ?> xxi
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00088"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00089"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>24. Con none:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00090"
+         alt="21"
+        >
+       <?MarkedContent page="1" ?> xxi
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00091"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00092"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>25. Con ac:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00093"
+         alt="21antes de cristo"
+        >
+       <?MarkedContent page="1" ?> xxi a. C.
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00094"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00095"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>26. Con dc:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00096"
+         alt="21después de cristo"
+        >
+       <?MarkedContent page="1" ?> xxi d. C.
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00097"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00098"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>27. Con ac y número romano:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00099"
+         alt="5antes de cristo"
+        >
+       <?MarkedContent page="1" ?> v a. C.
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00100"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00101"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>28. Con dc y número romano:
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00102"
+         alt="15después de cristo"
+        >
+       <?MarkedContent page="1" ?> xv d. C.
+      </Span>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00103"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00104"
+       title="D. Comando sptime (modo matemático)"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="1" ?>D. Comando sptime (modo matemático)
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00105"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00106"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>29. Horas y minutos: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00107"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00109"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00108"
+           intent=":time"
+          >
+         <?MarkedContent page="1" ?>23:45
+        </mtext>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00110"
+           intent="_minutos"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00111"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00112"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>30. Con segundos: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00113"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00117"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00114"
+           intent=":time"
+          >
+         <?MarkedContent page="1" ?>23:45
+        </mtext>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00118"
+           intent="_minutos-con:prefix($z)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00115"
+           >
+          <?MarkedContent page="1" ?>:
+         </mtext>
+         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00119"
+            arg="z"
+            intent="_segundos:postfix($m)"
+           >
+          <mi xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00120"
+             intent=":silent"
+             mathvariant="normal"
+            >
+           <?MarkedContent page="1" ?>⁣
+          </mi>
+          <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00116"
+             arg="m"
+            >
+           <?MarkedContent page="1" ?>30
+          </mtext>
+         </mrow>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00121"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00122"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>31. Medianoche: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00123"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00125"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00124"
+           intent=":time"
+          >
+         <?MarkedContent page="1" ?>00:00
+        </mtext>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00126"
+           intent="_minutos"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00127"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00128"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>32. Medianoche con segundos: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00129"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00133"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00130"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>00:00
+        </mtext>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00134"
+           intent="_minutos-con:prefix($z)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00131"
+           >
+          <?MarkedContent page="2" ?>:
+         </mtext>
+         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00135"
+            arg="z"
+            intent="_segundos:postfix($m)"
+           >
+          <mi xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00136"
+             intent=":silent"
+             mathvariant="normal"
+            >
+           <?MarkedContent page="2" ?>⁣
+          </mi>
+          <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00132"
+             arg="m"
+            >
+           <?MarkedContent page="2" ?>00
+          </mtext>
+         </mrow>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00137"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00138"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>33. Hora con cero inicial: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00139"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00141"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00140"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>01:05
+        </mtext>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00142"
+           intent="_minutos"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00143"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00144"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>34. Mediodía: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00145"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00147"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00146"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>12:00
+        </mtext>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00148"
+           intent="_minutos"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00149"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00150"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>35. Y media: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00151"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00153"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00152"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>12:30
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00154"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00155"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>36. Hora de la tarde: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00156"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00158"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00157"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>13:00
+        </mtext>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00159"
+           intent="_minutos"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00160"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00161"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>37. Y cuarto: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00162"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00164"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00163"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>18:15
+        </mtext>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00165"
+           intent="_minutos"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00166"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00167"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>38. Con segundos y ceros: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00168"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00172"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00169"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>09:07
+        </mtext>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00173"
+           intent="_minutos-con:prefix($z)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00170"
+           >
+          <?MarkedContent page="2" ?>:
+         </mtext>
+         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00174"
+            arg="z"
+            intent="_segundos:postfix($m)"
+           >
+          <mi xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00175"
+             intent=":silent"
+             mathvariant="normal"
+            >
+           <?MarkedContent page="2" ?>⁣
+          </mi>
+          <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00171"
+             arg="m"
+            >
+           <?MarkedContent page="2" ?>03
+          </mtext>
+         </mrow>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00176"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00177"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>39. Último segundo del día: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00178"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00182"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00179"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>23:59
+        </mtext>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00183"
+           intent="_minutos-con:prefix($z)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00180"
+           >
+          <?MarkedContent page="2" ?>:
+         </mtext>
+         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00184"
+            arg="z"
+            intent="_segundos:postfix($m)"
+           >
+          <mi xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00185"
+             intent=":silent"
+             mathvariant="normal"
+            >
+           <?MarkedContent page="2" ?>⁣
+          </mi>
+          <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00181"
+             arg="m"
+            >
+           <?MarkedContent page="2" ?>59
+          </mtext>
+         </mrow>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00186"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00187"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>40. Sin cero inicial: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00188"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00190"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00189"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>1:05
+        </mtext>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00191"
+           intent="_minutos"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00192"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00193"
+       title="E. Comando spdate (modo matemático)"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="2" ?>E. Comando spdate (modo matemático)
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00194"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00195"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>41. Formato DD/MM/YYYY: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00196"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00198"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00197"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>02/01/1981
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00199"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00200"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>42. Formato YYYY-MM-DD: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00201"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00203"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00202"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>1981-01-02
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00204"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00205"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>43. Formato DD-MM-YYYY: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00206"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00208"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00207"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>02-01-1981
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00209"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00210"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>44. Formato YYYY/MM/DD, que se convierte: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00211"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00213"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00212"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>02/01/1981
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00214"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00215"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>45. Primero de enero: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00216"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00218"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00217"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>01/01/2000
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00219"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00220"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>46. Fin de año: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00221"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00223"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00222"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>31/12/1999
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00224"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00225"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>47. Año bisiesto con DD/MM/YYYY: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00226"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00228"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00227"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>29/02/2024
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00229"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00230"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>48. Año bisiesto con YYYY-MM-DD: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00231"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00233"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00232"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>2024-02-29
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00234"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00235"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>49. Sin ceros iniciales: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00236"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00238"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00237"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>1/1/2000
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00239"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00240"
+       title="F. En contexto y dentro de fórmulas"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="2" ?>F. En contexto y dentro de fórmulas
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00241"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00242"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>50. Siglo en una oración: Nació en el siglo
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00243"
+         alt="19"
+        >
+       <?MarkedContent page="2" ?> xix
+      </Span>
+      <?MarkedContent page="2" ?> en Valparaíso.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00244"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00245"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>51. Siglo antes de Cristo en una oración: Ocurrió en el siglo
+      <Span xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00246"
+         alt="5antes de cristo"
+        >
+       <?MarkedContent page="2" ?> v a. C.
+      </Span>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00247"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00248"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>52. Hora y fecha en una misma oración: Salió a las 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00249"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00251"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00250"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>23:45
+        </mtext>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00252"
+           intent="_minutos"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?> del 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00253"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00255"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00254"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>31/12/1999
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00256"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00257"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>53. Comparación de horas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00258"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00261"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00259"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>09:30
+        </mtext>
+        <mo xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00262"
+           lspace="0.278em"
+           rspace="0.278em"
+          >
+         <?MarkedContent page="2" ?>&lt;
+        </mo>
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00260"
+           intent=":time"
+          >
+         <?MarkedContent page="2" ?>23:45
+        </mtext>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00263"
+           intent="_minutos"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00264"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00265"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>54. La misma fecha en dos formatos: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00266"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00269"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00267"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>02/01/1981
+        </mtext>
+        <mo xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00270"
+           lspace="0.278em"
+           rspace="0.278em"
+          >
+         <?MarkedContent page="2" ?>=
+        </mo>
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00268"
+           intent=":date"
+          >
+         <?MarkedContent page="2" ?>1981-01-02
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00271"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00272"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>55. Fecha en fórmula destacada:
+     </text-block>
+     <Formula xmlns="http://iso.org/pdf2/ssn"
+        id="ID.00273"
+        title="equation*"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:Placement="Block"
+       >
+      <math xmlns="http://www.w3.org/1998/Math/MathML"
+         id="ID.00275"
+         display="block"
+        >
+       <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00274"
+          intent=":date"
+         >
+        <?MarkedContent page="2" ?>31/12/1999
+       </mtext>
+      </math>
+     </Formula>
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00276"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00277"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00278"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>56. Siglos en una fórmula: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00279"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00282"
+         >
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00280"
+           intent="20:number"
+          >
+         <?MarkedContent page="2" ?>xx
+        </mtext>
+        <mo xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00283"
+           lspace="0.278em"
+           rspace="0.278em"
+          >
+         <?MarkedContent page="2" ?>&lt;
+        </mo>
+        <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00281"
+           intent="21:number"
+          >
+         <?MarkedContent page="2" ?>xxi
+        </mtext>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
+  </Document>
+ </StructTreeRoot>
+</PDF>
+-------- test-007.xml (end) -----------
+============================================================

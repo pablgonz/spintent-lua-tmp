@@ -1,0 +1,150 @@
+% test-001.tex -- comando \spnum
+%
+% Compilar:  lualatex-dev test-001.tex
+% Validar:   show-pdf-tags --xml test-001.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-001.pdf
+% Regresion: l3build save test-001   (genera testfiles/test-001.tlg)
+%            l3build check test-001  (compara contra el .tlg)
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al
+% escuchar el PDF. Los comentarios "doc:" indican la lectura que
+% documenta el manual de usuario; en el resto, la lectura se revisa
+% escuchando. Las entradas invalidas (que detienen la compilacion)
+% no van aqui.
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-001: spnum},
+  }
+\begin{document}
+
+\section*{A. Formas del argumento}
+
+% doc: «veintitrés»
+1. Entero sin signo: $\spnum{23}$.
+
+% doc: «más veintitrés»
+2. Entero con signo positivo: $\spnum{+23}$.
+
+% doc: «menos veintitrés»
+3. Entero con signo negativo: $\spnum{-23}$.
+
+% doc: «tres coma catorce»
+4. Decimal con coma: $\spnum{3,14}$.
+
+5. Decimal con punto: $\spnum{3.14}$.
+
+6. Decimal negativo: $\spnum{-3,14}$.
+
+% doc: «tres coma cuatro periódico»
+7. Periódico puro: $\spnum{3;4}$.
+
+% doc: «tres coma uno con cuatro periódico»
+8. Periódico mixto: $\spnum{3,1;4}$.
+
+9. Periódico de dos cifras: $\spnum{0,1;23}$.
+
+10. Periódico mixto negativo: $\spnum{-3,1;4}$.
+
+\section*{B. Notación científica}
+
+% doc: «tres coma catorce por diez al cubo»
+11. Con e minúscula: $\spnum{3,14e3}$.
+
+12. Con E mayúscula: $\spnum{3,14E3}$.
+
+13. Exponente negativo: $\spnum{3,14e-3}$.
+
+14. Exponente con signo positivo: $\spnum{3,14e+3}$.
+
+15. Entero con exponente: $\spnum{5e2}$.
+
+16. Número negativo con exponente: $\spnum{-3,14e3}$.
+
+\section*{C. Llave cifras-sep}
+
+% doc: imprime 100\,000
+17. Por defecto: $\spnum{100000}$.
+
+18. Con true explícito: $\spnum[cifras-sep=true]{100000}$.
+
+19. Parte entera y parte decimal: $\spnum{1234567,891234}$.
+
+% doc: imprime 10\,00\,00
+20. Con false y espacios del usuario: $\spnum[cifras-sep=false]{10\,00\,00}$.
+
+21. Con false y sin espacios: $\spnum[cifras-sep=false]{100000}$.
+
+\section*{D. Llave read-sign}
+
+% doc: «menos veintitrés»
+22. Terse con signo negativo: $\spnum[read-sign=terse]{-23}$.
+
+% doc: «veintitrés negativo»
+23. Clear con signo negativo: $\spnum[read-sign=clear]{-23}$.
+
+24. Terse con signo positivo: $\spnum[read-sign=terse]{+23}$.
+
+25. Clear con signo positivo: $\spnum[read-sign=clear]{+23}$.
+
+26. Clear con decimal negativo: $\spnum[read-sign=clear]{-3,14}$.
+
+\section*{E. Llave read-period-sep}
+
+% doc: «tres coma cuatro periódico»
+27. Con coma: $\spnum[read-period-sep=coma]{3;4}$.
+
+% doc: «tres punto cuatro periódico»
+28. Con punto: $\spnum[read-period-sep=punto]{3;4}$.
+
+29. Con punto y parte decimal finita: $\spnum[read-period-sep=punto]{3,1;4}$.
+
+\section*{F. Llave notation-sym}
+
+% doc: «tres coma catorce por diez al cubo»
+30. Con cdot: $\spnum[notation-sym=cdot]{3,14e3}$.
+
+% doc: «tres coma catorce por diez al cubo»
+31. Con times: $\spnum[notation-sym=times]{3,14e3}$.
+
+\section*{G. Combinaciones de llaves}
+
+32. Clear y times: $\spnum[read-sign=clear,notation-sym=times]{-3,14e3}$.
+
+33. Clear y punto: $\spnum[read-sign=clear,read-period-sep=punto]{-3;4}$.
+
+34. Clear y cifras-sep false: $\spnum[read-sign=clear,cifras-sep=false]{-10\,00\,00}$.
+
+\section*{H. Dentro de fórmulas}
+
+35. Suma e igualdad: $\spnum{3,14} + \spnum{2,5} = \spnum{5,64}$.
+
+36. Llaves distintas en una misma fórmula: $\spnum[read-sign=clear]{-2} < \spnum{+3}$.
+
+37. En fórmula destacada:
+\[ \spnum{3,14e3} \]
+
+38. En una fracción: $\frac{\spnum{1,5}}{\spnum{2}}$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}

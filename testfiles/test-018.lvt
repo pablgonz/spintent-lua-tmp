@@ -1,0 +1,227 @@
+% test-018.tex -- sesion unica para verificar silent-resto.patch
+%
+% Este archivo REEMPLAZA a las listas de casos de los tests 008, 010, 012
+% y 017: un solo PDF, una sola grabacion.
+%
+% Orden de prioridad:
+%   A (casos 1 a 11)  : lo que decide si el parche funciono.
+%   B (12 a 25)       : silent; no debe leerse NADA despues de la etiqueta.
+%   C a G (26 a 59)   : rutas de codigo cuyo MathML cambio; deben leerse
+%                       como esta anotado en "doc:" (o como antes del parche).
+% Si hay que parar a la mitad, con A y B ya esta lo importante.
+%
+% Compilar:  lualatex-dev test-018.tex
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-018: sesion unica de silent-resto},
+  }
+\begin{document}
+
+\newcommand{\xcuad}{x^2}%
+\spnewread{\cong}{es-congruente-con}%
+\spnewread{\perp}{es-perpendicular-a}%
+\spnewread{\approx}{es-aproximadamente-igual-a}%
+\spnewread{\neq}{es distinto de}%
+\spnewread{\geq}{es_mayor_o_igual_que}%
+\spnewread{\in}{pertenece a}%
+\spnewread{\xcuad}{x al cuadrado}%
+
+
+\section*{A. Lo que decide el parche}
+
+% doc: no se verbaliza (antes: «multiplicado por»)
+1. Silent con resultado, divisores de 6: $\spnD[silent=true,result=true](6)$.
+
+% doc: no se verbaliza
+2. Silent con resultado y result-num, divisores de 12: $\spnD[silent=true,result=true,result-num=3](12)$.
+
+% doc: no se verbaliza
+3. Silent con resultado, múltiplos de 6: $\spnM[silent=true,result=true](6)$.
+
+% doc: no se verbaliza
+4. Silent con resultado y result-num, múltiplos de 12: $\spnM[silent=true,result=true,result-num=3](12)$.
+
+% doc: no se verbaliza (antes: «el intervalo de a no incluyendo o»)
+5. Silent con resultado, máximo común divisor: $\spmcd[silent=true,result=true](12, 18)$.
+
+% doc: no se verbaliza
+6. Silent con resultado, mínimo común múltiplo: $\spmcm[silent=true,result=true](12, 18)$.
+
+% doc: divisores de 6 es un subconjunto de divisores de 12 (antes: «de de»)
+7. Divisores incluidos: $\spnD(6) \subset \spnD(12)$.
+
+% doc: sin «de de»
+8. Divisores con resultado, incluidos: $\spnD[result=true](6) \subset \spnD[result=true](12)$.
+
+% doc: sin «de de»
+9. Múltiplos con resultado, intersección: $\spnM[result=true,result-num=3](4) \cap \spnM[result=true,result-num=3](6)$.
+
+% doc: punto A es igual a 1 coma 2 (antes: «el intervalo de 1 a 2…»)
+10. Punto igual a coordenadas: $\spPoint{A} = \spcoord{1, 2}$.
+
+% doc: vector a es igual a 1 coma 2, etc.
+11. Tres vectores con coordenadas, cada uno en su fórmula: $\spvec{a}(1,2)$, $\spvec{b}(3,4)$ y $\spvec{c}(4,6)$.
+
+\section*{B. Con silent true no debe leerse nada}
+
+12. Silent en sprecta con dos puntos con subíndices: $\sprecta[silent=true]{A_{1}B_{2}}$.
+
+13. Silent en sprecta con una letra con subíndice: $\sprecta[silent=true]{r_{1}}$.
+
+14. Silent en spcirc con un centro con subíndice: $\spcirc[silent=true](O_{1})$.
+
+15. Silent en spcirc con radio entero: $\spcirc[silent=true](O,3)$.
+
+16. Silent en spcirc con radio segmento: $\spcirc[silent=true](O,AB)$.
+
+17. Silent en spAcirc con un centro con subíndice: $\spAcirc[silent=true](O_{1})$.
+
+18. Silent en spAcirc con un centro con prima: $\spAcirc[silent=true](O')$.
+
+19. Silent en spPcirc con un centro con subíndice: $\spPcirc[silent=true](O_{1})$.
+
+20. Silent en spnD con un número: $\spnD[silent=true](6)$.
+
+21. Silent en spnM con un número: $\spnM[silent=true](12)$.
+
+22. Silent en spmcd con dos números: $\spmcd[silent=true](12, 18)$.
+
+23. Silent en spmcm con dos letras: $\spmcm[silent=true](m, n)$.
+
+24. Silent en spread con un comando propio: $\spread[silent=true]{\xcuad}$.
+
+25. Silent en spread con un símbolo: $\spread[silent=true]{\cong}$.
+
+\section*{C. spnD y spnM sin silent}
+
+% doc: divisores de 6
+26. Divisores de un número: $\spnD(6)$.
+
+% doc: divisores de 12
+27. Divisores de un número de dos cifras: $\spnD(12)$.
+
+% doc: divisores de n
+28. Divisores de una letra: $\spnD(n)$.
+
+% doc: múltiplos de 6
+29. Múltiplos de un número: $\spnM(6)$.
+
+% doc: divisores de n
+30. Divisores sin argumento: $\spnD$.
+
+% doc: divisores de 12 son 1 2 3 4 6 y 12
+31. Divisores con resultado: $\spnD[result=true](12)$.
+
+% doc: divisores de 7 son 1 y 7
+32. Divisores con resultado de dos elementos: $\spnD[result=true](7)$.
+
+% doc: sin «de de»
+33. Divisores de dos letras en una fórmula: $\spnD(m) \subset \spnD(n)$.
+
+\section*{D. spmcd y spmcm sin silent}
+
+% doc: máximo común divisor entre 12 y 18
+34. Máximo común divisor: $\spmcd(12, 18)$.
+
+% doc: mínimo común múltiplo entre 12 y 18
+35. Mínimo común múltiplo: $\spmcm(12, 18)$.
+
+% doc: … es igual a 6
+36. Máximo común divisor con resultado: $\spmcd[result=true](12, 18)$.
+
+% doc: … es igual a 36
+37. Mínimo común múltiplo con resultado: $\spmcm[result=true](12, 18)$.
+
+% doc: sin «intervalo»
+38. Producto de los dos con letras: $\spmcd(m, n) \spmsym \spmcm(m, n) = m \spmsym n$.
+
+% doc: sin «intervalo»
+39. Suma de los dos con resultado: $\spmcd[result=true](12, 18) + \spmcm[result=true](12, 18)$.
+
+\section*{E. spcoord y coordenadas}
+
+% doc: menos 3 coma 4
+40. Coordenadas con signo: $\spcoord{-3, 4}$.
+
+41. Coordenadas con subíndices: $\spcoord{x_{1},y_{1}}$.
+
+42. Coordenadas con coma decimal: $\spcoord{3,5; 4,2}$.
+
+% doc: hoy omite la palabra «coma»
+43. Coordenadas con una raíz: $\spcoord{\sqrt{2}, 1}$.
+
+% doc: punto A menos 3 coma 4
+44. Un punto con coordenadas: $\spPoint{A}(-3,4)$.
+
+% doc: punto A sub uno menos 3 coma 4
+45. Un punto con subíndice y coordenadas: $\spPoint{A_{1}}(-3,4)$.
+
+% doc: vector a es igual a menos 3 coma 4
+46. Un vector con coordenadas: $\spvec{a}(-3,4)$.
+
+% doc: vector A B es igual a punto B 1 coma 2 menos punto A 4 coma menos 2
+47. Un vector con coordenadas en una fórmula destacada:
+\[ \spvec{AB} = \spPoint{B}(1,2) - \spPoint{A}(4,-2) \].
+
+\section*{F. spread: el símbolo ahora va dentro de un contenedor}
+
+% doc: triángulo A B C es congruente con triángulo D E F
+48. Símbolo registrado en una fórmula: $\triangle ABC \spread{\cong} \triangle DEF$.
+
+% doc: a es distinto de b
+49. Lectura con espacios: $a \spread{\neq} b$.
+
+% doc: a es mayor o igual que b
+50. Lectura con guiones bajos: $a \spread{\geq} b$.
+
+% doc: x pertenece a A
+51. Otra lectura con espacios: $x \spread{\in} A$.
+
+% doc: a es perpendicular a b es aproximadamente igual a c
+52. Dos símbolos en una fórmula: $a \spread{\perp} b \spread{\approx} c$.
+
+% doc: x al cuadrado
+53. Un comando propio: $\spread{\xcuad}$.
+
+% doc: y es igual a x al cuadrado más 1
+54. El comando propio en una fórmula: $y = \spread{\xcuad} + 1$.
+
+% doc: a es paralela a b
+55. Un símbolo sin registrar con read-arg: $a \spread[read-arg={es paralela a}]{\parallel} b$.
+
+\section*{G. Controles que no deben haber cambiado}
+
+% doc: circunferencia de centro en O y radio 3
+56. Control de spcirc con radio entero: $\spcirc(O,3)$.
+
+% doc: … radio medida del lado A B
+57. Control de spcirc con radio segmento: $\spcirc(O,AB)$.
+
+58. Control de spAcirc con un centro con subíndice: $\spAcirc(O_{1})$.
+
+% doc: recta A sub uno B sub dos
+59. Control de sprecta con dos puntos con subíndices: $\sprecta{A_{1}B_{2}}$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}

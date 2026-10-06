@@ -1,0 +1,446 @@
+% test-003.tex -- comando \spunit: tabla completa de unidades y alias
+%
+% Compilar:  lualatex-dev test-003.tex
+% Validar:   show-pdf-tags --xml test-003.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-003.pdf
+%
+% Generado a partir de la tabla de unidades del manual de usuario:
+% una entrada por cada simbolo y por cada alias. Cada caso es un
+% parrafo numerado, para poder referirse a el al escuchar el PDF.
+% Los comentarios "doc:" indican la lectura que documenta la tabla.
+% Se usa siempre el numero 2 como parte numerica.
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-003: spunit, tabla de unidades},
+  }
+\begin{document}
+
+\section*{A. Unidades con alias}
+
+% doc: «metro»
+1. Metro, entrada: $\spunit{2 m}$.
+
+% doc: «metro»
+2. Metro, alias metro: $\spunit{2 metro}$.
+
+% doc: «metro»
+3. Metro, alias metros: $\spunit{2 metros}$.
+
+% doc: «gramo»
+4. Gramo, entrada: $\spunit{2 g}$.
+
+% doc: «gramo»
+5. Gramo, alias gramo: $\spunit{2 gramo}$.
+
+% doc: «gramo»
+6. Gramo, alias gramos: $\spunit{2 gramos}$.
+
+% doc: «segundo (Tiempo)»
+7. Segundo (Tiempo), entrada: $\spunit{2 s}$.
+
+% doc: «segundo (Tiempo)»
+8. Segundo (Tiempo), alias segundo: $\spunit{2 segundo}$.
+
+% doc: «segundo (Tiempo)»
+9. Segundo (Tiempo), alias segundos: $\spunit{2 segundos}$.
+
+% doc: «litro (minúscula)»
+10. Litro (minúscula), entrada: $\spunit{2 l}$.
+
+% doc: «litro (minúscula)»
+11. Litro (minúscula), alias litro: $\spunit{2 litro}$.
+
+% doc: «litro (minúscula)»
+12. Litro (minúscula), alias l-litro: $\spunit{2 l-litro}$.
+
+% doc: «hora»
+13. Hora, entrada: $\spunit{2 h}$.
+
+% doc: «hora»
+14. Hora, alias hora: $\spunit{2 hora}$.
+
+% doc: «hora»
+15. Hora, alias horas: $\spunit{2 horas}$.
+
+% doc: «día»
+16. Día, entrada: $\spunit{2 d}$.
+
+% doc: «día»
+17. Día, alias dia: $\spunit{2 dia}$.
+
+% doc: «día»
+18. Día, alias dias: $\spunit{2 dias}$.
+
+% doc: «amperio»
+19. Amperio, entrada: $\spunit{2 A}$.
+
+% doc: «amperio»
+20. Amperio, alias amperio: $\spunit{2 amperio}$.
+
+% doc: «amperio»
+21. Amperio, alias ampere: $\spunit{2 ampere}$.
+
+% doc: «voltio»
+22. Voltio, entrada: $\spunit{2 V}$.
+
+% doc: «voltio»
+23. Voltio, alias voltio: $\spunit{2 voltio}$.
+
+% doc: «voltio»
+24. Voltio, alias volt: $\spunit{2 volt}$.
+
+% doc: «vatio»
+25. Vatio, entrada: $\spunit{2 W}$.
+
+% doc: «vatio»
+26. Vatio, alias vatio: $\spunit{2 vatio}$.
+
+% doc: «vatio»
+27. Vatio, alias watt: $\spunit{2 watt}$.
+
+% doc: «julio»
+28. Julio, entrada: $\spunit{2 J}$.
+
+% doc: «julio»
+29. Julio, alias julio: $\spunit{2 julio}$.
+
+% doc: «julio»
+30. Julio, alias joule: $\spunit{2 joule}$.
+
+% doc: «newton»
+31. Newton, entrada: $\spunit{2 N}$.
+
+% doc: «newton»
+32. Newton, alias newton: $\spunit{2 newton}$.
+
+% doc: «pascal»
+33. Pascal, entrada: $\spunit{2 Pa}$.
+
+% doc: «pascal»
+34. Pascal, alias pascal: $\spunit{2 pascal}$.
+
+% doc: «hercio»
+35. Hercio, entrada: $\spunit{2 Hz}$.
+
+% doc: «hercio»
+36. Hercio, alias hercio: $\spunit{2 hercio}$.
+
+% doc: «hercio»
+37. Hercio, alias hertz: $\spunit{2 hertz}$.
+
+% doc: «Ohmio»
+38. Ohmio, entrada: $\spunit{2 Ω}$.
+
+% doc: «Ohmio»
+39. Ohmio, alias ohmio: $\spunit{2 ohmio}$.
+
+% doc: «Ohmio»
+40. Ohmio, alias ohm: $\spunit{2 ohm}$.
+
+% doc: «Ohmio»
+41. Ohmio, alias Omega: $\spunit{2 Omega}$.
+
+% doc: «Faradio»
+42. Faradio, entrada: $\spunit{2 F}$.
+
+% doc: «Faradio»
+43. Faradio, alias faradio: $\spunit{2 faradio}$.
+
+% doc: «Culombio»
+44. Culombio, entrada: $\spunit{2 C}$.
+
+% doc: «Culombio»
+45. Culombio, alias culombio: $\spunit{2 culombio}$.
+
+% doc: «Kelvin»
+46. Kelvin, entrada: $\spunit{2 K}$.
+
+% doc: «Kelvin»
+47. Kelvin, alias kelvin: $\spunit{2 kelvin}$.
+
+% doc: «Kelvin»
+48. Kelvin, alias Kelvin: $\spunit{2 Kelvin}$.
+
+% doc: «Grados Celsius»
+49. Grados Celsius, entrada: $\spunit{2 °C}$.
+
+% doc: «Grados Celsius»
+50. Grados Celsius, alias celsius: $\spunit{2 celsius}$.
+
+% doc: «Grados Celsius»
+51. Grados Celsius, alias degC: $\spunit{2 degC}$.
+
+% doc: «Grados Celsius»
+52. Grados Celsius, alias de un solo carácter: $\spunit{2 ℃}$.
+
+% doc: «Grados Fahrenheit»
+53. Grados Fahrenheit, entrada: $\spunit{2 °F}$.
+
+% doc: «Grados Fahrenheit»
+54. Grados Fahrenheit, alias fahrenheit: $\spunit{2 fahrenheit}$.
+
+% doc: «Grados Fahrenheit»
+55. Grados Fahrenheit, alias degF: $\spunit{2 degF}$.
+
+% doc: «Grados Fahrenheit»
+56. Grados Fahrenheit, alias de un solo carácter: $\spunit{2 ℉}$.
+
+% doc: «Caloría»
+57. Caloría, entrada: $\spunit{2 cal}$.
+
+% doc: «Caloría»
+58. Caloría, alias caloria: $\spunit{2 caloria}$.
+
+% doc: «Caloría»
+59. Caloría, alias calorias: $\spunit{2 calorias}$.
+
+% doc: «Bit»
+60. Bit, entrada: $\spunit{2 b}$.
+
+% doc: «Bit»
+61. Bit, alias bit: $\spunit{2 bit}$.
+
+% doc: «Byte»
+62. Byte, entrada: $\spunit{2 B}$.
+
+% doc: «Byte»
+63. Byte, alias byte: $\spunit{2 byte}$.
+
+% doc: «Byte»
+64. Byte, alias bytes: $\spunit{2 bytes}$.
+
+% doc: «Pulgada»
+65. Pulgada, entrada: $\spunit{2 in}$.
+
+% doc: «Pulgada»
+66. Pulgada, alias pulgada: $\spunit{2 pulgada}$.
+
+% doc: «Pulgada»
+67. Pulgada, alias pulgadas: $\spunit{2 pulgadas}$.
+
+% doc: «Pie»
+68. Pie, entrada: $\spunit{2 ft}$.
+
+% doc: «Pie»
+69. Pie, alias pie: $\spunit{2 pie}$.
+
+% doc: «Pie»
+70. Pie, alias pies: $\spunit{2 pies}$.
+
+% doc: «Yarda»
+71. Yarda, entrada: $\spunit{2 yd}$.
+
+% doc: «Yarda»
+72. Yarda, alias yarda: $\spunit{2 yarda}$.
+
+% doc: «Yarda»
+73. Yarda, alias yardas: $\spunit{2 yardas}$.
+
+% doc: «Milla»
+74. Milla, entrada: $\spunit{2 mi}$.
+
+% doc: «Milla»
+75. Milla, alias milla: $\spunit{2 milla}$.
+
+% doc: «Milla»
+76. Milla, alias millas: $\spunit{2 millas}$.
+
+% doc: «Libra»
+77. Libra, entrada: $\spunit{2 lb}$.
+
+% doc: «Libra»
+78. Libra, alias libra: $\spunit{2 libra}$.
+
+% doc: «Libra»
+79. Libra, alias libras: $\spunit{2 libras}$.
+
+% doc: «Onza»
+80. Onza, entrada: $\spunit{2 oz}$.
+
+% doc: «Onza»
+81. Onza, alias onza: $\spunit{2 onza}$.
+
+% doc: «Onza»
+82. Onza, alias onzas: $\spunit{2 onzas}$.
+
+% doc: «Galón»
+83. Galón, entrada: $\spunit{2 gal}$.
+
+% doc: «Galón»
+84. Galón, alias galon: $\spunit{2 galon}$.
+
+% doc: «Galón»
+85. Galón, alias galones: $\spunit{2 galones}$.
+
+% doc: «Angstrom»
+86. Angstrom, entrada: $\spunit{2 Å}$.
+
+% doc: «Angstrom»
+87. Angstrom, alias angstrom: $\spunit{2 angstrom}$.
+
+% doc: «Micro (Prefijo)»
+88. Micro (Prefijo), entrada: $\spunit{2 µ}$.
+
+% doc: «Micro (Prefijo)»
+89. Micro (Prefijo), alias micro: $\spunit{2 micro}$.
+
+% doc: «Mho / Siemens»
+90. Mho / Siemens, entrada: $\spunit{2 ℧}$.
+
+% doc: «Mho / Siemens»
+91. Mho / Siemens, alias mho: $\spunit{2 mho}$.
+
+% doc: «Minuto (Arco)»
+92. Minuto (Arco), entrada: $\spunit{2 ′}$.
+
+% doc: «Minuto (Arco)»
+93. Minuto (Arco), alias minmin: $\spunit{2 minmin}$.
+
+% doc: «Segundo (Arco)»
+94. Segundo (Arco), entrada: $\spunit{2 ″}$.
+
+% doc: «Segundo (Arco)»
+95. Segundo (Arco), alias segseg: $\spunit{2 segseg}$.
+
+% doc: «Unidad masa atómica»
+96. Unidad masa atómica, entrada: $\spunit{2 u}$.
+
+% doc: «Unidad masa atómica»
+97. Unidad masa atómica, alias u-masa: $\spunit{2 u-masa}$.
+
+\section*{B. Unidades directas}
+
+% doc: «Litro (Mayúscula)»
+98. Litro (Mayúscula), entrada: $\spunit{2 L}$.
+
+% doc: «Litro (Cursiva)»
+99. Litro (Cursiva), entrada: $\spunit{2 ℓ}$.
+
+% doc: «Vatio (Minúscula)»
+100. Vatio (Minúscula), entrada: $\spunit{2 w}$.
+
+% doc: «Grado Kelvin»
+101. Grado Kelvin, entrada: $\spunit{2 °K}$.
+
+% doc: «Becquerel»
+102. Becquerel, entrada: $\spunit{2 Bq}$.
+
+% doc: «Dalton»
+103. Dalton, entrada: $\spunit{2 Da}$.
+
+% doc: «Gray»
+104. Gray, entrada: $\spunit{2 Gy}$.
+
+% doc: «Siemens»
+105. Siemens, entrada: $\spunit{2 S}$.
+
+% doc: «Sievert»
+106. Sievert, entrada: $\spunit{2 Sv}$.
+
+% doc: «Tesla»
+107. Tesla, entrada: $\spunit{2 T}$.
+
+% doc: «Weber»
+108. Weber, entrada: $\spunit{2 Wb}$.
+
+% doc: «Atmósfera»
+109. Atmósfera, entrada: $\spunit{2 atm}$.
+
+% doc: «Unidad astronómica»
+110. Unidad astronómica, entrada: $\spunit{2 au}$.
+
+% doc: «Bar»
+111. Bar, entrada: $\spunit{2 bar}$.
+
+% doc: «Candela»
+112. Candela, entrada: $\spunit{2 cd}$.
+
+% doc: «Decibelio»
+113. Decibelio, entrada: $\spunit{2 dB}$.
+
+% doc: «Dina»
+114. Dina, entrada: $\spunit{2 dyn}$.
+
+% doc: «Electronvoltio»
+115. Electronvoltio, entrada: $\spunit{2 eV}$.
+
+% doc: «Ergio»
+116. Ergio, entrada: $\spunit{2 erg}$.
+
+% doc: «Hectárea»
+117. Hectárea, entrada: $\spunit{2 ha}$.
+
+% doc: «Katal»
+118. Katal, entrada: $\spunit{2 kat}$.
+
+% doc: «Kilogramo»
+119. Kilogramo, entrada: $\spunit{2 kg}$.
+
+% doc: «Kilómetro»
+120. Kilómetro, entrada: $\spunit{2 km}$.
+
+% doc: «Lumen»
+121. Lumen, entrada: $\spunit{2 lm}$.
+
+% doc: «Lux»
+122. Lux, entrada: $\spunit{2 lx}$.
+
+% doc: «Centímetro»
+123. Centímetro, entrada: $\spunit{2 cm}$.
+
+% doc: «Minuto (Tiempo)»
+124. Minuto (Tiempo), entrada: $\spunit{2 min}$.
+
+% doc: «Milímetro»
+125. Milímetro, entrada: $\spunit{2 mm}$.
+
+% doc: «Mol»
+126. Mol, entrada: $\spunit{2 mol}$.
+
+% doc: «Pársec»
+127. Pársec, entrada: $\spunit{2 pc}$.
+
+% doc: «Radián»
+128. Radián, entrada: $\spunit{2 rad}$.
+
+% doc: «Rev. por minuto»
+129. Rev. por minuto, entrada: $\spunit{2 rpm}$.
+
+% doc: «Estereorradián»
+130. Estereorradián, entrada: $\spunit{2 sr}$.
+
+% doc: «Tonelada»
+131. Tonelada, entrada: $\spunit{2 t}$.
+
+% doc: «Año / Área (are)»
+132. Año / Área (are), entrada: $\spunit{2 a}$.
+
+% doc: «Año (Year)»
+133. Año (Year), entrada: $\spunit{2 y}$.
+
+% doc: «Grado (Arco)»
+134. Grado (Arco), entrada: $\spunit{2 °}$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}

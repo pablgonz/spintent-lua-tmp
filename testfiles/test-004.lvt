@@ -1,0 +1,226 @@
+% test-004.tex -- comando \spmoney
+%
+% Compilar:  lualatex-dev test-004.tex
+% Validar:   show-pdf-tags --xml test-004.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-004.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al
+% escuchar el PDF. Los comentarios "doc:" indican lo que documenta
+% el manual de usuario; en el resto, la lectura se revisa escuchando.
+% Las entradas invalidas (que detienen la compilacion) no van aqui.
+% La tabla completa de monedas y alias va en test-005.
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-004: spmoney},
+  }
+\begin{document}
+
+\section*{A. Formas del argumento}
+
+% doc: imprime \$500 -- «quinientos pesos»
+1. Solo la cifra: $\spmoney{500}$.
+
+% doc: imprime \$500 -- «quinientos dolares»
+2. Cifra y alias: $\spmoney{500 dolares}$.
+
+% doc: imprime CLP500 -- «quinientos pesos chilenos»
+3. Alias ISO en mayúsculas: $\spmoney{500 CLP}$.
+
+% doc: imprime \$500 -- «quinientos pesos chilenos»
+4. Alias ISO en minúsculas: $\spmoney{500 clp}$.
+
+5. Alias de otra moneda: $\spmoney{500 euro}$.
+
+6. Símbolo del euro: $\spmoney{500 €}$.
+
+7. Símbolo de la libra: $\spmoney{500 £}$.
+
+8. Alias de la libra: $\spmoney{500 libra}$.
+
+9. Dólar en formato ISO mayúsculas: $\spmoney{500 USD}$.
+
+10. Dólar en formato ISO minúsculas: $\spmoney{500 usd}$.
+
+11. Cifra negativa: $\spmoney{-500}$.
+
+12. Cifra decimal: $\spmoney{1234,56}$.
+
+13. Cifra decimal con alias: $\spmoney{1234,56 euro}$.
+
+14. Cifra menor que uno: $\spmoney{0,5}$.
+
+\section*{B. Singular, plural y millones}
+
+15. Uno: $\spmoney{1}$.
+
+16. Uno con alias: $\spmoney{1 euro}$.
+
+17. Dos: $\spmoney{2}$.
+
+18. Cero: $\spmoney{0}$.
+
+19. Uno negativo: $\spmoney{-1}$.
+
+20. Uno con decimales: $\spmoney{1,5}$.
+
+21. Mil: $\spmoney{1000}$.
+
+22. Un millón exacto: $\spmoney{1000000}$.
+
+23. Dos millones exactos: $\spmoney{2000000}$.
+
+24. Un millón con alias: $\spmoney{1000000 dolares}$.
+
+25. Un millón con alias ISO: $\spmoney{1000000 CLP}$.
+
+26. Un millón y medio: $\spmoney{1500000}$.
+
+\section*{C. Llave cifras-sep}
+
+% doc: imprime 100\,000
+27. Por defecto: $\spmoney{100000}$.
+
+28. Con false: $\spmoney[cifras-sep=false]{100000}$.
+
+29. Con false y espacios del usuario: $\spmoney[cifras-sep=false]{10\,00\,00}$.
+
+30. Decimales por defecto: $\spmoney{1234567,89}$.
+
+31. Decimales con false: $\spmoney[cifras-sep=false]{1234567,89}$.
+
+\section*{D. Llave currency}
+
+32. Peso, el valor por defecto: $\spmoney[currency=peso]{500}$.
+
+33. Euro por alias: $\spmoney[currency=euro]{500}$.
+
+34. Euro por símbolo: $\spmoney[currency=€]{500}$.
+
+35. Libra por alias: $\spmoney[currency=libra]{500}$.
+
+36. Yen por alias: $\spmoney[currency=yen]{500}$.
+
+37. Peso chileno en formato ISO: $\spmoney[currency=CLP]{500}$.
+
+38. Dólar en minúsculas: $\spmoney[currency=usd]{500}$.
+
+39. Dólar en mayúsculas: $\spmoney[currency=USD]{500}$.
+
+% doc: el alias del argumento tiene prioridad sobre el valor por defecto
+40. Prioridad del argumento: $\spmoney[currency=euro]{500 libra}$.
+
+41. Prioridad del argumento con ISO: $\spmoney[currency=libra]{500 USD}$.
+
+\section*{E. Llave sub-units}
+
+% doc: imprime \$100{,}5 -- «cien dólares con cincuenta centavos»
+42. Con true: $\spmoney[sub-units=true]{100,5 dolares}$.
+
+43. Con false: $\spmoney[sub-units=false]{100,5 dolares}$.
+
+44. Euro con true: $\spmoney[sub-units=true]{100,25 euro}$.
+
+45. Subunidad de una sola cifra: $\spmoney[sub-units=true]{100,05 dolares}$.
+
+46. Subunidad en singular: $\spmoney[sub-units=true]{1,01 dolares}$.
+
+47. Sin decimales: $\spmoney[sub-units=true]{100 dolares}$.
+
+48. Peso por defecto: $\spmoney[sub-units=true]{500,75}$.
+
+49. Libra: $\spmoney[sub-units=true]{100,5 libra}$.
+
+50. Dólar en formato ISO: $\spmoney[sub-units=true]{100,5 USD}$.
+
+51. Cifra negativa: $\spmoney[sub-units=true]{-100,5 dolares}$.
+
+\section*{F. Llave money-math}
+
+52. Con true, el valor por defecto: $\spmoney[money-math=true]{500}$.
+
+53. Con false: $\spmoney[money-math=false]{500}$.
+
+54. Con false y alias de dólar: $\spmoney[money-math=false]{500 dolares}$.
+
+55. Con false y otra moneda: $\spmoney[money-math=false]{500 euro}$.
+
+% el won no está en la fuente matemática por defecto, sí en la de texto
+56. Con false y el won: $\spmoney[money-math=false]{500 won}$.
+
+57. Con false y código ISO, que no cambia: $\spmoney[money-math=false]{500 CLP}$.
+
+58. Con false y subunidades: $\spmoney[money-math=false,sub-units=true]{100,5 euro}$.
+
+\section*{G. Combinaciones de llaves}
+
+59. Euro con subunidades: $\spmoney[currency=euro,sub-units=true]{1234,5}$.
+
+60. Euro, subunidades y sin separador de cifras: $\spmoney[currency=euro,sub-units=true,cifras-sep=false]{1234,5}$.
+
+61. Subunidades y money-math false: $\spmoney[sub-units=true,money-math=false]{100,5 dolares}$.
+
+62. Peso chileno negativo con millones: $\spmoney[currency=CLP]{-1500000}$.
+
+63. Libra con millones y subunidades: $\spmoney[currency=libra,sub-units=true,cifras-sep=false]{1000000,25}$.
+
+\section*{H. Dentro de fórmulas}
+
+64. Suma e igualdad: $\spmoney{500} + \spmoney{250} = \spmoney{750}$.
+
+65. Monedas distintas: $\spmoney{500 euro} < \spmoney{600 dolares}$.
+
+66. Llaves distintas en una misma fórmula: $\spmoney[sub-units=true]{1,5 dolares} + \spmoney{2 dolares}$.
+
+67. En fórmula destacada:
+\[ \spmoney[sub-units=true]{100,5 dolares} \]
+
+68. En una fracción: $\frac{\spmoney{500}}{\spmoney{2}}$.
+
+69. Con una variable: $P = \spmoney{1500 CLP}$.
+
+\section*{I. Alias con tilde y símbolo escapado}
+
+% el alias se acepta con tilde, con mayúscula inicial y en singular
+70. Alias con tilde: $\spmoney{500 dólares}$.
+
+71. Alias con tilde en singular: $\spmoney{1 dólar}$.
+
+% el símbolo del peso escrito como \$ equivale a $
+72. Símbolo escapado: $\spmoney{500 \$}$.
+
+73. Símbolo escapado con money-math false: $\spmoney[money-math=false]{500 \$}$.
+
+% la llave currency admite lo mismo que el argumento
+74. Llave currency con símbolo escapado: $\spmoney[currency=\$]{500}$.
+
+75. Llave currency con tilde: $\spmoney[currency=dólares]{500}$.
+
+76. Alias con tilde y subunidades: $\spmoney[sub-units=true]{100,5 dólares}$.
+
+77. Símbolo escapado y subunidades: $\spmoney[sub-units=true]{100,5 \$}$.
+
+78. Alias con tilde y espacios matemáticos: $\spmoney[cifras-sep=false]{10\,00\,00 dólares}$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}

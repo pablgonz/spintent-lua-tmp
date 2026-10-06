@@ -1,114 +1,42 @@
 test-019: mini test de pendientes - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado    nivel 1  página 1  A.
-Dos puntos con subíndices de dos cifras
-1.
-Recta con un subíndice de dos cifras y otro de una:        recta  A sub 12   B sub tres
-.
-2.
-Recta con dos subíndices de una cifra:        recta  A sub uno   B sub tres
-.
-3.
-Recta con dos subíndices de dos cifras:        recta  A sub 12   B sub 12
-.
-4.
-Recta con una cifra y luego dos:        recta  A sub tres   B sub 12
-.
-5.
-Rayo con subíndices de dos cifras y una:        rayo  A sub 12   B sub tres
-.
-6.
-Lado con subíndices de dos cifras y una:        lado  A sub 12   B sub tres
-.
-7.
-Vector con subíndices de dos cifras y una:        vector  A sub 12   B sub tres
-.
-8.
-Arco con subíndices de dos cifras y una:        arco  A sub 12   B sub tres
-.
-encabezado    nivel 1  B.
-prefix con la y con el
-9.
-Medida de lado con prefix la:        la medida del lado  A   B
-.
-10.
-Medida de lado con prefix el:        el medida del lado  A   B
-.
-11.
-Lado con prefix el:        el lado  A   B
-.
-12.
-Recta con prefix la:        la recta  A   B
-.
-13.
-Medida de ángulo con prefix la:        la medida del ángulo  A   O   B
-.
-14.
-Medida de arco con prefix la:        la medida del arco  A   B
-.
-encabezado    nivel 1  C.
-spcoord y la palabra «coma»
-15.
-Dos letras, el control:        x        coma          y
-.
-16.
-Subíndices en los dos:        x        subíndice 1 coma           y        subíndice 1
-.
-17.
-Subíndice solo en el primero:        x        subíndice 1 coma   3
-.
-18.
-Subíndice solo en el segundo:        3 coma           y        subíndice 1
-.
-19.
-Raíz en el primero:        el raíz cuadrada de 2         coma   1
-.
-20.
-Raíz en el segundo:        1 coma   el raíz cuadrada de 2
-.
-21.
-Potencia en el primero:        a        cuadrado coma   1
-.
-22.
-Fracción en el primero, el control:        1 mitad coma   3
-.
-encabezado    nivel 1  D.
-spcoord después de un signo igual
-23.
-Pareja creciente de enteros:        punto  A     es igual a          1 coma  2
-.
-24.
-Pareja con signo:        punto  A     es igual a            menos 1 coma  2
-.
-25.
-Pareja decreciente:        punto  A     es igual a          2 coma  1
-.
-26.
-Pareja creciente más separada:        punto  A     es igual a          3 coma  7
-.
-encabezado    nivel 1  E.
-concept=false en las figuras
-27.
-Área con concept false y la figura:        figura
-.
-28.
-Área con concept false y la figura con subíndice:        figura uno
-.
-página 2  29.
-Área con concept false y el polígono con subíndice:        polígono uno
-.
-30.
-Perímetro con concept false y la figura:        figura
-.
-encabezado    nivel 1  F.
-Número mixto escrito a mano
-31.
-Un número mixto con fracción:        3  más  5 séptimos
-.
-32.
-Otro número mixto:        3  más  1 mitad
-.
-33.
-Un número mixto con spmQ y use-spnZ false:        3   y   5 séptimos
-.
+encabezado  nivel 1  A. Dos puntos con subíndices de dos cifras
+1. Recta con un subíndice de dos cifras y otro de una: recta  A sub 12  B sub tres
+2. Recta con dos subíndices de una cifra: recta  A sub uno  B sub tres
+3. Recta con dos subíndices de dos cifras: recta  A sub 12  B sub 12
+4. Recta con una cifra y luego dos: recta  A sub tres  B sub 12
+5. Rayo con subíndices de dos cifras y una: rayo  A sub 12  B sub tres
+6. Lado con subíndices de dos cifras y una: lado  A sub 12  B sub tres
+7. Vector con subíndices de dos cifras y una: vector  A sub 12  B sub tres
+8. Arco con subíndices de dos cifras y una: arco  A sub 12  B sub tres
+encabezado  nivel 1  B. prefix con la y con el
+9. Medida de lado con prefix la: la medida del lado  A  B
+10. Medida de lado con prefix el: el medida del lado  A  B
+11. Lado con prefix el: el lado  A  B
+12. Recta con prefix la: la recta  A  B
+13. Medida de ángulo con prefix la: la medida del ángulo  A  O  B
+14. Medida de arco con prefix la: la medida del arco  A  B
+encabezado  nivel 1  C. spcoord y la palabra «coma»
+15. Dos letras, el control: x  coma  y
+16. Subíndices en los dos: x  subíndice 1 coma  y  subíndice 1
+17. Subíndice solo en el primero: x  subíndice 1 coma  3
+18. Subíndice solo en el segundo: 3 coma  y  subíndice 1
+19. Raíz en el primero: el raíz cuadrada de 2  coma  1
+20. Raíz en el segundo: 1 coma  el raíz cuadrada de 2
+21. Potencia en el primero: a  cuadrado coma  1
+22. Fracción en el primero, el control: 1 mitad coma  3
+encabezado  nivel 1  D. spcoord después de un signo igual
+23. Pareja creciente de enteros: punto  A  es igual a  1 coma  2
+24. Pareja con signo: punto  A  es igual a  menos 1 coma  2
+25. Pareja decreciente: punto  A  es igual a  2 coma  1
+26. Pareja creciente más separada: punto  A  es igual a  3 coma  7
+encabezado  nivel 1  E. concept=false en las figuras
+27. Área con concept false y la figura: figura
+28. Área con concept false y la figura con subíndice: figura uno
+29. Área con concept false y el polígono con subíndice: polígono uno
+30. Perímetro con concept false y la figura: figura
+encabezado  nivel 1  F. Número mixto escrito a mano
+31. Un número mixto con fracción: 3  más  5 séptimos
+32. Otro número mixto: 3  más  1 mitad
+33. Un número mixto con spmQ y use-spnZ false: 3  y  5 séptimos
 

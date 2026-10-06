@@ -1,0 +1,271 @@
+% test-017.tex -- silent=true en todos los comandos (verificacion de silent-total.patch)
+%
+% Compilar:  lualatex-dev test-017.tex
+% Validar:   show-pdf-tags --xml test-017.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-017.pdf
+%
+% Cada caso es un parrafo numerado. En los casos de las secciones A a N
+% NVDA NO debe leer nada despues de la etiqueta: el manual dice que con
+% silent=true "NVDA NO verbalizara la salida del comando". La seccion O
+% son controles sin silent, que deben leerse igual que antes del parche.
+%
+% Los casos con subindices, coordenadas, radios y resultados son los que
+% fallaban (test-010, 012, 013 y 016).
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-017: silent true en todos los comandos},
+  }
+\pagestyle{empty}
+\begin{document}
+
+\section*{A. Comando spPoint}
+
+1. Con silent true y un punto: $\spPoint[silent=true]{A}$.
+
+2. Con silent true y un punto con subíndice: $\spPoint[silent=true]{A_{1}}$.
+
+3. Con silent true y un punto con prima: $\spPoint[silent=true]{A'}$.
+
+4. Con silent true y un punto con coordenadas: $\spPoint[silent=true]{A}(-3,4)$.
+
+5. Con silent true y un punto con subíndice y coordenadas: $\spPoint[silent=true]{A_{1}}(-3,4)$.
+
+6. Con silent true y un punto con prima y coordenadas: $\spPoint[silent=true]{A'}(-3,4)$.
+
+7. Con silent true, read-cmd mathcat y subíndice: $\spPoint[silent=true,read-cmd=mathcat]{A_{1}}$.
+
+\section*{B. Comando spvec}
+
+8. Con silent true y un nombre: $\spvec[silent=true]{a}$.
+
+9. Con silent true y un nombre con subíndice: $\spvec[silent=true]{a_{1}}$.
+
+10. Con silent true y dos puntos: $\spvec[silent=true]{AB}$.
+
+11. Con silent true y dos puntos con subíndices: $\spvec[silent=true]{A_{1}B_{2}}$.
+
+12. Con silent true y dos puntos con primas: $\spvec[silent=true]{A'B'}$.
+
+13. Con silent true y un nombre y coordenadas: $\spvec[silent=true]{a}(-3,4)$.
+
+14. Con silent true y dos puntos y coordenadas: $\spvec[silent=true]{AB}(-3,4)$.
+
+15. Con silent true y dos puntos con subíndices y coordenadas: $\spvec[silent=true]{A_{1}B_{2}}(3,4)$.
+
+16. Con silent true, read-cmd mathcat y un nombre con subíndice: $\spvec[silent=true,read-cmd=mathcat]{a_{1}}$.
+
+\section*{C. Comando sprecta}
+
+17. Con silent true y dos puntos: $\sprecta[silent=true]{AB}$.
+
+18. Con silent true y una letra con subíndice: $\sprecta[silent=true]{r_{1}}$.
+
+19. Con silent true y dos puntos con subíndices: $\sprecta[silent=true]{A_{1}B_{2}}$.
+
+\section*{D. Comando sprayo}
+
+20. Con silent true y dos puntos: $\sprayo[silent=true]{AB}$.
+
+21. Con silent true y dos puntos con subíndices: $\sprayo[silent=true]{A_{1}B_{2}}$.
+
+22. Con silent true y dos puntos con primas: $\sprayo[silent=true]{A'B'}$.
+
+23. Con silent true y read-sty semirrecta: $\sprayo[silent=true,read-sty=semirrecta]{A_{1}B_{2}}$.
+
+\section*{E. Comandos spside y spmside}
+
+24. Con silent true y dos puntos: $\spside[silent=true]{AB}$.
+
+25. Con silent true y dos puntos con subíndices: $\spside[silent=true]{A_{1}B_{2}}$.
+
+26. Con silent true y dos puntos con primas: $\spside[silent=true]{A'B'}$.
+
+27. Con silent true y dos puntos: $\spmside[silent=true]{AB}$.
+
+28. Con silent true y dos puntos con subíndices: $\spmside[silent=true]{A_{1}B_{2}}$.
+
+29. Con silent true y dos puntos con primas: $\spmside[silent=true]{A'B'}$.
+
+30. Con silent true, read-arg y subíndices: $\spside[silent=true,read-arg={hipotenusa}]{A_{1}B_{2}}$.
+
+31. Con silent true, print-m y subíndices: $\spmside[silent=true,print-m=true]{A_{1}B_{2}}$.
+
+\section*{F. Comandos spangle, spmangle, sparc y spmarc}
+
+32. Con silent true en spangle con subíndice: $\spangle[silent=true]{A_{1}}$.
+
+33. Con silent true en spangle con tres puntos con subíndices: $\spangle[silent=true]{A_{1}OB_{2}}$.
+
+34. Con silent true en spmangle con tres puntos con subíndices: $\spmangle[silent=true]{A_{1}OB_{2}}$.
+
+35. Con silent true en sparc con subíndices: $\sparc[silent=true]{A_{1}B_{2}}$.
+
+36. Con silent true en spmarc con subíndices: $\spmarc[silent=true]{A_{1}B_{2}C_{3}}$.
+
+\section*{G. Comando spPoly}
+
+37. Con silent true y tres puntos: $\spPoly[silent=true]{ABC}$.
+
+38. Con silent true y tres puntos con subíndices: $\spPoly[silent=true]{A_{1}B_{2}C_{3}}$.
+
+39. Con silent true y tres puntos con primas: $\spPoly[silent=true]{A'B'C'}$.
+
+40. Con silent true y cuatro puntos con subíndices: $\spPoly[silent=true]{A_{1}B_{2}C_{3}D_{4}}$.
+
+41. Con silent true y cinco puntos: $\spPoly[silent=true]{ABCDE}$.
+
+\section*{H. Comandos spAfig y spPfig}
+
+42. Con silent true y tres puntos: $\spAfig[silent=true](ABC)$.
+
+43. Con silent true y tres puntos con subíndices: $\spAfig[silent=true](A_{1}B_{2}C_{3})$.
+
+44. Con silent true y un número: $\spAfig[silent=true](1)$.
+
+45. Con silent true y la figura con subíndice: $\spAfig[silent=true](F_{1})$.
+
+46. Con silent true y tres puntos: $\spPfig[silent=true](ABC)$.
+
+47. Con silent true y tres puntos con subíndices: $\spPfig[silent=true](A_{1}B_{2}C_{3})$.
+
+48. Con silent true y un número: $\spPfig[silent=true](1)$.
+
+49. Con silent true y la figura con subíndice: $\spPfig[silent=true](F_{1})$.
+
+\section*{I. Comandos spAcirc y spPcirc}
+
+50. Con silent true y un centro: $\spAcirc[silent=true](O)$.
+
+51. Con silent true y un centro con subíndice: $\spAcirc[silent=true](O_{1})$.
+
+52. Con silent true y un centro con prima: $\spAcirc[silent=true](O')$.
+
+53. Con silent true y un número: $\spAcirc[silent=true](1)$.
+
+54. Con silent true y un centro: $\spPcirc[silent=true](O)$.
+
+55. Con silent true y un centro con subíndice: $\spPcirc[silent=true](O_{1})$.
+
+56. Con silent true y un centro con prima: $\spPcirc[silent=true](O')$.
+
+57. Con silent true y un número: $\spPcirc[silent=true](1)$.
+
+\section*{J. Comando spcirc}
+
+58. Con silent true y un centro: $\spcirc[silent=true](O)$.
+
+59. Con silent true y un centro con subíndice: $\spcirc[silent=true](O_{1})$.
+
+60. Con silent true y centro y radio entero: $\spcirc[silent=true](O,3)$.
+
+61. Con silent true y centro y radio con letra: $\spcirc[silent=true](O,r)$.
+
+62. Con silent true y centro y radio con medida: $\spcirc[silent=true](O,3 cm)$.
+
+63. Con silent true y centro y radio con segmento: $\spcirc[silent=true](O,AB)$.
+
+64. Con silent true y centro y radio con segmento con subíndices: $\spcirc[silent=true](O,A_{1}B_{2})$.
+
+65. Con silent true y radio-sty side: $\spcirc[silent=true,radio-sty=side](O,AB)$.
+
+66. Con silent true y diameter true: $\spcirc[silent=true,diameter=true](O,3)$.
+
+\section*{K. Comandos spnD y spnM}
+
+67. Con silent true y un número: $\spnD[silent=true](6)$.
+
+68. Con silent true y un número de dos cifras: $\spnD[silent=true](12)$.
+
+69. Con silent true y la letra n: $\spnD[silent=true](n)$.
+
+70. Con silent true y result true: $\spnD[silent=true,result=true](6)$.
+
+71. Con silent true, result true y result-num: $\spnD[silent=true,result=true,result-num=3](12)$.
+
+72. Con silent true y un número: $\spnM[silent=true](6)$.
+
+73. Con silent true y un número de dos cifras: $\spnM[silent=true](12)$.
+
+74. Con silent true y la letra n: $\spnM[silent=true](n)$.
+
+75. Con silent true y result true: $\spnM[silent=true,result=true](6)$.
+
+76. Con silent true, result true y result-num: $\spnM[silent=true,result=true,result-num=3](12)$.
+
+\section*{L. Comandos spmcd y spmcm}
+
+77. Con silent true y dos números: $\spmcd[silent=true](12, 18)$.
+
+78. Con silent true y tres números: $\spmcd[silent=true](2, 3, 6)$.
+
+79. Con silent true y dos letras: $\spmcd[silent=true](m, n)$.
+
+80. Con silent true y result true: $\spmcd[silent=true,result=true](12, 18)$.
+
+81. Con silent true y dos números: $\spmcm[silent=true](12, 18)$.
+
+82. Con silent true y tres números: $\spmcm[silent=true](2, 3, 6)$.
+
+83. Con silent true y dos letras: $\spmcm[silent=true](m, n)$.
+
+84. Con silent true y result true: $\spmcm[silent=true,result=true](12, 18)$.
+
+\section*{M. Comandos sprad, spdiam y spVol}
+
+85. Con silent true y sub-index en sprad: $\sprad[silent=true,sub-index={1}]$.
+
+86. Con silent true y sub-index en spdiam: $\spdiam[silent=true,sub-index={1}]$.
+
+87. Con silent true y sub-index en spVol: $\spVol[silent=true,sub-index={1}]$.
+
+\section*{N. Comandos sprazon y spProp}
+
+88. Con silent true en sprazon: $\sprazon[silent=true]{3}{4}$.
+
+89. Con silent true en spProp: $\spProp[silent=true]{3}{4}{6}{8}$.
+
+\section*{O. Controles sin silent (deben leerse como antes)}
+
+90. Control de spPoint: $\spPoint{A_{1}}(-3,4)$.
+
+91. Control de spvec: $\spvec{a}(-3,4)$.
+
+92. Control de sprayo: $\sprayo{A_{1}B_{2}}$.
+
+93. Control de spside: $\spside{A_{1}B_{2}}$.
+
+94. Control de spPoly: $\spPoly{A_{1}B_{2}C_{3}}$.
+
+95. Control de spcirc con radio entero: $\spcirc(O,3)$.
+
+96. Control de spcirc con radio segmento: $\spcirc(O,AB)$.
+
+97. Control de spnD con resultado: $\spnD[result=true](6)$.
+
+98. Control de spmcd con resultado: $\spmcd[result=true](12, 18)$.
+
+99. Control de spmcm con resultado: $\spmcm[result=true](12, 18)$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}

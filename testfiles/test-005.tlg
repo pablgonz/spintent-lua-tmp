@@ -1,0 +1,3484 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+============================================================
+TEST 1: Show PDF Tags
+============================================================
+-------- test-005.xml (start) ---------
+<PDF version="2.0">
+ <StructTreeRoot>
+  <Document xmlns="http://iso.org/pdf2/ssn"
+     id="ID.00002"
+    >
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00006"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00007"
+       title="A. Símbolos y alias"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="1" ?>A. Símbolos y alias
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00008"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00009"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>1. Peso, símbolo: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00010"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00011"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00012"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00013"
+           intent="_pesos:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00014"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00015"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00016"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00017"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>2. Peso, alias peso: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00018"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00019"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00020"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00021"
+           intent="_pesos:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00022"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00023"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00024"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00025"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>3. Peso, alias pesos: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00026"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00027"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00028"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00029"
+           intent="_pesos:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00030"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00031"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00032"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00033"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>4. Dólar, entrada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00034"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00035"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00036"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00037"
+           intent="_dólares:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00038"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00039"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00040"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00041"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>5. Dólar, alias dolares: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00042"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00043"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00044"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00045"
+           intent="_dólares:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00046"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00047"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00048"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00049"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>6. Dólar, alias dólar: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00050"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00051"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00052"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00053"
+           intent="_dólares:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00054"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00055"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00056"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00057"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>7. Dólar, alias dólares: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00058"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00059"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00060"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00061"
+           intent="_dólares:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00062"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00063"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00064"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00065"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>8. Euro, símbolo: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00066"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00067"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00068"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00069"
+           intent="_euros:postfix($n)"
+          >
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00070"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00071"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>€
+         </mi>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00072"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00073"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>9. Euro, alias euro: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00074"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00075"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00076"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00077"
+           intent="_euros:postfix($n)"
+          >
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00078"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00079"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>€
+         </mi>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00080"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00081"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>10. Euro, alias euros: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00082"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00083"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00084"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00085"
+           intent="_euros:postfix($n)"
+          >
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00086"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00087"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>€
+         </mi>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00088"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00089"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>11. Libra, símbolo: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00090"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00091"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00092"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00093"
+           intent="_libras:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00094"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>£
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00095"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00096"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00097"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>12. Libra, alias libra: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00098"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00099"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00100"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00101"
+           intent="_libras:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00102"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>£
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00103"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00104"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00105"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>13. Libra, alias libras: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00106"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00107"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00108"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00109"
+           intent="_libras:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00110"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>£
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00111"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00112"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00113"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>14. Yen, símbolo: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00114"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00115"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00116"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00117"
+           intent="_yenes:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00118"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>¥
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00119"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00120"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00121"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>15. Yen, alias yen: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00122"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00123"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00124"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00125"
+           intent="_yenes:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00126"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>¥
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00127"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00128"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00129"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>16. Yen, alias yenes: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00130"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00131"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00132"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00133"
+           intent="_yenes:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00134"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>¥
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00135"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00136"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00137"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>17. Yuan, entrada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00138"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00139"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00140"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00141"
+           intent="_yuanes:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00142"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>¥
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00143"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00144"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00145"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>18. Yuan, alias yuanes: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00146"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00147"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00148"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00149"
+           intent="_yuanes:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00150"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>¥
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00151"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00152"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00153"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>19. Won, símbolo, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00154"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00156"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00157"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00158"
+           intent="_wons:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00155"
+           >
+          <?MarkedContent page="1" ?>₩
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00159"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00160"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00161"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>20. Won, alias won, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00162"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00164"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00165"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00166"
+           intent="_wons:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00163"
+           >
+          <?MarkedContent page="1" ?>₩
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00167"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00168"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00169"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>21. Won, alias wons, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00170"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00172"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00173"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00174"
+           intent="_wons:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00171"
+           >
+          <?MarkedContent page="1" ?>₩
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00175"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00176"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00177"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>22. Séquel, símbolo, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00178"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00180"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00181"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00182"
+           intent="_séqueles:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00179"
+           >
+          <?MarkedContent page="1" ?>₪
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00183"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00184"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00185"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>23. Séquel, alias shekel, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00186"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00188"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00189"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00190"
+           intent="_séqueles:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00187"
+           >
+          <?MarkedContent page="1" ?>₪
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00191"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00192"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00193"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>24. Séquel, alias shekels, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00194"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00196"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00197"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00198"
+           intent="_séqueles:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00195"
+           >
+          <?MarkedContent page="1" ?>₪
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00199"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00200"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00201"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>25. Séquel, alias sequel, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00202"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00204"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00205"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00206"
+           intent="_séqueles:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00203"
+           >
+          <?MarkedContent page="1" ?>₪
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00207"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00208"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00209"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>26. Séquel, alias sequeles, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00210"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00212"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00213"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00214"
+           intent="_séqueles:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00211"
+           >
+          <?MarkedContent page="1" ?>₪
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00215"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00216"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00217"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>27. Rupia, símbolo, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00218"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00220"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00221"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00222"
+           intent="_rupias:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00219"
+           >
+          <?MarkedContent page="1" ?>₹
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00223"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00224"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00225"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>28. Rupia, alias rupia, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00226"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00228"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00229"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00230"
+           intent="_rupias:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00227"
+           >
+          <?MarkedContent page="1" ?>₹
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00231"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00232"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00233"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>29. Rupia, alias rupias, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00234"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00236"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00237"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00238"
+           intent="_rupias:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00235"
+           >
+          <?MarkedContent page="1" ?>₹
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00239"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00240"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00241"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>30. Rublo, símbolo, con money-math=false en monoespaciada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00242"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00244"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00245"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00246"
+           intent="_rublos:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00243"
+           >
+          <?MarkedContent page="1" ?>₽
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00247"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00248"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00249"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>31. Rublo, alias rublo, con money-math=false en monoespaciada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00250"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00252"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00253"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00254"
+           intent="_rublos:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00251"
+           >
+          <?MarkedContent page="1" ?>₽
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00255"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00256"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00257"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>32. Rublo, alias rublos, con money-math=false en monoespaciada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00258"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00260"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00261"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00262"
+           intent="_rublos:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00259"
+           >
+          <?MarkedContent page="1" ?>₽
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00263"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00264"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00265"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>33. Lira, símbolo, con money-math=false en monoespaciada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00266"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00268"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00269"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00270"
+           intent="_liras:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00267"
+           >
+          <?MarkedContent page="1" ?>₺
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00271"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00272"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00273"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>34. Lira, alias lira, con money-math=false en monoespaciada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00274"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00276"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00277"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00278"
+           intent="_liras:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00275"
+           >
+          <?MarkedContent page="1" ?>₺
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00279"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00280"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00281"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>35. Lira, alias liras, con money-math=false en monoespaciada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00282"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00284"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00285"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00286"
+           intent="_liras:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00283"
+           >
+          <?MarkedContent page="1" ?>₺
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00287"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00288"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00289"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>36. Grivna, símbolo, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00290"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00292"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00293"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00294"
+           intent="_grivnas:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00291"
+           >
+          <?MarkedContent page="1" ?>₴
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00295"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00296"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00297"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>37. Grivna, alias grivna, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00298"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00300"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00301"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00302"
+           intent="_grivnas:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00299"
+           >
+          <?MarkedContent page="1" ?>₴
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00303"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00304"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00305"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>38. Grivna, alias grivnas, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00306"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00308"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00309"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00310"
+           intent="_grivnas:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00307"
+           >
+          <?MarkedContent page="1" ?>₴
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00311"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00312"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00313"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>39. Centavo, símbolo: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00314"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00315"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00316"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00317"
+           intent="_centavos:postfix($n)"
+          >
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00318"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00319"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>¢
+         </mi>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00320"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00321"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>40. Centavo, alias centavo: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00322"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00323"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00324"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00325"
+           intent="_centavos:postfix($n)"
+          >
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00326"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00327"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>¢
+         </mi>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00328"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00329"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="1" ?>41. Centavo, alias centavos: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00330"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="1" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00331"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00332"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="1" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00333"
+           intent="_centavos:postfix($n)"
+          >
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00334"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="1" ?>500
+         </mn>
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00335"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="1" ?>¢
+         </mi>
+        </mrow>
+       </math>
+       <?MarkedContent page="1" ?>
+      </Formula>
+      <?MarkedContent page="1" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00336"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00337"
+       title="B. Códigos ISO en mayúsculas"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="2" ?>B. Códigos ISO en mayúsculas
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00338"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00339"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>42. Peso chileno, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00340"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00341"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00342"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00343"
+           intent="_pesos-chilenos:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00344"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>CLP
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00345"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00346"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00347"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>43. Peso mexicano, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00348"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00349"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00350"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00351"
+           intent="_pesos-mexicanos:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00352"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>MXN
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00353"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00354"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00355"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>44. Dólar, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00356"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00357"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00358"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00359"
+           intent="_dólares-estadounidenses:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00360"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>USD
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00361"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00362"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00363"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>45. Euro, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00364"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00365"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00366"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00367"
+           intent="_euros:postfix($n)"
+          >
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00368"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00369"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>EUR
+         </mi>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00370"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00371"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>46. Libra, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00372"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00373"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00374"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00375"
+           intent="_libras:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00376"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>GBP
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00377"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00378"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00379"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>47. Yen, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00380"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00381"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00382"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00383"
+           intent="_yenes:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00384"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>JPY
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00385"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00386"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00387"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>48. Yuan, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00388"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00389"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00390"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00391"
+           intent="_yuanes:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00392"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>CNY
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00393"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00394"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00395"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>49. Won, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00396"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00397"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00398"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00399"
+           intent="_wons:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00400"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>KRW
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00401"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00402"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00403"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>50. Séquel, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00404"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00405"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00406"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00407"
+           intent="_séqueles:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00408"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>ILS
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00409"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00410"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00411"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>51. Rupia, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00412"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00413"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00414"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00415"
+           intent="_rupias:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00416"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>INR
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00417"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00418"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00419"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>52. Rublo, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00420"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00421"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00422"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00423"
+           intent="_rublos:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00424"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>RUB
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00425"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00426"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00427"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>53. Lira, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00428"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00429"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00430"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00431"
+           intent="_liras:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00432"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>TRY
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00433"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00434"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00435"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>54. Grivna, código en mayúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00436"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00437"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00438"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00439"
+           intent="_grivnas:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00440"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>UAH
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00441"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00442"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00443"
+       title="C. Códigos ISO en minúsculas"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="2" ?>C. Códigos ISO en minúsculas
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00444"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00445"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>55. Peso chileno, código en minúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00446"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00447"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00448"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00449"
+           intent="_pesos-chilenos:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00450"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00451"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00452"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00453"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>56. Peso mexicano, código en minúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00454"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00455"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00456"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00457"
+           intent="_pesos-mexicanos:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00458"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00459"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00460"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00461"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>57. Dólar, código en minúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00462"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00463"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00464"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00465"
+           intent="_dólares-estadounidenses:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00466"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>$
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00467"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00468"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00469"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>58. Euro, código en minúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00470"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00471"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00472"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00473"
+           intent="_euros:postfix($n)"
+          >
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00474"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00475"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>€
+         </mi>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00476"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00477"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>59. Libra, código en minúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00478"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00479"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00480"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00481"
+           intent="_libras:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00482"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>£
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00483"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00484"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00485"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>60. Yen, código en minúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00486"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00487"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00488"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00489"
+           intent="_yenes:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00490"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>¥
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00491"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00492"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00493"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>61. Yuan, código en minúsculas: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00494"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="2" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00495"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00496"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00497"
+           intent="_yuanes:postfix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00498"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>¥
+         </mi>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00499"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00500"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00501"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>62. Won, código en minúsculas, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00502"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00504"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00505"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00506"
+           intent="_wons:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00503"
+           >
+          <?MarkedContent page="2" ?>₩
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00507"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00508"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00509"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>63. Séquel, código en minúsculas, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00510"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00512"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00513"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00514"
+           intent="_séqueles:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00511"
+           >
+          <?MarkedContent page="2" ?>₪
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00515"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00516"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00517"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>64. Rupia, código en minúsculas, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00518"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00520"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00521"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00522"
+           intent="_rupias:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00519"
+           >
+          <?MarkedContent page="2" ?>₹
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00523"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00524"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00525"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>65. Rublo, código en minúsculas, con money-math=false en monoespaciada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00526"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00528"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00529"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00530"
+           intent="_rublos:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00527"
+           >
+          <?MarkedContent page="2" ?>₽
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00531"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00532"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00533"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>66. Lira, código en minúsculas, con money-math=false en monoespaciada: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00534"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00536"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00537"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00538"
+           intent="_liras:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00535"
+           >
+          <?MarkedContent page="2" ?>₺
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00539"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00540"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00541"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="2" ?>67. Grivna, código en minúsculas, con money-math=false: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00542"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00544"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00545"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="2" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00546"
+           intent="_grivnas:postfix($n)"
+          >
+         <mtext xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00543"
+           >
+          <?MarkedContent page="2" ?>₴
+         </mtext>
+         <mn xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00547"
+            arg="n"
+            intent="500:number"
+           >
+          <?MarkedContent page="2" ?>500
+         </mn>
+        </mrow>
+       </math>
+       <?MarkedContent page="2" ?>
+      </Formula>
+      <?MarkedContent page="2" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
+  </Document>
+ </StructTreeRoot>
+</PDF>
+-------- test-005.xml (end) -----------
+============================================================

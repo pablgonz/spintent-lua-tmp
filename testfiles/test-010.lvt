@@ -1,0 +1,383 @@
+% test-010.tex -- comandos \spnD, \spnM, \spmcd y \spmcm
+%
+% Compilar:  lualatex-dev test-010.tex
+% Validar:   show-pdf-tags --xml test-010.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-010.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
+% el PDF. Los comentarios "doc:" indican lo que documenta el manual; en el
+% resto, la lectura se revisa escuchando. Los cuatro trabajan en modo
+% matematico y reciben un argumento entre parentesis. Los resultados de
+% result=true los calcula el modulo Lua. Las entradas invalidas (que
+% detienen la compilacion) no van aqui, entre ellas una lista de un solo
+% elemento en \spmcd y \spmcm (se requieren al menos dos). Tampoco el 0
+% en \spnD y \spnM, que da siempre error (md-invalid-argument).
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-010: spnD, spnM, spmcd y spmcm},
+  }
+\pagestyle{empty}
+\begin{document}
+
+\section*{Comando spnD}
+
+% doc: imprime \mathrm{D}(n) -- «divisores de ene»
+1. Sin argumento: $\spnD$.
+
+% doc: imprime \mathrm{D}(6) -- «divisores de seis»
+2. Con un número: $\spnD(6)$.
+
+% doc: imprime \mathrm{D}(m) -- «divisores de eme»
+3. Con una letra: $\spnD(m)$.
+
+4. Con el número 12: $\spnD(12)$.
+
+5. Con el número 100: $\spnD(100)$.
+
+6. Con el número 1: $\spnD(1)$.
+
+7. Con el número 7: $\spnD(7)$.
+
+8. Con la letra n: $\spnD(n)$.
+
+9. Con la letra a: $\spnD(a)$.
+
+% doc: «divisores de seis»
+10. Con concept true, el valor por defecto: $\spnD[concept=true](6)$.
+
+% doc: solo se verbaliza el argumento
+11. Con concept false: $\spnD[concept=false](6)$.
+
+12. Con concept false y una letra: $\spnD[concept=false](m)$.
+
+% doc: el prefijo se verbaliza antes del concepto
+13. Con prefix: $\spnD[prefix={los}](6)$.
+
+14. Con prefix y una letra: $\spnD[prefix={los}](m)$.
+
+% doc: imprime \mathrm{D}(6) = \{1, 2, 3, 6\} -- «divisores de seis son uno, dos, tres y seis»
+15. Con result true: $\spnD[result=true](6)$.
+
+16. Con result true y el 12: $\spnD[result=true](12)$.
+
+17. Con result true y el 7: $\spnD[result=true](7)$.
+
+18. Con result true y el 1: $\spnD[result=true](1)$.
+
+19. Con result-num 2 y el 12: $\spnD[result=true,result-num=2](12)$.
+
+20. Con result-num 10 y el 100: $\spnD[result=true,result-num=10](100)$.
+
+21. Con result-num 1 y el 12: $\spnD[result=true,result-num=1](12)$.
+
+% doc: no se imprime ni se verbaliza el resultado
+22. Con result false explícito: $\spnD[result=false](6)$.
+
+% doc: no se verbaliza la salida del comando
+23. Con silent true: $\spnD[silent=true](6)$.
+
+24. Con silent false explícito: $\spnD[silent=false](6)$.
+
+25. Con silent true y una letra: $\spnD[silent=true](m)$.
+
+26. Con silent y result: $\spnD[silent=true,result=true](6)$.
+
+27. Con concept false y result: $\spnD[concept=false,result=true](6)$.
+
+28. Con prefix y result: $\spnD[prefix={los},result=true](6)$.
+
+29. Con prefix y concept false: $\spnD[prefix={los},concept=false](6)$.
+
+30. Con todas las llaves: $\spnD[prefix={los},concept=true,result=true,result-num=3](12)$.
+
+\section*{Comando spnM}
+
+% doc: imprime \mathrm{M}(n) -- «múltiplos de ene»
+31. Sin argumento: $\spnM$.
+
+% doc: imprime \mathrm{M}(6) -- «múltiplos de seis»
+32. Con un número: $\spnM(6)$.
+
+% doc: imprime \mathrm{M}(m) -- «múltiplos de eme»
+33. Con una letra: $\spnM(m)$.
+
+34. Con el número 12: $\spnM(12)$.
+
+35. Con el número 100: $\spnM(100)$.
+
+36. Con el número 1: $\spnM(1)$.
+
+37. Con el número 7: $\spnM(7)$.
+
+38. Con la letra n: $\spnM(n)$.
+
+39. Con la letra a: $\spnM(a)$.
+
+% doc: «múltiplos de seis»
+40. Con concept true, el valor por defecto: $\spnM[concept=true](6)$.
+
+% doc: solo se verbaliza el argumento
+41. Con concept false: $\spnM[concept=false](6)$.
+
+42. Con concept false y una letra: $\spnM[concept=false](m)$.
+
+% doc: el prefijo se verbaliza antes del concepto
+43. Con prefix: $\spnM[prefix={los}](6)$.
+
+44. Con prefix y una letra: $\spnM[prefix={los}](m)$.
+
+% doc: imprime \mathrm{M}(6) = \{6, 12, 18, 24, 30, \dots\} -- «múltiplos de seis son seis, doce, dieciocho, veinticuatro, treinta puntos suspensivos»
+45. Con result true: $\spnM[result=true](6)$.
+
+46. Con result true y el 12: $\spnM[result=true](12)$.
+
+47. Con result true y el 1: $\spnM[result=true](1)$.
+
+48. Con result true y el 7: $\spnM[result=true](7)$.
+
+49. Con result-num 2 y el 6: $\spnM[result=true,result-num=2](6)$.
+
+50. Con result-num 3 y el 12: $\spnM[result=true,result-num=3](12)$.
+
+51. Con result-num 10 y el 6: $\spnM[result=true,result-num=10](6)$.
+
+% doc: no se imprime ni se verbaliza el resultado
+52. Con result false explícito: $\spnM[result=false](6)$.
+
+% doc: no se verbaliza la salida del comando
+53. Con silent true: $\spnM[silent=true](6)$.
+
+54. Con silent false explícito: $\spnM[silent=false](6)$.
+
+55. Con silent true y una letra: $\spnM[silent=true](m)$.
+
+56. Con silent y result: $\spnM[silent=true,result=true](6)$.
+
+57. Con concept false y result: $\spnM[concept=false,result=true](6)$.
+
+58. Con prefix y result: $\spnM[prefix={los},result=true](6)$.
+
+59. Con prefix y concept false: $\spnM[prefix={los},concept=false](6)$.
+
+60. Con todas las llaves: $\spnM[prefix={los},concept=true,result=true,result-num=3](12)$.
+
+\section*{Comando spmcd}
+
+% doc: imprime \mathrm{mcd} -- «máximo común divisor»
+61. Sin argumento: $\spmcd$.
+
+% doc: imprime \mathrm{mcd}(2, 3, 6) -- «máximo común divisor entre dos, tres y seis»
+62. Con tres números: $\spmcd(2, 3, 6)$.
+
+% doc: imprime \mathrm{mcd}(m, n) -- «máximo común divisor entre eme y ene»
+63. Con dos letras: $\spmcd(m, n)$.
+
+64. Con los números 12, 18: $\spmcd(12, 18)$.
+
+65. Con los números 100, 75: $\spmcd(100, 75)$.
+
+66. Con los números 7, 13: $\spmcd(7, 13)$.
+
+67. Con los números 8, 12, 20: $\spmcd(8, 12, 20)$.
+
+68. Con los números 2, 3, 6, 12: $\spmcd(2, 3, 6, 12)$.
+
+69. Con los números 48, 36: $\spmcd(48, 36)$.
+
+70. Con los números 6, 6: $\spmcd(6, 6)$.
+
+71. Sin espacios entre los números: $\spmcd(12,18)$.
+
+72. Con las letras m, n, p: $\spmcd(m, n, p)$.
+
+73. Con las letras a, b: $\spmcd(a, b)$.
+
+74. Con un número y una letra: $\spmcd(2, m)$.
+
+% doc: solo se verbaliza el argumento
+75. Con concept false: $\spmcd[concept=false](12, 18)$.
+
+76. Con concept true explícito: $\spmcd[concept=true](12, 18)$.
+
+% doc: «máximo común divisor»
+77. Con read-cmd clear, el valor por defecto: $\spmcd[read-cmd=clear](12, 18)$.
+
+% doc: «m c d»
+78. Con read-cmd terse: $\spmcd[read-cmd=terse](12, 18)$.
+
+79. Con read-cmd terse y letras: $\spmcd[read-cmd=terse](m, n)$.
+
+% doc: imprime \mathrm{mcd}
+80. Con upper-case false, el valor por defecto: $\spmcd[upper-case=false](12, 18)$.
+
+% doc: imprime \mathrm{MCD}
+81. Con upper-case true: $\spmcd[upper-case=true](12, 18)$.
+
+82. Con upper-case true sin argumento: $\spmcd[upper-case=true]$.
+
+% doc: el prefijo se verbaliza antes del concepto
+83. Con prefix: $\spmcd[prefix={el}](12, 18)$.
+
+84. Con prefix y read-cmd terse: $\spmcd[prefix={el},read-cmd=terse](12, 18)$.
+
+% doc: imprime \mathrm{mcd}(2, 3, 6) = 1 -- «máximo común divisor entre dos, tres y seis es igual a uno»
+85. Con result true: $\spmcd[result=true](2, 3, 6)$.
+
+86. Con result true y dos números: $\spmcd[result=true](12, 18)$.
+
+87. Con result true y cuatro números: $\spmcd[result=true](2, 3, 6, 12)$.
+
+88. Con result true y números primos entre sí: $\spmcd[result=true](7, 13)$.
+
+89. Con result true y tres números: $\spmcd[result=true](8, 12, 20)$.
+
+% doc: no se imprime ni se verbaliza el resultado
+90. Con result false explícito: $\spmcd[result=false](2, 3, 6)$.
+
+% doc: no se verbaliza la salida del comando
+91. Con silent true: $\spmcd[silent=true](12, 18)$.
+
+92. Con silent false explícito: $\spmcd[silent=false](12, 18)$.
+
+93. Con silent true y letras: $\spmcd[silent=true](m, n)$.
+
+94. Con silent y result: $\spmcd[silent=true,result=true](12, 18)$.
+
+95. Con concept false y result: $\spmcd[concept=false,result=true](12, 18)$.
+
+96. Con read-cmd terse y result: $\spmcd[read-cmd=terse,result=true](12, 18)$.
+
+97. Con upper-case y result: $\spmcd[upper-case=true,result=true](12, 18)$.
+
+98. Con todas las llaves: $\spmcd[prefix={el},read-cmd=terse,upper-case=true,result=true](12, 18)$.
+
+\section*{Comando spmcm}
+
+% doc: imprime \mathrm{mcm} -- «mínimo común múltiplo»
+99. Sin argumento: $\spmcm$.
+
+% doc: imprime \mathrm{mcm}(2, 3, 6) -- «mínimo común múltiplo entre dos, tres y seis»
+100. Con tres números: $\spmcm(2, 3, 6)$.
+
+% doc: imprime \mathrm{mcm}(m, n) -- «mínimo común múltiplo entre eme y ene»
+101. Con dos letras: $\spmcm(m, n)$.
+
+102. Con los números 12, 18: $\spmcm(12, 18)$.
+
+103. Con los números 100, 75: $\spmcm(100, 75)$.
+
+104. Con los números 7, 13: $\spmcm(7, 13)$.
+
+105. Con los números 8, 12, 20: $\spmcm(8, 12, 20)$.
+
+106. Con los números 2, 3, 6, 12: $\spmcm(2, 3, 6, 12)$.
+
+107. Con los números 48, 36: $\spmcm(48, 36)$.
+
+108. Con los números 6, 6: $\spmcm(6, 6)$.
+
+109. Sin espacios entre los números: $\spmcm(12,18)$.
+
+110. Con las letras m, n, p: $\spmcm(m, n, p)$.
+
+111. Con las letras a, b: $\spmcm(a, b)$.
+
+112. Con un número y una letra: $\spmcm(2, m)$.
+
+% doc: solo se verbaliza el argumento
+113. Con concept false: $\spmcm[concept=false](12, 18)$.
+
+114. Con concept true explícito: $\spmcm[concept=true](12, 18)$.
+
+% doc: «mínimo común múltiplo»
+115. Con read-cmd clear, el valor por defecto: $\spmcm[read-cmd=clear](12, 18)$.
+
+% doc: «m c m»
+116. Con read-cmd terse: $\spmcm[read-cmd=terse](12, 18)$.
+
+117. Con read-cmd terse y letras: $\spmcm[read-cmd=terse](m, n)$.
+
+% doc: imprime \mathrm{mcm}
+118. Con upper-case false, el valor por defecto: $\spmcm[upper-case=false](12, 18)$.
+
+% doc: imprime \mathrm{MCM}
+119. Con upper-case true: $\spmcm[upper-case=true](12, 18)$.
+
+120. Con upper-case true sin argumento: $\spmcm[upper-case=true]$.
+
+% doc: el prefijo se verbaliza antes del concepto
+121. Con prefix: $\spmcm[prefix={el}](12, 18)$.
+
+122. Con prefix y read-cmd terse: $\spmcm[prefix={el},read-cmd=terse](12, 18)$.
+
+% doc: el manual dice = 1 y «es igual a uno»; el codigo calcula mcm(2, 3, 6) = 6
+123. Con result true: $\spmcm[result=true](2, 3, 6)$.
+
+124. Con result true y dos números: $\spmcm[result=true](12, 18)$.
+
+125. Con result true y cuatro números: $\spmcm[result=true](2, 3, 6, 12)$.
+
+126. Con result true y números primos entre sí: $\spmcm[result=true](7, 13)$.
+
+127. Con result true y tres números: $\spmcm[result=true](8, 12, 20)$.
+
+% doc: no se imprime ni se verbaliza el resultado
+128. Con result false explícito: $\spmcm[result=false](2, 3, 6)$.
+
+% doc: no se verbaliza la salida del comando
+129. Con silent true: $\spmcm[silent=true](12, 18)$.
+
+130. Con silent false explícito: $\spmcm[silent=false](12, 18)$.
+
+131. Con silent true y letras: $\spmcm[silent=true](m, n)$.
+
+132. Con silent y result: $\spmcm[silent=true,result=true](12, 18)$.
+
+133. Con concept false y result: $\spmcm[concept=false,result=true](12, 18)$.
+
+134. Con read-cmd terse y result: $\spmcm[read-cmd=terse,result=true](12, 18)$.
+
+135. Con upper-case y result: $\spmcm[upper-case=true,result=true](12, 18)$.
+
+136. Con todas las llaves: $\spmcm[prefix={el},read-cmd=terse,upper-case=true,result=true](12, 18)$.
+
+\section*{En fórmulas}
+
+137. Divisores incluidos: $\spnD(6) \subset \spnD(12)$.
+
+138. Divisores con resultado: $\spnD[result=true](6) \subset \spnD[result=true](12)$.
+
+139. Múltiplos con resultado: $\spnM[result=true,result-num=3](4) \cap \spnM[result=true,result-num=3](6)$.
+
+140. Relación entre mcd y mcm: $\spmcd(m, n) \spmsym \spmcm(m, n) = m \spmsym n$.
+
+141. Con números y resultado: $\spmcd[result=true](12, 18) + \spmcm[result=true](12, 18)$.
+
+142. Con otros comandos de la serie: $\spmcd(12, 18) \spmsym \spmcm(12, 18) = \spmul{12}{18}$.
+
+143. En fórmula destacada:
+\[ \spnD[result=true,result-num=10](100) \].
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}

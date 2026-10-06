@@ -44,6 +44,20 @@ unpackfiles = { "spintent.ins" }
 unpackopts  = "--interaction=batchmode"
 unpackexe   = "luatex"
 
+-- Regression tests (l3build check / save): the .lvt files in ./testfiles.
+-- ltxrelease needs the development format, so the tests run with latex-dev.
+testfiledir  = "./testfiles"
+checkengines = { "luatex" }
+stdengine    = "luatex"
+checkformat  = "latex-dev"
+
+-- The mathml-SE structure elements carry sequential ids (ID.00012, ...): one
+-- node more or less would shift all the following ones and flood the diff,
+-- so the ids are not compared.
+function normalize_log_hook(line)
+  return (string.gsub(line, 'id="ID%.%d+"', 'id="ID.NN"'))
+end
+
 -- Typesetting spintent documentation step by step :)
 
 function docinit_hook()

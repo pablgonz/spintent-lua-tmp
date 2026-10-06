@@ -1,0 +1,436 @@
+% test-015.tex -- comandos \spPoly, \spAfig y \spPfig
+%
+% Compilar:  lualatex-dev test-015.tex
+% Validar:   show-pdf-tags --xml test-015.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-015.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
+% el PDF. Los comentarios "doc:" indican lo que documenta el manual; en el
+% resto, la lectura se revisa escuchando. Todos trabajan en modo
+% matematico. \spPoly recibe tres o mas puntos. \spAfig y \spPfig reciben,
+% entre parentesis, un numero (o n), tres o mas puntos, o una de las
+% letras F, P, B, L y T con subindice opcional. Restricciones del manual:
+% read-arg solo se usa con puntos, y print-sym=triangle o square solo con
+% numeros, nunca con F, P, B, L o T. Las entradas invalidas (que detienen
+% la compilacion) no van aqui, entre ellas dos puntos o uno solo.
+%
+% \spPoly con cinco o mas puntos no lleva simbolo, pero si el nombre del
+% poligono: pentagono, hexagono, heptagono y octagono de cinco a ocho
+% puntos, y poligono desde nueve (spPoly-doc.patch).
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-015: spPoly, spAfig y spPfig},
+  }
+\pagestyle{empty}
+\begin{document}
+
+\section*{A. Comando spPoly: argumentos}
+
+% doc: imprime \triangle ABC -- «triángulo A B C»
+1. Tres puntos: $\spPoly{ABC}$.
+
+% doc: imprime \mdlgwhtsquare ABCD -- «cuadrado A B C D»
+2. Cuatro puntos: $\spPoly{ABCD}$.
+
+% doc: «pentágono A B C D E»
+3. Cinco puntos: $\spPoly{ABCDE}$.
+
+% doc: «hexágono A B C D E F»
+4. Seis puntos: $\spPoly{ABCDEF}$.
+
+5. Siete puntos: $\spPoly{ABCDEFG}$.
+
+6. Ocho puntos: $\spPoly{ABCDEFGH}$.
+
+7. Nueve puntos: $\spPoly{ABCDEFGHI}$.
+
+8. Tres puntos con comas: $\spPoly{A,B,C}$.
+
+9. Tres puntos con comas y espacios: $\spPoly{A, B, C}$.
+
+10. Con primas: $\spPoly{A'B'C'}$.
+
+11. Con subíndices: $\spPoly{A_{1}B_{2}C_{3}}$.
+
+12. Cuatro puntos con subíndices: $\spPoly{A_{1}B_{2}C_{3}D_{4}}$.
+
+13. Con otras letras: $\spPoly{PQR}$.
+
+14. Cuatro puntos con otras letras: $\spPoly{MNOP}$.
+
+\section*{B. Comando spPoly: llaves}
+
+% doc: triángulo A B C, sin el prefijo mayúscula
+15. Con read-cmd school, el valor por defecto: $\spPoly[read-cmd=school]{ABC}$.
+
+% doc: MathCAT aplica sus propias reglas
+16. Con read-cmd mathcat: $\spPoly[read-cmd=mathcat]{ABC}$.
+
+% doc: el prefijo se verbaliza antes del concepto
+17. Con prefix y tres puntos: $\spPoly[prefix={el}]{ABC}$.
+
+% doc: el prefijo se verbaliza antes del concepto
+18. Con prefix y cuatro puntos: $\spPoly[prefix={el}]{ABCD}$.
+
+% doc: el prefijo se verbaliza antes del concepto
+19. Con prefix y cinco puntos: $\spPoly[prefix={el}]{ABCDE}$.
+
+20. Con concept true, el valor por defecto: $\spPoly[concept=true]{ABC}$.
+
+% doc: solo se verbaliza el argumento
+21. Con concept false y tres puntos: $\spPoly[concept=false]{ABC}$.
+
+% doc: solo se verbaliza el argumento
+22. Con concept false y cuatro puntos: $\spPoly[concept=false]{ABCD}$.
+
+% doc: solo se verbaliza el argumento
+23. Con concept false y cinco puntos: $\spPoly[concept=false]{ABCDE}$.
+
+% doc: imprime \triangle ABC
+24. Con print-sym true, el valor por defecto: $\spPoly[print-sym=true]{ABC}$.
+
+% doc: imprime \mdlgwhtsquare ABCD -- «cuadrado A B C D»
+25. Con print-sym true y cuatro puntos: $\spPoly[print-sym=true]{ABCD}$.
+
+% doc: imprime ABC; la lectura es la misma
+26. Con print-sym false y tres puntos: $\spPoly[print-sym=false]{ABC}$.
+
+27. Con print-sym false y cuatro puntos: $\spPoly[print-sym=false]{ABCD}$.
+
+28. Con silent false, el valor por defecto: $\spPoly[silent=false]{ABC}$.
+
+% doc: no se verbaliza
+29. Con silent true y tres puntos: $\spPoly[silent=true]{ABC}$.
+
+% doc: no se verbaliza
+30. Con silent true y cuatro puntos: $\spPoly[silent=true]{ABCD}$.
+
+% doc: no se verbaliza
+31. Con silent true y cinco puntos: $\spPoly[silent=true]{ABCDE}$.
+
+32. Con todas las llaves: $\spPoly[read-cmd=mathcat,prefix={el},concept=true,print-sym=true,silent=false]{A_{1}B_{2}C_{3}}$.
+
+\section*{C. Comando spAfig: argumentos}
+
+% doc: imprime \mathcal{A} -- «área»
+33. Sin argumentos: $\spAfig$.
+
+% doc: imprime \mathcal{A}_1 -- «área uno»
+34. Un número: $\spAfig(1)$.
+
+% doc: imprime \mathcal{A}_n -- «área ene»
+35. La letra n: $\spAfig(n)$.
+
+36. Otro número: $\spAfig(2)$.
+
+37. Un número de dos cifras: $\spAfig(12)$.
+
+% doc: imprime \mathcal{A}_{\triangle ABC} -- «área del triángulo A B C»
+38. Tres puntos: $\spAfig(ABC)$.
+
+% doc: imprime \mathcal{A}_{\mdlgwhtsquare ABCD} -- «área del cuadrado A B C D»
+39. Cuatro puntos: $\spAfig(ABCD)$.
+
+40. Cinco puntos: $\spAfig(ABCDE)$.
+
+41. Tres puntos con comas: $\spAfig(A,B,C)$.
+
+42. Con primas: $\spAfig(A'B'C')$.
+
+43. Con subíndices: $\spAfig(A_{1}B_{2}C_{3})$.
+
+% doc: imprime \mathcal{A}_F -- «área de la figura»
+44. La figura: $\spAfig(F)$.
+
+% doc: imprime \mathcal{A}_{F_1} -- «área de la figura uno»
+45. La figura con subíndice: $\spAfig(F_{1})$.
+
+46. El polígono: $\spAfig(P)$.
+
+47. El polígono con subíndice: $\spAfig(P_{1})$.
+
+48. La parte basal: $\spAfig(B)$.
+
+49. La parte lateral: $\spAfig(L)$.
+
+50. La parte total: $\spAfig(T)$.
+
+51. El total con subíndice literal: $\spAfig(T_{n})$.
+
+\section*{C. Comando spAfig: llaves}
+
+% doc: área del triángulo A B C
+52. Con read-cmd school, el valor por defecto: $\spAfig[read-cmd=school](ABC)$.
+
+% doc: MathCAT aplica sus propias reglas
+53. Con read-cmd mathcat: $\spAfig[read-cmd=mathcat](ABC)$.
+
+% doc: el prefijo se verbaliza antes de la expresión
+54. Con prefix y sin argumentos: $\spAfig[prefix={el}]$.
+
+% doc: el prefijo se verbaliza antes de la expresión
+55. Con prefix y un número: $\spAfig[prefix={el}](1)$.
+
+% doc: el prefijo se verbaliza antes de la expresión
+56. Con prefix y tres puntos: $\spAfig[prefix={el}](ABC)$.
+
+% doc: el prefijo se verbaliza antes de la expresión
+57. Con prefix y la figura: $\spAfig[prefix={el}](F)$.
+
+58. Con concept true, el valor por defecto: $\spAfig[concept=true](ABC)$.
+
+% doc: solo se verbaliza el argumento
+59. Con concept false y sin argumentos: $\spAfig[concept=false]$.
+
+% doc: solo se verbaliza el argumento
+60. Con concept false y un número: $\spAfig[concept=false](1)$.
+
+% doc: solo se verbaliza el argumento
+61. Con concept false y tres puntos: $\spAfig[concept=false](ABC)$.
+
+% doc: solo se verbaliza el argumento
+62. Con concept false y cuatro puntos: $\spAfig[concept=false](ABCD)$.
+
+% doc: solo se verbaliza el argumento
+63. Con concept false y la figura: $\spAfig[concept=false](F)$.
+
+% doc: solo se verbaliza el argumento
+64. Con concept false y el polígono con subíndice: $\spAfig[concept=false](P_{1})$.
+
+% doc: imprime \mathcal{A}_{\square ABCD} -- «área del trapecio A B C D»
+65. Con read-arg y cuatro puntos: $\spAfig[read-arg={trapecio}](ABCD)$.
+
+66. Con read-arg y tres puntos: $\spAfig[read-arg={prisma}](ABC)$.
+
+% doc: los espacios pasan a guiones
+67. Con read-arg de varias palabras: $\spAfig[read-arg={triángulo isósceles}](ABC)$.
+
+68. Con read-arg y concept false: $\spAfig[concept=false,read-arg={trapecio}](ABCD)$.
+
+69. Con read-arg y prefix: $\spAfig[prefix={el},read-arg={trapecio}](ABCD)$.
+
+% doc: área uno
+70. Con read-sub false, el valor por defecto: $\spAfig[read-sub=false](1)$.
+
+% doc: imprime lo mismo -- «área sub uno»
+71. Con read-sub true y un número: $\spAfig[read-sub=true](1)$.
+
+% doc: «área de la figura sub uno»
+72. Con read-sub true y la figura: $\spAfig[read-sub=true](F_{1})$.
+
+% doc: «área de la figura uno»
+73. Con read-sub false y la figura: $\spAfig[read-sub=false](F_{1})$.
+
+74. Con read-sub true y el total: $\spAfig[read-sub=true](T_{n})$.
+
+% doc: imprime \mathcal{A}_{\triangle ABC}
+75. Con print-sym auto, el valor por defecto: $\spAfig[print-sym=auto](ABC)$.
+
+% doc: imprime \mathcal{A}_{ABC}; la lectura es la misma
+76. Con print-sym none y tres puntos: $\spAfig[print-sym=none](ABC)$.
+
+77. Con print-sym none y cuatro puntos: $\spAfig[print-sym=none](ABCD)$.
+
+% doc: imprime \mathcal{A}_{\triangle_1} -- «área del triángulo uno»
+78. Con print-sym triangle y un número: $\spAfig[print-sym=triangle](1)$.
+
+% doc: imprime \mathcal{A}_{\mdlgwhtsquare_1} -- «área del cuadrado uno»
+79. Con print-sym square y un número: $\spAfig[print-sym=square](1)$.
+
+80. Con silent false, el valor por defecto: $\spAfig[silent=false](ABC)$.
+
+% doc: no se verbaliza
+81. Con silent true y sin argumentos: $\spAfig[silent=true]$.
+
+% doc: no se verbaliza
+82. Con silent true y un número: $\spAfig[silent=true](1)$.
+
+% doc: no se verbaliza
+83. Con silent true y tres puntos: $\spAfig[silent=true](ABC)$.
+
+% doc: no se verbaliza
+84. Con silent true y la figura: $\spAfig[silent=true](F)$.
+
+85. Con todas las llaves: $\spAfig[read-cmd=mathcat,prefix={el},concept=true,read-arg={trapecio},silent=false](ABCD)$.
+
+\section*{D. Comando spPfig: argumentos}
+
+% doc: imprime \mathcal{P} -- «perímetro»
+86. Sin argumentos: $\spPfig$.
+
+% doc: imprime \mathcal{P}_1 -- «perímetro uno»
+87. Un número: $\spPfig(1)$.
+
+% doc: imprime \mathcal{P}_n -- «perímetro ene»
+88. La letra n: $\spPfig(n)$.
+
+89. Otro número: $\spPfig(2)$.
+
+90. Un número de dos cifras: $\spPfig(12)$.
+
+% doc: imprime \mathcal{P}_{\triangle ABC} -- «perímetro del triángulo A B C»
+91. Tres puntos: $\spPfig(ABC)$.
+
+% doc: imprime \mathcal{P}_{\mdlgwhtsquare ABCD} -- «perímetro del cuadrado A B C D»
+92. Cuatro puntos: $\spPfig(ABCD)$.
+
+93. Cinco puntos: $\spPfig(ABCDE)$.
+
+94. Tres puntos con comas: $\spPfig(A,B,C)$.
+
+95. Con primas: $\spPfig(A'B'C')$.
+
+96. Con subíndices: $\spPfig(A_{1}B_{2}C_{3})$.
+
+% doc: imprime \mathcal{P}_F -- «perímetro de la figura»
+97. La figura: $\spPfig(F)$.
+
+% doc: imprime \mathcal{P}_{F_1} -- «perímetro de la figura uno»
+98. La figura con subíndice: $\spPfig(F_{1})$.
+
+99. El polígono: $\spPfig(P)$.
+
+100. El polígono con subíndice: $\spPfig(P_{1})$.
+
+101. La parte basal: $\spPfig(B)$.
+
+102. La parte lateral: $\spPfig(L)$.
+
+103. La parte total: $\spPfig(T)$.
+
+104. El total con subíndice literal: $\spPfig(T_{n})$.
+
+\section*{D. Comando spPfig: llaves}
+
+% doc: perímetro del triángulo A B C
+105. Con read-cmd school, el valor por defecto: $\spPfig[read-cmd=school](ABC)$.
+
+% doc: MathCAT aplica sus propias reglas
+106. Con read-cmd mathcat: $\spPfig[read-cmd=mathcat](ABC)$.
+
+% doc: el prefijo se verbaliza antes de la expresión
+107. Con prefix y sin argumentos: $\spPfig[prefix={el}]$.
+
+% doc: el prefijo se verbaliza antes de la expresión
+108. Con prefix y un número: $\spPfig[prefix={el}](1)$.
+
+% doc: el prefijo se verbaliza antes de la expresión
+109. Con prefix y tres puntos: $\spPfig[prefix={el}](ABC)$.
+
+% doc: el prefijo se verbaliza antes de la expresión
+110. Con prefix y la figura: $\spPfig[prefix={el}](F)$.
+
+111. Con concept true, el valor por defecto: $\spPfig[concept=true](ABC)$.
+
+% doc: solo se verbaliza el argumento
+112. Con concept false y sin argumentos: $\spPfig[concept=false]$.
+
+% doc: solo se verbaliza el argumento
+113. Con concept false y un número: $\spPfig[concept=false](1)$.
+
+% doc: solo se verbaliza el argumento
+114. Con concept false y tres puntos: $\spPfig[concept=false](ABC)$.
+
+% doc: solo se verbaliza el argumento
+115. Con concept false y cuatro puntos: $\spPfig[concept=false](ABCD)$.
+
+% doc: solo se verbaliza el argumento
+116. Con concept false y la figura: $\spPfig[concept=false](F)$.
+
+% doc: solo se verbaliza el argumento
+117. Con concept false y el polígono con subíndice: $\spPfig[concept=false](P_{1})$.
+
+% doc: imprime \mathcal{P}_{\square ABCD} -- «perímetro del trapecio A B C D»
+118. Con read-arg y cuatro puntos: $\spPfig[read-arg={trapecio}](ABCD)$.
+
+119. Con read-arg y tres puntos: $\spPfig[read-arg={prisma}](ABC)$.
+
+% doc: los espacios pasan a guiones
+120. Con read-arg de varias palabras: $\spPfig[read-arg={triángulo isósceles}](ABC)$.
+
+121. Con read-arg y concept false: $\spPfig[concept=false,read-arg={trapecio}](ABCD)$.
+
+122. Con read-arg y prefix: $\spPfig[prefix={el},read-arg={trapecio}](ABCD)$.
+
+% doc: perímetro uno
+123. Con read-sub false, el valor por defecto: $\spPfig[read-sub=false](1)$.
+
+% doc: imprime lo mismo -- «perímetro sub uno»
+124. Con read-sub true y un número: $\spPfig[read-sub=true](1)$.
+
+% doc: «perímetro de la figura sub uno»
+125. Con read-sub true y la figura: $\spPfig[read-sub=true](F_{1})$.
+
+% doc: «perímetro de la figura uno»
+126. Con read-sub false y la figura: $\spPfig[read-sub=false](F_{1})$.
+
+127. Con read-sub true y el total: $\spPfig[read-sub=true](T_{n})$.
+
+% doc: imprime \mathcal{P}_{\triangle ABC}
+128. Con print-sym auto, el valor por defecto: $\spPfig[print-sym=auto](ABC)$.
+
+% doc: imprime \mathcal{P}_{ABC}; la lectura es la misma
+129. Con print-sym none y tres puntos: $\spPfig[print-sym=none](ABC)$.
+
+130. Con print-sym none y cuatro puntos: $\spPfig[print-sym=none](ABCD)$.
+
+% doc: imprime \mathcal{P}_{\triangle_1} -- «perímetro del triángulo uno»
+131. Con print-sym triangle y un número: $\spPfig[print-sym=triangle](1)$.
+
+% doc: imprime \mathcal{P}_{\mdlgwhtsquare_1} -- «perímetro del cuadrado uno»
+132. Con print-sym square y un número: $\spPfig[print-sym=square](1)$.
+
+133. Con silent false, el valor por defecto: $\spPfig[silent=false](ABC)$.
+
+% doc: no se verbaliza
+134. Con silent true y sin argumentos: $\spPfig[silent=true]$.
+
+% doc: no se verbaliza
+135. Con silent true y un número: $\spPfig[silent=true](1)$.
+
+% doc: no se verbaliza
+136. Con silent true y tres puntos: $\spPfig[silent=true](ABC)$.
+
+% doc: no se verbaliza
+137. Con silent true y la figura: $\spPfig[silent=true](F)$.
+
+138. Con todas las llaves: $\spPfig[read-cmd=mathcat,prefix={el},concept=true,read-arg={trapecio},silent=false](ABCD)$.
+
+\section*{E. En fórmulas}
+
+139. Área de un triángulo: $\spAfig(ABC) = \spAfig(1) + \spAfig(2)$.
+
+140. Área total, basal y lateral: $\spAfig(T) = \spAfig(B) + \spAfig(L)$.
+
+141. Perímetro de un cuadrado: $\spPfig(ABCD) = 4 \cdot \spmside{AB}$.
+
+142. Área y perímetro de la misma figura: $\spAfig(ABCD) \quad \spPfig(ABCD)$.
+
+143. Un polígono y su área: $\spPoly{ABC} \Rightarrow \spAfig(ABC)$.
+
+144. En fórmula destacada:
+\[ \spPfig(ABC) = \spmside{AB} + \spmside{BC} + \spmside{CA} \].
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}

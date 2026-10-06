@@ -1,0 +1,186 @@
+% test-007.tex -- comandos \spsiglo, \sptime y \spdate
+%
+% Compilar:  lualatex-dev test-007.tex
+% Validar:   show-pdf-tags --xml test-007.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-007.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
+% el PDF. Los comentarios "doc:" indican la lectura que documenta el
+% manual; en el resto, la lectura se revisa escuchando. \spsiglo trabaja
+% en modo texto y en modo matematico; \sptime y \spdate, solo en modo
+% matematico. Las entradas invalidas (que detienen la compilacion) no van
+% aqui, entre ellas \spsiglo{4000} y \spsiglo{MMMM}: el siglo debe ser
+% menor que 4000.
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-007: spsiglo, sptime y spdate},
+  }
+\begin{document}
+
+\section*{A. Comando spsiglo, argumento arábigo y romano (modo texto)}
+
+% doc: «veintiuno»
+% imprime xxi en versalitas
+1. Arábigo 21: \spsiglo{21}.
+
+% doc: «veintiuno»
+% imprime xxi en versalitas
+2. Romano XXI: \spsiglo{XXI}.
+
+3. Arábigo 1: \spsiglo{1}.
+
+4. Romano I: \spsiglo{I}.
+
+5. Arábigo 4: \spsiglo{4}.
+
+6. Romano IV: \spsiglo{IV}.
+
+7. Arábigo 9: \spsiglo{9}.
+
+8. Arábigo 14: \spsiglo{14}.
+
+9. Arábigo 19: \spsiglo{19}.
+
+10. Romano XIX: \spsiglo{XIX}.
+
+11. Arábigo 40: \spsiglo{40}.
+
+12. Arábigo 99: \spsiglo{99}.
+
+13. Arábigo 400: \spsiglo{400}.
+
+14. Arábigo 1999: \spsiglo{1999}.
+
+15. Romano MCMXCIX: \spsiglo{MCMXCIX}.
+
+16. Arábigo 2000: \spsiglo{2000}.
+
+17. Arábigo 3999, el máximo: \spsiglo{3999}.
+
+18. Romano MMMCMXCIX: \spsiglo{MMMCMXCIX}.
+
+% el manual no lo documenta, pero el código lo acepta
+19. Romano en minúsculas: \spsiglo{xxi}.
+
+\section*{B. Comando spsiglo en modo matemático}
+
+20. Arábigo: $\spsiglo{21}$.
+
+21. Romano: $\spsiglo{XXI}$.
+
+22. Con print-era ac: $\spsiglo[print-era=ac]{5}$.
+
+\section*{C. Llave print-era}
+
+% doc: «veintiuno»
+23. Por defecto: \spsiglo{21}.
+
+% doc: «veintiuno»
+24. Con none: \spsiglo[print-era=none]{21}.
+
+% doc: «veintiuno antes de cristo»
+% imprime xxi a. C.
+25. Con ac: \spsiglo[print-era=ac]{21}.
+
+% doc: «veintiuno después de cristo»
+% imprime xxi d. C.
+26. Con dc: \spsiglo[print-era=dc]{21}.
+
+27. Con ac y número romano: \spsiglo[print-era=ac]{V}.
+
+28. Con dc y número romano: \spsiglo[print-era=dc]{XV}.
+
+\section*{D. Comando sptime (modo matemático)}
+
+% doc: «las veintitrés y cuarenta y cinco minutos»
+29. Horas y minutos: $\sptime{23:45}$.
+
+30. Con segundos: $\sptime{23:45:30}$.
+
+31. Medianoche: $\sptime{00:00}$.
+
+32. Medianoche con segundos: $\sptime{00:00:00}$.
+
+33. Hora con cero inicial: $\sptime{01:05}$.
+
+34. Mediodía: $\sptime{12:00}$.
+
+35. Y media: $\sptime{12:30}$.
+
+36. Hora de la tarde: $\sptime{13:00}$.
+
+37. Y cuarto: $\sptime{18:15}$.
+
+38. Con segundos y ceros: $\sptime{09:07:03}$.
+
+39. Último segundo del día: $\sptime{23:59:59}$.
+
+% el manual no lo documenta, pero el código lo acepta
+40. Sin cero inicial: $\sptime{1:05}$.
+
+\section*{E. Comando spdate (modo matemático)}
+
+% doc: «dos de enero de mil novecientos ochenta y uno»
+% imprime 02/01/1981
+41. Formato DD/MM/YYYY: $\spdate{02/01/1981}$.
+
+% doc: «dos de enero de mil novecientos ochenta y uno»
+% imprime 1981-01-02
+42. Formato YYYY-MM-DD: $\spdate{1981-01-02}$.
+
+43. Formato DD-MM-YYYY: $\spdate{02-01-1981}$.
+
+% doc: se convierte a DD/MM/YYYY y se imprime 02/01/1981
+44. Formato YYYY/MM/DD, que se convierte: $\spdate{1981/01/02}$.
+
+45. Primero de enero: $\spdate{01/01/2000}$.
+
+46. Fin de año: $\spdate{31/12/1999}$.
+
+47. Año bisiesto con DD/MM/YYYY: $\spdate{29/02/2024}$.
+
+48. Año bisiesto con YYYY-MM-DD: $\spdate{2024-02-29}$.
+
+% el manual no lo documenta, pero el código lo acepta
+49. Sin ceros iniciales: $\spdate{1/1/2000}$.
+
+\section*{F. En contexto y dentro de fórmulas}
+
+50. Siglo en una oración: Nació en el siglo \spsiglo{XIX} en Valparaíso.
+
+51. Siglo antes de Cristo en una oración: Ocurrió en el siglo \spsiglo[print-era=ac]{V}.
+
+52. Hora y fecha en una misma oración: Salió a las $\sptime{23:45}$ del $\spdate{31/12/1999}$.
+
+53. Comparación de horas: $\sptime{09:30} < \sptime{23:45}$.
+
+54. La misma fecha en dos formatos: $\spdate{02/01/1981} = \spdate{1981-01-02}$.
+
+55. Fecha en fórmula destacada:
+\[ \spdate{31/12/1999} \].
+
+56. Siglos en una fórmula: $\spsiglo{XX} < \spsiglo{XXI}$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}
