@@ -752,9 +752,9 @@
                           {
                             \str_case:Vn \l__spintent_spunit_luaset_canonical_str
                               {
-                                { ° } { _grado   }
-                                { ′ } { _minuto  }
-                                { ″ } { _segundo }
+                                { ° } { _grado:unit   }
+                                { ′ } { _minuto:unit  }
+                                { ″ } { _segundo:unit }
                               }
                           }
                       }
@@ -1737,7 +1737,7 @@
         \__spintent_invisible_sep:
         \bool_if:NTF \l__spintent_spread_silent_bool
           {
-            \MathMLintent { :silent } { #2 }
+            \MathMLintent { _- } { \__spintent_inner_sep: #2 }
           }
           {
             \tl_if_empty:NTF \l__spintent_spread_read_arg_tl
@@ -1745,14 +1745,14 @@
                 \__spintent_luafun_spread_lookup:n { \exp_not:n {#2} }
                 \str_if_eq:VnTF \l__spintent_spread_luaset_status_str { found }
                   {
-                    \MathMLintent { _\l__spintent_spread_luaset_reading_str } { #2 }
+                    \MathMLintent { _\l__spintent_spread_luaset_reading_str } { \__spintent_inner_sep: #2 }
                   }
                   {
                     \msg_error:nne { spintent } { spread-unknown-sym } { \exp_not:n {#2} }
                   }
               }
               {
-                \MathMLintent { _\l__spintent_spread_read_arg_tl } { #2 }
+                \MathMLintent { _\l__spintent_spread_read_arg_tl } { \__spintent_inner_sep: #2 }
               }
           }
       }
@@ -2164,6 +2164,7 @@
           }
         \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent "por"
         \MathMLintent { :silent } { ( }
+        \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent "intervalo"
         \seq_use:Nnnn \l__spintent_mc_args_seq
           { \MathMLintent { :silent } { , } }
           { \MathMLintent { :silent } { , } }
@@ -2445,12 +2446,10 @@
               }
               { \MathMLintent { :silent } { \operatorname { #2 } } }
             \MathMLintent { :silent } { ( }
+            \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent doble "de"
             \str_if_eq:VnTF \l__spintent_spnmd_luaset_is_number_str { true }
               { \spnum { #4 } }
-              {
-                \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent doble "de"
-                #4
-              }
+              { #4 }
             \MathMLintent { :silent } { ) }
           }
         \str_if_eq:VnT \l__spintent_spnmd_luaset_is_number_str { true }
@@ -2459,6 +2458,7 @@
               {
                 \bool_if:cTF { l__spintent_sp #1 _silent_bool }
                   {
+                    \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent "por"
                     \MathMLintent { _- }
                       {
                         \__spintent_inner_sep:
@@ -3038,6 +3038,7 @@
       }
       {
         \MathMLintent { :silent } { \l__spintent_spcoord_wrap_parens_l_tl }
+        \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent "intervalo"
           \__spintent_spcoord_intent_infix:
         \MathMLintent { :silent } { \l__spintent_spcoord_wrap_parens_r_tl }
       }
@@ -3720,6 +3721,8 @@
           }
           {
             \tl_set:Ne \l__spintent_sprecta_intent_arg_tl { _( \l__spintent_sprecta_refs_tl ) }
+            \bool_if:NT \l__spintent_sprecta_silent_bool
+              { \tl_set:Nn \l__spintent_sprecta_intent_arg_tl { _- } }
           }
           {
             \tl_set:Ne \l__spintent_sprecta_intent_arg_tl
@@ -5554,7 +5557,7 @@
     \bool_if:NTF \l__spintent_spcirc_silent_bool
       {
         \tl_set:Nn \l__spintent_spcirc_intent_arg_tl     { _- }
-        \tl_set:Ne \l__spintent_spcirc_connector_arg_tl  { _( $ pt ) }
+        \tl_set:Nn \l__spintent_spcirc_connector_arg_tl  { _- }
         \tl_set:Nn \l__spintent_spcirc_radio_arg_tl      { _- }
       }
       {
@@ -5849,9 +5852,7 @@
   {
     \bool_if:cTF { l__spintent_sp #1 _silent_bool }
       {
-        \tl_if_empty:nTF {#2}
-          { \tl_set:Nn \l__spintent_spcircfig_intent_arg_tl { _- } }
-          { \tl_set:Ne \l__spintent_spcircfig_intent_arg_tl { _( $ pt ) } }
+        \tl_set:Nn \l__spintent_spcircfig_intent_arg_tl { _- }
       }
       {
         \bool_if:cTF { l__spintent_sp #1 _concept_bool }
