@@ -1,6 +1,6 @@
 test-012: spcoord - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado  nivel 1  página 1  A. Comando spcoord
+encabezado  nivel 1  A. Comando spcoord
 1. Enteros con signo: menos  3  coma  4
 2. Con subíndices: x  subíndice 1  y  subíndice 1
 3. Enteros positivos: 3 coma  4
@@ -39,7 +39,7 @@ encabezado  nivel 1  C. Comando spPoint: con coordenadas
 34. Con decimales con coma y punto y coma: punto  A  3 coma  5  punto y coma  4 coma  2
 35. Con coordenadas literales: punto  P  x  coma  y
 36. El origen: punto  O  0 coma  0
-encabezado  nivel 1  página 2  D. Comando spPoint: llaves
+encabezado  nivel 1  D. Comando spPoint: llaves
 37. Con read-cmd school, el valor por defecto: punto  A
 38. Con read-cmd mathcat: punto  a
 39. Con read-cmd mathcat y subíndice: punto  a  subíndice 1
