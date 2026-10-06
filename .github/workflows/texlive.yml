@@ -20,6 +20,7 @@ jobs:
         version:
           - 2026
         command:
+          - "check -q -H"
           - doc
     steps:
       - name: Checkout
