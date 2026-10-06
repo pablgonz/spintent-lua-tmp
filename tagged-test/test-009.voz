@@ -2,178 +2,99 @@ test-009: spdiv y spmul - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
 encabezado  nivel 1  página 1  A.
 Comando spdiv: argumentos
-1.
-Dos enteros: 20  dividido  26
-2.
-Primer argumento negativo: menos 20  dividido  26
-3.
-Segundo argumento negativo: 20  dividido  menos 26
-4.
-Ambos negativos: menos 20  dividido  menos 26
-5.
-Con signo positivo explícito: más 20  dividido  26
-6.
-Decimales con coma: 3 coma  5  dividido  2
-7.
-Decimales con punto: 3 punto  5  dividido  2
-8.
-Número periódico: 1 coma 3 periódico  dividido  2
-9.
-Periódico mixto: 3 coma  1  con 4 periódico  dividido  2
-10.
-Notación científica: 3 coma  14  por  10 al cubo  dividido  2
-11.
-Cifras grandes: 100000  dividido  250
-12.
-Decimales grandes: 1234567 coma  891234  dividido  10
-13.
-Primero menor que el segundo: 2  dividido  26
-14.
-Con cero: 0  dividido  5
+1. Dos enteros: 20  dividido  26
+2. Primer argumento negativo: menos 20  dividido  26
+3. Segundo argumento negativo: 20  dividido  menos 26
+4. Ambos negativos: menos 20  dividido  menos 26
+5. Con signo positivo explícito: más 20  dividido  26
+6. Decimales con coma: 3 coma  5  dividido  2
+7. Decimales con punto: 3 punto  5  dividido  2
+8. Número periódico: 1 coma 3 periódico  dividido  2
+9. Periódico mixto: 3 coma  1  con 4 periódico  dividido  2
+10. Notación científica: 3 coma  14  por  10 al cubo  dividido  2
+11. Cifras grandes: 100000  dividido  250
+12. Decimales grandes: 1234567 coma  891234  dividido  10
+13. Primero menor que el segundo: 2  dividido  26
+14. Con cero: 0  dividido  5
 encabezado  nivel 1  A.
 Comando spdiv: llaves de spnum
-15.
-Con cifras-sep false: 100000  dividido  250
-16.
-Con cifras-sep false y espacios del usuario: 100000  dividido  250
-17.
-Con read-sign clear en el primero: 20 negativo  dividido  26
-18.
-Con read-sign clear en el segundo: 20  dividido  26 negativo
-19.
-Con read-period-sep punto: 1 punto 3 periódico  dividido  2
-20.
-Con notation-sym times: 3 coma  14  por  10 al cubo  dividido  2
-21.
-Llaves de spnum combinadas: 3 coma  14  negativo  por  10 al cubo  dividido  2
+15. Con cifras-sep false: 100000  dividido  250
+16. Con cifras-sep false y espacios del usuario: 100000  dividido  250
+17. Con read-sign clear en el primero: 20 negativo  dividido  26
+18. Con read-sign clear en el segundo: 20  dividido  26 negativo
+19. Con read-period-sep punto: 1 punto 3 periódico  dividido  2
+20. Con notation-sym times: 3 coma  14  por  10 al cubo  dividido  2
+21. Llaves de spnum combinadas: 3 coma  14  negativo  por  10 al cubo  dividido  2
 encabezado  nivel 1  A.
 Comando spdiv: símbolo y lectura del operador
-22.
-Con set-sym old-style: 20  dividido  26
-23.
-Con set-sym two-dots: 20  dividido  26
-24.
-Con set-sym slash: 20  dividido  26
-25.
-Con read-sym dividido: 20  dividido  26
-26.
-Con read-sym dividido-por: 20  dividido por  26
-27.
-Con read-sym dividido-entre: 20  dividido entre  26
-28.
-Combinando old-style y dividido-por: 20  dividido por  26
-29.
-Combinando slash y dividido-entre: 20  dividido entre  26
+22. Con set-sym old-style: 20  dividido  26
+23. Con set-sym two-dots: 20  dividido  26
+24. Con set-sym slash: 20  dividido  26
+25. Con read-sym dividido: 20  dividido  26
+26. Con read-sym dividido-por: 20  dividido por  26
+27. Con read-sym dividido-entre: 20  dividido entre  26
+28. Combinando old-style y dividido-por: 20  dividido por  26
+29. Combinando slash y dividido-entre: 20  dividido entre  26
 encabezado  nivel 1  A.
 Comando spdiv: paréntesis
-30.
-Con wrap-parens false, el valor por defecto: menos 20  dividido  26
-31.
-Con wrap-parens true: se abren paréntesis  menos 20  dividido  26  se cierran paréntesis
-32.
-Con wrap-parens true y read-parens true: se abren paréntesis  menos 20  dividido  26  se cierran paréntesis
-33.
-Con wrap-parens true y read-parens false: menos 20  dividido  26
-34.
-Con wrap-parens false y read-parens false: menos 20  dividido  26
-35.
-Con paréntesis y slash: se abren paréntesis  menos 20  dividido  26  se cierran paréntesis
-36.
-Todas las llaves juntas: 20 negativo  dividido por  26
+30. Con wrap-parens false, el valor por defecto: menos 20  dividido  26
+31. Con wrap-parens true: se abren paréntesis  menos 20  dividido  26  se cierran paréntesis
+32. Con wrap-parens true y read-parens true: se abren paréntesis  menos 20  dividido  26  se cierran paréntesis
+33. Con wrap-parens true y read-parens false: menos 20  dividido  26
+34. Con wrap-parens false y read-parens false: menos 20  dividido  26
+35. Con paréntesis y slash: se abren paréntesis  menos 20  dividido  26  se cierran paréntesis
+36. Todas las llaves juntas: 20 negativo  dividido por  26
 encabezado  nivel 1  B.
 Comando spmul: argumentos
-37.
-Dos enteros: 20  por  26
-38.
-Primer argumento negativo: menos 20  por  26
-39.
-Segundo argumento negativo: 20  por  menos 26
-40.
-Ambos negativos: menos 20  por  menos 26
-41.
-Con signo positivo explícito: más 20  por  26
-42.
-Decimales con coma: 3 coma  5  por  2
-43.
-Decimales con punto: 3 punto  5  por  2
-44.
-Número periódico: 1 coma 3 periódico  por  2
-45.
-Periódico mixto: 3 coma  1  con 4 periódico  por  2
-46.
-Notación científica: 3 coma  14  por  10 al cubo  por  2
-47.
-Cifras grandes: 100000  por  250
-48.
-Decimales grandes: 1234567 coma  891234  por  10
-49.
-Primero menor que el segundo: 2  por  26
-50.
-Con cero: 0  por  5
+37. Dos enteros: 20  por  26
+38. Primer argumento negativo: menos 20  por  26
+39. Segundo argumento negativo: 20  por  menos 26
+40. Ambos negativos: menos 20  por  menos 26
+41. Con signo positivo explícito: más 20  por  26
+42. Decimales con coma: 3 coma  5  por  2
+43. Decimales con punto: 3 punto  5  por  2
+44. Número periódico: 1 coma 3 periódico  por  2
+45. Periódico mixto: 3 coma  1  con 4 periódico  por  2
+46. Notación científica: 3 coma  14  por  10 al cubo  por  2
+47. Cifras grandes: 100000  por  250
+48. Decimales grandes: 1234567 coma  891234  por  10
+49. Primero menor que el segundo: 2  por  26
+50. Con cero: 0  por  5
 encabezado  nivel 1  B.
 Comando spmul: llaves de spnum
-51.
-Con cifras-sep false: 100000  por  250
-52.
-Con cifras-sep false y espacios del usuario: 100000  por  250
-53.
-Con read-sign clear en el primero: 20 negativo  por  26
-54.
-Con read-sign clear en el segundo: 20  por  26 negativo
-55.
-Con read-period-sep punto: 1 punto 3 periódico  por  2
-56.
-Con notation-sym times: 3 coma  14  por  10 al cubo  por  2
-57.
-Llaves de spnum combinadas: 3 coma  14  negativo  por  10 al cubo  por  2
+51. Con cifras-sep false: 100000  por  250
+52. Con cifras-sep false y espacios del usuario: 100000  por  250
+53. Con read-sign clear en el primero: 20 negativo  por  26
+54. Con read-sign clear en el segundo: 20  por  26 negativo
+55. Con read-period-sep punto: 1 punto 3 periódico  por  2
+56. Con notation-sym times: 3 coma  14  por  10 al cubo  por  2
+57. Llaves de spnum combinadas: 3 coma  14  negativo  por  10 al cubo  por  2
 encabezado  nivel 1  B.
 Comando spmul: símbolo y lectura del operador
-58.
-Con set-sym cross: 20  por  26
-59.
-Con set-sym dot: 20  por  26
-60.
-Con set-sym asterisk: 20  por  26
-61.
-Con read-sym por: 20  por  26
-62.
-Con read-sym multiplicado-por: 20  multiplicado por  26
-63.
-Con read-sym veces: 20  veces  26
-64.
-Combinando cross y multiplicado-por: 20  multiplicado por  26
-65.
-Combinando asterisk y veces: 20  veces  26
+58. Con set-sym cross: 20  por  26
+59. Con set-sym dot: 20  por  26
+60. Con set-sym asterisk: 20  por  26
+61. Con read-sym por: 20  por  26
+62. Con read-sym multiplicado-por: 20  multiplicado por  26
+63. Con read-sym veces: 20  veces  26
+64. Combinando cross y multiplicado-por: 20  multiplicado por  26
+65. Combinando asterisk y veces: 20  veces  26
 encabezado  nivel 1  B.
 Comando spmul: paréntesis
-66.
-Con wrap-parens false, el valor por defecto: menos 20  por  26
-67.
-Con wrap-parens true: se abren paréntesis  menos 20  por  26  se cierran paréntesis
-68.
-Con wrap-parens true y read-parens true: se abren paréntesis  menos 20  por  26  se cierran paréntesis
-69.
-Con wrap-parens true y read-parens false: menos 20  por  26
-70.
-Con wrap-parens false y read-parens false: menos 20  por  26
-71.
-Con paréntesis y asterisk: se abren paréntesis  menos 20  por  26  se cierran paréntesis
-72.
-Todas las llaves juntas: 20 negativo  multiplicado por  26
+66. Con wrap-parens false, el valor por defecto: menos 20  por  26
+67. Con wrap-parens true: se abren paréntesis  menos 20  por  26  se cierran paréntesis
+68. Con wrap-parens true y read-parens true: se abren paréntesis  menos 20  por  26  se cierran paréntesis
+69. Con wrap-parens true y read-parens false: menos 20  por  26
+70. Con wrap-parens false y read-parens false: menos 20  por  26
+71. Con paréntesis y asterisk: se abren paréntesis  menos 20  por  26  se cierran paréntesis
+72. Todas las llaves juntas: 20 negativo  multiplicado por  26
 encabezado  nivel 1  C.
 En fórmulas
-73.
-División con igualdad: 12  dividido  4  es igual a  3
-74.
-Multiplicación con igualdad: 3  por  4  es igual a  12
-75.
-Suma de una división y un producto: 12  dividido  4  más  3  por  4
-76.
-División con paréntesis: se abren paréntesis  menos 12  dividido  4  se cierran paréntesis  es igual a  menos 3
-77.
-Llaves distintas en una misma fórmula: 12  dividido  4  es igual a  12  dividido  4
-78.
-Producto y división juntos: 3  por  4  dividido  2  es igual a  6
-79.
-En fórmula destacada:
+73. División con igualdad: 12  dividido  4  es igual a  3
+74. Multiplicación con igualdad: 3  por  4  es igual a  12
+75. Suma de una división y un producto: 12  dividido  4  más  3  por  4
+76. División con paréntesis: se abren paréntesis  menos 12  dividido  4  se cierran paréntesis  es igual a  menos 3
+77. Llaves distintas en una misma fórmula: 12  dividido  4  es igual a  12  dividido  4
+78. Producto y división juntos: 3  por  4  dividido  2  es igual a  6
+79. En fórmula destacada:
 se abren paréntesis  menos 3  por  4  se cierran paréntesis  es igual a  menos 12
