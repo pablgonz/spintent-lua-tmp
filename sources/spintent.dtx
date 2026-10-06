@@ -11692,7 +11692,10 @@ end, "shekel_fallback_patch")
 %   back to |false| rather than reporting it: the raw \mymarg{argument}
 %   is typeset regardless of whether it parsed. Otherwise, reports |spcoord-invalid-arg|
 %   on error. Either way, sizes the parentheses, then delegates to
-%   \myhlc|\@@_spcoord_mathml:| unless there was an error.
+%   \myhlc|\@@_spcoord_mathml:| unless there was an error, preceded by an
+%   invisible separator — placed \emph{before} the opening parenthesis, as
+%   \myhlc|\@@_spvec_exec:nnn| and \myhlc|\@@_spPoint_exec:nnn| do — so that
+%   \mynvmath{MathCAT} does not read the pair as an interval after an equals sign.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcoord_exec:nn
   {
@@ -11710,7 +11713,10 @@ end, "shekel_fallback_patch")
       }
     \@@_spcoord_set_wrap_parens_size:
     \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
-      { \@@_spcoord_mathml: }
+      {
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % previene lectura de intervalo
+        \@@_spcoord_mathml:
+      }
   }
 %    \end{macrocode}
 % \end{macro}

@@ -2914,6 +2914,7 @@
     \str_new:c { l__spintent_spcoord_luaset_ #1 _type_str }
     \str_new:c { l__spintent_spcoord_luaset_ #1 _value_str }
     \str_new:c { l__spintent_spcoord_luaset_ #1 _has_frac_str }
+    \str_new:c { l__spintent_spcoord_luaset_ #1 _composite_str }
   }
 \tl_new:N  \l__spintent_spcoord_raw_arg_tl
 \str_new:N \l__spintent_spcoord_intent_str
@@ -3013,6 +3014,12 @@
       }
       { \__spintent_spcoord_value:n { #1 } }
   }
+\cs_new_protected:Nn \__spintent_spcoord_inner_sep:n
+  {
+    \str_if_eq:eeT
+      { \str_use:c { l__spintent_spcoord_luaset_ #1 _composite_str } } { true }
+      { \__spintent_inner_sep: }
+  }
 \cs_new_protected:Nn \__spintent_spcoord_intent_infix:
   {
     \str_if_eq:VnTF \l__spintent_spcoord_luaset_sep_str { ; }
@@ -3020,9 +3027,9 @@
       { \str_set:Nn \l__spintent_spcoord_intent_str { _coma:infix } }
     \MathMLintent{ \l__spintent_spcoord_intent_str ($x, $y)}
       {
-        \MathMLarg{x}{ \__spintent_spcoord_print:n { x } }
+        \MathMLarg{x}{ \__spintent_spcoord_inner_sep:n { x } \__spintent_spcoord_print:n { x } }
         \MathMLintent { :silent } { \l__spintent_spcoord_luaset_sep_str }
-        \MathMLarg{y}{ \__spintent_spcoord_print:n { y } }
+        \MathMLarg{y}{ \__spintent_spcoord_inner_sep:n { y } \__spintent_spcoord_print:n { y } }
       }
   }
 \cs_new_protected:Nn \__spintent_spcoord_mathml:
@@ -3038,7 +3045,6 @@
       }
       {
         \MathMLintent { :silent } { \l__spintent_spcoord_wrap_parens_l_tl }
-        \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % prevent "intervalo"
           \__spintent_spcoord_intent_infix:
         \MathMLintent { :silent } { \l__spintent_spcoord_wrap_parens_r_tl }
       }
@@ -3059,7 +3065,10 @@
       }
     \__spintent_spcoord_set_wrap_parens_size:
     \str_if_eq:VnF \l__spintent_spcoord_luaset_error_str { true }
-      { \__spintent_spcoord_mathml: }
+      {
+        \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % previene lectura de intervalo
+        \__spintent_spcoord_mathml:
+      }
   }
 \NewDocumentCommand \spcoord { O{} m }
   {
@@ -3093,11 +3102,22 @@
                   { arg = "\l__spintent_mathmlarg_point_ref_tl", intent = "_ \l__spintent_geo_luaset_intent_str -" }
                 \__spintent_luafun_mrow_intent_arg:nn
                   { } { \l__spintent_mathmlarg_point_kv_tl }
-                {
-                  \l__spintent_geo_luaset_letra_str
-                  \c_math_subscript_token
-                    { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
-                }
+                \int_compare:nNnTF { \str_count:N \l__spintent_geo_luaset_sub_str } > { 1 }
+                  {
+                    \int_step_inline:nnnn { 1 } { 1 } { \str_count:N \l__spintent_geo_luaset_sub_str }
+                      { \__spintent_luafun_mrow_intent_arg:nn { } { intent = ":silent" } }
+                    {
+                      \l__spintent_geo_luaset_letra_str
+                      \c_math_subscript_token { \l__spintent_geo_luaset_sub_str }
+                    }
+                  }
+                  {
+                    {
+                      \l__spintent_geo_luaset_letra_str
+                      \c_math_subscript_token
+                        { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
+                    }
+                  }
               }
               {
                 {
@@ -4972,7 +4992,15 @@
                 \l__spintent_spfig_intent_tl
               }
           }
-          { \tl_set:Ne \l__spintent_spfig_intent_arg_tl { _ \l__spintent_spfig_desc_tl - } }
+          {
+            \tl_set_eq:NN \l_tmpa_tl \l__spintent_spfig_desc_tl
+            \str_if_empty:NF \l__spintent_geo_luaset_letra_conector_str
+              {
+                \tl_replace_once:Nee \l_tmpa_tl
+                  { \l__spintent_geo_luaset_letra_conector_str - } { }
+              }
+            \tl_set:Ne \l__spintent_spfig_intent_arg_tl { _ \l_tmpa_tl - }
+          }
       }
   }
 \cs_new_protected:Nn \__spintent_spfig_build_refs:

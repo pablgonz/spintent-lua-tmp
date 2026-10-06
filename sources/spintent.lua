@@ -2518,7 +2518,7 @@ end, { "string" })
 -- esa funcion completa ni disparar sus propios token_set_macro de
 -- unidades/millones/exponente, que no aplican aca.
 
-local function spintent_spcoord_classify(part)
+local function spintent_spcoord_classify_base(part)
     local sign, rest = "", part
     local first = s_sub(part, 1, 1)
     if first == "+" or first == "-" then
@@ -2543,6 +2543,19 @@ local function spintent_spcoord_classify(part)
     return sign, "raw", rest, "none"
 end
 
+-- Un valor "raw" que es un solo nodo con subíndice, potencia o raíz
+-- (x_{1}, a^{2}, \sqrt{2}) pierde el arg de \MathMLarg en luamml: se
+-- avisa con una quinta salida para que TeX le agregue un segundo hijo.
+local function spintent_spcoord_classify(part)
+    local sign, type_, value, has_frac = spintent_spcoord_classify_base(part)
+    local comp = "false"
+    if type_ == "raw" and has_frac == "none"
+       and (s_match(value, "[_^]") or s_match(value, "\\sqrt")) then
+        comp = "true"
+    end
+    return sign, type_, value, has_frac, comp
+end
+
 local function spintent_spcoord_set_error()
     token_set_macro("l__spintent_spcoord_luaset_error_str", "true")
     token_set_macro("l__spintent_spcoord_luaset_sep_str",   "")
@@ -2550,10 +2563,12 @@ local function spintent_spcoord_set_error()
     token_set_macro("l__spintent_spcoord_luaset_x_type_str",     "")
     token_set_macro("l__spintent_spcoord_luaset_x_value_str",    "")
     token_set_macro("l__spintent_spcoord_luaset_x_has_frac_str", "")
+    token_set_macro("l__spintent_spcoord_luaset_x_composite_str", "")
     token_set_macro("l__spintent_spcoord_luaset_y_sign_str",     "")
     token_set_macro("l__spintent_spcoord_luaset_y_type_str",     "")
     token_set_macro("l__spintent_spcoord_luaset_y_value_str",    "")
     token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", "")
+    token_set_macro("l__spintent_spcoord_luaset_y_composite_str", "")
 end
 
 register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
@@ -2591,8 +2606,8 @@ register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
         end
     end
 
-    local x_sign, x_type, x_value, x_has_frac = spintent_spcoord_classify(x_raw)
-    local y_sign, y_type, y_value, y_has_frac = spintent_spcoord_classify(y_raw)
+    local x_sign, x_type, x_value, x_has_frac, x_comp = spintent_spcoord_classify(x_raw)
+    local y_sign, y_type, y_value, y_has_frac, y_comp = spintent_spcoord_classify(y_raw)
 
     token_set_macro("l__spintent_spcoord_luaset_error_str", "false")
     token_set_macro("l__spintent_spcoord_luaset_sep_str",   sep_char)
@@ -2601,9 +2616,11 @@ register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spcoord_luaset_x_type_str",     x_type)
     token_set_macro("l__spintent_spcoord_luaset_x_value_str",    x_value)
     token_set_macro("l__spintent_spcoord_luaset_x_has_frac_str", x_has_frac)
+    token_set_macro("l__spintent_spcoord_luaset_x_composite_str", x_comp)
 
     token_set_macro("l__spintent_spcoord_luaset_y_sign_str",     y_sign)
     token_set_macro("l__spintent_spcoord_luaset_y_type_str",     y_type)
     token_set_macro("l__spintent_spcoord_luaset_y_value_str",    y_value)
     token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", y_has_frac)
+    token_set_macro("l__spintent_spcoord_luaset_y_composite_str", y_comp)
 end, { "string" })
