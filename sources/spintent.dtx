@@ -9245,8 +9245,12 @@ end, "shekel_fallback_patch")
 % \begin{macro}[int]{\@@_spread_exec:nn}
 %   The function \myhlc|\@@_spread_exec:nn| receives the optional
 %   \mymeta{keys} in `|#1|' and the \mymarg{symbol} in `|#2|'. With
-%   \mykey{silent} |true|, the symbol is typeset with a |:silent|
-%   |intent|, nothing else evaluated. Otherwise, with \mykey{read-arg}
+%   \mykey{silent} |true|, the symbol is typeset inside a literal |_-|
+%   |\MathMLintent|, nothing else evaluated; a composite symbol (such as
+%   |x^2|) is not reliably silenced by |:silent| alone. In every case the
+%   symbol is preceded by \myhlc|\@@_inner_sep:| inside the group, so that
+%   a composite symbol (a sole child, such as |x^2|) keeps its |intent|
+%   instead of collapsing. Otherwise, with \mykey{read-arg}
 %   given, it is used directly, overriding any registered reading for
 %   this call alone. With \mykey{read-arg} empty, calls
 %   \myhlc|\@@_luafun_spread_lookup:n|, using the registered
@@ -9261,7 +9265,7 @@ end, "shekel_fallback_patch")
         \@@_invisible_sep:
         \bool_if:NTF \l_@@_spread_silent_bool
           {
-            \MathMLintent { :silent } { #2 }
+            \MathMLintent { _- } { \@@_inner_sep: #2 }
           }
           {
             \tl_if_empty:NTF \l_@@_spread_read_arg_tl
@@ -9269,14 +9273,14 @@ end, "shekel_fallback_patch")
                 \@@_luafun_spread_lookup:n { \exp_not:n {#2} }
                 \str_if_eq:VnTF \l_@@_spread_luaset_status_str { found }
                   {
-                    \MathMLintent { _\l_@@_spread_luaset_reading_str } { #2 }
+                    \MathMLintent { _\l_@@_spread_luaset_reading_str } { \@@_inner_sep: #2 }
                   }
                   {
                     \msg_error:nne { spintent } { spread-unknown-sym } { \exp_not:n {#2} }
                   }
               }
               {
-                \MathMLintent { _\l_@@_spread_read_arg_tl } { #2 }
+                \MathMLintent { _\l_@@_spread_read_arg_tl } { \@@_inner_sep: #2 }
               }
           }
       }
@@ -9962,6 +9966,7 @@ end, "shekel_fallback_patch")
           }
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent "por"
         \MathMLintent { :silent } { ( }
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent "intervalo"
         \seq_use:Nnnn \l_@@_mc_args_seq
           { \MathMLintent { :silent } { , } }
           { \MathMLintent { :silent } { , } }
@@ -10443,12 +10448,10 @@ end, "shekel_fallback_patch")
               }
               { \MathMLintent { :silent } { \operatorname { #2 } } }
             \MathMLintent { :silent } { ( }
+            \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
             \str_if_eq:VnTF \l_@@_spnmd_luaset_is_number_str { true }
               { \spnum { #4 } }
-              {
-                \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent doble "de"
-                #4
-              }
+              { #4 }
             \MathMLintent { :silent } { ) }
           }
         \str_if_eq:VnT \l_@@_spnmd_luaset_is_number_str { true }
@@ -10457,6 +10460,7 @@ end, "shekel_fallback_patch")
               {
                 \bool_if:cTF { l_@@_sp #1 _silent_bool }
                   {
+                    \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent "por"
                     \MathMLintent { _- }
                       {
                         \@@_inner_sep:
@@ -11653,6 +11657,7 @@ end, "shekel_fallback_patch")
       }
       {
         \MathMLintent { :silent } { \l_@@_spcoord_wrap_parens_l_tl }
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % prevent "intervalo"
           \@@_spcoord_intent_infix:
         \MathMLintent { :silent } { \l_@@_spcoord_wrap_parens_r_tl }
       }
@@ -12698,8 +12703,9 @@ end, "shekel_fallback_patch")
 %   For a list of points, \myhlc|\l_@@_geo_luaset_points_clist| is
 %   split into \myhlc|\l_@@_sprecta_pt_seq| and walked to build
 %   \myhlc|\l_@@_sprecta_refs_tl|, the |$pt1,$pt2,...| reference list.
-%   The concept |intent| is |_(refs)| or |_recta:prefix(refs)|, same
-%   conditions as above, applied with a native |\MathMLintent|
+%   The concept |intent| is |_-| when \mykey{silent} is |true|,
+%   |_(refs)| when \mykey{concept} is |false| or |_recta:prefix(refs)|
+%   otherwise, applied with a native |\MathMLintent|
 %   wrapping |\overleftrightarrow|. The sequence is walked again,
 %   calling \myhlc|\@@_mathmlarg_point:nnn| once per point.
 %    \begin{macrocode}
@@ -12722,6 +12728,8 @@ end, "shekel_fallback_patch")
           }
           {
             \tl_set:Ne \l_@@_sprecta_intent_arg_tl { _( \l_@@_sprecta_refs_tl ) }
+            \bool_if:NT \l_@@_sprecta_silent_bool
+              { \tl_set:Nn \l_@@_sprecta_intent_arg_tl { _- } }
           }
           {
             \tl_set:Ne \l_@@_sprecta_intent_arg_tl
@@ -15952,14 +15960,15 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 %
 %   The key \mykey{silent}, when |true|, overrides
-%   \myhlc|\l_@@_spcirc_intent_arg_tl|/\myhlc|\l_@@_spcirc_radio_arg_tl|
-%   with |_-| and \myhlc|\l_@@_spcirc_connector_arg_tl| with |_($pt)|
-%   (the center is always read), regardless of \mykey{read-arg}.
+%   \myhlc|\l_@@_spcirc_intent_arg_tl|, \myhlc|\l_@@_spcirc_connector_arg_tl|
+%   and \myhlc|\l_@@_spcirc_radio_arg_tl| with |_-|, regardless of
+%   \mykey{read-arg}: a composite center (one with a subscript or a prime)
+%   is not reliably silenced by the per-point |:silent| alone.
 %    \begin{macrocode}
     \bool_if:NTF \l_@@_spcirc_silent_bool
       {
         \tl_set:Nn \l_@@_spcirc_intent_arg_tl     { _- }
-        \tl_set:Ne \l_@@_spcirc_connector_arg_tl  { _( $ pt ) }
+        \tl_set:Nn \l_@@_spcirc_connector_arg_tl  { _- }
         \tl_set:Nn \l_@@_spcirc_radio_arg_tl      { _- }
       }
 %    \end{macrocode}
@@ -16515,9 +16524,9 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_spcircfig_build_concept:nn}
 %   Builds \myhlc|\l_@@_spcircfig_intent_arg_tl|. |_-| when
-%   \mykey{silent} is |true|, or when |false| and \mykey{concept}
-%   is |false| with \mykey{read-arg} empty (|_($pt)| instead when |#2|
-%   is non-empty — the center is still read either way). Otherwise
+%   \mykey{silent} is |true|, whatever |#2| is, or when |false| and
+%   \mykey{concept} is |false| with \mykey{read-arg} empty (|_($pt)|
+%   instead when |#2| is non-empty — the center is still read). Otherwise
 %   \myhlc|_\l_@@_spcircfig_intent_tl| — with |:prefix($pt)|
 %   appended only when |#2| is non-empty — with \mykey{prefix} placed
 %   after the leading |_| when given, where \myhlc|\l_@@_spcircfig_intent_tl| is: with
@@ -16540,9 +16549,7 @@ end, "shekel_fallback_patch")
   {
     \bool_if:cTF { l_@@_sp #1 _silent_bool }
       {
-        \tl_if_empty:nTF {#2}
-          { \tl_set:Nn \l_@@_spcircfig_intent_arg_tl { _- } }
-          { \tl_set:Ne \l_@@_spcircfig_intent_arg_tl { _( $ pt ) } }
+        \tl_set:Nn \l_@@_spcircfig_intent_arg_tl { _- }
       }
       {
         \bool_if:cTF { l_@@_sp #1 _concept_bool }
