@@ -363,30 +363,44 @@ end
 if options["target"] == "testpkg" then
   make_tmp_dir()
 
-  local errorlevel = cp("*.*", "sources/test-pkg", tmpdir)
+  -- Copiar ÚNICAMENTE los archivos .tex desde ./tagged-test al directorio temporal
+  local errorlevel = cp("*.tex", "tagged-test", tmpdir)
   if errorlevel ~= 0 then
-    error("** Error!!: Failed to copy test files from sources/test-pkg to ./" .. tmpdir)
+    error("** Error!!: Failed to copy .tex files from ./tagged-test to ./" .. tmpdir)
   else
-    os_message("Copied test files from sources/test-pkg to ./" .. tmpdir)
+    os_message("Copied .tex files from ./tagged-test to ./" .. tmpdir)
   end
 
-  os_message("Compiling test files with arara")
-  local samples = {"spintent-02", "spintent-03", "spintent-04", "spintent-05", "spintent-06", "spintent-07"}
-  for _, sample in ipairs(samples) do
-    errorlevel = run(tmpdir, "arara -v " .. sample .. ".tex")
-    if errorlevel ~= 0 then
-      local f = io.open(tmpdir .. "/" .. sample .. ".log", "r")
-      if f then
-        print(f:read("*all"))
-        f:close()
+  local tex_files = {}
+  for file in lfs.dir("tagged-test") do
+    if file:match("%.tex$") then
+      table.insert(tex_files, file)
+    end
+  end
+  table.sort(tex_files)
+
+  if #tex_files == 0 then
+    print("** Warning: No .tex files found in ./tagged-test")
+  else
+    os_message("Compiling test files with lualatex-dev")
+    for _, sample in ipairs(tex_files) do
+      os_message("Compiling " .. sample)
+      errorlevel = run(tmpdir, "lualatex-dev -interaction=nonstopmode " .. sample .. " > " .. os_null)
+      if errorlevel ~= 0 then
+        local log_file = sample:gsub("%.tex$", ".log")
+        local f = io.open(tmpdir .. "/" .. log_file, "r")
+        if f then
+          print(f:read("*all"))
+          f:close()
+        end
+        error("** Error!!: lualatex-dev compilation failed for " .. sample)
       end
-      error("** Error!!: arara compilation failed for " .. sample .. ".tex")
     end
   end
 
-  errorlevel = cp("spintent-*.pdf", tmpdir, maindir)
+  errorlevel = cp("*.pdf", tmpdir, maindir)
   if errorlevel ~= 0 then
-    error("** Error!!: Failed to copy generated PDF files to main directory")
+    print("** Notice: No PDF files generated or copied to main directory")
   else
     os_message("Copied generated PDF files to main directory")
   end
