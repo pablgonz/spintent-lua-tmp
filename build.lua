@@ -396,8 +396,13 @@ if options["target"] == "testpkg" then
     local run_rnv = has_cmd("rnv-wrapp") and has_cmd("show-pdf-tags")
     local run_verapdf = has_cmd("verapdf")
 
-    if run_rnv then os_message("Validators detected: show-pdf-tags & rnv-wrapp") end
-    if run_verapdf then os_message("Validator detected: veraPDF") end
+    if run_rnv and run_verapdf then
+      os_message("Validators detected: show-pdf-tags, rnv-wrapp & veraPDF")
+    elseif run_rnv then
+      os_message("Validators detected: show-pdf-tags & rnv-wrapp")
+    elseif run_verapdf then
+      os_message("Validator detected: veraPDF")
+    end
 
     os_message("Compiling test files with lualatex-dev")
     for _, sample in ipairs(tex_files) do
@@ -415,22 +420,39 @@ if options["target"] == "testpkg" then
 
       local pdf_file = sample:gsub("%.tex$", ".pdf")
 
-      -- 1. Validación de etiquetas RNC (show-pdf-tags + rnv-wrapp)
-      if run_rnv then
+      -- Mensaje unificado según disponibilidad
+      if run_rnv and run_verapdf then
+        os_message("Validating RNC tags and PDF/UA-2 in " .. pdf_file)
+      elseif run_rnv then
         os_message("Validating RNC tags in " .. pdf_file)
-        errorlevel = run(tmpdir, "show-pdf-tags --xml " .. pdf_file .. " | rnv-wrapp")
+      elseif run_verapdf then
+        os_message("Validating PDF/UA-2 in " .. pdf_file)
+      end
+
+      -- 1. Validación RNC (show-pdf-tags + rnv-wrapp)
+      if run_rnv then
+        local cmd_rnv = "show-pdf-tags --xml " .. pdf_file .. " | rnv-wrapp"
+        errorlevel = run(tmpdir, cmd_rnv .. " > " .. os_null)
         if errorlevel ~= 0 then
+          print("\n[RNC Validation Error Output]:")
+          run(tmpdir, cmd_rnv) -- Muestra el reporte de error detallado
           error("** Error!!: Tag structure validation (rnv-wrapp) failed for " .. pdf_file)
         end
       end
 
-      -- 2. Validación PDF/UA-2 con veraPDF
+      -- 2. Validación PDF/UA-2 (veraPDF)
       if run_verapdf then
-        os_message("Validating PDF/UA-2 in " .. pdf_file)
-        errorlevel = run(tmpdir, "verapdf --flavour ua2 --format text " .. pdf_file)
+        local cmd_vera = "verapdf --flavour ua2 --format text " .. pdf_file
+        errorlevel = run(tmpdir, cmd_vera .. " > " .. os_null)
         if errorlevel ~= 0 then
+          print("\n[PDF/UA-2 Validation Error Output]:")
+          run(tmpdir, cmd_vera) -- Muestra el reporte de error detallado
           error("** Error!!: veraPDF (PDF/UA-2) validation failed for " .. pdf_file)
         end
+      end
+
+      if run_rnv or run_verapdf then
+        print("PASS")
       end
     end
   end
