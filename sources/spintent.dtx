@@ -12133,7 +12133,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_value:n}
-%   (Documentation pending.)
+%   A numeric endpoint is always preceded by \myhlc|\@@_inner_sep:|, since
+%   \myhlc|\spnum| only emits its own separator for the first number of the
+%   formula, and a bare |<mn>| next to the comma would be merged by
+%   \mynvmath{MathCAT} with its neighbour.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_value:n
   {
@@ -12143,7 +12146,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         { number }
           {
             \str_if_eq:VnTF \l_@@_spinterval_mode_str { school }
-              { \exp_args:Ne \spnum { \str_use:c { l_@@_spinterval_luaset_ #1 _value_str } } }
+              {
+                \@@_inner_sep:
+                \exp_args:Ne \spnum { \str_use:c { l_@@_spinterval_luaset_ #1 _value_str } }
+              }
               { \@@_spinterval_plain_number:n { #1 } }
           }
       }
@@ -12217,7 +12223,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_exec:nn}
-%   (Documentation pending.)
+%   The outer sibling is \myhlc|\@@_invisible_sep:|, which fires once per formula:
+%   with two intervals in the same formula, a separator before each one makes
+%   \mynvmath{MathCAT} drop the operand on the right of the operator.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_exec:nn
   {
@@ -12240,7 +12248,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
       {
         \@@_spinterval_set_delims:
         \@@_spinterval_set_intents:
-        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % previene lectura de intervalo
+        \@@_invisible_sep:
         \@@_spinterval_mathml:
       }
   }
