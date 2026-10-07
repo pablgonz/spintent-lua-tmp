@@ -2624,3 +2624,191 @@ register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", y_has_frac)
     token_set_macro("l__spintent_spcoord_luaset_y_composite_str", y_comp)
 end, { "string" })
+
+-- Intervalos
+
+-- \spinterval (modo school): "<izq> a <sep> b <der>". Delimitador
+-- izquierdo ( [ ]  y derecho ) ] [  -- cualquier combinacion; la notacion
+-- chilena ]a, b[ es un intervalo abierto. Un delimitador "abierto"
+-- excluye el extremo: ( ) ] [ ; "cerrado" lo incluye: [ ] .
+--
+-- Separador: un ";" a profundidad de llaves 0 (las comas son decimales);
+-- si no hay ";", exactamente una "," a profundidad 0. \, y \; no cuentan
+-- como separador. El infinito (\infty, +\infty, -\infty) nunca se incluye:
+-- un delimitador cerrado junto al infinito es un error, y -\infty solo
+-- puede ir a la izquierda y \infty a la derecha.
+--
+-- La fraccion se detecta en CUALQUIER posicion del extremo (spcoord solo
+-- mira el comienzo), para decidir el tamano del delimitador en expl3.
+
+local spintent_interval_left_open  = { ["("] = true,  ["["] = false, ["]"] = true }
+local spintent_interval_right_open = { [")"] = true,  ["]"] = false, ["["] = true }
+
+local spintent_interval_keys_end = { "sign", "type", "value", "inf", "tall", "composite" }
+local spintent_interval_keys_all = { "left_sym", "right_sym", "left_open", "right_open", "type", "sep", "tall" }
+
+local function spintent_interval_set_error(code)
+    token_set_macro("l__spintent_spinterval_luaset_error_str",      "true")
+    token_set_macro("l__spintent_spinterval_luaset_error_code_str", code)
+    for _, k in ipairs(spintent_interval_keys_all) do
+        token_set_macro("l__spintent_spinterval_luaset_" .. k .. "_str", "")
+    end
+    for _, p in ipairs({ "a", "b" }) do
+        for _, k in ipairs(spintent_interval_keys_end) do
+            token_set_macro("l__spintent_spinterval_luaset_" .. p .. "_" .. k .. "_str", "")
+        end
+    end
+end
+
+-- profundidad final de llaves y posiciones de ";" y "," a profundidad 0
+local function spintent_interval_scan(inner)
+    local depth, semis, commas = 0, {}, {}
+    local i, n = 1, #inner
+    while i <= n do
+        local c = s_sub(inner, i, i)
+        if c == "\\" then
+            i = i + 2
+        else
+            if c == "{" then
+                depth = depth + 1
+            elseif c == "}" then
+                depth = depth - 1
+            elseif depth == 0 then
+                if c == ";" then
+                    semis[#semis + 1] = i
+                elseif c == "," then
+                    commas[#commas + 1] = i
+                end
+            end
+            i = i + 1
+        end
+    end
+    return depth, semis, commas
+end
+
+local function spintent_interval_infinity(part)
+    local compact = string.gsub(part, "%s+", "")
+    if compact == "\\infty" or compact == "+\\infty" then
+        return "pos"
+    elseif compact == "-\\infty" then
+        return "neg"
+    end
+    return "none"
+end
+
+local function spintent_interval_tall(value)
+    if s_match(value, "\\dfrac") then
+        return "dfrac"
+    elseif s_match(value, "\\frac") then
+        return "frac"
+    end
+    return "none"
+end
+
+register_tex_cmd("luafun_spinterval_parse_and_set", function(raw_content)
+    raw_content = spintent_trim(raw_content)
+
+    local left  = s_sub(raw_content, 1, 1)
+    local right = s_sub(raw_content, -1)
+    local left_open, right_open = spintent_interval_left_open[left], spintent_interval_right_open[right]
+    if #raw_content < 2 or left_open == nil or right_open == nil then
+        spintent_interval_set_error("delim")
+        return
+    end
+
+    local inner = spintent_trim(s_sub(raw_content, 2, -2))
+    if inner == "" then
+        spintent_interval_set_error("vacio")
+        return
+    end
+
+    local depth, semis, commas = spintent_interval_scan(inner)
+    if depth ~= 0 then
+        spintent_interval_set_error("llaves")
+        return
+    end
+
+    local pos, sep_char
+    if #semis > 0 then
+        if #semis > 1 then
+            spintent_interval_set_error("ambiguo")
+            return
+        end
+        pos, sep_char = semis[1], ";"
+    elseif #commas == 1 then
+        pos, sep_char = commas[1], ","
+    elseif #commas == 0 then
+        spintent_interval_set_error("sep")
+        return
+    else
+        spintent_interval_set_error("ambiguo")
+        return
+    end
+
+    local a_raw = spintent_trim(s_sub(inner, 1, pos - 1))
+    local b_raw = spintent_trim(s_sub(inner, pos + 1))
+    if a_raw == "" or b_raw == "" then
+        spintent_interval_set_error("vacio")
+        return
+    end
+
+    local a_inf = spintent_interval_infinity(a_raw)
+    local b_inf = spintent_interval_infinity(b_raw)
+    if a_inf == "pos" or b_inf == "neg" then
+        spintent_interval_set_error("inf-orden")
+        return
+    end
+    if (a_inf == "neg" and not left_open) or (b_inf == "pos" and not right_open) then
+        spintent_interval_set_error("inf-cerrado")
+        return
+    end
+
+    local a_sign, a_type, a_value, _, a_comp = spintent_spcoord_classify(a_raw)
+    local b_sign, b_type, b_value, _, b_comp = spintent_spcoord_classify(b_raw)
+    if a_inf ~= "none" then a_type = "infinity" end
+    if b_inf ~= "none" then b_type = "infinity" end
+
+    local a_tall = spintent_interval_tall(a_value)
+    local b_tall = spintent_interval_tall(b_value)
+    local tall = "none"
+    if a_tall == "dfrac" or b_tall == "dfrac" then
+        tall = "dfrac"
+    elseif a_tall == "frac" or b_tall == "frac" then
+        tall = "frac"
+    end
+
+    local kind
+    if left_open and right_open then
+        kind = "open"
+    elseif (not left_open) and (not right_open) then
+        kind = "closed"
+    elseif left_open then
+        kind = "open-closed"
+    else
+        kind = "closed-open"
+    end
+
+    token_set_macro("l__spintent_spinterval_luaset_error_str",      "false")
+    token_set_macro("l__spintent_spinterval_luaset_error_code_str", "")
+    token_set_macro("l__spintent_spinterval_luaset_left_sym_str",   left)
+    token_set_macro("l__spintent_spinterval_luaset_right_sym_str",  right)
+    token_set_macro("l__spintent_spinterval_luaset_left_open_str",  left_open and "true" or "false")
+    token_set_macro("l__spintent_spinterval_luaset_right_open_str", right_open and "true" or "false")
+    token_set_macro("l__spintent_spinterval_luaset_type_str",       kind)
+    token_set_macro("l__spintent_spinterval_luaset_sep_str",        sep_char)
+    token_set_macro("l__spintent_spinterval_luaset_tall_str",       tall)
+
+    token_set_macro("l__spintent_spinterval_luaset_a_sign_str",      a_sign)
+    token_set_macro("l__spintent_spinterval_luaset_a_type_str",      a_type)
+    token_set_macro("l__spintent_spinterval_luaset_a_value_str",     a_value)
+    token_set_macro("l__spintent_spinterval_luaset_a_inf_str",       a_inf)
+    token_set_macro("l__spintent_spinterval_luaset_a_tall_str",      a_tall)
+    token_set_macro("l__spintent_spinterval_luaset_a_composite_str", a_comp)
+
+    token_set_macro("l__spintent_spinterval_luaset_b_sign_str",      b_sign)
+    token_set_macro("l__spintent_spinterval_luaset_b_type_str",      b_type)
+    token_set_macro("l__spintent_spinterval_luaset_b_value_str",     b_value)
+    token_set_macro("l__spintent_spinterval_luaset_b_inf_str",       b_inf)
+    token_set_macro("l__spintent_spinterval_luaset_b_tall_str",      b_tall)
+    token_set_macro("l__spintent_spinterval_luaset_b_composite_str", b_comp)
+end, { "string" })

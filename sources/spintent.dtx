@@ -11741,6 +11741,529 @@ end, "shekel_fallback_patch")
 %    \end{macrocode}
 % \end{macro}
 %
+% \subsection{The command \cs{spinterval}}\label{cmd:spinterval}
+%
+% (Documentation pending.)
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spinterval}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spinterval_luaset_error_str,
+%     \l_@@_spinterval_luaset_error_code_str,
+%     \l_@@_spinterval_luaset_left_sym_str,
+%     \l_@@_spinterval_luaset_right_sym_str,
+%     \l_@@_spinterval_luaset_left_open_str,
+%     \l_@@_spinterval_luaset_right_open_str,
+%     \l_@@_spinterval_luaset_type_str,
+%     \l_@@_spinterval_luaset_sep_str,
+%     \l_@@_spinterval_luaset_tall_str,
+%   }
+%   Variables set by the function \myhlc|\@@_luafun_spinterval_parse_and_set:n|.
+%    \begin{macrocode}
+\str_new:N \l_@@_spinterval_luaset_error_str
+\str_new:N \l_@@_spinterval_luaset_error_code_str
+\str_new:N \l_@@_spinterval_luaset_left_sym_str
+\str_new:N \l_@@_spinterval_luaset_right_sym_str
+\str_new:N \l_@@_spinterval_luaset_left_open_str
+\str_new:N \l_@@_spinterval_luaset_right_open_str
+\str_new:N \l_@@_spinterval_luaset_type_str
+\str_new:N \l_@@_spinterval_luaset_sep_str
+\str_new:N \l_@@_spinterval_luaset_tall_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spinterval_luaset_ #1 _sign_str,
+%     \l_@@_spinterval_luaset_ #1 _type_str,
+%     \l_@@_spinterval_luaset_ #1 _value_str,
+%     \l_@@_spinterval_luaset_ #1 _inf_str,
+%     \l_@@_spinterval_luaset_ #1 _tall_str,
+%     \l_@@_spinterval_luaset_ #1 _composite_str,
+%   }
+%   The same variables for each endpoint, |a| and |b|.
+%    \begin{macrocode}
+\clist_map_inline:nn { a , b }
+  {
+    \str_new:c { l_@@_spinterval_luaset_ #1 _sign_str }
+    \str_new:c { l_@@_spinterval_luaset_ #1 _type_str }
+    \str_new:c { l_@@_spinterval_luaset_ #1 _value_str }
+    \str_new:c { l_@@_spinterval_luaset_ #1 _inf_str }
+    \str_new:c { l_@@_spinterval_luaset_ #1 _tall_str }
+    \str_new:c { l_@@_spinterval_luaset_ #1 _composite_str }
+  }
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spinterval_raw_arg_tl,
+%     \l_@@_spinterval_prefix_tl,
+%     \l_@@_spinterval_read_arg_tl,
+%     \l_@@_spinterval_mode_str,
+%     \l_@@_spinterval_size_str,
+%     \l_@@_spinterval_reason_str,
+%     \l_@@_spinterval_word_w_tl,
+%     \l_@@_spinterval_word_g_tl,
+%     \l_@@_spinterval_intent_arg_tl,
+%     \l_@@_spinterval_intent_group_tl,
+%     \l_@@_spinterval_sym_l_tl,
+%     \l_@@_spinterval_sym_r_tl,
+%     \l_@@_spinterval_size_l_tl,
+%     \l_@@_spinterval_size_r_tl,
+%     \l_@@_spinterval_delim_l_tl,
+%     \l_@@_spinterval_delim_r_tl,
+%     \l_@@_spinterval_tmp_tl,
+%   }
+%   (Documentation pending.)
+%    \begin{macrocode}
+\tl_new:N  \l_@@_spinterval_raw_arg_tl
+\tl_new:N  \l_@@_spinterval_prefix_tl
+\tl_new:N  \l_@@_spinterval_read_arg_tl
+\str_new:N \l_@@_spinterval_mode_str
+\str_new:N \l_@@_spinterval_size_str
+\str_new:N \l_@@_spinterval_reason_str
+\tl_new:N  \l_@@_spinterval_word_w_tl
+\tl_new:N  \l_@@_spinterval_word_g_tl
+\tl_new:N  \l_@@_spinterval_intent_arg_tl
+\tl_new:N  \l_@@_spinterval_intent_group_tl
+\tl_new:N  \l_@@_spinterval_sym_l_tl
+\tl_new:N  \l_@@_spinterval_sym_r_tl
+\tl_new:N  \l_@@_spinterval_size_l_tl
+\tl_new:N  \l_@@_spinterval_size_r_tl
+\tl_new:N  \l_@@_spinterval_delim_l_tl
+\tl_new:N  \l_@@_spinterval_delim_r_tl
+\tl_new:N  \l_@@_spinterval_tmp_tl
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spinterval}}
+%
+% \begin{macro}[int]{spinterval-invalid-arg}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spinterval-invalid-arg }
+  {
+Invalid~format~in~\token_to_str:N \spinterval:~'#1'~(#2)~\msg_line_context:.
+  }
+  {
+See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~forms.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spinterval}}
+%
+% \begin{macro}[int]{read-cmd, prefix, read-arg, size, silent, concept, unknown}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\keys_define:nn { spintent / spinterval }
+  {
+    read-cmd            .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spinterval_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spinterval_mode_str { mathcat } }
+          }
+      },
+    read-cmd            .initial:n  = school,
+    read-cmd            .value_required:n = true,
+    read-cmd / unknown  .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
+    prefix              .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spinterval_prefix_tl {#1} },
+    prefix              .initial:n  = ,
+    prefix              .value_required:n = true,
+    read-arg            .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spinterval_read_arg_tl {#1} },
+    read-arg            .initial:n  = ,
+    read-arg            .value_required:n = true,
+    size                .choices:nn = { auto , none , big , Big , bigg , Bigg }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spinterval_size_str { auto } }
+            {2} { \str_set:Nn \l_@@_spinterval_size_str { none } }
+            {3} { \str_set:Nn \l_@@_spinterval_size_str { big  } }
+            {4} { \str_set:Nn \l_@@_spinterval_size_str { Big  } }
+            {5} { \str_set:Nn \l_@@_spinterval_size_str { bigg } }
+            {6} { \str_set:Nn \l_@@_spinterval_size_str { Bigg } }
+          }
+      },
+    size                .initial:n  = auto,
+    size                .value_required:n = true,
+    size / unknown      .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { size } { auto,~none,~big,~Big,~bigg,~Bigg } { \exp_not:n {#1} },
+    silent              .bool_set:N = \l_@@_spinterval_silent_bool,
+    silent              .initial:n  = false,
+    silent              .value_required:n = true,
+    concept             .bool_set:N = \l_@@_spinterval_concept_bool,
+    concept             .initial:n  = true,
+    concept             .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spinterval }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spinterval}}
+%
+% \begin{macro}[int]{\@@_spinterval_set_reason:}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spinterval_set_reason:
+  {
+    \str_case:VnF \l_@@_spinterval_luaset_error_code_str
+      {
+        { delim }
+          {
+            \str_set:Nn \l_@@_spinterval_reason_str
+              { it~must~start~with~'(',~'['~or~']'~and~end~with~')',~']'~or~'[' }
+          }
+        { vacio }
+          { \str_set:Nn \l_@@_spinterval_reason_str { an~endpoint~is~empty } }
+        { sep }
+          {
+            \str_set:Nn \l_@@_spinterval_reason_str
+              { there~is~no~separator:~use~a~comma~or~a~semicolon }
+          }
+        { ambiguo }
+          {
+            \str_set:Nn \l_@@_spinterval_reason_str
+              { more~than~one~separator:~use~a~single~semicolon~and~the~commas~are~decimal }
+          }
+        { llaves }
+          { \str_set:Nn \l_@@_spinterval_reason_str { unbalanced~braces } }
+        { inf-orden }
+          {
+            \str_set:Nn \l_@@_spinterval_reason_str
+              { minus~infinity~goes~on~the~left~and~infinity~on~the~right }
+          }
+        { inf-cerrado }
+          {
+            \str_set:Nn \l_@@_spinterval_reason_str
+              { an~infinite~endpoint~cannot~be~included:~use~'('~or~']'~on~the~left,~')'~or~'['~on~the~right }
+          }
+      }
+      { \str_set:Nn \l_@@_spinterval_reason_str { invalid~argument } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spinterval_set_delims:}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spinterval_set_delims:
+  {
+    \str_case:Vn \l_@@_spinterval_luaset_left_sym_str
+      {
+        { ( } { \tl_set:Nn \l_@@_spinterval_sym_l_tl { \lparen } }
+        { [ } { \tl_set:Nn \l_@@_spinterval_sym_l_tl { \lbrack } }
+        { ] } { \tl_set:Nn \l_@@_spinterval_sym_l_tl { \rbrack } }
+      }
+    \str_case:Vn \l_@@_spinterval_luaset_right_sym_str
+      {
+        { ) } { \tl_set:Nn \l_@@_spinterval_sym_r_tl { \rparen } }
+        { [ } { \tl_set:Nn \l_@@_spinterval_sym_r_tl { \lbrack } }
+        { ] } { \tl_set:Nn \l_@@_spinterval_sym_r_tl { \rbrack } }
+      }
+    \tl_clear:N \l_@@_spinterval_size_l_tl
+    \tl_clear:N \l_@@_spinterval_size_r_tl
+    \str_case:Vn \l_@@_spinterval_size_str
+      {
+        { big }
+          {
+            \tl_set:Nn \l_@@_spinterval_size_l_tl { \bigl }
+            \tl_set:Nn \l_@@_spinterval_size_r_tl { \bigr }
+          }
+        { Big }
+          {
+            \tl_set:Nn \l_@@_spinterval_size_l_tl { \Bigl }
+            \tl_set:Nn \l_@@_spinterval_size_r_tl { \Bigr }
+          }
+        { bigg }
+          {
+            \tl_set:Nn \l_@@_spinterval_size_l_tl { \biggl }
+            \tl_set:Nn \l_@@_spinterval_size_r_tl { \biggr }
+          }
+        { Bigg }
+          {
+            \tl_set:Nn \l_@@_spinterval_size_l_tl { \Biggl }
+            \tl_set:Nn \l_@@_spinterval_size_r_tl { \Biggr }
+          }
+        { auto }
+          {
+            \str_if_eq:VnF \l_@@_spinterval_luaset_tall_str { none }
+              {
+                \int_case:nnF { \mathstyle }
+                  {
+                    { 0 }
+                      {
+                        \tl_set:Nn \l_@@_spinterval_size_l_tl { \Bigl }
+                        \tl_set:Nn \l_@@_spinterval_size_r_tl { \Bigr }
+                      }
+                    { 1 }
+                      {
+                        \tl_set:Nn \l_@@_spinterval_size_l_tl { \Bigl }
+                        \tl_set:Nn \l_@@_spinterval_size_r_tl { \Bigr }
+                      }
+                    { 2 }
+                      {
+                        \tl_set:Nn \l_@@_spinterval_size_l_tl { \bigl }
+                        \tl_set:Nn \l_@@_spinterval_size_r_tl { \bigr }
+                      }
+                    { 3 }
+                      {
+                        \tl_set:Nn \l_@@_spinterval_size_l_tl { \bigl }
+                        \tl_set:Nn \l_@@_spinterval_size_r_tl { \bigr }
+                      }
+                  }
+                  { }
+                \str_if_eq:VnT \l_@@_spinterval_luaset_tall_str { dfrac }
+                  {
+                    \tl_set:Nn \l_@@_spinterval_size_l_tl { \Bigl }
+                    \tl_set:Nn \l_@@_spinterval_size_r_tl { \Bigr }
+                  }
+              }
+          }
+      }
+    \tl_if_empty:NTF \l_@@_spinterval_size_l_tl
+      {
+        \tl_set:Ne \l_@@_spinterval_delim_l_tl
+          { \exp_not:N \mathopen { \exp_not:V \l_@@_spinterval_sym_l_tl } }
+        \tl_set:Ne \l_@@_spinterval_delim_r_tl
+          { \exp_not:N \mathclose { \exp_not:V \l_@@_spinterval_sym_r_tl } }
+      }
+      {
+        \tl_set:Ne \l_@@_spinterval_delim_l_tl
+          { \exp_not:V \l_@@_spinterval_size_l_tl \exp_not:V \l_@@_spinterval_sym_l_tl }
+        \tl_set:Ne \l_@@_spinterval_delim_r_tl
+          { \exp_not:V \l_@@_spinterval_size_r_tl \exp_not:V \l_@@_spinterval_sym_r_tl }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spinterval_set_intents:}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spinterval_set_intents:
+  {
+    \str_case:Vn \l_@@_spinterval_luaset_type_str
+      {
+        { open }
+          {
+            \tl_set:Nn \l_@@_spinterval_word_w_tl { abierto-de }
+            \tl_set:Nn \l_@@_spinterval_word_g_tl { a }
+          }
+        { closed }
+          {
+            \tl_set:Nn \l_@@_spinterval_word_w_tl { cerrado-de }
+            \tl_set:Nn \l_@@_spinterval_word_g_tl { a }
+          }
+        { open-closed }
+          {
+            \tl_set:Nn \l_@@_spinterval_word_w_tl { abierto-en }
+            \tl_set:Nn \l_@@_spinterval_word_g_tl { y-cerrado-en }
+          }
+        { closed-open }
+          {
+            \tl_set:Nn \l_@@_spinterval_word_w_tl { cerrado-en }
+            \tl_set:Nn \l_@@_spinterval_word_g_tl { y-abierto-en }
+          }
+      }
+    \tl_set:Ne \l_@@_spinterval_intent_group_tl
+      { _ \l_@@_spinterval_word_g_tl :infix($a,$b) }
+    \bool_if:NTF \l_@@_spinterval_silent_bool
+      { \tl_set:Nn \l_@@_spinterval_intent_arg_tl { _- } }
+      {
+        \tl_if_empty:NTF \l_@@_spinterval_read_arg_tl
+          {
+            \tl_set:Ne \l_@@_spinterval_intent_arg_tl
+              {
+                _
+                \bool_if:NT \l_@@_spinterval_concept_bool
+                  {
+                    \tl_if_empty:NF \l_@@_spinterval_prefix_tl
+                      { \tl_use:N \l_@@_spinterval_prefix_tl - }
+                    intervalo-
+                  }
+                \l_@@_spinterval_word_w_tl :prefix($ab)
+              }
+          }
+          {
+            \tl_set:Ne \l_@@_spinterval_intent_arg_tl
+              { _ \l_@@_spinterval_read_arg_tl }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spinterval_inner_sep:n}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spinterval_inner_sep:n
+  {
+    \str_if_eq:eeT
+      { \str_use:c { l_@@_spinterval_luaset_ #1 _composite_str } } { true }
+      { \@@_inner_sep: }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spinterval_plain_number:n}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spinterval_plain_number:n
+  {
+    \tl_set:Ne \l_@@_spinterval_tmp_tl
+      { \str_use:c { l_@@_spinterval_luaset_ #1 _value_str } }
+    \tl_replace_all:Nnn \l_@@_spinterval_tmp_tl { , } { {,} }
+    \tl_use:N \l_@@_spinterval_tmp_tl
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spinterval_value:n}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spinterval_value:n
+  {
+    \str_case:enF { \str_use:c { l_@@_spinterval_luaset_ #1 _type_str } }
+      {
+        { infinity } { \infty }
+        { number }
+          {
+            \str_if_eq:VnTF \l_@@_spinterval_mode_str { school }
+              { \exp_args:Ne \spnum { \str_use:c { l_@@_spinterval_luaset_ #1 _value_str } } }
+              { \@@_spinterval_plain_number:n { #1 } }
+          }
+      }
+      { \str_use:c { l_@@_spinterval_luaset_ #1 _value_str } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spinterval_print:n}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spinterval_print:n
+  {
+    \str_if_eq:VnTF \l_@@_spinterval_mode_str { school }
+      {
+        \str_case:enF { \str_use:c { l_@@_spinterval_luaset_ #1 _sign_str } }
+          {
+            { + }
+              {
+                \MathMLintent { _más:prefix($vp) }
+                  {
+                    +
+                    \MathMLarg { vp }
+                      { \@@_spinterval_inner_sep:n { #1 } \@@_spinterval_value:n { #1 } }
+                  }
+              }
+            { - }
+              {
+                \MathMLintent { _menos:prefix($vn) }
+                  {
+                    -
+                    \MathMLarg { vn }
+                      { \@@_spinterval_inner_sep:n { #1 } \@@_spinterval_value:n { #1 } }
+                  }
+              }
+          }
+          { \@@_spinterval_value:n { #1 } }
+      }
+      {
+        \str_use:c { l_@@_spinterval_luaset_ #1 _sign_str }
+        \@@_spinterval_value:n { #1 }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spinterval_mathml:}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spinterval_mathml:
+  {
+    \MathMLintent { \l_@@_spinterval_intent_arg_tl }
+      {
+        \MathMLintent { :silent } { \l_@@_spinterval_delim_l_tl }
+        \MathMLarg { ab }
+          {
+            \@@_inner_sep:
+            \MathMLintent { \l_@@_spinterval_intent_group_tl }
+              {
+                \MathMLarg { a }
+                  { \@@_spinterval_inner_sep:n { a } \@@_spinterval_print:n { a } }
+                \MathMLintent { :silent } { \l_@@_spinterval_luaset_sep_str }
+                \MathMLarg { b }
+                  { \@@_spinterval_inner_sep:n { b } \@@_spinterval_print:n { b } }
+              }
+          }
+        \MathMLintent { :silent } { \l_@@_spinterval_delim_r_tl }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spinterval_exec:nn}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spinterval_exec:nn
+  {
+    \keys_set:nn { spintent / spinterval } {#1}
+    \tl_set:Nn \l_@@_spinterval_raw_arg_tl {#2}
+    \@@_luafun_spinterval_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnTF \l_@@_spinterval_luaset_error_str { true }
+      {
+        \bool_if:NTF \l_@@_spinterval_silent_bool
+          {
+            \MathMLintent { _- }
+              { \@@_inner_sep: \l_@@_spinterval_raw_arg_tl }
+          }
+          {
+            \@@_spinterval_set_reason:
+            \msg_error:nnee { spintent } { spinterval-invalid-arg }
+              { \exp_not:n {#2} } { \l_@@_spinterval_reason_str }
+          }
+      }
+      {
+        \@@_spinterval_set_delims:
+        \@@_spinterval_set_intents:
+        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % previene lectura de intervalo
+        \@@_spinterval_mathml:
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spinterval}
+%   (Documentation pending.)
+%    \begin{macrocode}
+\NewDocumentCommand \spinterval { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \@@_spinterval_exec:nn {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spinterval } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \subsection{The function \cs[no-index]{__spintent_mathmlarg_point:nnn}}\label{fun:mathmlarg_point}
 %
 % \begin{variable}[int]
@@ -19807,6 +20330,194 @@ register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spcoord_luaset_y_value_str",    y_value)
     token_set_macro("l__spintent_spcoord_luaset_y_has_frac_str", y_has_frac)
     token_set_macro("l__spintent_spcoord_luaset_y_composite_str", y_comp)
+end, { "string" })
+
+-- Intervalos
+
+-- \spinterval (modo school): "<izq> a <sep> b <der>". Delimitador
+-- izquierdo ( [ ]  y derecho ) ] [  -- cualquier combinacion; la notacion
+-- chilena ]a, b[ es un intervalo abierto. Un delimitador "abierto"
+-- excluye el extremo: ( ) ] [ ; "cerrado" lo incluye: [ ] .
+--
+-- Separador: un ";" a profundidad de llaves 0 (las comas son decimales);
+-- si no hay ";", exactamente una "," a profundidad 0. \, y \; no cuentan
+-- como separador. El infinito (\infty, +\infty, -\infty) nunca se incluye:
+-- un delimitador cerrado junto al infinito es un error, y -\infty solo
+-- puede ir a la izquierda y \infty a la derecha.
+--
+-- La fraccion se detecta en CUALQUIER posicion del extremo (spcoord solo
+-- mira el comienzo), para decidir el tamano del delimitador en expl3.
+
+local spintent_interval_left_open  = { ["("] = true,  ["["] = false, ["]"] = true }
+local spintent_interval_right_open = { [")"] = true,  ["]"] = false, ["["] = true }
+
+local spintent_interval_keys_end = { "sign", "type", "value", "inf", "tall", "composite" }
+local spintent_interval_keys_all = { "left_sym", "right_sym", "left_open", "right_open", "type", "sep", "tall" }
+
+local function spintent_interval_set_error(code)
+    token_set_macro("l__spintent_spinterval_luaset_error_str",      "true")
+    token_set_macro("l__spintent_spinterval_luaset_error_code_str", code)
+    for _, k in ipairs(spintent_interval_keys_all) do
+        token_set_macro("l__spintent_spinterval_luaset_" .. k .. "_str", "")
+    end
+    for _, p in ipairs({ "a", "b" }) do
+        for _, k in ipairs(spintent_interval_keys_end) do
+            token_set_macro("l__spintent_spinterval_luaset_" .. p .. "_" .. k .. "_str", "")
+        end
+    end
+end
+
+-- profundidad final de llaves y posiciones de ";" y "," a profundidad 0
+local function spintent_interval_scan(inner)
+    local depth, semis, commas = 0, {}, {}
+    local i, n = 1, #inner
+    while i <= n do
+        local c = s_sub(inner, i, i)
+        if c == "\\" then
+            i = i + 2
+        else
+            if c == "{" then
+                depth = depth + 1
+            elseif c == "}" then
+                depth = depth - 1
+            elseif depth == 0 then
+                if c == ";" then
+                    semis[#semis + 1] = i
+                elseif c == "," then
+                    commas[#commas + 1] = i
+                end
+            end
+            i = i + 1
+        end
+    end
+    return depth, semis, commas
+end
+
+local function spintent_interval_infinity(part)
+    local compact = string.gsub(part, "%s+", "")
+    if compact == "\\infty" or compact == "+\\infty" then
+        return "pos"
+    elseif compact == "-\\infty" then
+        return "neg"
+    end
+    return "none"
+end
+
+local function spintent_interval_tall(value)
+    if s_match(value, "\\dfrac") then
+        return "dfrac"
+    elseif s_match(value, "\\frac") then
+        return "frac"
+    end
+    return "none"
+end
+
+register_tex_cmd("luafun_spinterval_parse_and_set", function(raw_content)
+    raw_content = spintent_trim(raw_content)
+
+    local left  = s_sub(raw_content, 1, 1)
+    local right = s_sub(raw_content, -1)
+    local left_open, right_open = spintent_interval_left_open[left], spintent_interval_right_open[right]
+    if #raw_content < 2 or left_open == nil or right_open == nil then
+        spintent_interval_set_error("delim")
+        return
+    end
+
+    local inner = spintent_trim(s_sub(raw_content, 2, -2))
+    if inner == "" then
+        spintent_interval_set_error("vacio")
+        return
+    end
+
+    local depth, semis, commas = spintent_interval_scan(inner)
+    if depth ~= 0 then
+        spintent_interval_set_error("llaves")
+        return
+    end
+
+    local pos, sep_char
+    if #semis > 0 then
+        if #semis > 1 then
+            spintent_interval_set_error("ambiguo")
+            return
+        end
+        pos, sep_char = semis[1], ";"
+    elseif #commas == 1 then
+        pos, sep_char = commas[1], ","
+    elseif #commas == 0 then
+        spintent_interval_set_error("sep")
+        return
+    else
+        spintent_interval_set_error("ambiguo")
+        return
+    end
+
+    local a_raw = spintent_trim(s_sub(inner, 1, pos - 1))
+    local b_raw = spintent_trim(s_sub(inner, pos + 1))
+    if a_raw == "" or b_raw == "" then
+        spintent_interval_set_error("vacio")
+        return
+    end
+
+    local a_inf = spintent_interval_infinity(a_raw)
+    local b_inf = spintent_interval_infinity(b_raw)
+    if a_inf == "pos" or b_inf == "neg" then
+        spintent_interval_set_error("inf-orden")
+        return
+    end
+    if (a_inf == "neg" and not left_open) or (b_inf == "pos" and not right_open) then
+        spintent_interval_set_error("inf-cerrado")
+        return
+    end
+
+    local a_sign, a_type, a_value, _, a_comp = spintent_spcoord_classify(a_raw)
+    local b_sign, b_type, b_value, _, b_comp = spintent_spcoord_classify(b_raw)
+    if a_inf ~= "none" then a_type = "infinity" end
+    if b_inf ~= "none" then b_type = "infinity" end
+
+    local a_tall = spintent_interval_tall(a_value)
+    local b_tall = spintent_interval_tall(b_value)
+    local tall = "none"
+    if a_tall == "dfrac" or b_tall == "dfrac" then
+        tall = "dfrac"
+    elseif a_tall == "frac" or b_tall == "frac" then
+        tall = "frac"
+    end
+
+    local kind
+    if left_open and right_open then
+        kind = "open"
+    elseif (not left_open) and (not right_open) then
+        kind = "closed"
+    elseif left_open then
+        kind = "open-closed"
+    else
+        kind = "closed-open"
+    end
+
+    token_set_macro("l__spintent_spinterval_luaset_error_str",      "false")
+    token_set_macro("l__spintent_spinterval_luaset_error_code_str", "")
+    token_set_macro("l__spintent_spinterval_luaset_left_sym_str",   left)
+    token_set_macro("l__spintent_spinterval_luaset_right_sym_str",  right)
+    token_set_macro("l__spintent_spinterval_luaset_left_open_str",  left_open and "true" or "false")
+    token_set_macro("l__spintent_spinterval_luaset_right_open_str", right_open and "true" or "false")
+    token_set_macro("l__spintent_spinterval_luaset_type_str",       kind)
+    token_set_macro("l__spintent_spinterval_luaset_sep_str",        sep_char)
+    token_set_macro("l__spintent_spinterval_luaset_tall_str",       tall)
+
+    token_set_macro("l__spintent_spinterval_luaset_a_sign_str",      a_sign)
+    token_set_macro("l__spintent_spinterval_luaset_a_type_str",      a_type)
+    token_set_macro("l__spintent_spinterval_luaset_a_value_str",     a_value)
+    token_set_macro("l__spintent_spinterval_luaset_a_inf_str",       a_inf)
+    token_set_macro("l__spintent_spinterval_luaset_a_tall_str",      a_tall)
+    token_set_macro("l__spintent_spinterval_luaset_a_composite_str", a_comp)
+
+    token_set_macro("l__spintent_spinterval_luaset_b_sign_str",      b_sign)
+    token_set_macro("l__spintent_spinterval_luaset_b_type_str",      b_type)
+    token_set_macro("l__spintent_spinterval_luaset_b_value_str",     b_value)
+    token_set_macro("l__spintent_spinterval_luaset_b_inf_str",       b_inf)
+    token_set_macro("l__spintent_spinterval_luaset_b_tall_str",      b_tall)
+    token_set_macro("l__spintent_spinterval_luaset_b_composite_str", b_comp)
 end, { "string" })
 % \iffalse
 %</spintentlua>
