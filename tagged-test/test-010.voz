@@ -1,6 +1,5 @@
 test-010: spnD - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado  nivel 1  Comando spnD
 1. Sin argumento: divisores de  n
 2. Con un número: divisores de  6
 3. Con una letra: divisores de  m
@@ -31,7 +30,6 @@ encabezado  nivel 1  Comando spnD
 28. Con prefix y result: los divisores de  6  son  1  2  3  y  6
 29. Con prefix y concept false: 6
 30. Con todas las llaves: los divisores de  12  son  1  2  3  puntos suspensivos
-encabezado  nivel 1  Comando spnM
 31. Sin argumento: múltiplos de  n
 32. Con un número: múltiplos de  6
 33. Con una letra: múltiplos de  m
@@ -62,7 +60,6 @@ encabezado  nivel 1  Comando spnM
 58. Con prefix y result: los múltiplos de  6  son  6  y  12  puntos suspensivos
 59. Con prefix y concept false: 6
 60. Con todas las llaves: los múltiplos de  12  son  12  24  36  puntos suspensivos
-encabezado  nivel 1  Comando spmcd
 61. Sin argumento: máximo común divisor
 62. Con tres números: máximo común divisor  entre  2  3  y  6
 63. Con dos letras: máximo común divisor  entre  m  y  n
@@ -101,7 +98,6 @@ encabezado  nivel 1  Comando spmcd
 96. Con read-cmd terse y result: mcd  entre  12  y  18  es igual a  6
 97. Con upper-case y result: máximo común divisor  entre  12  y  18  es igual a  6
 98. Con todas las llaves: el mcd  entre  12  y  18  es igual a  6
-encabezado  nivel 1  Comando spmcm
 99. Sin argumento: mínimo común múltiplo
 100. Con tres números: mínimo común múltiplo  entre  2  3  y  6
 101. Con dos letras: mínimo común múltiplo  entre  m  y  n
@@ -140,7 +136,6 @@ encabezado  nivel 1  Comando spmcm
 134. Con read-cmd terse y result: mcm  entre  12  y  18  es igual a  36
 135. Con upper-case y result: mínimo común múltiplo  entre  12  y  18  es igual a  36
 136. Con todas las llaves: el mcm  entre  12  y  18  es igual a  36
-encabezado  nivel 1  En fórmulas
 137. Divisores incluidos: divisores de  6  es un subconjunto de  divisores de  de  12
 138. Divisores con resultado: divisores de  6  son  1  2  3  y  6  es un subconjunto de  divisores de  de  12  son  1  2  3  4  6  y  12
 139. Múltiplos con resultado: múltiplos de  4  son  4  8  12  puntos suspensivos  intersección  múltiplos de  de  6  son  6  12  18  puntos suspensivos

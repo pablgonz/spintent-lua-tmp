@@ -1,7 +1,6 @@
 test-016: sprad - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
 Cargando documento...
-encabezado  nivel 1  Comando sprad
 1. Sin llaves: radio
 2. Con concept true, el valor por defecto: radio
 3. Con concept false: r
@@ -25,7 +24,6 @@ encabezado  nivel 1  Comando sprad
 21. Con silent true:
 22. Con silent true y sub-index:
 23. Con todas las llaves: radio subíndice 1
-encabezado  nivel 1  Comando spdiam
 24. Sin llaves: diámetro
 25. Con concept true, el valor por defecto: diámetro
 26. Con concept false: d
@@ -49,7 +47,6 @@ encabezado  nivel 1  Comando spdiam
 44. Con silent true:
 45. Con silent true y sub-index:
 46. Con todas las llaves: diámetro subíndice 1
-encabezado  nivel 1  Comando spcirc: argumentos
 47. Sin argumentos: circunferencia
 48. Con un centro: circunferencia  de centro en  O
 49. Con centro y radio entero: circunferencia  de centro en  O  y radio  3
@@ -70,7 +67,6 @@ encabezado  nivel 1  Comando spcirc: argumentos
 64. Con un segmento con primas: circunferencia  de centro en  O  y radio  medida del lado  A prima  B prima
 65. Con un segmento con subíndices: circunferencia  de centro en  O  y radio  medida del lado  A sub uno  B sub dos
 66. Con centro con prima y radio: circunferencia  de centro en  O prima  y radio  3
-encabezado  nivel 1  Comando spcirc: llaves
 67. Con read-cmd school, el valor por defecto y un centro: circunferencia  de centro en  O
 68. Con read-cmd school, el valor por defecto y un segmento: circunferencia  de centro en  O  y radio  medida del lado  A  B
 69. Con read-cmd mathcat y un centro: circunferencia  de centro en  o
@@ -117,7 +113,6 @@ encabezado  nivel 1  Comando spcirc: llaves
 110. Con silent true y centro y radio:
 111. Con silent true y centro y segmento:
 112. Con todas las llaves: el círculo sub 1  de centro en  o  subíndice 1  y diámetro  medida del lado  a  b
-encabezado  nivel 1  Comando spAcirc: argumentos
 113. Sin argumentos: área de la circunferencia
 114. Con un centro: área de la circunferencia con centro en  O
 115. Con un número: área de la circunferencia uno
@@ -127,7 +122,6 @@ encabezado  nivel 1  Comando spAcirc: argumentos
 119. Con otro número: área de la circunferencia dos
 120. Con un número de dos cifras: área de la circunferencia 12
 121. Con la letra n: área de la circunferencia n
-encabezado  nivel 1  Comando spAcirc: llaves
 122. Con read-cmd school, el valor por defecto: área de la circunferencia con centro en  O
 123. Con read-cmd mathcat: área de la circunferencia con centro en  o
 124. Con prefix y sin argumentos: el área de la circunferencia
@@ -159,7 +153,6 @@ encabezado  nivel 1  Comando spAcirc: llaves
 150. Con silent true y un centro:
 151. Con silent true y un número:
 152. Con todas las llaves: el área del círculo sub 1 con centro en  o
-encabezado  nivel 1  Comando spPcirc: argumentos
 153. Sin argumentos: perímetro de la circunferencia
 154. Con un centro: perímetro de la circunferencia con centro en  O
 155. Con un número: perímetro de la circunferencia uno
@@ -169,7 +162,6 @@ encabezado  nivel 1  Comando spPcirc: argumentos
 159. Con otro número: perímetro de la circunferencia dos
 160. Con un número de dos cifras: perímetro de la circunferencia 12
 161. Con la letra n: perímetro de la circunferencia n
-encabezado  nivel 1  Comando spPcirc: llaves
 162. Con read-cmd school, el valor por defecto: perímetro de la circunferencia con centro en  O
 163. Con read-cmd mathcat: perímetro de la circunferencia con centro en  o
 164. Con prefix y sin argumentos: el perímetro de la circunferencia
@@ -201,7 +193,6 @@ encabezado  nivel 1  Comando spPcirc: llaves
 190. Con silent true y un centro:
 191. Con silent true y un número:
 192. Con todas las llaves: el perímetro del círculo sub 1 con centro en  o
-encabezado  nivel 1  Comando spVol
 193. Sin llaves: volumen
 194. Con concept true, el valor por defecto: volumen
 195. Con concept false: V
@@ -218,7 +209,6 @@ encabezado  nivel 1  Comando spVol
 206. Con silent false, el valor por defecto: volumen
 207. Con silent true:
 208. Con todas las llaves: volumen subíndice 1
-encabezado  nivel 1  En fórmulas
 209. Diámetro y radio: diámetro  es igual a  2  punto  radio
 210. Área y perímetro de la misma circunferencia: área de la circunferencia con centro en  O  perímetro de la circunferencia con centro en  O
 211. Una circunferencia y su radio: circunferencia  de centro en  O  y radio  3  flecha doble derecha  radio  es igual a  3
@@ -226,7 +216,6 @@ encabezado  nivel 1  En fórmulas
 213. En fórmula destacada:
 área de la circunferencia con centro en  O  es igual a  pi  punto  radio
 214. Volumen de una esfera sin potencias: volumen  es igual a  4 tercios  punto  pi  punto  radio  punto  radio  punto  radio
-encabezado  nivel 1  Casos con potencias (al final, por precaución)
 215. Área con exponente: área de la circunferencia con centro en  O  es igual a  pi  radio cuadrado
 216. Volumen con exponente: volumen  es igual a  4 tercios  pi  radio al cubo
 217. Diámetro al cuadrado: diámetro cuadrado  es igual a  4  radio cuadrado

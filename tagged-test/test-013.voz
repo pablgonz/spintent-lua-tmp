@@ -1,6 +1,5 @@
 test-013: sprecta - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado  nivel 1  A. Comando sprecta: argumentos
 1. Dos puntos juntos: recta  A  B
 2. Una letra minúscula: recta  m
 3. Dos puntos con coma y espacio: recta  A  B
@@ -15,7 +14,6 @@ encabezado  nivel 1  A. Comando sprecta: argumentos
 12. Una mayúscula con subíndice: recta  L sub uno
 13. Una letra con prima: recta  m prima
 14. Una letra con dos primas: recta  l doble prima
-encabezado  nivel 1  B. Comando sprecta: llaves
 15. Con read-cmd school, el valor por defecto: recta  A  B
 16. Con read-cmd mathcat: recta  a  b
 17. Con read-cmd mathcat y una mayúscula: recta  l
@@ -36,7 +34,6 @@ encabezado  nivel 1  B. Comando sprecta: llaves
 32. Con silent true y una letra con dos primas:
 33. Con silent true y read-cmd mathcat:
 34. Con todas las llaves: la recta  a  subíndice 1  b  subíndice 2
-encabezado  nivel 1  C. Comando sprayo
 35. Dos puntos juntos: rayo  A  B
 36. Dos puntos con coma y espacio: rayo  A  B
 37. Dos puntos con coma: rayo  A  B
@@ -57,7 +54,6 @@ encabezado  nivel 1  C. Comando sprayo
 52. Con silent true:
 53. Con silent true y subíndices:
 54. Con todas las llaves: la semirrecta  a  subíndice 1  b  subíndice 2
-encabezado  nivel 1  D. Comando spside
 55. Dos puntos juntos: lado  A  B
 56. Dos puntos con coma y espacio: lado  A  B
 57. Dos puntos con coma: lado  A  B
@@ -83,7 +79,6 @@ encabezado  nivel 1  D. Comando spside
 77. Con silent true:
 78. Con silent true y subíndices:
 79. Con todas las llaves: el segmento  a  subíndice 1  b  subíndice 2
-encabezado  nivel 1  E. Comando spmside
 80. Dos puntos juntos: medida del lado  A  B
 81. Dos puntos con coma y espacio: medida del lado  A  B
 82. Dos puntos con coma: medida del lado  A  B
@@ -111,7 +106,6 @@ encabezado  nivel 1  E. Comando spmside
 104. Con silent true:
 105. Con silent true y subíndices:
 106. Con todas las llaves: el medida del segmento  a  subíndice 1  b  subíndice 2
-encabezado  nivel 1  F. En fórmulas
 107. Rectas paralelas: recta  A  B  es paralelo a  recta  C  D
 108. Rectas perpendiculares: recta  m  es perpendicular a  recta  n
 109. Dos rayos con origen común: rayo  O  A  unión  rayo  O  B

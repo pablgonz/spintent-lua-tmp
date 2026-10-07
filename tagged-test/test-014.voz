@@ -1,6 +1,5 @@
 test-014: spangle - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado  nivel 1  Comando spangle: argumentos
 1. Un punto: ángulo  A
 2. Una letra griega: ángulo  alfa
 3. Un número: ángulo  1
@@ -20,7 +19,6 @@ encabezado  nivel 1  Comando spangle: argumentos
 17. Con subíndices y comas: ángulo  A sub uno  O  B sub dos
 18. Con otras letras: ángulo  P  Q  R
 19. Con tres vértices: ángulo  A  B  C
-encabezado  nivel 1  Comando spangle: llaves
 20. Con read-cmd school, el valor por defecto: ángulo  A  O  B
 21. Con read-cmd mathcat: ángulo  a  o  b
 22. Con read-cmd mathcat y un punto: ángulo  a
@@ -44,7 +42,6 @@ encabezado  nivel 1  Comando spangle: llaves
 40. Con silent true y una letra griega:
 41. Con silent true y un número:
 42. Con todas las llaves: el ángulo recto  a  subíndice 1  o  b  subíndice 2
-encabezado  nivel 1  Comando spmangle: argumentos
 43. Un punto: medida del ángulo  A
 44. Una letra griega: medida del ángulo  alfa
 45. Un número: medida del ángulo  1
@@ -64,7 +61,6 @@ encabezado  nivel 1  Comando spmangle: argumentos
 59. Con subíndices y comas: medida del ángulo  A sub uno  O  B sub dos
 60. Con otras letras: medida del ángulo  P  Q  R
 61. Con tres vértices: medida del ángulo  A  B  C
-encabezado  nivel 1  Comando spmangle: llaves
 62. Con read-cmd school, el valor por defecto: medida del ángulo  A  O  B
 63. Con read-cmd mathcat: medida del ángulo  a  o  b
 64. Con read-cmd mathcat y un punto: medida del ángulo  a
@@ -92,7 +88,6 @@ encabezado  nivel 1  Comando spmangle: llaves
 86. Con print-m true y recto true: medida del ángulo recto  A  O  B
 87. Con print-m true y un número: medida del ángulo  1
 88. Con todas las llaves: la medida del ángulo recto  a  subíndice 1  o  b  subíndice 2
-encabezado  nivel 1  Comando spang
 89. Con grados, minutos y segundos: 45  grados  30 minutos  15  segundos
 90. Con grados y minutos: 45  grados  30 minutos
 91. Solo grados: 45  grados
@@ -112,7 +107,6 @@ encabezado  nivel 1  Comando spang
 105. Control con un grado y medio, que sigue en plural: 1 coma  5  grados
 106. Suma de ángulos: 45  grados  30 minutos  15  segundos  más  10  grados  20 minutos  30  segundos
 107. Medida igual a un ángulo: medida del ángulo  A  O  B  es igual a  90  grados
-encabezado  nivel 1  Comando sparc
 108. Dos puntos juntos: arco  A  B
 109. Dos puntos con coma: arco  A  B
 110. Dos puntos con coma y espacio: arco  A  B
@@ -135,7 +129,6 @@ encabezado  nivel 1  Comando sparc
 127. Con silent true y tres puntos:
 128. Con silent true y subíndices:
 129. Con todas las llaves: el arco  a  subíndice 1  b  subíndice 2  c  subíndice 3
-encabezado  nivel 1  Comando spmarc
 130. Dos puntos juntos: medida del arco  A  B
 131. Dos puntos con coma: medida del arco  A  B
 132. Dos puntos con coma y espacio: medida del arco  A  B
@@ -158,7 +151,6 @@ encabezado  nivel 1  Comando spmarc
 149. Con silent true y tres puntos:
 150. Con silent true y subíndices:
 151. Con todas las llaves: la medida del arco  a  subíndice 1  b  subíndice 2  c  subíndice 3
-encabezado  nivel 1  En fórmulas
 152. Ángulos iguales: ángulo  A  B  C  es igual a  ángulo  D  E  F
 153. Suma de medidas: medida del ángulo  A  O  B  más  medida del ángulo  B  O  C  es igual a  medida del ángulo  A  O  C
 154. Medida de un ángulo en grados: medida del ángulo  A  O  B  es igual a  45  grados  30 minutos

@@ -1,6 +1,5 @@
 test-008: utilidades de simbolos - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado  nivel 1  A. Comandos spnewread y spread: símbolos registrados
 1. Símbolo registrado: es congruente con
 2. Otro símbolo registrado: es semejante a
 3. Perpendicular: es perpendicular a
@@ -9,20 +8,17 @@ encabezado  nivel 1  A. Comandos spnewread y spread: símbolos registrados
 6. Perpendicularidad: a  b  es perpendicular a  c  d
 7. Aproximación: x  es aproximadamente igual a  3
 8. Dos símbolos en una misma fórmula: triángulo blanco apuntando hacia arriba  a  b  c  es semejante a  triángulo blanco apuntando hacia arriba  d  e  f  es semejante a  triángulo blanco apuntando hacia arriba  g  h  i
-encabezado  nivel 1  B. Llave read-arg
 9. Ejemplo del manual: es paralela a
 10. Sobrescribe un símbolo registrado: es equivalente a
 11. Otro comando sin registrar: es menor o igual que
 12. En una fórmula: a  b  es paralela a  c  d
 13. Con un símbolo de ángulo: ángulo  a  b  c
-encabezado  nivel 1  C. Llave silent
 14. Con true y un símbolo registrado:
 15. Con false explícito: es congruente con
 16. Con true y un símbolo sin registrar:
 17. Con true en una fórmula: a  b  c  d
 18. Alternativa documentada con read-arg:
 19. Con silent y read-arg a la vez:
-encabezado  nivel 1  D. Comando spusep
 20. Paréntesis que abre: se abren paréntesis
 21. Paréntesis que cierra: se cierran paréntesis
 22. Corchete que abre: abrir corchetes
@@ -42,7 +38,6 @@ encabezado  nivel 1  D. Comando spusep
 36. Con silent true: a  más  b
 37. Con silent false explícito: se abren paréntesis  a  más  b  se cierran paréntesis
 38. Con size y silent: a  partido por  b
-encabezado  nivel 1  E. Comando spdsym
 39. Por defecto: a  dividido  b
 40. Con set-sym old-style: a  dividido  b
 41. Con set-sym two-dots: a  dividido  b
@@ -56,7 +51,6 @@ encabezado  nivel 1  E. Comando spdsym
 49. Con suffix: a  dividido entre  b
 50. Con prefix y suffix: a  se lee dividido entre  b
 51. Con números: 12  dividido  4  es igual a  3
-encabezado  nivel 1  F. Comando spmsym
 52. Por defecto: a  por  b
 53. Con set-sym cross: a  por  b
 54. Con set-sym dot: a  por  b
@@ -72,13 +66,11 @@ encabezado  nivel 1  F. Comando spmsym
 64. Con prefix: a  se lee por  b
 65. Con suffix: a  por entre  b
 66. Con números: 3  por  4  es igual a  12
-encabezado  nivel 1  G. Combinaciones
 67. División y multiplicación: 12  dividido  4  por  2
 68. Con delimitadores: se abren paréntesis  6  por  2  se cierran paréntesis  dividido  3
 69. Con un símbolo registrado: se abren paréntesis  a  por  b  se cierran paréntesis  es aproximadamente igual a  c
 70. En fórmula destacada:
 se abren paréntesis  a  por  b  se cierran paréntesis  dividido  c
-encabezado  nivel 1  H. Comando spnewread: espacios, guiones bajos y comandos propios
 71. Lectura registrada con espacios: a  es distinto de  b
 72. Lectura registrada con guiones bajos: a  es mayor o igual que  b
 73. Lectura registrada con un guion bajo al inicio: a  es subconjunto de  b

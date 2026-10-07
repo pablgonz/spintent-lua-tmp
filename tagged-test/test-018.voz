@@ -1,6 +1,5 @@
 test-018: sesion unica de silent-resto - Adobe Acrobat Reader (32-bit)
 AVPageView  marco de texto
-encabezado  nivel 1  A. Lo que decide el parche
 1. Silent con resultado, divisores de 6:
 2. Silent con resultado y result-num, divisores de 12:
 3. Silent con resultado, múltiplos de 6:
@@ -14,7 +13,6 @@ encabezado  nivel 1  A. Lo que decide el parche
 11. Tres vectores con coordenadas, cada uno en su fórmula: vector  a  es igual a  1 coma  2
 ,  vector  b  es igual a  3 coma  4
 y  vector  c  es igual a  4 coma  6
-encabezado  nivel 1  B. Con silent true no debe leerse nada
 12. Silent en sprecta con dos puntos con subíndices:
 13. Silent en sprecta con una letra con subíndice:
 14. Silent en spcirc con un centro con subíndice:
@@ -29,7 +27,6 @@ encabezado  nivel 1  B. Con silent true no debe leerse nada
 23. Silent en spmcm con dos letras:
 24. Silent en spread con un comando propio:
 25. Silent en spread con un símbolo:
-encabezado  nivel 1  C. spnD y spnM sin silent
 26. Divisores de un número: divisores de  6
 27. Divisores de un número de dos cifras: divisores de  12
 28. Divisores de una letra: divisores de  n
@@ -38,14 +35,12 @@ encabezado  nivel 1  C. spnD y spnM sin silent
 31. Divisores con resultado: divisores de  12  son  1  2  3  4  6  y  12
 32. Divisores con resultado de dos elementos: divisores de  7  son  1  y  7
 33. Divisores de dos letras en una fórmula: divisores de  m  es un subconjunto de  divisores de  n
-encabezado  nivel 1  D. spmcd y spmcm sin silent
 34. Máximo común divisor: máximo común divisor  entre  12  y  18
 35. Mínimo común múltiplo: mínimo común múltiplo  entre  12  y  18
 36. Máximo común divisor con resultado: máximo común divisor  entre  12  y  18  es igual a  6
 37. Mínimo común múltiplo con resultado: mínimo común múltiplo  entre  12  y  18  es igual a  36
 38. Producto de los dos con letras: máximo común divisor  entre  m  y  n  por  mínimo común múltiplo  entre  m  y  n  es igual a  m  por  n
 39. Suma de los dos con resultado: máximo común divisor  entre  12  y  18  es igual a  6  más  mínimo común múltiplo  entre  12  y  18  es igual a  36
-encabezado  nivel 1  E. spcoord y coordenadas
 40. Coordenadas con signo: menos  3  coma  4
 41. Coordenadas con subíndices: x  subíndice 1 coma  y  subíndice 1
 42. Coordenadas con coma decimal: 3 coma  5  punto y coma  4 coma  2
@@ -55,7 +50,6 @@ encabezado  nivel 1  E. spcoord y coordenadas
 46. Un vector con coordenadas: vector  a  es igual a  menos 3 coma  4
 47. Un vector con coordenadas en una fórmula destacada:
 vector  A  B  es igual a  punto  B  1 coma  2  menos  punto  A  4 coma  menos 2
-encabezado  nivel 1  F. spread: el símbolo ahora va dentro de un contenedor
 48. Símbolo registrado en una fórmula: triángulo blanco apuntando hacia arriba  a  b  c  es congruente con  triángulo blanco apuntando hacia arriba  d  e  f
 49. Lectura con espacios: a  es distinto de  b
 50. Lectura con guiones bajos: a  es mayor o igual que  b
@@ -64,7 +58,6 @@ encabezado  nivel 1  F. spread: el símbolo ahora va dentro de un contenedor
 53. Un comando propio: x al cuadrado
 54. El comando propio en una fórmula: y  es igual a  x al cuadrado  más  1
 55. Un símbolo sin registrar con read-arg: a  es paralela a  b
-encabezado  nivel 1  G. Controles que no deben haber cambiado
 56. Control de spcirc con radio entero: circunferencia  de centro en  O  y radio  3
 57. Control de spcirc con radio segmento: circunferencia  de centro en  O  y radio  medida del lado  A  B
 58. Control de spAcirc con un centro con subíndice: área de la circunferencia con centro en  O sub uno
