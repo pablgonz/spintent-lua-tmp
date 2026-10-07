@@ -287,16 +287,24 @@
 % doc: «x pertenece a a»
 74. Otra lectura con espacios: $x \spread{\in} A$.
 
-% doc: «x cuadrado»
+% doc: «x al cuadrado»
 75. Un comando definido por el usuario: $\spread{\xcuad}$.
 
-% doc: «y es igual a x cuadrado más 1»
+% doc: «y es igual a x al cuadrado más 1»
 76. El comando definido por el usuario en una fórmula: $y = \spread{\xcuad} + 1$.
 
-% doc: «x cuadrado»
+% doc: «»
 77. El mismo comando con silent true: $\spread[silent=true]{\xcuad}$.
 
-% doc: «x cuadrado»
+% doc: «equis al cuadrado»
 78. El mismo comando con read-arg: $\spread[read-arg={equis al cuadrado}]{\xcuad}$.
+
+\section*{I. Varios spread en una fórmula}
+
+% doc: «a es perpendicular a b es aproximadamente igual a c»
+79. Dos símbolos registrados en una fórmula: $a \spread{\perp} b \spread{\approx} c$.
+
+% doc: «a es paralela a b»
+80. Un símbolo sin registrar con read-arg con espacios: $a \spread[read-arg={es paralela a}]{\parallel} b$.
 
 \end{document}

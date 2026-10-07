@@ -222,6 +222,12 @@
 
 78. El mismo comando con read-arg: $\spread[read-arg={equis al cuadrado}]{\xcuad}$.
 
+\section*{I. Varios spread en una fórmula}
+
+79. Dos símbolos registrados en una fórmula: $a \spread{\perp} b \spread{\approx} c$.
+
+80. Un símbolo sin registrar con read-arg con espacios: $a \spread[read-arg={es paralela a}]{\parallel} b$.
+
 \START
 
 \SHOWPDFTAGS

@@ -15701,6 +15701,114 @@ TEST 1: Show PDF Tags
       <?MarkedContent page="4" ?>.
      </text-block>
     </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.02235"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.02236"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="4" ?>144. Divisores de dos letras en una fórmula: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.02237"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="4" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.02238"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02239"
+           intent="_divisores-de"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="4" ?>D
+        </mi>
+        <mo xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02240"
+           intent=":silent"
+           lspace="0"
+           rspace="0"
+           stretchy="false"
+          >
+         <?MarkedContent page="4" ?>(
+        </mo>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02241"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="4" ?>⁣
+        </mi>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02242"
+          >
+         <?MarkedContent page="4" ?>𝑚
+        </mi>
+        <mo xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02243"
+           intent=":silent"
+           lspace="0"
+           rspace="0"
+           stretchy="false"
+          >
+         <?MarkedContent page="4" ?>)
+        </mo>
+        <mo xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02244"
+           lspace="0.278em"
+           rspace="0.278em"
+          >
+         <?MarkedContent page="4" ?>⊂
+        </mo>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02245"
+           intent="_divisores-de"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="4" ?>D
+        </mi>
+        <mo xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02246"
+           intent=":silent"
+           lspace="0"
+           rspace="0"
+           stretchy="false"
+          >
+         <?MarkedContent page="4" ?>(
+        </mo>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02247"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="4" ?>⁣
+        </mi>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02248"
+          >
+         <?MarkedContent page="4" ?>𝑛
+        </mi>
+        <mo xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.02249"
+           intent=":silent"
+           lspace="0"
+           rspace="0"
+           stretchy="false"
+          >
+         <?MarkedContent page="4" ?>)
+        </mo>
+       </math>
+       <?MarkedContent page="4" ?>
+      </Formula>
+      <?MarkedContent page="4" ?>.
+     </text-block>
+    </semantic-para>
    </section>
   </Document>
  </StructTreeRoot>

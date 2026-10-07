@@ -4443,6 +4443,168 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
    </section>
+   <section xmlns="https://www.latex-project.org/ns/dflt"
+      id="ID.00691"
+      rolemaps-to="Sect"
+     >
+    <section-heading xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00692"
+       title="I. Varios spread en una fórmula"
+       rolemaps-to="H1"
+      >
+     <?MarkedContent page="3" ?>I. Varios spread en una fórmula
+    </section-heading>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00693"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00694"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="3" ?>79. Dos símbolos registrados en una fórmula: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00695"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="3" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00696"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00697"
+          >
+         <?MarkedContent page="3" ?>𝑎
+        </mi>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00698"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="3" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00699"
+           intent="_es-perpendicular-a"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00700"
+            intent=":silent"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="3" ?>⁣
+         </mi>
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00701"
+            lspace="0.278em"
+            rspace="0"
+           >
+          <?MarkedContent page="3" ?>⟂
+         </mo>
+        </mrow>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00702"
+          >
+         <?MarkedContent page="3" ?>𝑏
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00703"
+           intent="_es-aproximadamente-igual-a"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00704"
+            intent=":silent"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="3" ?>⁣
+         </mi>
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00705"
+            lspace="0.278em"
+            rspace="0"
+           >
+          <?MarkedContent page="3" ?>≈
+         </mo>
+        </mrow>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00706"
+          >
+         <?MarkedContent page="3" ?>𝑐
+        </mi>
+       </math>
+       <?MarkedContent page="3" ?>
+      </Formula>
+      <?MarkedContent page="3" ?>.
+     </text-block>
+    </semantic-para>
+    <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
+       id="ID.00707"
+       rolemaps-to="Part"
+      >
+     <text-block xmlns="https://www.latex-project.org/ns/dflt"
+        id="ID.00708"
+        xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+        Layout:TextAlign="Justify"
+        rolemaps-to="P"
+       >
+      <?MarkedContent page="3" ?>80. Un símbolo sin registrar con read-arg con espacios: 
+      <Formula xmlns="http://iso.org/pdf2/ssn"
+         id="ID.00709"
+         title="math"
+         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
+         Layout:Placement="Inline"
+        >
+       <?MarkedContent page="3" ?>
+       <math xmlns="http://www.w3.org/1998/Math/MathML"
+          id="ID.00710"
+         >
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00711"
+          >
+         <?MarkedContent page="3" ?>𝑎
+        </mi>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00712"
+           intent=":silent"
+           mathvariant="normal"
+          >
+         <?MarkedContent page="3" ?>⁣
+        </mi>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00713"
+           intent="_es-paralela-a"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00714"
+            intent=":silent"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="3" ?>⁣
+         </mi>
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00715"
+            lspace="0.278em"
+            rspace="0"
+           >
+          <?MarkedContent page="3" ?>∥
+         </mo>
+        </mrow>
+        <mi xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00716"
+          >
+         <?MarkedContent page="3" ?>𝑏
+        </mi>
+       </math>
+       <?MarkedContent page="3" ?>
+      </Formula>
+      <?MarkedContent page="3" ?>.
+     </text-block>
+    </semantic-para>
+   </section>
   </Document>
  </StructTreeRoot>
 </PDF>
