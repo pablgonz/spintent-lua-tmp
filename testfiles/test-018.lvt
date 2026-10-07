@@ -1,10 +1,10 @@
-% test-019.lvt -- regresion de puntos con subindices de varias cifras, de
+% test-018.lvt -- regresion de puntos con subindices de varias cifras, de
 % spcoord y de las figuras con concept=false
 %
-% Regresion:  l3build save test-019
-%             l3build check test-019
+% Regresion:  l3build save test-018
+%             l3build check test-018
 %
-% Las lecturas esperadas de NVDA estan en tagged-test/test-019.tex.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-018.tex.
 %
 % A  casos 1 a 8   : subindices de dos cifras en los comandos de dos puntos.
 % B  casos 9 a 14  : prefix la / el en los comandos de "medida".
