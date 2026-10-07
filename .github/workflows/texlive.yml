@@ -36,6 +36,16 @@ jobs:
       - name: Install show-pdf-tags RNC schemas
         run: tlmgr install --with-doc show-pdf-tags
 
+      - name: Install rnv-wrapp
+        run: |
+          curl -sSL https://raw.githubusercontent.com/pablgonz/rnv-vera-pdf-cli/main/install-rnv.sh | bash -s -- --unattended
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install veraPDF CLI
+        run: |
+          curl -sSL https://raw.githubusercontent.com/pablgonz/rnv-vera-pdf-cli/main/install-verapdf.sh | bash -s -- --unattended
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Install spintent package
         run: l3build install
 
