@@ -16119,7 +16119,7 @@ end, "shekel_fallback_patch")
 %   Otherwise, the |(|center|)| group
 %   (\myhlc|\l_@@_spcirc_connector_arg_tl|) follows as a separate
 %   sibling, never nested inside the symbol's own |\MathMLintent| — or
-%   |MathCAT| falls back to its own structural reading of the
+%   \mynvmath{MathCAT} falls back to its own structural reading of the
 %   underlying |<mover>|/|<msub>| instead, the same problem already
 %   found for \cs[no-index]{spangle}'s symbol and
 %   \cs[no-index]{sparc}'s accent. When a radius is present, the |,|
@@ -16144,7 +16144,7 @@ end, "shekel_fallback_patch")
 %   shifting every claim after it by one. The |(| delimiter is
 %   silenced the same way, but \emph{without} the usual |{...}| around
 %   the character: |luamml| only keeps a delimiter's own math class
-%   (giving |<mo>| instead of |<mi>|, needed for |MathCAT| to read the
+%   (giving |<mo>| instead of |<mi>|, needed for \mynvmath{MathCAT} to read the
 %   group at all) when it is not itself sitting inside a brace group.
 %
 %   The final |)| — following \myhlc|\@@_spcirc_radio_print:|, whose
