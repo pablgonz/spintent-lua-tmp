@@ -9205,16 +9205,17 @@ end, "shekel_fallback_patch")
 %     \l_@@_spread_luaset_status_str,
 %     \l_@@_spread_luaset_reading_str,
 %     \l_@@_spread_read_arg_tl,
+%     \l_@@_spread_read_tmp_tl,
 %   }
 %   The variables \myhlc|\l_@@_spread_luaset_status_str| and
 %   \myhlc|\l_@@_spread_luaset_reading_str| are set by
-%   \myhlc|\@@_luafun_spread_new:nn|/
-%   \myhlc|\@@_luafun_spread_lookup:n|.
+%   \myhlc|\@@_luafun_spread_new:nn|/\myhlc|\@@_luafun_spread_lookup:n|.
 %   The variable \myhlc|\l_@@_spread_read_arg_tl| stores \mykey{read-arg}.
 %    \begin{macrocode}
 \str_new:N \l_@@_spread_luaset_status_str
 \str_new:N \l_@@_spread_luaset_reading_str
 \tl_new:N  \l_@@_spread_read_arg_tl
+\tl_new:N  \l_@@_spread_read_tmp_tl
 %    \end{macrocode}
 % \end{variable}
 %
@@ -9309,7 +9310,7 @@ end, "shekel_fallback_patch")
 %   The public command |\spnewread| registers a new symbol/reading
 %   pair. It first normalizes the reading `|#2|' with
 %   \myhlc|\@@_sanitize_affix:Nn|, storing the result in the scratch
-%   variable \myhlc|\l_tmpa_tl|, and reports |spnewread-empty-args|
+%   variable \myhlc|\l_@@_spread_read_tmp_tl|, and reports |spnewread-empty-args|
 %   when the symbol `|#1|' is blank or the normalized reading is empty.
 %   Otherwise it passes the symbol and the normalized reading to Lua via
 %   \myhlc|\@@_luafun_spread_new:nn|, reporting
@@ -9322,11 +9323,12 @@ end, "shekel_fallback_patch")
         \msg_error:nnn { spintent } { need-text-mode } { \spnewread }
       }
       {
-        \@@_sanitize_affix:Nn \l_tmpa_tl { #2 }
-        \bool_lazy_or:nnTF { \tl_if_blank_p:n { #1 } } { \tl_if_empty_p:N \l_tmpa_tl }
+        \@@_sanitize_affix:Nn \l_@@_spread_read_tmp_tl { #2 }
+        \bool_lazy_or:nnTF
+          { \tl_if_blank_p:n { #1 } } { \tl_if_empty_p:N \l_@@_spread_read_tmp_tl }
           { \msg_error:nn { spintent } { spnewread-empty-args } }
           {
-            \@@_luafun_spread_new:nn { \exp_not:n {#1} } { \exp_not:V \l_tmpa_tl }
+            \@@_luafun_spread_new:nn { \exp_not:n {#1} } { \exp_not:V \l_@@_spread_read_tmp_tl }
             \str_if_eq:VnT \l_@@_spread_luaset_status_str { duplicate }
               {
                 \msg_error:nnn { spintent } { spnewread-duplicate } { #1 }
@@ -14804,6 +14806,7 @@ end, "shekel_fallback_patch")
 %     \l_@@_spfig_intent_arg_tl,
 %     \l_@@_spfig_pt_idx_int,
 %     \l_@@_geo_print_sym_str,
+%     \l_@@_geo_temp_tl,
 %   }
 %   The variable \myhlc|\l_@@_spfig_op_tl| holds |área| or |perímetro|.
 %   The variable \myhlc|\l_@@_spfig_intent_tl| holds the concept word for the
@@ -14821,6 +14824,7 @@ end, "shekel_fallback_patch")
 \tl_new:N  \l_@@_spfig_intent_arg_tl
 \int_new:N \l_@@_spfig_pt_idx_int
 \str_new:N \l_@@_geo_print_sym_str
+\tl_new:N  \l_@@_geo_temp_tl
 %    \end{macrocode}
 % \end{variable}
 %
@@ -15021,13 +15025,13 @@ end, "shekel_fallback_patch")
               }
           }
           {
-            \tl_set_eq:NN \l_tmpa_tl \l_@@_spfig_desc_tl
+            \tl_set_eq:NN \l_@@_geo_temp_tl \l_@@_spfig_desc_tl
             \str_if_empty:NF \l_@@_geo_luaset_letra_conector_str
               {
-                \tl_replace_once:Nee \l_tmpa_tl
+                \tl_replace_once:Nee \l_@@_geo_temp_tl
                   { \l_@@_geo_luaset_letra_conector_str - } { }
               }
-            \tl_set:Ne \l_@@_spfig_intent_arg_tl { _ \l_tmpa_tl - }
+            \tl_set:Ne \l_@@_spfig_intent_arg_tl { _ \l_@@_geo_temp_tl - }
           }
       }
   }
