@@ -1,17 +1,16 @@
-% test-008.tex -- comandos \spnewread, \spread, \spusep, \spdsym y \spmsym
+% test-008.lvt -- regresion de \spnewread, \spread, \spusep, \spdsym y \spmsym
 %
-% Compilar:  lualatex-dev test-008.tex
-% Validar:   show-pdf-tags --xml test-008.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-008.pdf
+% Regresion:  l3build save test-008
+%             l3build check test-008
 %
-% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
-% el PDF. Los comentarios "doc:" indican lo que documenta el manual; en el
-% resto, la lectura se revisa escuchando. Estos comandos no analizan los
-% simbolos: solo cambian la forma en que se verbalizan.
-% \spnewread trabaja en modo texto y registra cada simbolo una sola vez
-% (es global); los demas, en modo matematico. Las entradas invalidas (que
-% detienen la compilacion) no van aqui, entre ellas \spread con un
-% simbolo sin registrar y sin las llaves read-arg ni silent.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-008.tex.
+%
+% Cada caso es un parrafo numerado, para ubicarlo en el diff del .tlg.
+% Estos comandos no analizan los simbolos: solo cambian la forma en que se
+% verbalizan. \spnewread trabaja en modo texto y registra cada simbolo una
+% sola vez (es global); los demas, en modo matematico. Las entradas
+% invalidas (que detienen la compilacion) no van aqui, entre ellas \spread
+% con un simbolo sin registrar y sin las llaves read-arg ni silent.
 \input{regression-test}
 
 \DocumentMetadata
@@ -43,7 +42,6 @@
 \spnewread{\perp}{es-perpendicular-a}%
 \spnewread{\approx}{es-aproximadamente-igual-a}%
 
-% doc: imprime ≅ -- «es congruente con»
 1. Símbolo registrado: $\spread{\cong}$.
 
 2. Otro símbolo registrado: $\spread{\sim}$.
@@ -62,10 +60,8 @@
 
 \section*{B. Llave read-arg}
 
-% doc: imprime ∥ -- «es paralela a»
 9. Ejemplo del manual: $\spread[read-arg={es-paralela-a}]{\parallel}$.
 
-% doc: sobrescribe la lectura registrada
 10. Sobrescribe un símbolo registrado: $\spread[read-arg={es-equivalente-a}]{\cong}$.
 
 11. Otro comando sin registrar: $\spread[read-arg={es-menor-o-igual-que}]{\leq}$.
@@ -76,26 +72,20 @@
 
 \section*{C. Llave silent}
 
-% doc: no se verbaliza
 14. Con true y un símbolo registrado: $\spread[silent=true]{\cong}$.
 
-% doc: «es congruente con»
 15. Con false explícito: $\spread[silent=false]{\cong}$.
 
-% doc: no hace falta registrar el símbolo
 16. Con true y un símbolo sin registrar: $\spread[silent=true]{\parallel}$.
 
 17. Con true en una fórmula: $AB \spread[silent=true]{\parallel} CD$.
 
-% doc: para cuando silent no alcanza
 18. Alternativa documentada con read-arg: $\spread[read-arg={_-}]{\parallel}$.
 
-% doc: combinación que el manual no describe
 19. Con silent y read-arg a la vez: $\spread[silent=true,read-arg={es-paralela-a}]{\parallel}$.
 
 \section*{D. Comando spusep}
 
-% doc: imprime ( -- «abrir paréntesis»
 20. Paréntesis que abre: $\spusep{(}$.
 
 21. Paréntesis que cierra: $\spusep{)}$.
@@ -128,7 +118,6 @@
 
 35. Llaves grandes: $\spusep[size=bigg]{\{} a, b \spusep[size=bigg]{\}}$.
 
-% doc: no se verbaliza
 36. Con silent true: $\spusep[silent=true]{(} a + b \spusep[silent=true]{)}$.
 
 37. Con silent false explícito: $\spusep[silent=false]{(} a + b \spusep[silent=false]{)}$.
@@ -137,25 +126,18 @@
 
 \section*{E. Comando spdsym}
 
-% doc: imprime : -- «dividido»
 39. Por defecto: $a \spdsym b$.
 
-% doc: imprime ÷
 40. Con set-sym old-style: $a \spdsym[set-sym=old-style] b$.
 
-% doc: imprime :
 41. Con set-sym two-dots: $a \spdsym[set-sym=two-dots] b$.
 
-% doc: imprime /
 42. Con set-sym slash: $a \spdsym[set-sym=slash] b$.
 
-% doc: «dividido»
 43. Con read-sym dividido: $a \spdsym[read-sym=dividido] b$.
 
-% doc: «dividido por»
 44. Con read-sym dividido-por: $a \spdsym[read-sym=dividido-por] b$.
 
-% doc: «dividido entre»
 45. Con read-sym dividido-entre: $a \spdsym[read-sym=dividido-entre] b$.
 
 46. Con old-style y dividido-por: $a \spdsym[set-sym=old-style,read-sym=dividido-por] b$.
@@ -172,32 +154,24 @@
 
 \section*{F. Comando spmsym}
 
-% doc: imprime · -- «por»
 52. Por defecto: $a \spmsym b$.
 
-% doc: imprime ×
 53. Con set-sym cross: $a \spmsym[set-sym=cross] b$.
 
-% doc: imprime ·
 54. Con set-sym dot: $a \spmsym[set-sym=dot] b$.
 
-% doc: imprime ∗
 55. Con set-sym asterisk: $a \spmsym[set-sym=asterisk] b$.
 
-% doc: «por»
 56. Con read-sym por: $a \spmsym[read-sym=por] b$.
 
-% doc: «multiplicado por»
 57. Con read-sym multiplicado-por: $a \spmsym[read-sym=multiplicado-por] b$.
 
-% doc: «veces»
 58. Con read-sym veces: $a \spmsym[read-sym=veces] b$.
 
 59. Con cross y multiplicado-por: $a \spmsym[set-sym=cross,read-sym=multiplicado-por] b$.
 
 60. Con asterisk y veces: $a \spmsym[set-sym=asterisk,read-sym=veces] b$.
 
-% doc: no se imprime el símbolo; se verbaliza igual
 61. Con not-print true: $2 \spmsym[not-print=true] x$.
 
 62. Con not-print false explícito: $2 \spmsym[not-print=false] x$.
@@ -232,28 +206,20 @@
 \spnewread{\in}{pertenece a}%
 \spnewread{\xcuad}{x al cuadrado}%
 
-% doc: «a es distinto de b»
 71. Lectura registrada con espacios: $a \spread{\neq} b$.
 
-% doc: «a es mayor o igual que b»
 72. Lectura registrada con guiones bajos: $a \spread{\geq} b$.
 
-% doc: «A es subconjunto de B»
 73. Lectura registrada con un guion bajo al inicio: $A \spread{\subset} B$.
 
-% doc: «x pertenece a A»
 74. Otra lectura con espacios: $x \spread{\in} A$.
 
-% doc: imprime x^2 -- «x al cuadrado»
 75. Un comando definido por el usuario: $\spread{\xcuad}$.
 
-% doc: «y es igual a x al cuadrado más 1»
 76. El comando definido por el usuario en una fórmula: $y = \spread{\xcuad} + 1$.
 
-% doc: no se verbaliza
 77. El mismo comando con silent true: $\spread[silent=true]{\xcuad}$.
 
-% doc: «equis al cuadrado»
 78. El mismo comando con read-arg: $\spread[read-arg={equis al cuadrado}]{\xcuad}$.
 
 \START

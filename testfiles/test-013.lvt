@@ -1,21 +1,16 @@
-% test-013.tex -- comandos \sprecta, \sprayo, \spside y \spmside
+% test-013.lvt -- regresion de \sprecta, \sprayo, \spside y \spmside
 %
-% Compilar:  lualatex-dev test-013.tex
-% Validar:   show-pdf-tags --xml test-013.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-013.pdf
+% Regresion:  l3build save test-013
+%             l3build check test-013
 %
-% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
-% el PDF. Los comentarios "doc:" indican lo que documenta el manual; en el
-% resto, la lectura se revisa escuchando. Todos trabajan en modo
-% matematico. \sprecta recibe una letra o dos puntos; \sprayo, \spside y
-% \spmside, dos puntos. Un punto es una letra mayuscula con prima o con
-% subindice entre llaves. Las entradas invalidas (que detienen la
-% compilacion) no van aqui, entre ellas dos letras minusculas juntas y A_1
-% sin llaves.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-013.tex.
 %
-% Casos pensados para escuchar: los de silent y concept de \sprecta con
-% letra sola, con subindice y con prima (sprecta-silent.patch), y los de
-% prefix de \spside y \spmside.
+% Cada caso es un parrafo numerado, para ubicarlo en el diff del .tlg.
+% Todos trabajan en modo matematico. \sprecta recibe una letra o dos
+% puntos; \sprayo, \spside y \spmside, dos puntos. Un punto es una letra
+% mayuscula con prima o con subindice entre llaves. Las entradas invalidas
+% (que detienen la compilacion) no van aqui, entre ellas dos letras
+% minusculas juntas y A_1 sin llaves.
 \input{regression-test}
 
 \DocumentMetadata
@@ -41,10 +36,8 @@
 
 \section*{A. Comando sprecta: argumentos}
 
-% doc: imprime \overleftrightarrow{AB} -- «recta A B»
 1. Dos puntos juntos: $\sprecta{AB}$.
 
-% doc: imprime m -- «recta m»
 2. Una letra minúscula: $\sprecta{m}$.
 
 3. Dos puntos con coma y espacio: $\sprecta{A, B}$.
@@ -73,55 +66,40 @@
 
 \section*{B. Comando sprecta: llaves}
 
-% doc: recta A B, sin el prefijo mayúscula
 15. Con read-cmd school, el valor por defecto: $\sprecta[read-cmd=school]{AB}$.
 
-% doc: MathCAT aplica sus propias reglas
 16. Con read-cmd mathcat: $\sprecta[read-cmd=mathcat]{AB}$.
 
 17. Con read-cmd mathcat y una mayúscula: $\sprecta[read-cmd=mathcat]{L}$.
 
-% doc: el prefijo se verbaliza antes del concepto
 18. Con prefix y dos puntos: $\sprecta[prefix={la}]{AB}$.
 
-% doc: el prefijo se verbaliza antes del concepto
 19. Con prefix y una letra: $\sprecta[prefix={la}]{m}$.
 
-% doc: el prefijo se verbaliza antes del concepto
 20. Con prefix y una letra con subíndice: $\sprecta[prefix={la}]{r_{1}}$.
 
-% doc: el prefijo se verbaliza antes del concepto
 21. Con prefix y una letra con prima: $\sprecta[prefix={la}]{m'}$.
 
 22. Con concept true, el valor por defecto: $\sprecta[concept=true]{AB}$.
 
-% doc: solo se verbaliza el argumento
 23. Con concept false y dos puntos: $\sprecta[concept=false]{AB}$.
 
-% doc: solo se verbaliza el argumento
 24. Con concept false y una letra: $\sprecta[concept=false]{m}$.
 
-% doc: solo se verbaliza el argumento
 25. Con concept false y una letra con subíndice: $\sprecta[concept=false]{r_{1}}$.
 
-% doc: solo se verbaliza el argumento
 26. Con concept false y una letra con prima: $\sprecta[concept=false]{m'}$.
 
 27. Con silent false, el valor por defecto: $\sprecta[silent=false]{AB}$.
 
-% doc: no se verbaliza
 28. Con silent true y dos puntos: $\sprecta[silent=true]{AB}$.
 
-% doc: no se verbaliza
 29. Con silent true y una letra: $\sprecta[silent=true]{m}$.
 
-% doc: no se verbaliza
 30. Con silent true y una letra con subíndice: $\sprecta[silent=true]{r_{1}}$.
 
-% doc: no se verbaliza
 31. Con silent true y una letra con prima: $\sprecta[silent=true]{m'}$.
 
-% doc: no se verbaliza
 32. Con silent true y una letra con dos primas: $\sprecta[silent=true]{l''}$.
 
 33. Con silent true y read-cmd mathcat: $\sprecta[silent=true,read-cmd=mathcat]{r_{1}}$.
@@ -130,7 +108,6 @@
 
 \section*{C. Comando sprayo}
 
-% doc: imprime \overrightarrow{AB} -- «rayo A B»
 35. Dos puntos juntos: $\sprayo{AB}$.
 
 36. Dos puntos con coma y espacio: $\sprayo{A, B}$.
@@ -145,33 +122,26 @@
 
 41. Con el origen: $\sprayo{OA}$.
 
-% doc: rayo A B, sin el prefijo mayúscula
 42. Con read-cmd school, el valor por defecto: $\sprayo[read-cmd=school]{AB}$.
 
-% doc: MathCAT aplica sus propias reglas
 43. Con read-cmd mathcat: $\sprayo[read-cmd=mathcat]{AB}$.
 
-% doc: rayo A B
 44. Con read-sty rayo, el valor por defecto: $\sprayo[read-sty=rayo]{AB}$.
 
-% doc: semirrecta A B
 45. Con read-sty semirrecta: $\sprayo[read-sty=semirrecta]{AB}$.
 
-% doc: el prefijo se verbaliza antes del concepto
 46. Con prefix y read-sty rayo: $\sprayo[prefix={el}]{AB}$.
 
 47. Con prefix y read-sty semirrecta: $\sprayo[prefix={la},read-sty=semirrecta]{AB}$.
 
 48. Con concept true, el valor por defecto: $\sprayo[concept=true]{AB}$.
 
-% doc: solo se verbaliza el argumento
 49. Con concept false: $\sprayo[concept=false]{AB}$.
 
 50. Con concept false y semirrecta: $\sprayo[concept=false,read-sty=semirrecta]{AB}$.
 
 51. Con silent false, el valor por defecto: $\sprayo[silent=false]{AB}$.
 
-% doc: no se verbaliza
 52. Con silent true: $\sprayo[silent=true]{AB}$.
 
 53. Con silent true y subíndices: $\sprayo[silent=true]{A_{1}B_{2}}$.
@@ -180,7 +150,6 @@
 
 \section*{D. Comando spside}
 
-% doc: imprime \overline{AB} -- «lado A B»
 55. Dos puntos juntos: $\spside{AB}$.
 
 56. Dos puntos con coma y espacio: $\spside{A, B}$.
@@ -197,34 +166,26 @@
 
 62. Con read-cmd school, el valor por defecto: $\spside[read-cmd=school]{AB}$.
 
-% doc: MathCAT aplica sus propias reglas
 63. Con read-cmd mathcat: $\spside[read-cmd=mathcat]{AB}$.
 
-% doc: lado A B
 64. Con read-sty lado: $\spside[read-sty=lado]{AB}$.
 
-% doc: segmento A B
 65. Con read-sty segmento: $\spside[read-sty=segmento]{AB}$.
 
-% doc: trazo A B
 66. Con read-sty trazo: $\spside[read-sty=trazo]{AB}$.
 
-% doc: el prefijo se verbaliza antes del concepto
 67. Con prefix: $\spside[prefix={el}]{AB}$.
 
 68. Con prefix y read-sty segmento: $\spside[prefix={el},read-sty=segmento]{AB}$.
 
 69. Con concept true, el valor por defecto: $\spside[concept=true]{AB}$.
 
-% doc: solo se verbaliza el argumento
 70. Con concept false: $\spside[concept=false]{AB}$.
 
 71. Con concept false y trazo: $\spside[concept=false,read-sty=trazo]{AB}$.
 
-% doc: imprime \overline{AB} -- «hipotenusa A B»
 72. Con read-arg: $\spside[read-arg={hipotenusa}]{AB}$.
 
-% doc: los espacios pasan a guiones
 73. Con read-arg de varias palabras: $\spside[read-arg={lado opuesto}]{AB}$.
 
 74. Con read-arg y prefix: $\spside[read-arg={hipotenusa},prefix={la}]{AB}$.
@@ -233,7 +194,6 @@
 
 76. Con silent false, el valor por defecto: $\spside[silent=false]{AB}$.
 
-% doc: no se verbaliza
 77. Con silent true: $\spside[silent=true]{AB}$.
 
 78. Con silent true y subíndices: $\spside[silent=true]{A_{1}B_{2}}$.
@@ -242,7 +202,6 @@
 
 \section*{E. Comando spmside}
 
-% doc: imprime AB -- «medida del lado A B»
 80. Dos puntos juntos: $\spmside{AB}$.
 
 81. Dos puntos con coma y espacio: $\spmside{A, B}$.
@@ -259,49 +218,38 @@
 
 87. Con read-cmd school, el valor por defecto: $\spmside[read-cmd=school]{AB}$.
 
-% doc: MathCAT aplica sus propias reglas
 88. Con read-cmd mathcat: $\spmside[read-cmd=mathcat]{AB}$.
 
-% doc: medida del lado A B
 89. Con read-sty lado: $\spmside[read-sty=lado]{AB}$.
 
-% doc: medida del segmento A B
 90. Con read-sty segmento: $\spmside[read-sty=segmento]{AB}$.
 
-% doc: medida del trazo A B
 91. Con read-sty trazo: $\spmside[read-sty=trazo]{AB}$.
 
-% doc: el prefijo se verbaliza antes del concepto
 92. Con prefix: $\spmside[prefix={el}]{AB}$.
 
 93. Con prefix y read-sty segmento: $\spmside[prefix={el},read-sty=segmento]{AB}$.
 
 94. Con concept true, el valor por defecto: $\spmside[concept=true]{AB}$.
 
-% doc: solo se verbaliza el argumento
 95. Con concept false: $\spmside[concept=false]{AB}$.
 
 96. Con concept false y trazo: $\spmside[concept=false,read-sty=trazo]{AB}$.
 
-% doc: imprime AB -- «medida de la cuerda A B»
 97. Con read-arg y concept false: $\spmside[concept=false,read-arg={medida de la cuerda}]{AB}$.
 
-% doc: medida del hipotenusa A B, según el código
 98. Con read-arg y concept true: $\spmside[read-arg={hipotenusa}]{AB}$.
 
 99. Con read-arg y prefix: $\spmside[concept=false,read-arg={medida de la cuerda},prefix={la}]{AB}$.
 
-% doc: imprime AB
 100. Con print-m false, el valor por defecto: $\spmside[print-m=false]{AB}$.
 
-% doc: imprime m\overline{AB} -- «medida del lado A B»
 101. Con print-m true: $\spmside[print-m=true]{AB}$.
 
 102. Con print-m true y subíndices: $\spmside[print-m=true]{A_{1}B_{2}}$.
 
 103. Con silent false, el valor por defecto: $\spmside[silent=false]{AB}$.
 
-% doc: no se verbaliza
 104. Con silent true: $\spmside[silent=true]{AB}$.
 
 105. Con silent true y subíndices: $\spmside[silent=true]{A_{1}B_{2}}$.

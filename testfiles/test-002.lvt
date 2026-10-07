@@ -1,14 +1,13 @@
-% test-002.tex -- comandos \spunit, \spnewunit y \spunitalias
+% test-002.lvt -- regresion de \spunit, \spnewunit y \spunitalias
 %
-% Compilar:  lualatex-dev test-002.tex
-% Validar:   show-pdf-tags --xml test-002.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-002.pdf
+% Regresion:  l3build save test-002
+%             l3build check test-002
 %
-% Cada caso es un parrafo numerado, para poder referirse a el al
-% escuchar el PDF. Los comentarios "doc:" indican la lectura que
-% documenta el manual de usuario; en el resto, la lectura se revisa
-% escuchando. Las entradas invalidas (que detienen la compilacion)
-% no van aqui. La tabla completa de unidades y alias va en test-003.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-002.tex.
+%
+% Cada caso es un parrafo numerado, para ubicarlo en el diff del .tlg. Las
+% entradas invalidas (que detienen la compilacion) no van aqui. La tabla
+% completa de unidades y alias va en test-003.
 \input{regression-test}
 
 \DocumentMetadata
@@ -29,20 +28,17 @@
     pdfdisplaydoctitle = true,
     pdftitle           = {test-002: spunit},
   }
+\pagestyle{empty}
 \begin{document}
 
 \section*{A. Formas del argumento}
 
-% doc: «metro»
 1. Solo la unidad: $\spunit{m}$.
 
-% doc: «veintitrés metros»
 2. Número y unidad: $\spunit{23 m}$.
 
-% doc: «veintitrés metros segundos al cuadrado»
 3. Producto de unidades con potencia: $\spunit{23 m*s^{2}}$.
 
-% doc: «veintitrés metros por segundos al cuadrado»
 4. Fracción lineal: $\spunit{23 m/s^{2}}$.
 
 5. Producto de dos unidades: $\spunit{2 N*m}$.
@@ -89,38 +85,30 @@
 
 \section*{E. Llave print-cdot}
 
-% doc: imprime un espacio fino entre las unidades
 23. Por defecto: $\spunit{23 m*s^{2}}$.
 
 24. Con false: $\spunit[print-cdot=false]{23 m*s^{2}}$.
 
-% doc: imprime \cdot entre las unidades
 25. Con true: $\spunit[print-cdot=true]{23 m*s^{2}}$.
 
 26. Con true y dos unidades: $\spunit[print-cdot=true]{2 N*m}$.
 
 \section*{F. Llave read-cdot}
 
-% doc: no verbaliza nada entre las unidades
 27. Por defecto: $\spunit{23 m*s^{2}}$.
 
-% doc: no verbaliza nada entre las unidades
 28. Con false: $\spunit[read-cdot=false]{23 m*s^{2}}$.
 
-% doc: verbaliza «por» entre las unidades
 29. Con true: $\spunit[read-cdot=true]{23 m*s^{2}}$.
 
 30. Con true y print-cdot true: $\spunit[print-cdot=true,read-cdot=true]{2 N*m}$.
 
 \section*{G. Llave read-slash}
 
-% doc: «por»
 31. Por defecto: $\spunit{23 m/s^{2}}$.
 
-% doc: «por»
 32. Con por: $\spunit[read-slash=por]{23 m/s^{2}}$.
 
-% doc: «partido por»
 33. Con partido-por: $\spunit[read-slash=partido-por]{23 m/s^{2}}$.
 
 34. Con partido-por y sin número: $\spunit[read-slash=partido-por]{m/s}$.
@@ -138,14 +126,12 @@
 \spunitalias{caudal}{m^{3}/s}%
 \spunitalias{velocidad}{m/s}%
 
-% doc: «cien píxeles»
 37. Unidad nueva: $\spunit{100 px}$.
 
 38. Otra unidad nueva: $\spunit{5 ppm}$.
 
 39. Unidad nueva en un producto: $\spunit{3 px*s}$.
 
-% doc: «cincuenta metros al cubo por segundos»
 40. Alias nuevo: $\spunit{50 caudal}$.
 
 41. Otro alias nuevo: $\spunit{30 velocidad}$.

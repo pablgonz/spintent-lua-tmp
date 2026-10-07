@@ -1,16 +1,14 @@
-% test-017.tex -- silent=true en todos los comandos (verificacion de silent-total.patch)
+% test-017.lvt -- regresion de silent=true en todos los comandos
 %
-% Compilar:  lualatex-dev test-017.tex
-% Validar:   show-pdf-tags --xml test-017.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-017.pdf
+% Regresion:  l3build save test-017
+%             l3build check test-017
 %
-% Cada caso es un parrafo numerado. En los casos de las secciones A a N
-% NVDA NO debe leer nada despues de la etiqueta: el manual dice que con
-% silent=true "NVDA NO verbalizara la salida del comando". La seccion O
-% son controles sin silent, que deben leerse igual que antes del parche.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-017.tex.
 %
-% Los casos con subindices, coordenadas, radios y resultados son los que
-% fallaban (test-010, 012, 013 y 016).
+% Cada caso es un parrafo numerado. En las secciones A a N, con silent=true
+% NVDA no debe leer nada despues de la etiqueta; la seccion O son controles
+% sin silent. Incluye los casos con subindices, coordenadas, radios y
+% resultados.
 \input{regression-test}
 
 \DocumentMetadata

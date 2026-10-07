@@ -1,18 +1,17 @@
-% test-012.tex -- comandos \spcoord, \spPoint y \spvec
+% test-012.lvt -- regresion de \spcoord, \spPoint y \spvec
 %
-% Compilar:  lualatex-dev test-012.tex
-% Validar:   show-pdf-tags --xml test-012.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-012.pdf
+% Regresion:  l3build save test-012
+%             l3build check test-012
 %
-% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
-% el PDF. Los comentarios "doc:" indican lo que documenta el manual; en el
-% resto, la lectura se revisa escuchando. Todos trabajan en modo
-% matematico. Reglas de la familia geo: un punto es una unica letra
-% mayuscula con prima o con subindice entre llaves (A_{1}, nunca A_1); un
-% vector con nombre es una letra minuscula. Las coordenadas (x, y) usan
-% coma, o punto y coma si llevan coma decimal. Las entradas invalidas (que
-% detienen la compilacion) no van aqui, entre ellas A_1, un punto en
-% minuscula, \spcoord con uno o con tres valores y \spvec{ab}.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-012.tex.
+%
+% Cada caso es un parrafo numerado, para ubicarlo en el diff del .tlg.
+% Todos trabajan en modo matematico. Reglas de la familia geo: un punto es
+% una unica letra mayuscula con prima o con subindice entre llaves (A_{1},
+% nunca A_1); un vector con nombre es una letra minuscula. Las coordenadas
+% (x, y) usan coma, o punto y coma si llevan coma decimal. Las entradas
+% invalidas (que detienen la compilacion) no van aqui, entre ellas A_1, un
+% punto en minuscula, \spcoord con uno o con tres valores y \spvec{ab}.
 \input{regression-test}
 
 \DocumentMetadata
@@ -33,14 +32,13 @@
     pdfdisplaydoctitle = true,
     pdftitle           = {test-012: spcoord, spPoint y spvec},
   }
+\pagestyle{empty}
 \begin{document}
 
 \section*{A. Comando spcoord}
 
-% doc: imprime (-3, 4) -- «menos tres coma cuatro»
 1. Enteros con signo: $\spcoord{-3, 4}$.
 
-% doc: imprime (x_1, y_1) -- «exis subíndice uno y subíndice uno»
 2. Con subíndices: $\spcoord{x_{1},y_{1}}$.
 
 3. Enteros positivos: $\spcoord{3, 4}$.
@@ -73,17 +71,14 @@
 
 17. Con silent false, el valor por defecto: $\spcoord[silent=false]{-3, 4}$.
 
-% doc: no se verbaliza
 18. Con silent true: $\spcoord[silent=true]{-3, 4}$.
 
 19. Con silent true y letras: $\spcoord[silent=true]{x_{1},y_{1}}$.
 
 \section*{B. Comando spPoint: el punto}
 
-% doc: imprime A -- «punto A»
 20. Una letra: $\spPoint{A}$.
 
-% doc: imprime A_1 -- «punto A sub uno»
 21. Con subíndice: $\spPoint{A_{1}}$.
 
 22. Con una prima: $\spPoint{A'}$.
@@ -98,17 +93,14 @@
 
 27. La última letra: $\spPoint{Z}$.
 
-% doc: caso del comentario del código: la cola compartida
 28. Dos puntos seguidos, el primero con subíndice: $\spPoint{A_{1}}\spPoint{B}$.
 
 29. Dos puntos seguidos con coma: $\spPoint{A}, \spPoint{B}$.
 
 \section*{C. Comando spPoint: con coordenadas}
 
-% doc: imprime A(-3,4) -- «punto A menos tres coma cuatro»
 30. Con coordenadas: $\spPoint{A}(-3,4)$.
 
-% doc: imprime A_1(-3,4) -- «punto A sub uno menos tres coma cuatro»
 31. Con subíndice y coordenadas: $\spPoint{A_{1}}(-3,4)$.
 
 32. Con prima y coordenadas: $\spPoint{A'}(-3,4)$.
@@ -123,31 +115,26 @@
 
 \section*{D. Comando spPoint: llaves}
 
-% doc: punto A, sin el prefijo mayúscula
 37. Con read-cmd school, el valor por defecto: $\spPoint[read-cmd=school]{A}$.
 
-% doc: MathCAT aplica sus propias reglas
 38. Con read-cmd mathcat: $\spPoint[read-cmd=mathcat]{A}$.
 
 39. Con read-cmd mathcat y subíndice: $\spPoint[read-cmd=mathcat]{A_{1}}$.
 
 40. Con concept true, el valor por defecto: $\spPoint[concept=true]{A}$.
 
-% doc: solo se verbaliza el argumento
 41. Con concept false: $\spPoint[concept=false]{A}$.
 
 42. Con concept false y subíndice: $\spPoint[concept=false]{A_{1}}$.
 
 43. Con concept false y coordenadas: $\spPoint[concept=false]{A}(-3,4)$.
 
-% doc: el prefijo se verbaliza antes del concepto
 44. Con prefix: $\spPoint[prefix={el}]{A}$.
 
 45. Con prefix y coordenadas: $\spPoint[prefix={el}]{A}(-3,4)$.
 
 46. Con silent false, el valor por defecto: $\spPoint[silent=false]{A}$.
 
-% doc: no se verbaliza
 47. Con silent true: $\spPoint[silent=true]{A}$.
 
 48. Con silent true y coordenadas: $\spPoint[silent=true]{A_{1}}(-3,4)$.
@@ -158,14 +145,12 @@
 
 \section*{E. Comando spvec: vector con nombre}
 
-% doc: imprime \vec{a} -- «vector a»
 51. Una letra: $\spvec{a}$.
 
 52. Con subíndice: $\spvec{a_{1}}$.
 
 53. Otra letra: $\spvec{u}$.
 
-% doc: imprime \vec{a}=(-3,4) -- «vector a igual a menos tres coma cuatro»
 54. Con coordenadas: $\spvec{a}(-3,4)$.
 
 55. Con subíndice y coordenadas: $\spvec{a_{1}}(2,5)$.
@@ -174,7 +159,6 @@
 
 \section*{F. Comando spvec: vector definido por dos puntos}
 
-% doc: imprime \overrightarrow{AB} -- «vector A B»
 57. Dos puntos seguidos: $\spvec{AB}$.
 
 58. Dos puntos con coma: $\spvec{A,B}$.
@@ -187,20 +171,16 @@
 
 62. Con subíndices y coma: $\spvec{A_{1},B_{2}}$.
 
-% doc: imprime \overrightarrow{AB}=(-3,4) -- «vector A B igual a menos tres coma cuatro»
 63. Con coordenadas: $\spvec{AB}(-3,4)$.
 
 64. Con coordenadas literales: $\spvec{MN}(x, y)$.
 
 \section*{G. Comando spvec: llaves}
 
-% doc: vector A B, sin el prefijo mayúscula
 65. Con read-cmd school, el valor por defecto: $\spvec[read-cmd=school]{AB}$.
 
-% doc: MathCAT aplica sus propias reglas
 66. Con read-cmd mathcat: $\spvec[read-cmd=mathcat]{AB}$.
 
-% doc: el prefijo se respeta también con un nombre
 67. Con prefix y un nombre: $\spvec[prefix={el}]{a}$.
 
 68. Con prefix y dos puntos: $\spvec[prefix={el}]{AB}$.
@@ -209,12 +189,10 @@
 
 70. Con autofit false, el valor por defecto: $\spvec[autofit=false]{a}$.
 
-% doc: se aplica \vphantom{b} para igualar la altura
 71. Con autofit true: $\spvec[autofit=true]{a}$.
 
 72. Con concept true, el valor por defecto: $\spvec[concept=true]{a}$.
 
-% doc: solo se verbaliza el argumento
 73. Con concept false y un nombre: $\spvec[concept=false]{a}$.
 
 74. Con concept false y dos puntos: $\spvec[concept=false]{AB}$.
@@ -223,7 +201,6 @@
 
 76. Con silent false, el valor por defecto: $\spvec[silent=false]{a}$.
 
-% doc: no se verbaliza
 77. Con silent true y un nombre: $\spvec[silent=true]{a}$.
 
 78. Con silent true y dos puntos: $\spvec[silent=true]{AB}$.

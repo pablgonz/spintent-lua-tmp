@@ -1,14 +1,13 @@
-% test-004.tex -- comando \spmoney
+% test-004.lvt -- regresion de \spmoney
 %
-% Compilar:  lualatex-dev test-004.tex
-% Validar:   show-pdf-tags --xml test-004.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-004.pdf
+% Regresion:  l3build save test-004
+%             l3build check test-004
 %
-% Cada caso es un parrafo numerado, para poder referirse a el al
-% escuchar el PDF. Los comentarios "doc:" indican lo que documenta
-% el manual de usuario; en el resto, la lectura se revisa escuchando.
-% Las entradas invalidas (que detienen la compilacion) no van aqui.
-% La tabla completa de monedas y alias va en test-005.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-004.tex.
+%
+% Cada caso es un parrafo numerado, para ubicarlo en el diff del .tlg. Las
+% entradas invalidas (que detienen la compilacion) no van aqui. La tabla
+% completa de monedas y alias va en test-005.
 \input{regression-test}
 
 \DocumentMetadata
@@ -29,20 +28,17 @@
     pdfdisplaydoctitle = true,
     pdftitle           = {test-004: spmoney},
   }
+\pagestyle{empty}
 \begin{document}
 
 \section*{A. Formas del argumento}
 
-% doc: imprime \$500 -- «quinientos pesos»
 1. Solo la cifra: $\spmoney{500}$.
 
-% doc: imprime \$500 -- «quinientos dolares»
 2. Cifra y alias: $\spmoney{500 dolares}$.
 
-% doc: imprime CLP500 -- «quinientos pesos chilenos»
 3. Alias ISO en mayúsculas: $\spmoney{500 CLP}$.
 
-% doc: imprime \$500 -- «quinientos pesos chilenos»
 4. Alias ISO en minúsculas: $\spmoney{500 clp}$.
 
 5. Alias de otra moneda: $\spmoney{500 euro}$.
@@ -93,7 +89,6 @@
 
 \section*{C. Llave cifras-sep}
 
-% doc: imprime 100\,000
 27. Por defecto: $\spmoney{100000}$.
 
 28. Con false: $\spmoney[cifras-sep=false]{100000}$.
@@ -122,14 +117,12 @@
 
 39. Dólar en mayúsculas: $\spmoney[currency=USD]{500}$.
 
-% doc: el alias del argumento tiene prioridad sobre el valor por defecto
 40. Prioridad del argumento: $\spmoney[currency=euro]{500 libra}$.
 
 41. Prioridad del argumento con ISO: $\spmoney[currency=libra]{500 USD}$.
 
 \section*{E. Llave sub-units}
 
-% doc: imprime \$100{,}5 -- «cien dólares con cincuenta centavos»
 42. Con true: $\spmoney[sub-units=true]{100,5 dolares}$.
 
 43. Con false: $\spmoney[sub-units=false]{100,5 dolares}$.

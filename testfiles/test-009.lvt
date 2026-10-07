@@ -1,15 +1,15 @@
-% test-009.tex -- comandos \spdiv y \spmul
+% test-009.lvt -- regresion de \spdiv y \spmul
 %
-% Compilar:  lualatex-dev test-009.tex
-% Validar:   show-pdf-tags --xml test-009.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-009.pdf
+% Regresion:  l3build save test-009
+%             l3build check test-009
 %
-% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
-% el PDF. Los comentarios "doc:" indican lo que documenta el manual; en el
-% resto, la lectura se revisa escuchando. Ambos comandos trabajan en modo
-% matematico y pasan sus dos argumentos por \spnum, asi que solo reciben
-% numeros. Las entradas invalidas (argumentos vacios o que no son numeros,
-% que detienen la compilacion) no van aqui.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-009.tex.
+%
+% Cada caso es un parrafo numerado, para ubicarlo en el diff del .tlg.
+% Ambos comandos trabajan en modo matematico y pasan sus dos argumentos
+% por \spnum, asi que solo reciben numeros. Las entradas invalidas
+% (argumentos vacios o que no son numeros, que detienen la compilacion) no
+% van aqui.
 \input{regression-test}
 
 \DocumentMetadata
@@ -30,11 +30,11 @@
     pdfdisplaydoctitle = true,
     pdftitle           = {test-009: spdiv y spmul},
   }
+\pagestyle{empty}
 \begin{document}
 
 \section*{A. Comando spdiv: argumentos}
 
-% doc: imprime 20:26 -- «veinte dividido veinte y seis»
 1. Dos enteros: $\spdiv{20}{26}$.
 
 2. Primer argumento negativo: $\spdiv{-20}{26}$.
@@ -81,22 +81,16 @@
 
 \section*{A. Comando spdiv: símbolo y lectura}
 
-% doc: imprime ÷
 22. Con set-sym old-style: $\spdiv[set-sym=old-style]{20}{26}$.
 
-% doc: imprime :
 23. Con set-sym two-dots: $\spdiv[set-sym=two-dots]{20}{26}$.
 
-% doc: imprime /
 24. Con set-sym slash: $\spdiv[set-sym=slash]{20}{26}$.
 
-% doc: «dividido»
 25. Con read-sym dividido: $\spdiv[read-sym=dividido]{20}{26}$.
 
-% doc: «dividido por»
 26. Con read-sym dividido-por: $\spdiv[read-sym=dividido-por]{20}{26}$.
 
-% doc: «dividido entre»
 27. Con read-sym dividido-entre: $\spdiv[read-sym=dividido-entre]{20}{26}$.
 
 28. Combinando old-style y dividido-por: $\spdiv[set-sym=old-style,read-sym=dividido-por]{20}{26}$.
@@ -107,13 +101,10 @@
 
 30. Con wrap-parens false, el valor por defecto: $\spdiv[wrap-parens=false]{-20}{26}$.
 
-% doc: imprime paréntesis alrededor de ambos argumentos
 31. Con wrap-parens true: $\spdiv[wrap-parens=true]{-20}{26}$.
 
-% doc: se verbalizan los paréntesis
 32. Con wrap-parens true y read-parens true: $\spdiv[wrap-parens=true,read-parens=true]{-20}{26}$.
 
-% doc: se imprimen pero no se verbalizan
 33. Con wrap-parens true y read-parens false: $\spdiv[wrap-parens=true,read-parens=false]{-20}{26}$.
 
 34. Con wrap-parens false y read-parens false: $\spdiv[wrap-parens=false,read-parens=false]{-20}{26}$.
@@ -124,7 +115,6 @@
 
 \section*{B. Comando spmul: argumentos}
 
-% doc: imprime 20 · 26 -- «veinte por veinte y seis»
 37. Dos enteros: $\spmul{20}{26}$.
 
 38. Primer argumento negativo: $\spmul{-20}{26}$.
@@ -171,22 +161,16 @@
 
 \section*{B. Comando spmul: símbolo y lectura}
 
-% doc: imprime ×
 58. Con set-sym cross: $\spmul[set-sym=cross]{20}{26}$.
 
-% doc: imprime ·
 59. Con set-sym dot: $\spmul[set-sym=dot]{20}{26}$.
 
-% doc: imprime ∗
 60. Con set-sym asterisk: $\spmul[set-sym=asterisk]{20}{26}$.
 
-% doc: «por»
 61. Con read-sym por: $\spmul[read-sym=por]{20}{26}$.
 
-% doc: «multiplicado por»
 62. Con read-sym multiplicado-por: $\spmul[read-sym=multiplicado-por]{20}{26}$.
 
-% doc: «veces»
 63. Con read-sym veces: $\spmul[read-sym=veces]{20}{26}$.
 
 64. Combinando cross y multiplicado-por: $\spmul[set-sym=cross,read-sym=multiplicado-por]{20}{26}$.
@@ -197,13 +181,10 @@
 
 66. Con wrap-parens false, el valor por defecto: $\spmul[wrap-parens=false]{-20}{26}$.
 
-% doc: imprime paréntesis alrededor de ambos argumentos
 67. Con wrap-parens true: $\spmul[wrap-parens=true]{-20}{26}$.
 
-% doc: se verbalizan los paréntesis
 68. Con wrap-parens true y read-parens true: $\spmul[wrap-parens=true,read-parens=true]{-20}{26}$.
 
-% doc: se imprimen pero no se verbalizan
 69. Con wrap-parens true y read-parens false: $\spmul[wrap-parens=true,read-parens=false]{-20}{26}$.
 
 70. Con wrap-parens false y read-parens false: $\spmul[wrap-parens=false,read-parens=false]{-20}{26}$.

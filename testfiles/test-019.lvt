@@ -1,17 +1,16 @@
-% test-019.tex -- mini test de los pendientes (tema por tema)
+% test-019.lvt -- regresion de puntos con subindices de varias cifras, de
+% spcoord y de las figuras con concept=false
 %
-% COMO USARLO (sin cambiar de sistema):
-%   1. Compilar:  lualatex-dev test-019.tex
-%   2. XML:       show-pdf-tags --xml test-019.pdf > test-019.xml
-%   3. Subir test-019.xml. Se diagnostica con el XML.
-%   4. Solo si el XML no decide, se graba en NVDA UNICAMENTE la seccion
-%      que quede dudosa (cada seccion es independiente).
+% Regresion:  l3build save test-019
+%             l3build check test-019
 %
-% A  casos 1 a 8   : sprecta con subindices de dos cifras (pierde un punto).
+% Las lecturas esperadas de NVDA estan en tagged-test/test-019.tex.
+%
+% A  casos 1 a 8   : subindices de dos cifras en los comandos de dos puntos.
 % B  casos 9 a 14  : prefix la / el en los comandos de "medida".
-% C  casos 15 a 22 : spcoord omite la palabra "coma".
-% D  casos 23 a 26 : spcoord despues de un signo igual (lee "intervalo").
-% E  casos 27 a 30 : concept=false deja un fragmento colgante ("de la figura").
+% C  casos 15 a 22 : spcoord con subindices, potencias y raices.
+% D  casos 23 a 26 : spcoord despues de un signo igual.
+% E  casos 27 a 30 : concept=false en las figuras.
 % F  casos 31 a 33 : numero mixto escrito a mano.
 \input{regression-test}
 
@@ -31,16 +30,15 @@
 \hypersetup
   {
     pdfdisplaydoctitle = true,
-    pdftitle           = {test-019: mini test de pendientes},
+    pdftitle           = {test-019: subindices de varias cifras, spcoord y figuras con concept false},
   }
+\pagestyle{empty}
 \begin{document}
 
 \section*{A. Dos puntos con subíndices de dos cifras}
 
-% doc: falla: pierde «B sub 3»
 1. Recta con un subíndice de dos cifras y otro de una: $\sprecta{A_{12}B_{3}}$.
 
-% doc: control: «recta A sub uno B sub tres»
 2. Recta con dos subíndices de una cifra: $\sprecta{A_{1}B_{3}}$.
 
 3. Recta con dos subíndices de dos cifras: $\sprecta{A_{12}B_{12}}$.
@@ -57,49 +55,38 @@
 
 \section*{B. prefix con la y con el}
 
-% doc: debe decir «la medida del lado A B»
 9. Medida de lado con prefix la: $\spmside[prefix={la}]{AB}$.
 
-% doc: «el medida del lado A B»: el prefijo se respeta tal cual
 10. Medida de lado con prefix el: $\spmside[prefix={el}]{AB}$.
 
-% doc: control: «el lado A B»
 11. Lado con prefix el: $\spside[prefix={el}]{AB}$.
 
-% doc: control: «la recta A B»
 12. Recta con prefix la: $\sprecta[prefix={la}]{AB}$.
 
-% doc: debe decir «la medida del ángulo A O B»
 13. Medida de ángulo con prefix la: $\spmangle[prefix={la}]{AOB}$.
 
-% doc: debe decir «la medida del arco A B»
 14. Medida de arco con prefix la: $\spmarc[prefix={la}]{AB}$.
 
 \section*{C. spcoord y la palabra «coma»}
 
-% doc: control: «x coma y»
 15. Dos letras, el control: $\spcoord{x, y}$.
 
-% doc: hoy omite «coma»
 16. Subíndices en los dos: $\spcoord{x_{1},y_{1}}$.
 
 17. Subíndice solo en el primero: $\spcoord{x_{1}, 3}$.
 
 18. Subíndice solo en el segundo: $\spcoord{3, y_{1}}$.
 
-% doc: hoy omite «coma»
 19. Raíz en el primero: $\spcoord{\sqrt{2}, 1}$.
 
 20. Raíz en el segundo: $\spcoord{1, \sqrt{2}}$.
 
 21. Potencia en el primero: $\spcoord{a^{2}, 1}$.
 
-% doc: control: «1 mitad coma 3»
 22. Fracción en el primero, el control: $\spcoord{\frac{1}{2}, 3}$.
 
 \section*{D. spcoord después de un signo igual}
 
-% doc: hoy: «el intervalo de 1 a 2 no incluyendo 1 o 2»
 23. Pareja creciente de enteros: $\spPoint{A} = \spcoord{1, 2}$.
 
 24. Pareja con signo: $\spPoint{A} = \spcoord{-1, 2}$.
@@ -110,24 +97,20 @@
 
 \section*{E. concept=false en las figuras}
 
-% doc: hoy: «de la figura»
 27. Área con concept false y la figura: $\spAfig[concept=false](F)$.
 
 28. Área con concept false y la figura con subíndice: $\spAfig[concept=false](F_{1})$.
 
-% doc: hoy: «del polígono uno»
 29. Área con concept false y el polígono con subíndice: $\spAfig[concept=false](P_{1})$.
 
 30. Perímetro con concept false y la figura: $\spPfig[concept=false](F)$.
 
 \section*{F. Número mixto escrito a mano}
 
-% doc: el manual dice «tres más cinco séptimos»
 31. Un número mixto con fracción: $3\frac{5}{7}$.
 
 32. Otro número mixto: $3\frac{1}{2}$.
 
-% doc: «tres y cinco séptimos»
 33. Un número mixto con spmQ y use-spnZ false: $\spmQ[use-spnZ=false]{3}{5}{7}$.
 
 \START

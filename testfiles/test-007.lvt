@@ -1,16 +1,15 @@
-% test-007.tex -- comandos \spsiglo, \sptime y \spdate
+% test-007.lvt -- regresion de \spsiglo, \sptime y \spdate
 %
-% Compilar:  lualatex-dev test-007.tex
-% Validar:   show-pdf-tags --xml test-007.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-007.pdf
+% Regresion:  l3build save test-007
+%             l3build check test-007
 %
-% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
-% el PDF. Los comentarios "doc:" indican la lectura que documenta el
-% manual; en el resto, la lectura se revisa escuchando. \spsiglo trabaja
-% en modo texto y en modo matematico; \sptime y \spdate, solo en modo
-% matematico. Las entradas invalidas (que detienen la compilacion) no van
-% aqui, entre ellas \spsiglo{4000} y \spsiglo{MMMM}: el siglo debe ser
-% menor que 4000.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-007.tex.
+%
+% Cada caso es un parrafo numerado, para ubicarlo en el diff del .tlg.
+% \spsiglo trabaja en modo texto y en modo matematico; \sptime y \spdate,
+% solo en modo matematico. Las entradas invalidas (que detienen la
+% compilacion) no van aqui, entre ellas \spsiglo{4000} y \spsiglo{MMMM}:
+% el siglo debe ser menor que 4000.
 \input{regression-test}
 
 \DocumentMetadata
@@ -31,15 +30,14 @@
     pdfdisplaydoctitle = true,
     pdftitle           = {test-007: spsiglo, sptime y spdate},
   }
+\pagestyle{empty}
 \begin{document}
 
 \section*{A. Comando spsiglo, argumento arábigo y romano (modo texto)}
 
-% doc: «veintiuno»
 % imprime xxi en versalitas
 1. Arábigo 21: \spsiglo{21}.
 
-% doc: «veintiuno»
 % imprime xxi en versalitas
 2. Romano XXI: \spsiglo{XXI}.
 
@@ -88,17 +86,13 @@
 
 \section*{C. Llave print-era}
 
-% doc: «veintiuno»
 23. Por defecto: \spsiglo{21}.
 
-% doc: «veintiuno»
 24. Con none: \spsiglo[print-era=none]{21}.
 
-% doc: «veintiuno antes de cristo»
 % imprime xxi a. C.
 25. Con ac: \spsiglo[print-era=ac]{21}.
 
-% doc: «veintiuno después de cristo»
 % imprime xxi d. C.
 26. Con dc: \spsiglo[print-era=dc]{21}.
 
@@ -108,7 +102,6 @@
 
 \section*{D. Comando sptime (modo matemático)}
 
-% doc: «las veintitrés y cuarenta y cinco minutos»
 29. Horas y minutos: $\sptime{23:45}$.
 
 30. Con segundos: $\sptime{23:45:30}$.
@@ -136,17 +129,14 @@
 
 \section*{E. Comando spdate (modo matemático)}
 
-% doc: «dos de enero de mil novecientos ochenta y uno»
 % imprime 02/01/1981
 41. Formato DD/MM/YYYY: $\spdate{02/01/1981}$.
 
-% doc: «dos de enero de mil novecientos ochenta y uno»
 % imprime 1981-01-02
 42. Formato YYYY-MM-DD: $\spdate{1981-01-02}$.
 
 43. Formato DD-MM-YYYY: $\spdate{02-01-1981}$.
 
-% doc: se convierte a DD/MM/YYYY y se imprime 02/01/1981
 44. Formato YYYY/MM/DD, que se convierte: $\spdate{1981/01/02}$.
 
 45. Primero de enero: $\spdate{01/01/2000}$.

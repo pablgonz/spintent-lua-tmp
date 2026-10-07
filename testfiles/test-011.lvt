@@ -1,18 +1,16 @@
-% test-011.tex -- comandos \spnZ, \spmQ, \sprazon y \spProp
+% test-011.lvt -- regresion de \spnZ, \spmQ, \sprazon y \spProp
 %
-% Compilar:  lualatex-dev test-011.tex
-% Validar:   show-pdf-tags --xml test-011.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-011.pdf
+% Regresion:  l3build save test-011
+%             l3build check test-011
 %
-% Cada caso es un parrafo numerado, para poder referirse a el al escuchar
-% el PDF. Los comentarios "doc:" indican lo que documenta el manual; en el
-% resto, la lectura se revisa escuchando. Todos trabajan en modo
-% matematico. \spnZ y el entero de \spmQ solo reciben enteros; en \spmQ el
-% numerador tambien debe ser entero (incluso con use-spnZ=false) y el
-% denominador distinto de cero. \sprazon y \spProp reciben cualquier
-% expresion matematica. Las entradas invalidas (que detienen la
-% compilacion) no van aqui. Las lecturas de \sprazon y \spProp se deducen
-% de sus intents y hay que confirmarlas escuchando.
+% Las lecturas esperadas de NVDA estan en tagged-test/test-011.tex.
+%
+% Cada caso es un parrafo numerado, para ubicarlo en el diff del .tlg.
+% Todos trabajan en modo matematico. \spnZ y el entero de \spmQ solo
+% reciben enteros; en \spmQ el numerador tambien debe ser entero (incluso
+% con use-spnZ=false) y el denominador distinto de cero. \sprazon y
+% \spProp reciben cualquier expresion matematica. Las entradas invalidas
+% (que detienen la compilacion) no van aqui.
 \input{regression-test}
 
 \DocumentMetadata
@@ -33,6 +31,7 @@
     pdfdisplaydoctitle = true,
     pdftitle           = {test-011: spnZ, spmQ, sprazon y spProp},
   }
+\pagestyle{empty}
 \begin{document}
 
 \section*{A. Comando spnZ: argumentos}
@@ -65,13 +64,10 @@
 
 13. Con wrap-parens false, el valor por defecto: $\spnZ[wrap-parens=false]{-23}$.
 
-% doc: se imprimen paréntesis alrededor del entero
 14. Con wrap-parens true: $\spnZ[wrap-parens=true]{-23}$.
 
-% doc: se verbalizan los paréntesis
 15. Con wrap-parens true y read-parens true: $\spnZ[wrap-parens=true,read-parens=true]{-23}$.
 
-% doc: se imprimen pero no se verbalizan
 16. Con wrap-parens true y read-parens false: $\spnZ[wrap-parens=true,read-parens=false]{-23}$.
 
 17. Con wrap-parens false y read-parens false: $\spnZ[wrap-parens=false,read-parens=false]{-23}$.
@@ -91,16 +87,12 @@
 
 \section*{D. Comando spmQ: ejemplos del manual y llave join-word}
 
-% doc: «dos y la fracción con numerador cinco y denominador siete»
 23. Por defecto: $\spmQ{2}{5}{7}$.
 
-% doc: «un entero la fracción con numerador cinco y denominador siete»
 24. Con join-word entero: $\spmQ[join-word=entero]{1}{5}{7}$.
 
-% doc: «dos enteros la fracción con numerador cinco y denominador siete»
 25. Con join-word enteros: $\spmQ[join-word=enteros]{2}{5}{7}$.
 
-% doc: «dos y la fracción con numerador cinco y denominador siete»
 26. Con join-word y: $\spmQ[join-word=y]{2}{5}{7}$.
 
 \section*{E. Comando spmQ: denominadores}
@@ -139,15 +131,12 @@
 
 42. Entero de cuatro cifras: $\spmQ{1000}{1}{2}$.
 
-% doc: «dos y la fracción con numerador cinco y denominador siete»
 43. Con use-spnZ true, el valor por defecto: $\spmQ[use-spnZ=true]{2}{5}{7}$.
 
-% doc: se tipografían directamente; MathCAT lee «dos y cinco séptimos»
 44. Con use-spnZ false: $\spmQ[use-spnZ=false]{2}{5}{7}$.
 
 45. Con use-dfrac false, el valor por defecto: $\spmQ[use-dfrac=false]{2}{5}{7}$.
 
-% doc: la fracción se imprime con \dfrac
 46. Con use-dfrac true: $\spmQ[use-dfrac=true]{2}{5}{7}$.
 
 47. Con wrap-parens true: $\spmQ[wrap-parens=true]{2}{5}{7}$.
@@ -162,7 +151,6 @@
 
 \section*{G. Comando sprazon}
 
-% doc: tres es a cuatro
 52. Dos enteros: $\sprazon{3}{4}$.
 
 53. Con letras: $\sprazon{a}{b}$.
@@ -173,18 +161,14 @@
 
 56. Con silent false, el valor por defecto: $\sprazon[silent=false]{3}{4}$.
 
-% doc: no se verbaliza
 57. Con silent true: $\sprazon[silent=true]{3}{4}$.
 
-% doc: la fracción se imprime con \dfrac
 58. Con use-dfrac true: $\sprazon[use-dfrac=true]{3}{4}$.
 
-% doc: imprime 3:4; la lectura es la misma
 59. Con inline true: $\sprazon[inline=true]{3}{4}$.
 
 60. Con inline true y letras: $\sprazon[inline=true]{a}{b}$.
 
-% doc: use-dfrac no tiene efecto con inline
 61. Con inline y use-dfrac: $\sprazon[inline=true,use-dfrac=true]{3}{4}$.
 
 62. Con silent e inline: $\sprazon[silent=true,inline=true]{3}{4}$.
@@ -193,7 +177,6 @@
 
 \section*{H. Comando spProp}
 
-% doc: tres es a cuatro como seis es a ocho
 64. Cuatro enteros: $\spProp{3}{4}{6}{8}$.
 
 65. Con letras: $\spProp{a}{b}{c}{d}$.
@@ -202,18 +185,14 @@
 
 67. Con silent false, el valor por defecto: $\spProp[silent=false]{3}{4}{6}{8}$.
 
-% doc: no se verbaliza
 68. Con silent true: $\spProp[silent=true]{3}{4}{6}{8}$.
 
-% doc: las fracciones se imprimen con \dfrac
 69. Con use-dfrac true: $\spProp[use-dfrac=true]{3}{4}{6}{8}$.
 
-% doc: imprime 3:4=6:8; la lectura es la misma
 70. Con inline true: $\spProp[inline=true]{3}{4}{6}{8}$.
 
 71. Con inline true y letras: $\spProp[inline=true]{a}{b}{c}{d}$.
 
-% doc: use-dfrac no tiene efecto con inline
 72. Con inline y use-dfrac: $\spProp[inline=true,use-dfrac=true]{3}{4}{6}{8}$.
 
 73. Con silent e inline: $\spProp[silent=true,inline=true]{3}{4}{6}{8}$.
