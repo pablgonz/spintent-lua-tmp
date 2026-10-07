@@ -126,6 +126,16 @@ local function os_message(text)
   print(text .. " " .. string.rep(".", mymax) .. " done")
 end
 
+-- Helper para detectar si un ejecutable existe en el PATH (Windows y Linux)
+local function has_cmd(cmd)
+  local is_windows = package.config:sub(1, 1) == "\\"
+  local null_dev = os_null or (is_windows and "NUL" or "/dev/null")
+  local check = is_windows and ("where " .. cmd .. " > " .. null_dev .. " 2>&1")
+                           or ("command -v " .. cmd .. " > " .. null_dev .. " 2>&1")
+  local res = os.execute(check)
+  return (res == true or res == 0)
+end
+
 -- Helper to safely read file content
 local function read_file(filepath)
   local f = io.open(filepath, "r")
@@ -363,7 +373,7 @@ end
 if options["target"] == "testpkg" then
   make_tmp_dir()
 
-  -- Copiar ÚNICAMENTE los archivos .tex desde ./tagged-test al directorio temporal
+  -- Copiar únicamente archivos .tex
   local errorlevel = cp("*.tex", "tagged-test", tmpdir)
   if errorlevel ~= 0 then
     error("** Error!!: Failed to copy .tex files from ./tagged-test to ./" .. tmpdir)
@@ -382,6 +392,13 @@ if options["target"] == "testpkg" then
   if #tex_files == 0 then
     print("** Warning: No .tex files found in ./tagged-test")
   else
+    -- Detección de herramientas requeridas
+    local run_rnv = has_cmd("rnv-wrapp") and has_cmd("show-pdf-tags")
+    local run_verapdf = has_cmd("verapdf")
+
+    if run_rnv then os_message("Validators detected: show-pdf-tags & rnv-wrapp") end
+    if run_verapdf then os_message("Validator detected: veraPDF") end
+
     os_message("Compiling test files with lualatex-dev")
     for _, sample in ipairs(tex_files) do
       os_message("Compiling " .. sample)
@@ -394,6 +411,26 @@ if options["target"] == "testpkg" then
           f:close()
         end
         error("** Error!!: lualatex-dev compilation failed for " .. sample)
+      end
+
+      local pdf_file = sample:gsub("%.tex$", ".pdf")
+
+      -- 1. Validación de etiquetas RNC (show-pdf-tags + rnv-wrapp)
+      if run_rnv then
+        os_message("Validating RNC tags in " .. pdf_file)
+        errorlevel = run(tmpdir, "show-pdf-tags --xml " .. pdf_file .. " | rnv-wrapp")
+        if errorlevel ~= 0 then
+          error("** Error!!: Tag structure validation (rnv-wrapp) failed for " .. pdf_file)
+        end
+      end
+
+      -- 2. Validación PDF/UA-2 con veraPDF
+      if run_verapdf then
+        os_message("Validating PDF/UA-2 in " .. pdf_file)
+        errorlevel = run(tmpdir, "verapdf --flavour ua2 --format text " .. pdf_file)
+        if errorlevel ~= 0 then
+          error("** Error!!: veraPDF (PDF/UA-2) validation failed for " .. pdf_file)
+        end
       end
     end
   end
