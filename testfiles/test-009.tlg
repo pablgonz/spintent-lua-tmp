@@ -1754,11 +1754,10 @@ TEST 1: Show PDF Tags
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
        id="ID.00282"
-       title="A. Comando spdiv: símbolo y lectura del operador"
+       title="A. Comando spdiv: símbolo y lectura"
        rolemaps-to="H1"
       >
-     <?MarkedContent page="1" ?>A. Comando spdiv: símbolo y lectura del opera
-     <?MarkedContent page="1" ?>dor
+     <?MarkedContent page="1" ?>A. Comando spdiv: símbolo y lectura
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
        id="ID.00283"
@@ -2364,14 +2363,14 @@ TEST 1: Show PDF Tags
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
-      <?MarkedContent page="2" ?>32. Con wrap-parens true y read-parens true: 
+      <?MarkedContent page="1" ?>32. Con wrap-parens true y read-parens true: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
          id="ID.00373"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
-       <?MarkedContent page="2" ?>
+       <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
           id="ID.00374"
          >
@@ -2381,14 +2380,14 @@ TEST 1: Show PDF Tags
            rspace="0"
            stretchy="false"
           >
-         <?MarkedContent page="2" ?>(
+         <?MarkedContent page="1" ?>(
         </mo>
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00376"
            intent=":silent"
            mathvariant="normal"
           >
-         <?MarkedContent page="2" ?>⁣
+         <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00377"
@@ -2399,14 +2398,14 @@ TEST 1: Show PDF Tags
             lspace="0"
             rspace="0.222em"
            >
-          <?MarkedContent page="2" ?>−
+          <?MarkedContent page="1" ?>−
          </mo>
          <mn xmlns="http://www.w3.org/1998/Math/MathML"
             id="ID.00379"
             arg="n"
             intent="20:number"
            >
-          <?MarkedContent page="2" ?>20
+          <?MarkedContent page="1" ?>20
          </mn>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
@@ -2415,13 +2414,13 @@ TEST 1: Show PDF Tags
            lspace="0.278em"
            rspace="0.278em"
           >
-         <?MarkedContent page="2" ?>∶
+         <?MarkedContent page="1" ?>∶
         </mo>
         <mn xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00381"
            intent="26:number"
           >
-         <?MarkedContent page="2" ?>26
+         <?MarkedContent page="1" ?>26
         </mn>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00382"
@@ -2429,12 +2428,12 @@ TEST 1: Show PDF Tags
            rspace="0"
            stretchy="false"
           >
-         <?MarkedContent page="2" ?>)
+         <?MarkedContent page="1" ?>)
         </mo>
        </math>
-       <?MarkedContent page="2" ?>
+       <?MarkedContent page="1" ?>
       </Formula>
-      <?MarkedContent page="2" ?>.
+      <?MarkedContent page="1" ?>.
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
@@ -2447,14 +2446,14 @@ TEST 1: Show PDF Tags
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
-      <?MarkedContent page="2" ?>33. Con wrap-parens true y read-parens false: 
+      <?MarkedContent page="1" ?>33. Con wrap-parens true y read-parens false: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
          id="ID.00385"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
-       <?MarkedContent page="2" ?>
+       <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
           id="ID.00386"
          >
@@ -2465,14 +2464,14 @@ TEST 1: Show PDF Tags
            rspace="0"
            stretchy="false"
           >
-         <?MarkedContent page="2" ?>(
+         <?MarkedContent page="1" ?>(
         </mo>
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00388"
            intent=":silent"
            mathvariant="normal"
           >
-         <?MarkedContent page="2" ?>⁣
+         <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00389"
@@ -2483,14 +2482,14 @@ TEST 1: Show PDF Tags
             lspace="0"
             rspace="0.222em"
            >
-          <?MarkedContent page="2" ?>−
+          <?MarkedContent page="1" ?>−
          </mo>
          <mn xmlns="http://www.w3.org/1998/Math/MathML"
             id="ID.00391"
             arg="n"
             intent="20:number"
            >
-          <?MarkedContent page="2" ?>20
+          <?MarkedContent page="1" ?>20
          </mn>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
@@ -2499,13 +2498,13 @@ TEST 1: Show PDF Tags
            lspace="0.278em"
            rspace="0.278em"
           >
-         <?MarkedContent page="2" ?>∶
+         <?MarkedContent page="1" ?>∶
         </mo>
         <mn xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00393"
            intent="26:number"
           >
-         <?MarkedContent page="2" ?>26
+         <?MarkedContent page="1" ?>26
         </mn>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00394"
@@ -2514,12 +2513,12 @@ TEST 1: Show PDF Tags
            rspace="0"
            stretchy="false"
           >
-         <?MarkedContent page="2" ?>)
+         <?MarkedContent page="1" ?>)
         </mo>
        </math>
-       <?MarkedContent page="2" ?>
+       <?MarkedContent page="1" ?>
       </Formula>
-      <?MarkedContent page="2" ?>.
+      <?MarkedContent page="1" ?>.
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
@@ -4897,14 +4896,14 @@ TEST 1: Show PDF Tags
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
-      <?MarkedContent page="3" ?>65. Combinando asterisk y veces: 
+      <?MarkedContent page="2" ?>65. Combinando asterisk y veces: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
          id="ID.00764"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
-       <?MarkedContent page="3" ?>
+       <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
           id="ID.00765"
          >
@@ -4913,13 +4912,13 @@ TEST 1: Show PDF Tags
            intent=":silent"
            mathvariant="normal"
           >
-         <?MarkedContent page="3" ?>⁣
+         <?MarkedContent page="2" ?>⁣
         </mi>
         <mn xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00767"
            intent="20:number"
           >
-         <?MarkedContent page="3" ?>20
+         <?MarkedContent page="2" ?>20
         </mn>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00768"
@@ -4927,18 +4926,18 @@ TEST 1: Show PDF Tags
            lspace="0.222em"
            rspace="0.222em"
           >
-         <?MarkedContent page="3" ?>∗
+         <?MarkedContent page="2" ?>∗
         </mo>
         <mn xmlns="http://www.w3.org/1998/Math/MathML"
            id="ID.00769"
            intent="26:number"
           >
-         <?MarkedContent page="3" ?>26
+         <?MarkedContent page="2" ?>26
         </mn>
        </math>
-       <?MarkedContent page="3" ?>
+       <?MarkedContent page="2" ?>
       </Formula>
-      <?MarkedContent page="3" ?>.
+      <?MarkedContent page="2" ?>.
      </text-block>
     </semantic-para>
    </section>
