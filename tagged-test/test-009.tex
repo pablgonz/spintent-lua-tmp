@@ -32,198 +32,257 @@
 
 \section*{A. Comando spdiv: argumentos}
 
-% doc: imprime 20:26 -- «veinte dividido veinte y seis»
+% doc: «20 dividido 26»
 1. Dos enteros: $\spdiv{20}{26}$.
 
+% doc: «menos 20 dividido 26»
 2. Primer argumento negativo: $\spdiv{-20}{26}$.
 
+% doc: «20 dividido menos 26»
 3. Segundo argumento negativo: $\spdiv{20}{-26}$.
 
+% doc: «menos 20 dividido menos 26»
 4. Ambos negativos: $\spdiv{-20}{-26}$.
 
+% doc: «más 20 dividido 26»
 5. Con signo positivo explícito: $\spdiv{+20}{26}$.
 
+% doc: «3 coma 5 dividido 2»
 6. Decimales con coma: $\spdiv{3,5}{2}$.
 
+% doc: «3 punto 5 dividido 2»
 7. Decimales con punto: $\spdiv{3.5}{2}$.
 
+% doc: «1 coma 3 periódico dividido 2»
 8. Número periódico: $\spdiv{1;3}{2}$.
 
+% doc: «3 coma 1 con 4 periódico dividido 2»
 9. Periódico mixto: $\spdiv{3,1;4}{2}$.
 
+% doc: «3 coma 14 por 10 al cubo dividido 2»
 10. Notación científica: $\spdiv{3,14e3}{2}$.
 
+% doc: «100000 dividido 250»
 11. Cifras grandes: $\spdiv{100000}{250}$.
 
+% doc: «1234567 coma 891234 dividido 10»
 12. Decimales grandes: $\spdiv{1234567,891234}{10}$.
 
+% doc: «2 dividido 26»
 13. Primero menor que el segundo: $\spdiv{2}{26}$.
 
+% doc: «0 dividido 5»
 14. Con cero: $\spdiv{0}{5}$.
 
 \section*{A. Comando spdiv: llaves de spnum}
 
+% doc: «100000 dividido 250»
 15. Con cifras-sep false: $\spdiv[cifras-sep=false]{100000}{250}$.
 
+% doc: «100000 dividido 250»
 16. Con cifras-sep false y espacios del usuario: $\spdiv[cifras-sep=false]{10\,00\,00}{250}$.
 
+% doc: «20 negativo dividido 26»
 17. Con read-sign clear en el primero: $\spdiv[read-sign=clear]{-20}{26}$.
 
+% doc: «20 dividido 26 negativo»
 18. Con read-sign clear en el segundo: $\spdiv[read-sign=clear]{20}{-26}$.
 
+% doc: «1 punto 3 periódico dividido 2»
 19. Con read-period-sep punto: $\spdiv[read-period-sep=punto]{1;3}{2}$.
 
+% doc: «3 coma 14 por 10 al cubo dividido 2»
 20. Con notation-sym times: $\spdiv[notation-sym=times]{3,14e3}{2}$.
 
+% doc: «3 coma 14 negativo por 10 al cubo dividido 2»
 21. Llaves de spnum combinadas: $\spdiv[read-sign=clear,notation-sym=times]{-3,14e3}{2}$.
 
 \section*{A. Comando spdiv: símbolo y lectura del operador}
 
-% doc: imprime ÷
+% doc: «20 dividido 26»
 22. Con set-sym old-style: $\spdiv[set-sym=old-style]{20}{26}$.
 
-% doc: imprime :
+% doc: «20 dividido 26»
 23. Con set-sym two-dots: $\spdiv[set-sym=two-dots]{20}{26}$.
 
-% doc: imprime /
+% doc: «20 dividido 26»
 24. Con set-sym slash: $\spdiv[set-sym=slash]{20}{26}$.
 
-% doc: «dividido»
+% doc: «20 dividido 26»
 25. Con read-sym dividido: $\spdiv[read-sym=dividido]{20}{26}$.
 
-% doc: «dividido por»
+% doc: «20 dividido por 26»
 26. Con read-sym dividido-por: $\spdiv[read-sym=dividido-por]{20}{26}$.
 
-% doc: «dividido entre»
+% doc: «20 dividido entre 26»
 27. Con read-sym dividido-entre: $\spdiv[read-sym=dividido-entre]{20}{26}$.
 
+% doc: «20 dividido por 26»
 28. Combinando old-style y dividido-por: $\spdiv[set-sym=old-style,read-sym=dividido-por]{20}{26}$.
 
+% doc: «20 dividido entre 26»
 29. Combinando slash y dividido-entre: $\spdiv[set-sym=slash,read-sym=dividido-entre]{20}{26}$.
 
 \section*{A. Comando spdiv: paréntesis}
 
+% doc: «menos 20 dividido 26»
 30. Con wrap-parens false, el valor por defecto: $\spdiv[wrap-parens=false]{-20}{26}$.
 
-% doc: imprime paréntesis alrededor de ambos argumentos
+% doc: «se abren paréntesis menos 20 dividido 26 se cierran paréntesis»
 31. Con wrap-parens true: $\spdiv[wrap-parens=true]{-20}{26}$.
 
-% doc: se verbalizan los paréntesis
+% doc: «se abren paréntesis menos 20 dividido 26 se cierran paréntesis»
 32. Con wrap-parens true y read-parens true: $\spdiv[wrap-parens=true,read-parens=true]{-20}{26}$.
 
-% doc: se imprimen pero no se verbalizan
+% doc: «menos 20 dividido 26»
 33. Con wrap-parens true y read-parens false: $\spdiv[wrap-parens=true,read-parens=false]{-20}{26}$.
 
+% doc: «menos 20 dividido 26»
 34. Con wrap-parens false y read-parens false: $\spdiv[wrap-parens=false,read-parens=false]{-20}{26}$.
 
+% doc: «se abren paréntesis menos 20 dividido 26 se cierran paréntesis»
 35. Con paréntesis y slash: $\spdiv[wrap-parens=true,set-sym=slash]{-20}{26}$.
 
+% doc: «20 negativo dividido por 26»
 36. Todas las llaves juntas: $\spdiv[wrap-parens=true,read-parens=false,set-sym=old-style,read-sym=dividido-por,read-sign=clear]{-20}{26}$.
 
 \section*{B. Comando spmul: argumentos}
 
-% doc: imprime 20 · 26 -- «veinte por veinte y seis»
+% doc: «20 por 26»
 37. Dos enteros: $\spmul{20}{26}$.
 
+% doc: «menos 20 por 26»
 38. Primer argumento negativo: $\spmul{-20}{26}$.
 
+% doc: «20 por menos 26»
 39. Segundo argumento negativo: $\spmul{20}{-26}$.
 
+% doc: «menos 20 por menos 26»
 40. Ambos negativos: $\spmul{-20}{-26}$.
 
+% doc: «más 20 por 26»
 41. Con signo positivo explícito: $\spmul{+20}{26}$.
 
+% doc: «3 coma 5 por 2»
 42. Decimales con coma: $\spmul{3,5}{2}$.
 
+% doc: «3 punto 5 por 2»
 43. Decimales con punto: $\spmul{3.5}{2}$.
 
+% doc: «1 coma 3 periódico por 2»
 44. Número periódico: $\spmul{1;3}{2}$.
 
+% doc: «3 coma 1 con 4 periódico por 2»
 45. Periódico mixto: $\spmul{3,1;4}{2}$.
 
+% doc: «3 coma 14 por 10 al cubo por 2»
 46. Notación científica: $\spmul{3,14e3}{2}$.
 
+% doc: «100000 por 250»
 47. Cifras grandes: $\spmul{100000}{250}$.
 
+% doc: «1234567 coma 891234 por 10»
 48. Decimales grandes: $\spmul{1234567,891234}{10}$.
 
+% doc: «2 por 26»
 49. Primero menor que el segundo: $\spmul{2}{26}$.
 
+% doc: «0 por 5»
 50. Con cero: $\spmul{0}{5}$.
 
 \section*{B. Comando spmul: llaves de spnum}
 
+% doc: «100000 por 250»
 51. Con cifras-sep false: $\spmul[cifras-sep=false]{100000}{250}$.
 
+% doc: «100000 por 250»
 52. Con cifras-sep false y espacios del usuario: $\spmul[cifras-sep=false]{10\,00\,00}{250}$.
 
+% doc: «20 negativo por 26»
 53. Con read-sign clear en el primero: $\spmul[read-sign=clear]{-20}{26}$.
 
+% doc: «20 por 26 negativo»
 54. Con read-sign clear en el segundo: $\spmul[read-sign=clear]{20}{-26}$.
 
+% doc: «1 punto 3 periódico por 2»
 55. Con read-period-sep punto: $\spmul[read-period-sep=punto]{1;3}{2}$.
 
+% doc: «3 coma 14 por 10 al cubo por 2»
 56. Con notation-sym times: $\spmul[notation-sym=times]{3,14e3}{2}$.
 
+% doc: «3 coma 14 negativo por 10 al cubo por 2»
 57. Llaves de spnum combinadas: $\spmul[read-sign=clear,notation-sym=times]{-3,14e3}{2}$.
 
 \section*{B. Comando spmul: símbolo y lectura del operador}
 
-% doc: imprime ×
+% doc: «20 por 26»
 58. Con set-sym cross: $\spmul[set-sym=cross]{20}{26}$.
 
-% doc: imprime ·
+% doc: «20 por 26»
 59. Con set-sym dot: $\spmul[set-sym=dot]{20}{26}$.
 
-% doc: imprime ∗
+% doc: «20 por 26»
 60. Con set-sym asterisk: $\spmul[set-sym=asterisk]{20}{26}$.
 
-% doc: «por»
+% doc: «20 por 26»
 61. Con read-sym por: $\spmul[read-sym=por]{20}{26}$.
 
-% doc: «multiplicado por»
+% doc: «20 multiplicado por 26»
 62. Con read-sym multiplicado-por: $\spmul[read-sym=multiplicado-por]{20}{26}$.
 
-% doc: «veces»
+% doc: «20 veces 26»
 63. Con read-sym veces: $\spmul[read-sym=veces]{20}{26}$.
 
+% doc: «20 multiplicado por 26»
 64. Combinando cross y multiplicado-por: $\spmul[set-sym=cross,read-sym=multiplicado-por]{20}{26}$.
 
+% doc: «20 veces 26»
 65. Combinando asterisk y veces: $\spmul[set-sym=asterisk,read-sym=veces]{20}{26}$.
 
 \section*{B. Comando spmul: paréntesis}
 
+% doc: «menos 20 por 26»
 66. Con wrap-parens false, el valor por defecto: $\spmul[wrap-parens=false]{-20}{26}$.
 
-% doc: imprime paréntesis alrededor de ambos argumentos
+% doc: «se abren paréntesis menos 20 por 26 se cierran paréntesis»
 67. Con wrap-parens true: $\spmul[wrap-parens=true]{-20}{26}$.
 
-% doc: se verbalizan los paréntesis
+% doc: «se abren paréntesis menos 20 por 26 se cierran paréntesis»
 68. Con wrap-parens true y read-parens true: $\spmul[wrap-parens=true,read-parens=true]{-20}{26}$.
 
-% doc: se imprimen pero no se verbalizan
+% doc: «menos 20 por 26»
 69. Con wrap-parens true y read-parens false: $\spmul[wrap-parens=true,read-parens=false]{-20}{26}$.
 
+% doc: «menos 20 por 26»
 70. Con wrap-parens false y read-parens false: $\spmul[wrap-parens=false,read-parens=false]{-20}{26}$.
 
+% doc: «se abren paréntesis menos 20 por 26 se cierran paréntesis»
 71. Con paréntesis y asterisk: $\spmul[wrap-parens=true,set-sym=asterisk]{-20}{26}$.
 
+% doc: «20 negativo multiplicado por 26»
 72. Todas las llaves juntas: $\spmul[wrap-parens=true,read-parens=false,set-sym=cross,read-sym=multiplicado-por,read-sign=clear]{-20}{26}$.
 
 \section*{C. En fórmulas}
 
+% doc: «12 dividido 4 es igual a 3»
 73. División con igualdad: $\spdiv{12}{4} = 3$.
 
+% doc: «3 por 4 es igual a 12»
 74. Multiplicación con igualdad: $\spmul{3}{4} = 12$.
 
+% doc: «12 dividido 4 más 3 por 4»
 75. Suma de una división y un producto: $\spdiv{12}{4} + \spmul{3}{4}$.
 
+% doc: «se abren paréntesis menos 12 dividido 4 se cierran paréntesis es igual a menos 3»
 76. División con paréntesis: $\spdiv[wrap-parens=true]{-12}{4} = -3$.
 
+% doc: «12 dividido 4 es igual a 12 dividido 4»
 77. Llaves distintas en una misma fórmula: $\spdiv[set-sym=slash]{12}{4} = \spdiv[set-sym=old-style]{12}{4}$.
 
+% doc: «3 por 4 dividido 2 es igual a 6»
 78. Producto y división juntos: $\spmul{3}{4} \spdsym 2 = 6$.
 
+% doc: «se abren paréntesis menos 3 por 4 se cierran paréntesis es igual a menos 12»
 79. En fórmula destacada:
 \[ \spmul[wrap-parens=true]{-3}{4} = -12 \].
 

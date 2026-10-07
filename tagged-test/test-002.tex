@@ -34,99 +34,123 @@
 % doc: «metro»
 1. Solo la unidad: $\spunit{m}$.
 
-% doc: «veintitrés metros»
+% doc: «23 metros»
 2. Número y unidad: $\spunit{23 m}$.
 
-% doc: «veintitrés metros segundos al cuadrado»
+% doc: «23 metros segundos cuadrado»
 3. Producto de unidades con potencia: $\spunit{23 m*s^{2}}$.
 
-% doc: «veintitrés metros por segundos al cuadrado»
+% doc: «23 metros por segundos cuadrado»
 4. Fracción lineal: $\spunit{23 m/s^{2}}$.
 
+% doc: «2 newtons metros»
 5. Producto de dos unidades: $\spunit{2 N*m}$.
 
+% doc: «3 kilogramos metros segundos»
 6. Producto de tres unidades: $\spunit{3 kg*m*s}$.
 
+% doc: «3 kilogramos metros cuadrado por segundos cuadrado»
 7. Producto y fracción: $\spunit{3 kg*m^{2}/s^{2}}$.
 
+% doc: «9 coma 8 metros por segundos cuadrado»
 8. Número decimal: $\spunit{9,8 m/s^{2}}$.
 
+% doc: «menos 3 coma 5 metros»
 9. Número negativo: $\spunit{-3,5 m}$.
 
+% doc: «1 coma 2 con 3 periódico metros»
 10. Número periódico: $\spunit{1,2;3 m}$.
 
+% doc: «3 por 10 a la octavo potencia metros por segundos»
 11. Notación científica: $\spunit{3e8 m/s}$.
 
+% doc: «metro cuadrado»
 12. Sin número, con potencia: $\spunit{m^{2}}$.
 
+% doc: «metros por segundos»
 13. Sin número, con fracción: $\spunit{m/s}$.
 
+% doc: «23 metros»
 14. Con alias de la tabla: $\spunit{23 metros}$.
 
+% doc: «20 grados Celsius»
 15. Con alias de temperatura: $\spunit{20 celsius}$.
 
 \section*{B. Llave cifras-sep}
 
+% doc: «100000 metros»
 16. Por defecto: $\spunit{100000 m}$.
 
+% doc: «100000 metros»
 17. Con false y espacios del usuario: $\spunit[cifras-sep=false]{10\,00\,00 m}$.
 
+% doc: «100000 metros»
 18. Con false y sin espacios: $\spunit[cifras-sep=false]{100000 m}$.
 
 \section*{C. Llave read-period-sep}
 
+% doc: «3 coma 4 periódico metros»
 19. Con coma: $\spunit[read-period-sep=coma]{3;4 m}$.
 
+% doc: «3 punto 4 periódico metros»
 20. Con punto: $\spunit[read-period-sep=punto]{3;4 m}$.
 
 \section*{D. Llave notation-sym}
 
+% doc: «3 por 10 a la octavo potencia metros por segundos»
 21. Con cdot: $\spunit[notation-sym=cdot]{3e8 m/s}$.
 
+% doc: «3 por 10 a la octavo potencia metros por segundos»
 22. Con times: $\spunit[notation-sym=times]{3e8 m/s}$.
 
 \section*{E. Llave print-cdot}
 
-% doc: imprime un espacio fino entre las unidades
+% doc: «23 metros segundos cuadrado»
 23. Por defecto: $\spunit{23 m*s^{2}}$.
 
+% doc: «23 metros segundos cuadrado»
 24. Con false: $\spunit[print-cdot=false]{23 m*s^{2}}$.
 
-% doc: imprime \cdot entre las unidades
+% doc: «23 metros segundos cuadrado»
 25. Con true: $\spunit[print-cdot=true]{23 m*s^{2}}$.
 
+% doc: «2 newtons metros»
 26. Con true y dos unidades: $\spunit[print-cdot=true]{2 N*m}$.
 
 \section*{F. Llave read-cdot}
 
-% doc: no verbaliza nada entre las unidades
+% doc: «23 metros segundos cuadrado»
 27. Por defecto: $\spunit{23 m*s^{2}}$.
 
-% doc: no verbaliza nada entre las unidades
+% doc: «23 metros segundos cuadrado»
 28. Con false: $\spunit[read-cdot=false]{23 m*s^{2}}$.
 
-% doc: verbaliza «por» entre las unidades
+% doc: «23 metros segundos cuadrado»
 29. Con true: $\spunit[read-cdot=true]{23 m*s^{2}}$.
 
+% doc: «2 newtons por metros»
 30. Con true y print-cdot true: $\spunit[print-cdot=true,read-cdot=true]{2 N*m}$.
 
 \section*{G. Llave read-slash}
 
-% doc: «por»
+% doc: «23 metros por segundos cuadrado»
 31. Por defecto: $\spunit{23 m/s^{2}}$.
 
-% doc: «por»
+% doc: «23 metros por segundos cuadrado»
 32. Con por: $\spunit[read-slash=por]{23 m/s^{2}}$.
 
-% doc: «partido por»
+% doc: «23 metros partido por segundos cuadrado»
 33. Con partido-por: $\spunit[read-slash=partido-por]{23 m/s^{2}}$.
 
+% doc: «metros partido por segundos»
 34. Con partido-por y sin número: $\spunit[read-slash=partido-por]{m/s}$.
 
 \section*{H. Combinaciones de llaves}
 
+% doc: «9 coma 8 kilogramos por metros partido por segundos cuadrado»
 35. Todas las de unidades: $\spunit[print-cdot=true,read-cdot=true,read-slash=partido-por]{9,8 kg*m/s^{2}}$.
 
+% doc: «3 por 10 a la octavo potencia metros partido por segundos»
 36. Llaves de número y de unidades: $\spunit[cifras-sep=false,notation-sym=times,read-slash=partido-por]{3e8 m/s}$.
 
 \section*{I. Unidades y alias nuevos}
@@ -136,33 +160,43 @@
 \spunitalias{caudal}{m^{3}/s}%
 \spunitalias{velocidad}{m/s}%
 
-% doc: «cien píxeles»
+% doc: «100 píxeles»
 37. Unidad nueva: $\spunit{100 px}$.
 
+% doc: «5 partes por millón»
 38. Otra unidad nueva: $\spunit{5 ppm}$.
 
+% doc: «3 píxeles segundos»
 39. Unidad nueva en un producto: $\spunit{3 px*s}$.
 
-% doc: «cincuenta metros al cubo por segundos»
+% doc: «50 metros al cubo por segundos»
 40. Alias nuevo: $\spunit{50 caudal}$.
 
+% doc: «30 metros por segundos»
 41. Otro alias nuevo: $\spunit{30 velocidad}$.
 
+% doc: «50 metros al cubo partido por segundos»
 42. Alias nuevo con read-slash: $\spunit[read-slash=partido-por]{50 caudal}$.
 
 \section*{J. Dentro de fórmulas}
 
+% doc: «3 metros más 2 metros es igual a 5 metros»
 43. Suma e igualdad: $\spunit{3 m} + \spunit{2 m} = \spunit{5 m}$.
 
+% doc: «g es igual a 9 coma 8 metros por segundos cuadrado»
 44. Con una variable: $g = \spunit{9,8 m/s^{2}}$.
 
+% doc: «3 coma 5 punto 2 metros»
 45. Con un número aparte: $\spnum{3,5} \cdot \spunit{2 m}$.
 
+% doc: «2 metros por segundos es menor que 3 metros partido por segundos»
 46. Llaves distintas en una misma fórmula: $\spunit[read-slash=por]{2 m/s} < \spunit[read-slash=partido-por]{3 m/s}$.
 
+% doc: «3 kilogramos metros cuadrado por segundos cuadrado»
 47. En fórmula destacada:
 \[ \spunit{3 kg*m^{2}/s^{2}} \]
 
+% doc: «la fracción con numerador 10 metros y denominador 2 segundos»
 48. En una fracción: $\frac{\spunit{10 m}}{\spunit{2 s}}$.
 
 \end{document}

@@ -41,181 +41,226 @@
 \spnewread{\perp}{es-perpendicular-a}%
 \spnewread{\approx}{es-aproximadamente-igual-a}%
 
-% doc: imprime ≅ -- «es congruente con»
+% doc: «es congruente con»
 1. Símbolo registrado: $\spread{\cong}$.
 
+% doc: «es semejante a»
 2. Otro símbolo registrado: $\spread{\sim}$.
 
+% doc: «es perpendicular a»
 3. Perpendicular: $\spread{\perp}$.
 
+% doc: «es aproximadamente igual a»
 4. Aproximadamente igual: $\spread{\approx}$.
 
+% doc: «triángulo blanco apuntando hacia arriba a b c es congruente con triángulo blanco apuntando hacia arriba d e f»
 5. En una fórmula: $\triangle ABC \spread{\cong} \triangle DEF$.
 
+% doc: «a b es perpendicular a c d»
 6. Perpendicularidad: $AB \spread{\perp} CD$.
 
+% doc: «x es aproximadamente igual a 3»
 7. Aproximación: $x \spread{\approx} 3$.
 
+% doc: «triángulo blanco apuntando hacia arriba a b c es semejante a triángulo blanco apuntando hacia arriba d e f es semejante a triángulo blanco apuntando hacia arriba g h i»
 8. Dos símbolos en una misma fórmula: $\triangle ABC \spread{\sim} \triangle DEF \spread{\sim} \triangle GHI$.
 
 \section*{B. Llave read-arg}
 
-% doc: imprime ∥ -- «es paralela a»
+% doc: «es paralela a»
 9. Ejemplo del manual: $\spread[read-arg={es-paralela-a}]{\parallel}$.
 
-% doc: sobrescribe la lectura registrada
+% doc: «es equivalente a»
 10. Sobrescribe un símbolo registrado: $\spread[read-arg={es-equivalente-a}]{\cong}$.
 
+% doc: «es menor o igual que»
 11. Otro comando sin registrar: $\spread[read-arg={es-menor-o-igual-que}]{\leq}$.
 
+% doc: «a b es paralela a c d»
 12. En una fórmula: $AB \spread[read-arg={es-paralela-a}]{\parallel} CD$.
 
+% doc: «ángulo a b c»
 13. Con un símbolo de ángulo: $\spread[read-arg={ángulo}]{\angle}ABC$.
 
 \section*{C. Llave silent}
 
-% doc: no se verbaliza
+% doc: «»
 14. Con true y un símbolo registrado: $\spread[silent=true]{\cong}$.
 
 % doc: «es congruente con»
 15. Con false explícito: $\spread[silent=false]{\cong}$.
 
-% doc: no hace falta registrar el símbolo
+% doc: «»
 16. Con true y un símbolo sin registrar: $\spread[silent=true]{\parallel}$.
 
+% doc: «a b c d»
 17. Con true en una fórmula: $AB \spread[silent=true]{\parallel} CD$.
 
-% doc: para cuando silent no alcanza
+% doc: «»
 18. Alternativa documentada con read-arg: $\spread[read-arg={_-}]{\parallel}$.
 
-% doc: combinación que el manual no describe
+% doc: «»
 19. Con silent y read-arg a la vez: $\spread[silent=true,read-arg={es-paralela-a}]{\parallel}$.
 
 \section*{D. Comando spusep}
 
-% doc: imprime ( -- «abrir paréntesis»
+% doc: «se abren paréntesis»
 20. Paréntesis que abre: $\spusep{(}$.
 
+% doc: «se cierran paréntesis»
 21. Paréntesis que cierra: $\spusep{)}$.
 
+% doc: «abrir corchetes»
 22. Corchete que abre: $\spusep{[}$.
 
+% doc: «cerrar corchetes»
 23. Corchete que cierra: $\spusep{]}$.
 
+% doc: «abrir llaves»
 24. Llave que abre: $\spusep{\{}$.
 
+% doc: «cerrar llaves»
 25. Llave que cierra: $\spusep{\}}$.
 
+% doc: «se abren paréntesis a más b se cierran paréntesis»
 26. Par de paréntesis: $\spusep{(} a + b \spusep{)}$.
 
+% doc: «abrir corchetes a más b cerrar corchetes»
 27. Par de corchetes: $\spusep{[} a + b \spusep{]}$.
 
+% doc: «el conjunto a coma b»
 28. Par de llaves: $\spusep{\{} a, b \spusep{\}}$.
 
+% doc: «se abren paréntesis a más b se cierran paréntesis»
 29. Con size none, el valor por defecto: $\spusep[size=none]{(} a + b \spusep[size=none]{)}$.
 
+% doc: «se abren paréntesis a partido por b se cierran paréntesis»
 30. Con size big sobre una fracción: $\spusep[size=big]{(} \frac{a}{b} \spusep[size=big]{)}$.
 
+% doc: «se abren paréntesis a partido por b se cierran paréntesis»
 31. Con size Big sobre una fracción: $\spusep[size=Big]{(} \frac{a}{b} \spusep[size=Big]{)}$.
 
+% doc: «se abren paréntesis a partido por b se cierran paréntesis»
 32. Con size bigg sobre una fracción: $\spusep[size=bigg]{(} \frac{a}{b} \spusep[size=bigg]{)}$.
 
+% doc: «se abren paréntesis a partido por b se cierran paréntesis»
 33. Con size Bigg sobre una fracción: $\spusep[size=Bigg]{(} \frac{a}{b} \spusep[size=Bigg]{)}$.
 
+% doc: «abrir corchetes a más b cerrar corchetes»
 34. Corchetes grandes: $\spusep[size=Big]{[} a + b \spusep[size=Big]{]}$.
 
+% doc: «el conjunto a coma b»
 35. Llaves grandes: $\spusep[size=bigg]{\{} a, b \spusep[size=bigg]{\}}$.
 
-% doc: no se verbaliza
+% doc: «a más b»
 36. Con silent true: $\spusep[silent=true]{(} a + b \spusep[silent=true]{)}$.
 
+% doc: «se abren paréntesis a más b se cierran paréntesis»
 37. Con silent false explícito: $\spusep[silent=false]{(} a + b \spusep[silent=false]{)}$.
 
+% doc: «a partido por b»
 38. Con size y silent: $\spusep[size=Big,silent=true]{(} \frac{a}{b} \spusep[size=Big,silent=true]{)}$.
 
 \section*{E. Comando spdsym}
 
-% doc: imprime : -- «dividido»
+% doc: «a dividido b»
 39. Por defecto: $a \spdsym b$.
 
-% doc: imprime ÷
+% doc: «a dividido b»
 40. Con set-sym old-style: $a \spdsym[set-sym=old-style] b$.
 
-% doc: imprime :
+% doc: «a dividido b»
 41. Con set-sym two-dots: $a \spdsym[set-sym=two-dots] b$.
 
-% doc: imprime /
+% doc: «a dividido b»
 42. Con set-sym slash: $a \spdsym[set-sym=slash] b$.
 
-% doc: «dividido»
+% doc: «a dividido b»
 43. Con read-sym dividido: $a \spdsym[read-sym=dividido] b$.
 
-% doc: «dividido por»
+% doc: «a dividido por b»
 44. Con read-sym dividido-por: $a \spdsym[read-sym=dividido-por] b$.
 
-% doc: «dividido entre»
+% doc: «a dividido entre b»
 45. Con read-sym dividido-entre: $a \spdsym[read-sym=dividido-entre] b$.
 
+% doc: «a dividido por b»
 46. Con old-style y dividido-por: $a \spdsym[set-sym=old-style,read-sym=dividido-por] b$.
 
+% doc: «a dividido entre b»
 47. Con slash y dividido-entre: $a \spdsym[set-sym=slash,read-sym=dividido-entre] b$.
 
+% doc: «a se lee dividido b»
 48. Con prefix: $a \spdsym[prefix={se-lee}] b$.
 
+% doc: «a dividido entre b»
 49. Con suffix: $a \spdsym[suffix={entre}] b$.
 
+% doc: «a se lee dividido entre b»
 50. Con prefix y suffix: $a \spdsym[prefix={se-lee},suffix={entre}] b$.
 
+% doc: «12 dividido 4 es igual a 3»
 51. Con números: $12 \spdsym 4 = 3$.
 
 \section*{F. Comando spmsym}
 
-% doc: imprime · -- «por»
+% doc: «a por b»
 52. Por defecto: $a \spmsym b$.
 
-% doc: imprime ×
+% doc: «a por b»
 53. Con set-sym cross: $a \spmsym[set-sym=cross] b$.
 
-% doc: imprime ·
+% doc: «a por b»
 54. Con set-sym dot: $a \spmsym[set-sym=dot] b$.
 
-% doc: imprime ∗
+% doc: «a por b»
 55. Con set-sym asterisk: $a \spmsym[set-sym=asterisk] b$.
 
-% doc: «por»
+% doc: «a por b»
 56. Con read-sym por: $a \spmsym[read-sym=por] b$.
 
-% doc: «multiplicado por»
+% doc: «a multiplicado por b»
 57. Con read-sym multiplicado-por: $a \spmsym[read-sym=multiplicado-por] b$.
 
-% doc: «veces»
+% doc: «a veces b»
 58. Con read-sym veces: $a \spmsym[read-sym=veces] b$.
 
+% doc: «a multiplicado por b»
 59. Con cross y multiplicado-por: $a \spmsym[set-sym=cross,read-sym=multiplicado-por] b$.
 
+% doc: «a veces b»
 60. Con asterisk y veces: $a \spmsym[set-sym=asterisk,read-sym=veces] b$.
 
-% doc: no se imprime el símbolo; se verbaliza igual
+% doc: «2 x»
 61. Con not-print true: $2 \spmsym[not-print=true] x$.
 
+% doc: «2 por x»
 62. Con not-print false explícito: $2 \spmsym[not-print=false] x$.
 
+% doc: «2 x»
 63. Con not-print y read-sym: $2 \spmsym[not-print=true,read-sym=multiplicado-por] x$.
 
+% doc: «a se lee por b»
 64. Con prefix: $a \spmsym[prefix={se-lee}] b$.
 
+% doc: «a por entre b»
 65. Con suffix: $a \spmsym[suffix={entre}] b$.
 
+% doc: «3 por 4 es igual a 12»
 66. Con números: $3 \spmsym 4 = 12$.
 
 \section*{G. Combinaciones}
 
+% doc: «12 dividido 4 por 2»
 67. División y multiplicación: $12 \spdsym 4 \spmsym 2$.
 
+% doc: «se abren paréntesis 6 por 2 se cierran paréntesis dividido 3»
 68. Con delimitadores: $\spusep{(} 6 \spmsym 2 \spusep{)} \spdsym 3$.
 
+% doc: «se abren paréntesis a por b se cierran paréntesis es aproximadamente igual a c»
 69. Con un símbolo registrado: $\spusep{(} a \spmsym b \spusep{)} \spread{\approx} c$.
 
+% doc: «se abren paréntesis a por b se cierran paréntesis dividido c»
 70. En fórmula destacada:
 \[ \spusep[size=Big]{(} a \spmsym b \spusep[size=Big]{)} \spdsym c \].
 
@@ -236,22 +281,22 @@
 % doc: «a es mayor o igual que b»
 72. Lectura registrada con guiones bajos: $a \spread{\geq} b$.
 
-% doc: «A es subconjunto de B»
+% doc: «a es subconjunto de b»
 73. Lectura registrada con un guion bajo al inicio: $A \spread{\subset} B$.
 
-% doc: «x pertenece a A»
+% doc: «x pertenece a a»
 74. Otra lectura con espacios: $x \spread{\in} A$.
 
-% doc: imprime x^2 -- «x al cuadrado»
+% doc: «x cuadrado»
 75. Un comando definido por el usuario: $\spread{\xcuad}$.
 
-% doc: «y es igual a x al cuadrado más 1»
+% doc: «y es igual a x cuadrado más 1»
 76. El comando definido por el usuario en una fórmula: $y = \spread{\xcuad} + 1$.
 
-% doc: no se verbaliza
+% doc: «x cuadrado»
 77. El mismo comando con silent true: $\spread[silent=true]{\xcuad}$.
 
-% doc: «equis al cuadrado»
+% doc: «x cuadrado»
 78. El mismo comando con read-arg: $\spread[read-arg={equis al cuadrado}]{\xcuad}$.
 
 \end{document}

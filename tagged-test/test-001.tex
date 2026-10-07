@@ -31,110 +31,133 @@
 
 \section*{A. Formas del argumento}
 
-% doc: «veintitrés»
+% doc: «23»
 1. Entero sin signo: $\spnum{23}$.
 
-% doc: «más veintitrés»
+% doc: «más 23»
 2. Entero con signo positivo: $\spnum{+23}$.
 
-% doc: «menos veintitrés»
+% doc: «menos 23»
 3. Entero con signo negativo: $\spnum{-23}$.
 
-% doc: «tres coma catorce»
+% doc: «3 coma 14»
 4. Decimal con coma: $\spnum{3,14}$.
 
+% doc: «3 punto 14»
 5. Decimal con punto: $\spnum{3.14}$.
 
+% doc: «menos 3 coma 14»
 6. Decimal negativo: $\spnum{-3,14}$.
 
-% doc: «tres coma cuatro periódico»
+% doc: «3 coma 4 periódico»
 7. Periódico puro: $\spnum{3;4}$.
 
-% doc: «tres coma uno con cuatro periódico»
+% doc: «3 coma 1 con 4 periódico»
 8. Periódico mixto: $\spnum{3,1;4}$.
 
+% doc: «0 coma 1 con 23 periódico»
 9. Periódico de dos cifras: $\spnum{0,1;23}$.
 
+% doc: «menos 3 coma 1 con 4 periódico»
 10. Periódico mixto negativo: $\spnum{-3,1;4}$.
 
 \section*{B. Notación científica}
 
-% doc: «tres coma catorce por diez al cubo»
+% doc: «3 coma 14 por 10 al cubo»
 11. Con e minúscula: $\spnum{3,14e3}$.
 
+% doc: «3 coma 14 por 10 al cubo»
 12. Con E mayúscula: $\spnum{3,14E3}$.
 
+% doc: «3 coma 14 por 10 a la menos 3 potencia»
 13. Exponente negativo: $\spnum{3,14e-3}$.
 
+% doc: «3 coma 14 por 10 elevado a la positivo 3 potencia»
 14. Exponente con signo positivo: $\spnum{3,14e+3}$.
 
+% doc: «5 por 10 cuadrado»
 15. Entero con exponente: $\spnum{5e2}$.
 
+% doc: «menos 3 coma 14 por 10 al cubo»
 16. Número negativo con exponente: $\spnum{-3,14e3}$.
 
 \section*{C. Llave cifras-sep}
 
-% doc: imprime 100\,000
+% doc: «100000»
 17. Por defecto: $\spnum{100000}$.
 
+% doc: «100000»
 18. Con true explícito: $\spnum[cifras-sep=true]{100000}$.
 
+% doc: «1234567 coma 891234»
 19. Parte entera y parte decimal: $\spnum{1234567,891234}$.
 
-% doc: imprime 10\,00\,00
+% doc: «100000»
 20. Con false y espacios del usuario: $\spnum[cifras-sep=false]{10\,00\,00}$.
 
+% doc: «100000»
 21. Con false y sin espacios: $\spnum[cifras-sep=false]{100000}$.
 
 \section*{D. Llave read-sign}
 
-% doc: «menos veintitrés»
+% doc: «menos 23»
 22. Terse con signo negativo: $\spnum[read-sign=terse]{-23}$.
 
-% doc: «veintitrés negativo»
+% doc: «23 negativo»
 23. Clear con signo negativo: $\spnum[read-sign=clear]{-23}$.
 
+% doc: «más 23»
 24. Terse con signo positivo: $\spnum[read-sign=terse]{+23}$.
 
+% doc: «23 positivo»
 25. Clear con signo positivo: $\spnum[read-sign=clear]{+23}$.
 
+% doc: «3 coma 14 negativo»
 26. Clear con decimal negativo: $\spnum[read-sign=clear]{-3,14}$.
 
 \section*{E. Llave read-period-sep}
 
-% doc: «tres coma cuatro periódico»
+% doc: «3 coma 4 periódico»
 27. Con coma: $\spnum[read-period-sep=coma]{3;4}$.
 
-% doc: «tres punto cuatro periódico»
+% doc: «3 punto 4 periódico»
 28. Con punto: $\spnum[read-period-sep=punto]{3;4}$.
 
+% doc: «3 coma 1 con 4 periódico»
 29. Con punto y parte decimal finita: $\spnum[read-period-sep=punto]{3,1;4}$.
 
 \section*{F. Llave notation-sym}
 
-% doc: «tres coma catorce por diez al cubo»
+% doc: «3 coma 14 por 10 al cubo»
 30. Con cdot: $\spnum[notation-sym=cdot]{3,14e3}$.
 
-% doc: «tres coma catorce por diez al cubo»
+% doc: «3 coma 14 por 10 al cubo»
 31. Con times: $\spnum[notation-sym=times]{3,14e3}$.
 
 \section*{G. Combinaciones de llaves}
 
+% doc: «3 coma 14 negativo por 10 al cubo»
 32. Clear y times: $\spnum[read-sign=clear,notation-sym=times]{-3,14e3}$.
 
+% doc: «3 punto 4 periódico negativo»
 33. Clear y punto: $\spnum[read-sign=clear,read-period-sep=punto]{-3;4}$.
 
+% doc: «100000 negativo»
 34. Clear y cifras-sep false: $\spnum[read-sign=clear,cifras-sep=false]{-10\,00\,00}$.
 
 \section*{H. Dentro de fórmulas}
 
+% doc: «3 coma 14 más 2 coma 5 es igual a 5 coma 64»
 35. Suma e igualdad: $\spnum{3,14} + \spnum{2,5} = \spnum{5,64}$.
 
+% doc: «2 negativo es menor que más 3»
 36. Llaves distintas en una misma fórmula: $\spnum[read-sign=clear]{-2} < \spnum{+3}$.
 
+% doc: «3 coma 14 por 10 al cubo»
 37. En fórmula destacada:
 \[ \spnum{3,14e3} \]
 
+% doc: «la fracción con numerador 1 coma 5 y denominador 2»
 38. En una fracción: $\frac{\spnum{1,5}}{\spnum{2}}$.
 
 \end{document}

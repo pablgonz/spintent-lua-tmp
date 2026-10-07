@@ -35,191 +35,246 @@
 
 \section*{A. Comando spnZ: argumentos}
 
+% doc: «23»
 1. Entero positivo: $\spnZ{23}$.
 
+% doc: «menos 23»
 2. Con signo negativo: $\spnZ{-23}$.
 
+% doc: «más 23»
 3. Con signo positivo explícito: $\spnZ{+23}$.
 
+% doc: «0»
 4. Cero: $\spnZ{0}$.
 
+% doc: «100»
 5. Cien: $\spnZ{100}$.
 
+% doc: «1000000»
 6. Un millón: $\spnZ{1000000}$.
 
+% doc: «1234567»
 7. Siete cifras: $\spnZ{1234567}$.
 
+% doc: «menos 1000»
 8. Negativo grande: $\spnZ{-1000}$.
 
 \section*{B. Comando spnZ: llaves}
 
+% doc: «1000000»
 9. Con cifras-sep false: $\spnZ[cifras-sep=false]{1000000}$.
 
+% doc: «100000»
 10. Con cifras-sep false y espacios del usuario: $\spnZ[cifras-sep=false]{10\,00\,00}$.
 
+% doc: «23 negativo»
 11. Con read-sign clear y signo negativo: $\spnZ[read-sign=clear]{-23}$.
 
+% doc: «23 positivo»
 12. Con read-sign clear y signo positivo: $\spnZ[read-sign=clear]{+23}$.
 
+% doc: «menos 23»
 13. Con wrap-parens false, el valor por defecto: $\spnZ[wrap-parens=false]{-23}$.
 
-% doc: se imprimen paréntesis alrededor del entero
+% doc: «se abren paréntesis menos 23 se cierran paréntesis»
 14. Con wrap-parens true: $\spnZ[wrap-parens=true]{-23}$.
 
-% doc: se verbalizan los paréntesis
+% doc: «se abren paréntesis menos 23 se cierran paréntesis»
 15. Con wrap-parens true y read-parens true: $\spnZ[wrap-parens=true,read-parens=true]{-23}$.
 
-% doc: se imprimen pero no se verbalizan
+% doc: «menos 23»
 16. Con wrap-parens true y read-parens false: $\spnZ[wrap-parens=true,read-parens=false]{-23}$.
 
+% doc: «menos 23»
 17. Con wrap-parens false y read-parens false: $\spnZ[wrap-parens=false,read-parens=false]{-23}$.
 
+% doc: «1234567 negativo»
 18. Con todas las llaves: $\spnZ[cifras-sep=false,read-sign=clear,wrap-parens=true,read-parens=false]{-1234567}$.
 
 \section*{C. Comando spnZ: en fórmulas}
 
+% doc: «menos 3 más 5»
 19. Suma de enteros: $\spnZ{-3} + \spnZ{5}$.
 
+% doc: «se abren paréntesis menos 3 se cierran paréntesis por 4»
 20. Con paréntesis y producto: $\spnZ[wrap-parens=true]{-3} \spmsym \spnZ{4}$.
 
+% doc: «12 dividido 4 es igual a 3»
 21. División con igualdad: $\spnZ{12} \spdsym \spnZ{4} = \spnZ{3}$.
 
+% doc: «se abren paréntesis menos 3 se cierran paréntesis por se abren paréntesis menos 4 se cierran paréntesis es igual a 12»
 22. En fórmula destacada:
 \[ \spnZ[wrap-parens=true]{-3} \spmsym \spnZ[wrap-parens=true]{-4} = \spnZ{12} \].
 
 \section*{D. Comando spmQ: ejemplos del manual y llave join-word}
 
-% doc: «dos y la fracción con numerador cinco y denominador siete»
+% doc: «2 y la fracción con numerador 5 y denominador 7»
 23. Por defecto: $\spmQ{2}{5}{7}$.
 
-% doc: «un entero la fracción con numerador cinco y denominador siete»
+% doc: «1 entero la fracción con numerador 5 y denominador 7»
 24. Con join-word entero: $\spmQ[join-word=entero]{1}{5}{7}$.
 
-% doc: «dos enteros la fracción con numerador cinco y denominador siete»
+% doc: «2 enteros la fracción con numerador 5 y denominador 7»
 25. Con join-word enteros: $\spmQ[join-word=enteros]{2}{5}{7}$.
 
-% doc: «dos y la fracción con numerador cinco y denominador siete»
+% doc: «2 y la fracción con numerador 5 y denominador 7»
 26. Con join-word y: $\spmQ[join-word=y]{2}{5}{7}$.
 
 \section*{E. Comando spmQ: denominadores}
 
+% doc: «1 y la fracción con numerador 1 y denominador 2»
 27. Con denominador 2: $\spmQ{1}{1}{2}$.
 
+% doc: «1 y la fracción con numerador 1 y denominador 3»
 28. Con denominador 3: $\spmQ{1}{1}{3}$.
 
+% doc: «2 y la fracción con numerador 3 y denominador 4»
 29. Con denominador 4: $\spmQ{2}{3}{4}$.
 
+% doc: «3 y la fracción con numerador 2 y denominador 5»
 30. Con denominador 5: $\spmQ{3}{2}{5}$.
 
+% doc: «1 y la fracción con numerador 1 y denominador 6»
 31. Con denominador 6: $\spmQ{1}{1}{6}$.
 
+% doc: «4 y la fracción con numerador 6 y denominador 7»
 32. Con denominador 7: $\spmQ{4}{6}{7}$.
 
+% doc: «5 y la fracción con numerador 3 y denominador 8»
 33. Con denominador 8: $\spmQ{5}{3}{8}$.
 
+% doc: «6 y la fracción con numerador 1 y denominador 9»
 34. Con denominador 9: $\spmQ{6}{1}{9}$.
 
+% doc: «7 y la fracción con numerador 3 y denominador 10»
 35. Con denominador 10: $\spmQ{7}{3}{10}$.
 
+% doc: «8 y la fracción con numerador 1 y denominador 11»
 36. Con denominador 11: $\spmQ{8}{1}{11}$.
 
+% doc: «9 y la fracción con numerador 5 y denominador 12»
 37. Con denominador 12: $\spmQ{9}{5}{12}$.
 
+% doc: «3 y la fracción con numerador 1 y denominador 100»
 38. Con denominador 100: $\spmQ{3}{1}{100}$.
 
 \section*{F. Comando spmQ: enteros y llaves}
 
+% doc: «menos 2 y la fracción con numerador 5 y denominador 7»
 39. Entero negativo: $\spmQ{-2}{5}{7}$.
 
+% doc: «más 2 y la fracción con numerador 5 y denominador 7»
 40. Entero con signo positivo explícito: $\spmQ{+2}{5}{7}$.
 
+% doc: «100 y la fracción con numerador 1 y denominador 2»
 41. Entero grande: $\spmQ{100}{1}{2}$.
 
+% doc: «1000 y la fracción con numerador 1 y denominador 2»
 42. Entero de cuatro cifras: $\spmQ{1000}{1}{2}$.
 
-% doc: «dos y la fracción con numerador cinco y denominador siete»
+% doc: «2 y la fracción con numerador 5 y denominador 7»
 43. Con use-spnZ true, el valor por defecto: $\spmQ[use-spnZ=true]{2}{5}{7}$.
 
-% doc: se tipografían directamente; MathCAT lee «dos y cinco séptimos»
+% doc: «2 y 5 séptimos»
 44. Con use-spnZ false: $\spmQ[use-spnZ=false]{2}{5}{7}$.
 
+% doc: «2 y la fracción con numerador 5 y denominador 7»
 45. Con use-dfrac false, el valor por defecto: $\spmQ[use-dfrac=false]{2}{5}{7}$.
 
-% doc: la fracción se imprime con \dfrac
+% doc: «2 y la fracción con numerador 5 y denominador 7»
 46. Con use-dfrac true: $\spmQ[use-dfrac=true]{2}{5}{7}$.
 
+% doc: «se abren paréntesis 2 y la fracción con numerador 5 y denominador 7 se cierran paréntesis»
 47. Con wrap-parens true: $\spmQ[wrap-parens=true]{2}{5}{7}$.
 
+% doc: «2 y la fracción con numerador 5 y denominador 7»
 48. Con wrap-parens true y read-parens false: $\spmQ[wrap-parens=true,read-parens=false]{2}{5}{7}$.
 
+% doc: «2 enteros la fracción con numerador 5 y denominador 7»
 49. Con join-word y use-dfrac: $\spmQ[join-word=enteros,use-dfrac=true]{2}{5}{7}$.
 
+% doc: «1 entero 5 séptimos»
 50. Con todas las llaves: $\spmQ[join-word=entero,use-spnZ=false,use-dfrac=true,wrap-parens=true,read-parens=false]{1}{5}{7}$.
 
+% doc: «2 y la fracción con numerador 5 y denominador 7 más 1 y la fracción con numerador 1 y denominador 2»
 51. Suma de números mixtos: $\spmQ{2}{5}{7} + \spmQ{1}{1}{2}$.
 
 \section*{G. Comando sprazon}
 
-% doc: tres es a cuatro
+% doc: «3 es a 4»
 52. Dos enteros: $\sprazon{3}{4}$.
 
+% doc: «a es a b»
 53. Con letras: $\sprazon{a}{b}$.
 
+% doc: «x más 1 es a 2»
 54. Con una expresión: $\sprazon{x+1}{2}$.
 
+% doc: «12 es a 18»
 55. Con cifras grandes: $\sprazon{12}{18}$.
 
+% doc: «3 es a 4»
 56. Con silent false, el valor por defecto: $\sprazon[silent=false]{3}{4}$.
 
-% doc: no se verbaliza
+% doc: «»
 57. Con silent true: $\sprazon[silent=true]{3}{4}$.
 
-% doc: la fracción se imprime con \dfrac
+% doc: «3 es a 4»
 58. Con use-dfrac true: $\sprazon[use-dfrac=true]{3}{4}$.
 
-% doc: imprime 3:4; la lectura es la misma
+% doc: «3 es a 4»
 59. Con inline true: $\sprazon[inline=true]{3}{4}$.
 
+% doc: «a es a b»
 60. Con inline true y letras: $\sprazon[inline=true]{a}{b}$.
 
-% doc: use-dfrac no tiene efecto con inline
+% doc: «3 es a 4»
 61. Con inline y use-dfrac: $\sprazon[inline=true,use-dfrac=true]{3}{4}$.
 
+% doc: «»
 62. Con silent e inline: $\sprazon[silent=true,inline=true]{3}{4}$.
 
+% doc: «3 es a 4 es igual a 6 es a 8»
 63. Dos razones iguales: $\sprazon{3}{4} = \sprazon{6}{8}$.
 
 \section*{H. Comando spProp}
 
-% doc: tres es a cuatro como seis es a ocho
+% doc: «3 es a 4 como 6 es a 8»
 64. Cuatro enteros: $\spProp{3}{4}{6}{8}$.
 
+% doc: «a es a b como c es a d»
 65. Con letras: $\spProp{a}{b}{c}{d}$.
 
+% doc: «x es a 2 como x más 1 es a 3»
 66. Con expresiones: $\spProp{x}{2}{x+1}{3}$.
 
+% doc: «3 es a 4 como 6 es a 8»
 67. Con silent false, el valor por defecto: $\spProp[silent=false]{3}{4}{6}{8}$.
 
-% doc: no se verbaliza
+% doc: «»
 68. Con silent true: $\spProp[silent=true]{3}{4}{6}{8}$.
 
-% doc: las fracciones se imprimen con \dfrac
+% doc: «3 es a 4 como 6 es a 8»
 69. Con use-dfrac true: $\spProp[use-dfrac=true]{3}{4}{6}{8}$.
 
-% doc: imprime 3:4=6:8; la lectura es la misma
+% doc: «3 es a 4 como 6 es a 8»
 70. Con inline true: $\spProp[inline=true]{3}{4}{6}{8}$.
 
+% doc: «a es a b como c es a d»
 71. Con inline true y letras: $\spProp[inline=true]{a}{b}{c}{d}$.
 
-% doc: use-dfrac no tiene efecto con inline
+% doc: «3 es a 4 como 6 es a 8»
 72. Con inline y use-dfrac: $\spProp[inline=true,use-dfrac=true]{3}{4}{6}{8}$.
 
+% doc: «»
 73. Con silent e inline: $\spProp[silent=true,inline=true]{3}{4}{6}{8}$.
 
 \section*{I. En contexto}
 
+% doc: «3 es a 4 flecha doble derecha 3 es a 4 como 6 es a 8»
 74. Razón y proporción en una misma fórmula: $\sprazon{3}{4} \Rightarrow \spProp{3}{4}{6}{8}$.
 
+% doc: «a es a b como c es a d»
 75. En fórmula destacada:
 \[ \spProp[use-dfrac=true]{a}{b}{c}{d} \].
 

@@ -35,6 +35,7 @@
 
 % doc: «veintiuno»
 % imprime xxi en versalitas
+% doc: «21. encabezado nivel 1 B. Comando spsiglo en modo matemático»
 1. Arábigo 21: \spsiglo{21}.
 
 % doc: «veintiuno»
@@ -78,15 +79,18 @@
 
 \section*{B. Comando spsiglo en modo matemático}
 
+% doc: «21»
 20. Arábigo: $\spsiglo{21}$.
 
+% doc: «21»
 21. Romano: $\spsiglo{XXI}$.
 
+% doc: «5 antes de cristo»
 22. Con print-era ac: $\spsiglo[print-era=ac]{5}$.
 
 \section*{C. Llave print-era}
 
-% doc: «veintiuno»
+% doc: «21antes de cristo.»
 23. Por defecto: \spsiglo{21}.
 
 % doc: «veintiuno»
@@ -98,61 +102,82 @@
 
 % doc: «veintiuno después de cristo»
 % imprime xxi d. C.
+% doc: «21después de cristo.»
 26. Con dc: \spsiglo[print-era=dc]{21}.
 
+% doc: «5antes de cristo.»
 27. Con ac y número romano: \spsiglo[print-era=ac]{V}.
 
+% doc: «15después de cristo.»
 28. Con dc y número romano: \spsiglo[print-era=dc]{XV}.
 
 \section*{D. Comando sptime (modo matemático)}
 
-% doc: «las veintitrés y cuarenta y cinco minutos»
+% doc: «45 minutos»
 29. Horas y minutos: $\sptime{23:45}$.
 
+% doc: «45 minutos con 30 segundos»
 30. Con segundos: $\sptime{23:45:30}$.
 
+% doc: «00 minutos»
 31. Medianoche: $\sptime{00:00}$.
 
+% doc: «00 minutos con 00 segundos»
 32. Medianoche con segundos: $\sptime{00:00:00}$.
 
+% doc: «05 minutos»
 33. Hora con cero inicial: $\sptime{01:05}$.
 
+% doc: «00 minutos»
 34. Mediodía: $\sptime{12:00}$.
 
+% doc: «30»
 35. Y media: $\sptime{12:30}$.
 
+% doc: «00 minutos»
 36. Hora de la tarde: $\sptime{13:00}$.
 
+% doc: «15 minutos»
 37. Y cuarto: $\sptime{18:15}$.
 
+% doc: «07 minutos con 03 segundos»
 38. Con segundos y ceros: $\sptime{09:07:03}$.
 
+% doc: «59 minutos con 59 segundos»
 39. Último segundo del día: $\sptime{23:59:59}$.
 
 % el manual no lo documenta, pero el código lo acepta
+% doc: «05 minutos»
 40. Sin cero inicial: $\sptime{1:05}$.
 
 \section*{E. Comando spdate (modo matemático)}
 
 % doc: «dos de enero de mil novecientos ochenta y uno»
 % imprime 02/01/1981
+% doc: «02/01/1981»
 41. Formato DD/MM/YYYY: $\spdate{02/01/1981}$.
 
 % doc: «dos de enero de mil novecientos ochenta y uno»
 % imprime 1981-01-02
+% doc: «1981-01-02»
 42. Formato YYYY-MM-DD: $\spdate{1981-01-02}$.
 
+% doc: «02-01-1981»
 43. Formato DD-MM-YYYY: $\spdate{02-01-1981}$.
 
-% doc: se convierte a DD/MM/YYYY y se imprime 02/01/1981
+% doc: «02/01/1981»
 44. Formato YYYY/MM/DD, que se convierte: $\spdate{1981/01/02}$.
 
+% doc: «01/01/2000»
 45. Primero de enero: $\spdate{01/01/2000}$.
 
+% doc: «31/12/1999»
 46. Fin de año: $\spdate{31/12/1999}$.
 
+% doc: «29/02/2024»
 47. Año bisiesto con DD/MM/YYYY: $\spdate{29/02/2024}$.
 
+% doc: «2024-02-29»
 48. Año bisiesto con YYYY-MM-DD: $\spdate{2024-02-29}$.
 
 % el manual no lo documenta, pero el código lo acepta
@@ -160,19 +185,26 @@
 
 \section*{F. En contexto y dentro de fórmulas}
 
+% doc: «Nació en el siglo19 en Valparaíso.»
 50. Siglo en una oración: Nació en el siglo \spsiglo{XIX} en Valparaíso.
 
+% doc: «Ocurrió en el siglo5antes de cristo.»
 51. Siglo antes de Cristo en una oración: Ocurrió en el siglo \spsiglo[print-era=ac]{V}.
 
+% doc: «45 minutos»
 52. Hora y fecha en una misma oración: Salió a las $\sptime{23:45}$ del $\spdate{31/12/1999}$.
 
+% doc: «45 minutos»
 53. Comparación de horas: $\sptime{09:30} < \sptime{23:45}$.
 
+% doc: «02/01/1981 es igual a 1981-01-02»
 54. La misma fecha en dos formatos: $\spdate{02/01/1981} = \spdate{1981-01-02}$.
 
+% doc: «31/12/1999»
 55. Fecha en fórmula destacada:
 \[ \spdate{31/12/1999} \].
 
+% doc: «20 es menor que 21»
 56. Siglos en una fórmula: $\spsiglo{XX} < \spsiglo{XXI}$.
 
 \end{document}

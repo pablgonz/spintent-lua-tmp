@@ -39,289 +39,356 @@
 
 \section*{A. Comando sprecta: argumentos}
 
-% doc: imprime \overleftrightarrow{AB} -- «recta A B»
+% doc: «recta A B»
 1. Dos puntos juntos: $\sprecta{AB}$.
 
-% doc: imprime m -- «recta m»
+% doc: «recta m»
 2. Una letra minúscula: $\sprecta{m}$.
 
+% doc: «recta A B»
 3. Dos puntos con coma y espacio: $\sprecta{A, B}$.
 
+% doc: «recta A B»
 4. Dos puntos con coma: $\sprecta{A,B}$.
 
+% doc: «recta A prima B prima»
 5. Con primas: $\sprecta{A'B'}$.
 
+% doc: «recta A sub uno B sub dos»
 6. Con subíndices: $\sprecta{A_{1}B_{2}}$.
 
+% doc: «recta A sub uno B sub dos»
 7. Con subíndices y coma: $\sprecta{A_{1},B_{2}}$.
 
+% doc: «recta A doble prima B»
 8. Con dos primas: $\sprecta{A''B}$.
 
+% doc: «recta A sub 12»
 9. Con subíndices de dos cifras: $\sprecta{A_{12}B_{3}}$.
 
+% doc: «recta L»
 10. Una letra mayúscula: $\sprecta{L}$.
 
+% doc: «recta r sub uno»
 11. Una letra con subíndice: $\sprecta{r_{1}}$.
 
+% doc: «recta L sub uno»
 12. Una mayúscula con subíndice: $\sprecta{L_{1}}$.
 
+% doc: «recta m prima»
 13. Una letra con prima: $\sprecta{m'}$.
 
+% doc: «recta l doble prima»
 14. Una letra con dos primas: $\sprecta{l''}$.
 
 \section*{B. Comando sprecta: llaves}
 
-% doc: recta A B, sin el prefijo mayúscula
+% doc: «recta A B»
 15. Con read-cmd school, el valor por defecto: $\sprecta[read-cmd=school]{AB}$.
 
-% doc: MathCAT aplica sus propias reglas
+% doc: «recta a b»
 16. Con read-cmd mathcat: $\sprecta[read-cmd=mathcat]{AB}$.
 
+% doc: «recta l»
 17. Con read-cmd mathcat y una mayúscula: $\sprecta[read-cmd=mathcat]{L}$.
 
-% doc: el prefijo se verbaliza antes del concepto
+% doc: «la recta A B»
 18. Con prefix y dos puntos: $\sprecta[prefix={la}]{AB}$.
 
-% doc: el prefijo se verbaliza antes del concepto
+% doc: «la recta m»
 19. Con prefix y una letra: $\sprecta[prefix={la}]{m}$.
 
-% doc: el prefijo se verbaliza antes del concepto
+% doc: «la recta r sub uno»
 20. Con prefix y una letra con subíndice: $\sprecta[prefix={la}]{r_{1}}$.
 
-% doc: el prefijo se verbaliza antes del concepto
+% doc: «la recta m prima»
 21. Con prefix y una letra con prima: $\sprecta[prefix={la}]{m'}$.
 
+% doc: «recta A B»
 22. Con concept true, el valor por defecto: $\sprecta[concept=true]{AB}$.
 
-% doc: solo se verbaliza el argumento
+% doc: «A B»
 23. Con concept false y dos puntos: $\sprecta[concept=false]{AB}$.
 
-% doc: solo se verbaliza el argumento
+% doc: «m»
 24. Con concept false y una letra: $\sprecta[concept=false]{m}$.
 
-% doc: solo se verbaliza el argumento
+% doc: «r sub uno»
 25. Con concept false y una letra con subíndice: $\sprecta[concept=false]{r_{1}}$.
 
-% doc: solo se verbaliza el argumento
+% doc: «m prima»
 26. Con concept false y una letra con prima: $\sprecta[concept=false]{m'}$.
 
+% doc: «recta A B»
 27. Con silent false, el valor por defecto: $\sprecta[silent=false]{AB}$.
 
-% doc: no se verbaliza
+% doc: «»
 28. Con silent true y dos puntos: $\sprecta[silent=true]{AB}$.
 
-% doc: no se verbaliza
+% doc: «»
 29. Con silent true y una letra: $\sprecta[silent=true]{m}$.
 
-% doc: no se verbaliza
+% doc: «»
 30. Con silent true y una letra con subíndice: $\sprecta[silent=true]{r_{1}}$.
 
-% doc: no se verbaliza
+% doc: «»
 31. Con silent true y una letra con prima: $\sprecta[silent=true]{m'}$.
 
-% doc: no se verbaliza
+% doc: «»
 32. Con silent true y una letra con dos primas: $\sprecta[silent=true]{l''}$.
 
+% doc: «»
 33. Con silent true y read-cmd mathcat: $\sprecta[silent=true,read-cmd=mathcat]{r_{1}}$.
 
+% doc: «la recta a subíndice 1 b subíndice 2»
 34. Con todas las llaves: $\sprecta[read-cmd=mathcat,prefix={la},concept=true,silent=false]{A_{1}B_{2}}$.
 
 \section*{C. Comando sprayo}
 
-% doc: imprime \overrightarrow{AB} -- «rayo A B»
+% doc: «rayo A B»
 35. Dos puntos juntos: $\sprayo{AB}$.
 
+% doc: «rayo A B»
 36. Dos puntos con coma y espacio: $\sprayo{A, B}$.
 
+% doc: «rayo A B»
 37. Dos puntos con coma: $\sprayo{A,B}$.
 
+% doc: «rayo A prima B prima»
 38. Con primas: $\sprayo{A'B'}$.
 
+% doc: «rayo A sub uno B sub dos»
 39. Con subíndices: $\sprayo{A_{1}B_{2}}$.
 
+% doc: «rayo A sub uno B sub dos»
 40. Con subíndices y coma: $\sprayo{A_{1},B_{2}}$.
 
+% doc: «rayo O A»
 41. Con el origen: $\sprayo{OA}$.
 
-% doc: rayo A B, sin el prefijo mayúscula
+% doc: «rayo A B»
 42. Con read-cmd school, el valor por defecto: $\sprayo[read-cmd=school]{AB}$.
 
-% doc: MathCAT aplica sus propias reglas
+% doc: «rayo a b»
 43. Con read-cmd mathcat: $\sprayo[read-cmd=mathcat]{AB}$.
 
-% doc: rayo A B
+% doc: «rayo A B»
 44. Con read-sty rayo, el valor por defecto: $\sprayo[read-sty=rayo]{AB}$.
 
-% doc: semirrecta A B
+% doc: «semirrecta A B»
 45. Con read-sty semirrecta: $\sprayo[read-sty=semirrecta]{AB}$.
 
-% doc: el prefijo se verbaliza antes del concepto
+% doc: «el rayo A B»
 46. Con prefix y read-sty rayo: $\sprayo[prefix={el}]{AB}$.
 
+% doc: «la semirrecta A B»
 47. Con prefix y read-sty semirrecta: $\sprayo[prefix={la},read-sty=semirrecta]{AB}$.
 
+% doc: «rayo A B»
 48. Con concept true, el valor por defecto: $\sprayo[concept=true]{AB}$.
 
-% doc: solo se verbaliza el argumento
+% doc: «A B»
 49. Con concept false: $\sprayo[concept=false]{AB}$.
 
+% doc: «A B»
 50. Con concept false y semirrecta: $\sprayo[concept=false,read-sty=semirrecta]{AB}$.
 
+% doc: «rayo A B»
 51. Con silent false, el valor por defecto: $\sprayo[silent=false]{AB}$.
 
-% doc: no se verbaliza
+% doc: «»
 52. Con silent true: $\sprayo[silent=true]{AB}$.
 
+% doc: «»
 53. Con silent true y subíndices: $\sprayo[silent=true]{A_{1}B_{2}}$.
 
+% doc: «la semirrecta a subíndice 1 b subíndice 2»
 54. Con todas las llaves: $\sprayo[read-cmd=mathcat,read-sty=semirrecta,prefix={la},concept=true,silent=false]{A_{1}B_{2}}$.
 
 \section*{D. Comando spside}
 
-% doc: imprime \overline{AB} -- «lado A B»
+% doc: «lado A B»
 55. Dos puntos juntos: $\spside{AB}$.
 
+% doc: «lado A B»
 56. Dos puntos con coma y espacio: $\spside{A, B}$.
 
+% doc: «lado A B»
 57. Dos puntos con coma: $\spside{A,B}$.
 
+% doc: «lado A prima B prima»
 58. Con primas: $\spside{A'B'}$.
 
+% doc: «lado A sub uno B sub dos»
 59. Con subíndices: $\spside{A_{1}B_{2}}$.
 
+% doc: «lado A sub uno B sub dos»
 60. Con subíndices y coma: $\spside{A_{1},B_{2}}$.
 
+% doc: «lado B C»
 61. Con el vértice: $\spside{BC}$.
 
+% doc: «lado A B»
 62. Con read-cmd school, el valor por defecto: $\spside[read-cmd=school]{AB}$.
 
-% doc: MathCAT aplica sus propias reglas
+% doc: «lado a b»
 63. Con read-cmd mathcat: $\spside[read-cmd=mathcat]{AB}$.
 
-% doc: lado A B
+% doc: «lado A B»
 64. Con read-sty lado: $\spside[read-sty=lado]{AB}$.
 
-% doc: segmento A B
+% doc: «segmento A B»
 65. Con read-sty segmento: $\spside[read-sty=segmento]{AB}$.
 
-% doc: trazo A B
+% doc: «trazo A B»
 66. Con read-sty trazo: $\spside[read-sty=trazo]{AB}$.
 
-% doc: el prefijo se verbaliza antes del concepto
+% doc: «el lado A B»
 67. Con prefix: $\spside[prefix={el}]{AB}$.
 
+% doc: «el segmento A B»
 68. Con prefix y read-sty segmento: $\spside[prefix={el},read-sty=segmento]{AB}$.
 
+% doc: «lado A B»
 69. Con concept true, el valor por defecto: $\spside[concept=true]{AB}$.
 
-% doc: solo se verbaliza el argumento
+% doc: «A B»
 70. Con concept false: $\spside[concept=false]{AB}$.
 
+% doc: «A B»
 71. Con concept false y trazo: $\spside[concept=false,read-sty=trazo]{AB}$.
 
-% doc: imprime \overline{AB} -- «hipotenusa A B»
+% doc: «hipotenusa A B»
 72. Con read-arg: $\spside[read-arg={hipotenusa}]{AB}$.
 
-% doc: los espacios pasan a guiones
+% doc: «lado opuesto A B»
 73. Con read-arg de varias palabras: $\spside[read-arg={lado opuesto}]{AB}$.
 
+% doc: «la hipotenusa A B»
 74. Con read-arg y prefix: $\spside[read-arg={hipotenusa},prefix={la}]{AB}$.
 
+% doc: «hipotenusa A B»
 75. Con read-arg y concept false: $\spside[read-arg={hipotenusa},concept=false]{AB}$.
 
+% doc: «lado A B»
 76. Con silent false, el valor por defecto: $\spside[silent=false]{AB}$.
 
-% doc: no se verbaliza
+% doc: «»
 77. Con silent true: $\spside[silent=true]{AB}$.
 
+% doc: «»
 78. Con silent true y subíndices: $\spside[silent=true]{A_{1}B_{2}}$.
 
+% doc: «el segmento a subíndice 1 b subíndice 2»
 79. Con todas las llaves: $\spside[read-cmd=mathcat,read-sty=segmento,prefix={el},concept=true,silent=false]{A_{1}B_{2}}$.
 
 \section*{E. Comando spmside}
 
-% doc: imprime AB -- «medida del lado A B»
+% doc: «medida del lado A B»
 80. Dos puntos juntos: $\spmside{AB}$.
 
+% doc: «medida del lado A B»
 81. Dos puntos con coma y espacio: $\spmside{A, B}$.
 
+% doc: «medida del lado A B»
 82. Dos puntos con coma: $\spmside{A,B}$.
 
+% doc: «medida del lado A prima B prima»
 83. Con primas: $\spmside{A'B'}$.
 
+% doc: «medida del lado A sub uno B sub dos»
 84. Con subíndices: $\spmside{A_{1}B_{2}}$.
 
+% doc: «medida del lado A sub uno B sub dos»
 85. Con subíndices y coma: $\spmside{A_{1},B_{2}}$.
 
+% doc: «medida del lado B C»
 86. Con el vértice: $\spmside{BC}$.
 
+% doc: «medida del lado A B»
 87. Con read-cmd school, el valor por defecto: $\spmside[read-cmd=school]{AB}$.
 
-% doc: MathCAT aplica sus propias reglas
+% doc: «medida del lado a b»
 88. Con read-cmd mathcat: $\spmside[read-cmd=mathcat]{AB}$.
 
-% doc: medida del lado A B
+% doc: «medida del lado A B»
 89. Con read-sty lado: $\spmside[read-sty=lado]{AB}$.
 
-% doc: medida del segmento A B
+% doc: «medida del segmento A B»
 90. Con read-sty segmento: $\spmside[read-sty=segmento]{AB}$.
 
-% doc: medida del trazo A B
+% doc: «medida del trazo A B»
 91. Con read-sty trazo: $\spmside[read-sty=trazo]{AB}$.
 
-% doc: el prefijo se verbaliza antes del concepto
+% doc: «el medida del lado A B»
 92. Con prefix: $\spmside[prefix={el}]{AB}$.
 
+% doc: «el medida del segmento A B»
 93. Con prefix y read-sty segmento: $\spmside[prefix={el},read-sty=segmento]{AB}$.
 
+% doc: «medida del lado A B»
 94. Con concept true, el valor por defecto: $\spmside[concept=true]{AB}$.
 
-% doc: solo se verbaliza el argumento
+% doc: «A B»
 95. Con concept false: $\spmside[concept=false]{AB}$.
 
+% doc: «A B»
 96. Con concept false y trazo: $\spmside[concept=false,read-sty=trazo]{AB}$.
 
-% doc: imprime AB -- «medida de la cuerda A B»
+% doc: «medida de la cuerda A B»
 97. Con read-arg y concept false: $\spmside[concept=false,read-arg={medida de la cuerda}]{AB}$.
 
-% doc: medida del hipotenusa A B, según el código
+% doc: «medida del hipotenusa A B»
 98. Con read-arg y concept true: $\spmside[read-arg={hipotenusa}]{AB}$.
 
+% doc: «la medida de la cuerda A B»
 99. Con read-arg y prefix: $\spmside[concept=false,read-arg={medida de la cuerda},prefix={la}]{AB}$.
 
-% doc: imprime AB
+% doc: «medida del lado A B»
 100. Con print-m false, el valor por defecto: $\spmside[print-m=false]{AB}$.
 
-% doc: imprime m\overline{AB} -- «medida del lado A B»
+% doc: «medida del lado A B»
 101. Con print-m true: $\spmside[print-m=true]{AB}$.
 
+% doc: «medida del lado A sub uno B sub dos»
 102. Con print-m true y subíndices: $\spmside[print-m=true]{A_{1}B_{2}}$.
 
+% doc: «medida del lado A B»
 103. Con silent false, el valor por defecto: $\spmside[silent=false]{AB}$.
 
-% doc: no se verbaliza
+% doc: «»
 104. Con silent true: $\spmside[silent=true]{AB}$.
 
+% doc: «»
 105. Con silent true y subíndices: $\spmside[silent=true]{A_{1}B_{2}}$.
 
+% doc: «el medida del segmento a subíndice 1 b subíndice 2»
 106. Con todas las llaves: $\spmside[read-cmd=mathcat,read-sty=segmento,prefix={el},concept=true,silent=false,print-m=true]{A_{1}B_{2}}$.
 
 \section*{F. En fórmulas}
 
+% doc: «recta A B es paralelo a recta C D»
 107. Rectas paralelas: $\sprecta{AB} \parallel \sprecta{CD}$.
 
+% doc: «recta m es perpendicular a recta n»
 108. Rectas perpendiculares: $\sprecta{m} \perp \sprecta{n}$.
 
+% doc: «rayo O A unión rayo O B»
 109. Dos rayos con origen común: $\sprayo{OA} \cup \sprayo{OB}$.
 
+% doc: «lado A B es igual a lado C D»
 110. Segmentos iguales: $\spside{AB} = \spside{CD}$.
 
+% doc: «medida del lado A B es igual a medida del lado C D»
 111. Medidas iguales: $\spmside{AB} = \spmside{CD}$.
 
+% doc: «medida del lado A B más medida del lado B C es mayor que medida del lado A C»
 112. Desigualdad triangular: $\spmside{AB} + \spmside{BC} > \spmside{AC}$.
 
+% doc: «medida del lado A B es igual a medida del lado C D»
 113. Medida con m impresa: $\spmside[print-m=true]{AB} = \spmside[print-m=true]{CD}$.
 
+% doc: «medida del lado A B más medida del lado B C es igual a medida del lado A C»
 114. En fórmula destacada:
 \[ \spmside{AB} + \spmside{BC} = \spmside{AC} \].
 
