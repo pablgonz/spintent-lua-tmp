@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-10-05]
+     Lua module spintent.lua for spintent package - v0.99 [2026-10-07]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -2518,6 +2518,21 @@ end, { "string" })
 -- esa funcion completa ni disparar sus propios token_set_macro de
 -- unidades/millones/exponente, que no aplican aca.
 
+-- Altura "alta" de un valor: busca \dfrac, \frac o \spmQ en CUALQUIER
+-- posicion (como \spinterval), pero ignora lo que quede dentro de un
+-- subindice o superindice (x_{\frac{1}{2}} no agranda el parentesis).
+-- Devuelve "dfrac", "frac" o "none".
+local function spintent_spcoord_tall(value)
+    local v = value
+    v = v:gsub("[_^]%s*%b{}", "")
+    v = v:gsub("[_^]%s*\\%a+", "")
+    v = v:gsub("[_^]%s*[^%s{\\]", "")
+    if s_match(v, "\\dfrac%f[%A]") then return "dfrac" end
+    if s_match(v, "\\spmQ%s*%[[^%]]*use%-dfrac%s*=%s*true") then return "dfrac" end
+    if s_match(v, "\\frac%f[%A]") or s_match(v, "\\spmQ%f[%A]") then return "frac" end
+    return "none"
+end
+
 local function spintent_spcoord_classify_base(part)
     local sign, rest = "", part
     local first = s_sub(part, 1, 1)
@@ -2526,11 +2541,9 @@ local function spintent_spcoord_classify_base(part)
         rest = spintent_trim(s_sub(part, 2))
     end
 
-    if s_match(rest, "^\\dfrac%s*%{") then
-        return sign, "raw", rest, "dfrac"
-    end
-    if s_match(rest, "^\\frac%s*%{") then
-        return sign, "raw", rest, "frac"
+    local tall = spintent_spcoord_tall(rest)
+    if tall ~= "none" then
+        return sign, "raw", rest, tall
     end
 
     local num_result = spintent_number_pattern:match(rest)
@@ -2549,7 +2562,8 @@ end
 local function spintent_spcoord_classify(part)
     local sign, type_, value, has_frac = spintent_spcoord_classify_base(part)
     local comp = "false"
-    if type_ == "raw" and has_frac == "none"
+    if type_ == "raw"
+       and not s_match(value, "^\\d?frac%f[%A]")
        and (s_match(value, "[_^]") or s_match(value, "\\sqrt")) then
         comp = "true"
     end
@@ -2627,19 +2641,8 @@ end, { "string" })
 
 -- Intervalos
 
--- \spinterval (modo school): "<izq> a <sep> b <der>". Delimitador
--- izquierdo ( [ ]  y derecho ) ] [  -- cualquier combinacion; la notacion
--- chilena ]a, b[ es un intervalo abierto. Un delimitador "abierto"
--- excluye el extremo: ( ) ] [ ; "cerrado" lo incluye: [ ] .
---
--- Separador: un ";" a profundidad de llaves 0 (las comas son decimales);
--- si no hay ";", exactamente una "," a profundidad 0. \, y \; no cuentan
--- como separador. El infinito (\infty, +\infty, -\infty) nunca se incluye:
--- un delimitador cerrado junto al infinito es un error, y -\infty solo
--- puede ir a la izquierda y \infty a la derecha.
---
--- La fraccion se detecta en CUALQUIER posicion del extremo (spcoord solo
--- mira el comienzo), para decidir el tamano del delimitador en expl3.
+-- \spinterval: delimitador ( [ ] a la izquierda y ) ] [ a la derecha; el
+-- separador es un ";" o, si no hay, una única "," a profundidad de llaves 0.
 
 local spintent_interval_left_open  = { ["("] = true,  ["["] = false, ["]"] = true }
 local spintent_interval_right_open = { [")"] = true,  ["]"] = false, ["["] = true }

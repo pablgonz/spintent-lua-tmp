@@ -1,0 +1,129 @@
+% test-020.tex -- regresion de \spcoord
+%
+% Compilar:  lualatex-dev test-020.tex
+% Validar:   show-pdf-tags --xml test-020.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-020.pdf
+%
+% Test de regresion dedicado a \spcoord, que tuvo varios fallos que se
+% pisaban entre si:
+%   - la altura de los parentesis (una fraccion en cualquier posicion de la
+%     abscisa o de la ordenada, o un \spmQ, los agranda; dentro de un
+%     subindice o superindice no);
+%   - MathCAT leia (1,2) como intervalo si despues venia = o \in (se
+%     envuelve en \mathord);
+%   - un unico nodo con raiz, potencia o subindice perdia su arg (coma
+%     perdida) si ademas llevaba una fraccion.
+% Los "doc:" son lecturas reales de NVDA con MathCAT (2026-10-07), salvo los
+% marcados PENDIENTE. "es no es igual a" y "es miembro de a" son lecturas
+% propias de MathCAT, no del paquete. El tamano se comprueba en el XML
+% (maxsize/minsize del <mo>): 11.907pt en texto, 17.861pt con dfrac o en display.
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-020: regresion de spcoord},
+  }
+\begin{document}
+
+\section*{A. Varias coordenadas en una fórmula}
+
+% doc: «1 coma 2 es igual a 3 coma 4»
+1. Dos coordenadas con igual: $\spcoord{1,2} = \spcoord{3,4}$.
+
+% doc: «1 coma 2 más 3 coma 4»
+2. Dos coordenadas con suma: $\spcoord{1,2} + \spcoord{3,4}$.
+
+% doc: «x es igual a 3 coma 4»
+3. Una coordenada tras el igual: $x = \spcoord{3,4}$.
+
+% doc: «1 coma 2 es igual a 3 coma 4 es igual a 5 coma 6»
+4. Tres coordenadas encadenadas: $\spcoord{1,2} = \spcoord{3,4} = \spcoord{5,6}$.
+
+% doc: «punto A 1 coma 2 es igual a punto B 3 coma 4»
+5. Dos puntos con coordenadas: $\spPoint{A}(1,2) = \spPoint{B}(3,4)$.
+
+\section*{B. Lo que viene después del paréntesis (MathCAT leía el par como un intervalo)}
+
+% doc: «1 coma 2 es igual a 5»
+6. Igual y un número: $\spcoord{1,2} = 5$.
+
+% doc: «1 coma 2 es miembro de a»
+7. Pertenencia: $\spcoord{1,2} \in A$.
+
+% doc: «1 coma 2 es no es igual a 3 coma 4»
+8. Distinto: $\spcoord{1,2} \neq \spcoord{3,4}$.
+
+% doc: «1 coma 2 es menor que 3 coma 4»
+9. Menor: $\spcoord{1,2} < \spcoord{3,4}$.
+
+% doc: «1 coma 2 3»
+10. Sin operador, producto implícito: $\spcoord{1,2}\,3$.
+
+% doc: «1 punto y coma 2 es igual a 5»
+11. Con punto y coma: $\spcoord{1;2} = 5$.
+
+% doc: «x es igual a 1 coma 2 es igual a 5»
+12. Una variable antes y un igual después: $x = \spcoord{1,2} = 5$.
+
+\section*{C. Tamaño de los paréntesis (mirar maxsize en el XML)}
+
+% doc: «1 mitad coma 3»
+13. Fracción al comienzo (11.907pt): $\spcoord{\frac{1}{2}, 3}$.
+
+% doc: «1 más 1 mitad coma 3»
+14. Fracción después de un término, en la abscisa (11.907pt): $\spcoord{1+\frac{1}{2}, 3}$.
+
+% doc: «3 coma 1 más 1 mitad»
+15. Fracción después de un término, en la ordenada (11.907pt): $\spcoord{3, 1+\frac{1}{2}}$.
+
+% doc: «1 más 1 mitad coma 3»
+16. Con dfrac después de un término (17.861pt): $\spcoord{1+\dfrac{1}{2}, 3}$.
+
+% doc: «el raíz cuadrada de 1 mitad coma 1»
+17. Fracción dentro de una raíz (11.907pt): $\spcoord{\sqrt{\frac{1}{2}}, 1}$.
+
+% doc: «x subíndice 1 mitad coma 1»
+18. Fracción dentro de un subíndice, sin tamaño: $\spcoord{x_{\frac{1}{2}}, 1}$.
+
+% doc: «1 y la fracción con numerador 1 y denominador 2 coma 3»
+19. Mixto en la abscisa (11.907pt): $\spcoord{\spmQ{1}{1}{2}, 3}$.
+
+% doc: «3 coma 1 y la fracción con numerador 1 y denominador 2»
+20. Mixto en la ordenada (11.907pt): $\spcoord{3, \spmQ{1}{1}{2}}$.
+
+% doc: «1 y la fracción con numerador 1 y denominador 2»
+21. Un mixto solo, el control: $\spmQ{1}{1}{2}$.
+
+\section*{D. Un único nodo con raíz, potencia o subíndice (necesita el separador interno)}
+
+% doc: «el raíz cuadrada de 2 coma 1»
+22. Una raíz en la abscisa: $\spcoord{\sqrt{2}, 1}$.
+
+% doc: «»  PENDIENTE: grabar la lectura
+23. Una potencia en la abscisa: $\spcoord{x^{2}, 1}$.
+
+% doc: «»  PENDIENTE: grabar la lectura
+24. Un subíndice en la ordenada: $\spcoord{1, x_{1}}$.
+
+% doc: «»  PENDIENTE: grabar la lectura
+25. Con dfrac en la ordenada (17.861pt): $\spcoord{3, \dfrac{1}{2}}$.
+
+\section*{E. Fórmula destacada}
+
+% doc: «1 más 1 mitad coma 3»
+26. Fracción después de un término, en display (17.861pt):
+\[ \spcoord{1+\frac{1}{2}, 3} \].
+
+\end{document}
