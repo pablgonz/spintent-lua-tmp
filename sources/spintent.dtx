@@ -11861,13 +11861,9 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_spcoord_exec:nn}
 %   Sets the \mymeta{keys} in `|#1|' and \myhlc|\l_@@_spcoord_raw_arg_tl|
-%   to `|#2|'. Calls \myhlc|\@@_luafun_spcoord_parse_and_set:n| either way — even with
-%   \mykey{silent}|=true|, since \myhlc|\@@_spcoord_set_wrap_parens_size:|
-%   still needs \myhlc|\l_@@_spcoord_luaset_ #1 _has_frac_str| — but
-%   with \mykey{silent}|=true|, forces \myhlc|\l_@@_spcoord_luaset_error_str|
-%   back to |false| rather than reporting it: the raw \mymarg{argument}
-%   is typeset regardless of whether it parsed. Otherwise, reports |spcoord-invalid-arg|
-%   on error. Either way, sizes the parentheses, then delegates to
+%   to `|#2|'. Calls \myhlc|\@@_luafun_spcoord_parse_and_set:n| and reports
+%   |spcoord-invalid-arg| on error, whatever the value of \mykey{silent}:
+%   an invalid \mymarg{argument} is always rejected. Then sizes the parentheses, and delegates to
 %   \myhlc|\@@_spcoord_mathml:| unless there was an error, preceded by an
 %   invisible separator — placed \emph{before} the opening parenthesis, as
 %   \myhlc|\@@_spvec_exec:nnn| and \myhlc|\@@_spPoint_exec:nnn| do — and the
@@ -11880,16 +11876,9 @@ end, "shekel_fallback_patch")
   {
     \keys_set:nn { spintent / spcoord } {#1}
     \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#2}
-    \bool_if:NTF \l_@@_spcoord_silent_bool
-      {
-        \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
-        \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
-      }
-      {
-        \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
-        \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
-          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
-      }
+    \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
+      { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
     \@@_spcoord_set_wrap_parens_size:
     \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
       {
@@ -12466,9 +12455,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   The internal function \myhlc|\@@_spinterval_exec:nn| receives the optional
 %   \mymeta{keys} passed in `|#1|' and the \mymarg{argument} passed in `|#2|'. It calls
 %   \myhlc|\@@_luafun_spinterval_parse_and_set:n|; if the Lua module reports an error,
-%   it typesets the \mymarg{argument} as written under the intent |_-| when
-%   \mykey[spinterval]{silent} is |true|, and reports |spinterval-invalid-arg|
-%   otherwise. When there is no error, it calls \myhlc|\@@_spinterval_set_delims:| and
+%   it reports |spinterval-invalid-arg| whatever the value of
+%   \mykey[spinterval]{silent}: an invalid \mymarg{argument} is always
+%   rejected. When there is no error, it calls \myhlc|\@@_spinterval_set_delims:| and
 %   \myhlc|\@@_spinterval_set_intents:|, places \myhlc|\@@_invisible_sep:| and
 %   delegates the rendering to \myhlc|\@@_spinterval_mathml:|.
 %    \begin{macrocode}
@@ -12479,16 +12468,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
     \@@_luafun_spinterval_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnTF \l_@@_spinterval_luaset_error_str { true }
       {
-        \bool_if:NTF \l_@@_spinterval_silent_bool
-          {
-            \MathMLintent { _- }
-              { \@@_inner_sep: \l_@@_spinterval_raw_arg_tl }
-          }
-          {
-            \@@_spinterval_set_reason:
-            \msg_error:nnee { spintent } { spinterval-invalid-arg }
-              { \exp_not:n {#2} } { \l_@@_spinterval_reason_str }
-          }
+        \@@_spinterval_set_reason:
+        \msg_error:nnee { spintent } { spinterval-invalid-arg }
+          { \exp_not:n {#2} } { \l_@@_spinterval_reason_str }
       }
       {
         \@@_spinterval_set_delims:
@@ -12833,7 +12815,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   coordinate first (otherwise read as an implicit product), then temporarily aliases
 %   \myhlc|\l_@@_spcoord_silent_bool| to \myhlc|\l_@@_spPoint_silent_bool|
 %   and calls \myhlc|\@@_luafun_spcoord_parse_and_set:n| directly, reporting
-%   |spcoord-invalid-arg| on error unless silenced, then \myhlc|\@@_spcoord_set_wrap_parens_size:|
+%   |spcoord-invalid-arg| on error (whatever \mykey{silent} says), then \myhlc|\@@_spcoord_set_wrap_parens_size:|
 %   and \myhlc|\@@_spcoord_mathml:|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spPoint_exec:nnn
@@ -12845,16 +12827,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % silencia el "por"
         \bool_set_eq:NN \l_@@_spcoord_silent_bool \l_@@_spPoint_silent_bool
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l_@@_spcoord_silent_bool
-          {
-            \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
-            \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
-          }
-          {
-            \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
-            \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
-              { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
-          }
+        \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+        \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
+          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
         \@@_spcoord_set_wrap_parens_size:
         \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
           { \@@_spcoord_mathml: }
@@ -13192,7 +13167,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   to \myhlc|\l_@@_spvec_silent_bool| — reverted when the calling
 %   group closes — and calls
 %   \myhlc|\@@_luafun_spcoord_parse_and_set:n| directly, reporting
-%   |spcoord-invalid-arg| on error unless silenced, then
+%   |spcoord-invalid-arg| on error (whatever \mykey{silent} says), then
 %   \myhlc|\@@_spcoord_set_wrap_parens_size:| and
 %   \myhlc|\@@_spcoord_mathml:| — the same rendering functions
 %   \cs[no-index]{spcoord} itself uses.
@@ -13209,16 +13184,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \MathMLintent { :silent } { \c_@@_invisible_sep_int } % previene lectura de intervalo
         \bool_set_eq:NN \l_@@_spcoord_silent_bool \l_@@_spvec_silent_bool
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l_@@_spvec_silent_bool
-          {
-            \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
-            \str_set:Nn \l_@@_spcoord_luaset_error_str { false }
-          }
-          {
-            \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
-            \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
-              { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
-          }
+        \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+        \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
+          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
         \@@_spcoord_set_wrap_parens_size:
         \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
           { \@@_spcoord_mathml: }
