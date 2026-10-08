@@ -10,8 +10,9 @@
 % Las entradas invalidas (que detienen la compilacion) no van aqui.
 %
 % Los "doc:" son lecturas reales de NVDA con MathCAT (2026-10-08).
-% La de read-cmd=mathcat y la inversa dentro de un argumento (caso 17) son
-% lecturas propias de MathCAT, no del paquete.
+% La de read-cmd=mathcat (caso 20) es una lectura propia de MathCAT, no del
+% paquete. La inversa dentro de un argumento (caso 17) usa la recursion de
+% \spfun; ver test-023.
 \input{regression-test}
 
 \DocumentMetadata
@@ -88,7 +89,7 @@
 % doc: «f inversa de f de x es igual a x»
 16. La composición: $\spfun{f^{-1}(f(x))} = x$.
 
-% doc: «f de la menos 1 a la potencia de f de y es igual a y» (la inversa dentro de un argumento queda sin anotar: lectura nativa de MathCAT)
+% doc: «f de f inversa de y es igual a y»
 17. La otra composición: $\spfun{f(f^{-1}(y))} = y$.
 
 % doc: «f inversa de 2 más g de 3»

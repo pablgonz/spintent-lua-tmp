@@ -1983,35 +1983,45 @@ TEST 1: Show PDF Tags
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
-          <mi xmlns="http://www.w3.org/1998/Math/MathML"
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
              id="ID.00301"
+             intent="$f2($a2x1)"
             >
-           <?MarkedContent page="1" ?>𝑔
-          </mi>
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00302"
-             lspace="0"
-             rspace="0"
-             stretchy="false"
-            >
-           <?MarkedContent page="1" ?>(
-          </mo>
-          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00303"
-            >
-           <?MarkedContent page="1" ?>𝑥
-          </mi>
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00304"
-             lspace="0"
-             rspace="0"
-             stretchy="false"
-            >
-           <?MarkedContent page="1" ?>)
-          </mo>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00302"
+              arg="f2"
+              intent="_g-"
+             >
+            <?MarkedContent page="1" ?>𝑔
+           </mi>
+           <mo xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00303"
+              intent=":silent"
+              lspace="0"
+              rspace="0"
+              stretchy="false"
+             >
+            <?MarkedContent page="1" ?>(
+           </mo>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00304"
+              arg="a2x1"
+             >
+            <?MarkedContent page="1" ?>𝑥
+           </mi>
+           <mo xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00305"
+              intent=":silent"
+              lspace="0"
+              rspace="0"
+              stretchy="false"
+             >
+            <?MarkedContent page="1" ?>)
+           </mo>
+          </mrow>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00305"
+            id="ID.00306"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2027,46 +2037,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00306"
+       id="ID.00307"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00307"
+        id="ID.00308"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>25. Decimal con coma entre llaves: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00308"
+         id="ID.00309"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00309"
+          id="ID.00310"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00310"
+           id="ID.00311"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00311"
+           id="ID.00312"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00312"
+            id="ID.00313"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00313"
+            id="ID.00314"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2075,24 +2085,24 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00314"
+            id="ID.00315"
             arg="a1"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00315"
+             id="ID.00316"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <mn xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00316"
+             id="ID.00317"
             >
            <?MarkedContent page="1" ?>1,5
           </mn>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00317"
+            id="ID.00318"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2108,46 +2118,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00318"
+       id="ID.00319"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00319"
+        id="ID.00320"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>26. Espacios alrededor de los argumentos: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00320"
+         id="ID.00321"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00321"
+          id="ID.00322"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00322"
+           id="ID.00323"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00323"
+           id="ID.00324"
            intent="$f($a1,$a2)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00324"
+            id="ID.00325"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00325"
+            id="ID.00326"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2156,13 +2166,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00326"
+            id="ID.00327"
             arg="a1"
            >
           <?MarkedContent page="1" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00327"
+            id="ID.00328"
             intent=":silent"
             lspace="0"
             rspace="0.167em"
@@ -2170,13 +2180,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>,
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00328"
+            id="ID.00329"
             arg="a2"
            >
           <?MarkedContent page="1" ?>𝑦
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00329"
+            id="ID.00330"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2193,57 +2203,57 @@ TEST 1: Show PDF Tags
     </semantic-para>
    </section>
    <section xmlns="https://www.latex-project.org/ns/dflt"
-      id="ID.00330"
+      id="ID.00331"
       rolemaps-to="Sect"
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00331"
+       id="ID.00332"
        title="C. La función dentro de una fórmula"
        rolemaps-to="H1"
       >
      <?MarkedContent page="1" ?>C. La función dentro de una fórmula
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00332"
+       id="ID.00333"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00333"
+        id="ID.00334"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>27. Igual y un número: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00334"
+         id="ID.00335"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00335"
+          id="ID.00336"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00336"
+           id="ID.00337"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00337"
+           id="ID.00338"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00338"
+            id="ID.00339"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00339"
+            id="ID.00340"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2252,13 +2262,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00340"
+            id="ID.00341"
             arg="a1"
            >
           <?MarkedContent page="1" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00341"
+            id="ID.00342"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2268,14 +2278,14 @@ TEST 1: Show PDF Tags
          </mo>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00342"
+           id="ID.00343"
            lspace="0.278em"
            rspace="0.278em"
           >
          <?MarkedContent page="1" ?>=
         </mo>
         <mn xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00343"
+           id="ID.00344"
           >
          <?MarkedContent page="1" ?>5
         </mn>
@@ -2286,46 +2296,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00344"
+       id="ID.00345"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00345"
+        id="ID.00346"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>28. Dos funciones: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00346"
+         id="ID.00347"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00347"
+          id="ID.00348"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00348"
+           id="ID.00349"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00349"
+           id="ID.00350"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00350"
+            id="ID.00351"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00351"
+            id="ID.00352"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2334,13 +2344,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00352"
+            id="ID.00353"
             arg="a1"
            >
           <?MarkedContent page="1" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00353"
+            id="ID.00354"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2350,25 +2360,25 @@ TEST 1: Show PDF Tags
          </mo>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00354"
+           id="ID.00355"
            lspace="0.222em"
            rspace="0.222em"
           >
          <?MarkedContent page="1" ?>+
         </mo>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00355"
+           id="ID.00356"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00356"
+            id="ID.00357"
             arg="f"
             intent="_g-"
            >
           <?MarkedContent page="1" ?>𝑔
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00357"
+            id="ID.00358"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2377,13 +2387,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00358"
+            id="ID.00359"
             arg="a1"
            >
           <?MarkedContent page="1" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00359"
+            id="ID.00360"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2399,46 +2409,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00360"
+       id="ID.00361"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00361"
+        id="ID.00362"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>29. Igual y un producto: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00362"
+         id="ID.00363"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00363"
+          id="ID.00364"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00364"
+           id="ID.00365"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00365"
+           id="ID.00366"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00366"
+            id="ID.00367"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00367"
+            id="ID.00368"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2447,13 +2457,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00368"
+            id="ID.00369"
             arg="a1"
            >
           <?MarkedContent page="1" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00369"
+            id="ID.00370"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2463,19 +2473,19 @@ TEST 1: Show PDF Tags
          </mo>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00370"
+           id="ID.00371"
            lspace="0.278em"
            rspace="0.278em"
           >
          <?MarkedContent page="1" ?>=
         </mo>
         <mn xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00371"
+           id="ID.00372"
           >
          <?MarkedContent page="1" ?>2
         </mn>
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00372"
+           id="ID.00373"
           >
          <?MarkedContent page="1" ?>𝑥
         </mi>
@@ -2486,46 +2496,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00373"
+       id="ID.00374"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00374"
+        id="ID.00375"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>30. Una suma después: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00375"
+         id="ID.00376"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00376"
+          id="ID.00377"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00377"
+           id="ID.00378"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00378"
+           id="ID.00379"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00379"
+            id="ID.00380"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00380"
+            id="ID.00381"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2534,13 +2544,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00381"
+            id="ID.00382"
             arg="a1"
            >
           <?MarkedContent page="1" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00382"
+            id="ID.00383"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2550,14 +2560,14 @@ TEST 1: Show PDF Tags
          </mo>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00383"
+           id="ID.00384"
            lspace="0.222em"
            rspace="0.222em"
           >
          <?MarkedContent page="1" ?>+
         </mo>
         <mn xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00384"
+           id="ID.00385"
           >
          <?MarkedContent page="1" ?>1
         </mn>
@@ -2568,58 +2578,58 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00385"
+       id="ID.00386"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00386"
+        id="ID.00387"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>31. Una función después del igual: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00387"
+         id="ID.00388"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00388"
+          id="ID.00389"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00389"
+           id="ID.00390"
           >
          <?MarkedContent page="1" ?>𝑦
         </mi>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00390"
+           id="ID.00391"
            lspace="0.278em"
            rspace="0.278em"
           >
          <?MarkedContent page="1" ?>=
         </mo>
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00391"
+           id="ID.00392"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00392"
+           id="ID.00393"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00393"
+            id="ID.00394"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00394"
+            id="ID.00395"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2628,13 +2638,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00395"
+            id="ID.00396"
             arg="a1"
            >
           <?MarkedContent page="1" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00396"
+            id="ID.00397"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2650,46 +2660,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00397"
+       id="ID.00398"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00398"
+        id="ID.00399"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>32. Dos funciones con igual: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00399"
+         id="ID.00400"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00400"
+          id="ID.00401"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00401"
+           id="ID.00402"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00402"
+           id="ID.00403"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00403"
+            id="ID.00404"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00404"
+            id="ID.00405"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2698,13 +2708,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00405"
+            id="ID.00406"
             arg="a1"
            >
           <?MarkedContent page="1" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00406"
+            id="ID.00407"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2714,25 +2724,25 @@ TEST 1: Show PDF Tags
          </mo>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00407"
+           id="ID.00408"
            lspace="0.278em"
            rspace="0.278em"
           >
          <?MarkedContent page="1" ?>=
         </mo>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00408"
+           id="ID.00409"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00409"
+            id="ID.00410"
             arg="f"
             intent="_g-"
            >
           <?MarkedContent page="1" ?>𝑔
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00410"
+            id="ID.00411"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2741,13 +2751,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00411"
+            id="ID.00412"
             arg="a1"
            >
           <?MarkedContent page="1" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00412"
+            id="ID.00413"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2763,46 +2773,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00413"
+       id="ID.00414"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00414"
+        id="ID.00415"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>33. Dos valores de la misma función: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00415"
+         id="ID.00416"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00416"
+          id="ID.00417"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00417"
+           id="ID.00418"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00418"
+           id="ID.00419"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00419"
+            id="ID.00420"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00420"
+            id="ID.00421"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2811,13 +2821,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mn xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00421"
+            id="ID.00422"
             arg="a1"
            >
           <?MarkedContent page="1" ?>1
          </mn>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00422"
+            id="ID.00423"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2827,25 +2837,25 @@ TEST 1: Show PDF Tags
          </mo>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00423"
+           id="ID.00424"
            lspace="0.278em"
            rspace="0.278em"
           >
          <?MarkedContent page="1" ?>=
         </mo>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00424"
+           id="ID.00425"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00425"
+            id="ID.00426"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="1" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00426"
+            id="ID.00427"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2854,13 +2864,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="1" ?>(
          </mo>
          <mn xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00427"
+            id="ID.00428"
             arg="a1"
            >
           <?MarkedContent page="1" ?>2
          </mn>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00428"
+            id="ID.00429"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2877,57 +2887,57 @@ TEST 1: Show PDF Tags
     </semantic-para>
    </section>
    <section xmlns="https://www.latex-project.org/ns/dflt"
-      id="ID.00429"
+      id="ID.00430"
       rolemaps-to="Sect"
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00430"
+       id="ID.00431"
        title="D. Llave read-cmd"
        rolemaps-to="H1"
       >
      <?MarkedContent page="2" ?>D. Llave read-cmd
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00431"
+       id="ID.00432"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00432"
+        id="ID.00433"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>34. Con read-cmd school, el valor por defecto: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00433"
+         id="ID.00434"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00434"
+          id="ID.00435"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00435"
+           id="ID.00436"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00436"
+           id="ID.00437"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00437"
+            id="ID.00438"
             arg="f"
             intent="_F-"
            >
           <?MarkedContent page="2" ?>𝐹
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00438"
+            id="ID.00439"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2936,13 +2946,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00439"
+            id="ID.00440"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00440"
+            id="ID.00441"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -2958,45 +2968,45 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00441"
+       id="ID.00442"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00442"
+        id="ID.00443"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>35. Con read-cmd mathcat: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00443"
+         id="ID.00444"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00444"
+          id="ID.00445"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00445"
+           id="ID.00446"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00446"
+           id="ID.00447"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00447"
+            id="ID.00448"
             arg="f"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00448"
+            id="ID.00449"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3005,13 +3015,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00449"
+            id="ID.00450"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00450"
+            id="ID.00451"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3027,58 +3037,58 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00451"
+       id="ID.00452"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00452"
+        id="ID.00453"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>36. Con read-cmd mathcat y una prima: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00453"
+         id="ID.00454"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00454"
+          id="ID.00455"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00455"
+           id="ID.00456"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00456"
+           id="ID.00457"
            intent="$f($a1)"
           >
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00457"
+            id="ID.00458"
             arg="f"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00458"
+             id="ID.00459"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="2" ?>⁣
           </mi>
           <msup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00459"
+             id="ID.00460"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00460"
+              id="ID.00461"
              >
             <?MarkedContent page="2" ?>𝑓
            </mi>
            <mo xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00461"
+              id="ID.00462"
               lspace="0"
               rspace="0"
              >
@@ -3087,7 +3097,7 @@ TEST 1: Show PDF Tags
           </msup>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00462"
+            id="ID.00463"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3096,13 +3106,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00463"
+            id="ID.00464"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00464"
+            id="ID.00465"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3118,58 +3128,58 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00465"
+       id="ID.00466"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00466"
+        id="ID.00467"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>37. Con read-cmd mathcat y dos primas: MathCAT lee el símbolo como segundos: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00467"
+         id="ID.00468"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00468"
+          id="ID.00469"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00469"
+           id="ID.00470"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00470"
+           id="ID.00471"
            intent="$f($a1)"
           >
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00471"
+            id="ID.00472"
             arg="f"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00472"
+             id="ID.00473"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="2" ?>⁣
           </mi>
           <msup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00473"
+             id="ID.00474"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00474"
+              id="ID.00475"
              >
             <?MarkedContent page="2" ?>𝑓
            </mi>
            <mo xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00475"
+              id="ID.00476"
               lspace="0"
               rspace="0"
              >
@@ -3178,7 +3188,7 @@ TEST 1: Show PDF Tags
           </msup>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00476"
+            id="ID.00477"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3187,13 +3197,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00477"
+            id="ID.00478"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00478"
+            id="ID.00479"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3209,65 +3219,65 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00479"
+       id="ID.00480"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00480"
+        id="ID.00481"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>38. Con read-cmd mathcat y subíndice: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00481"
+         id="ID.00482"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00482"
+          id="ID.00483"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00483"
+           id="ID.00484"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00484"
+           id="ID.00485"
            intent="$f($a1)"
           >
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00485"
+            id="ID.00486"
             arg="f"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00486"
+             id="ID.00487"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="2" ?>⁣
           </mi>
           <msub xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00487"
+             id="ID.00488"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00488"
+              id="ID.00489"
              >
             <?MarkedContent page="2" ?>𝑓
            </mi>
            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00489"
+              id="ID.00490"
              >
             <?MarkedContent page="2" ?>1
            </mn>
           </msub>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00490"
+            id="ID.00491"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3276,13 +3286,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00491"
+            id="ID.00492"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00492"
+            id="ID.00493"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3299,57 +3309,57 @@ TEST 1: Show PDF Tags
     </semantic-para>
    </section>
    <section xmlns="https://www.latex-project.org/ns/dflt"
-      id="ID.00493"
+      id="ID.00494"
       rolemaps-to="Sect"
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00494"
+       id="ID.00495"
        title="E. Llaves concept y prefix"
        rolemaps-to="H1"
       >
      <?MarkedContent page="2" ?>E. Llaves concept y prefix
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00495"
+       id="ID.00496"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00496"
+        id="ID.00497"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>39. Con concept false, el valor por defecto: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00497"
+         id="ID.00498"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00498"
+          id="ID.00499"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00499"
+           id="ID.00500"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00500"
+           id="ID.00501"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00501"
+            id="ID.00502"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00502"
+            id="ID.00503"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3358,13 +3368,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00503"
+            id="ID.00504"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00504"
+            id="ID.00505"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3380,46 +3390,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00505"
+       id="ID.00506"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00506"
+        id="ID.00507"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>40. Con concept true: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00507"
+         id="ID.00508"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00508"
+          id="ID.00509"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00509"
+           id="ID.00510"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00510"
+           id="ID.00511"
            intent="_función:prefix($f($a1))"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00511"
+            id="ID.00512"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00512"
+            id="ID.00513"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3428,13 +3438,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00513"
+            id="ID.00514"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00514"
+            id="ID.00515"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3450,56 +3460,56 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00515"
+       id="ID.00516"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00516"
+        id="ID.00517"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>41. Con concept true, subíndice y dos argumentos: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00517"
+         id="ID.00518"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00518"
+          id="ID.00519"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00519"
+           id="ID.00520"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00520"
+           id="ID.00521"
            intent="_función:prefix($f($a1,$a2))"
           >
          <msub xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00521"
+            id="ID.00522"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00522"
+             id="ID.00523"
              arg="f"
              intent="_f-sub-uno-"
             >
            <?MarkedContent page="2" ?>𝑓
           </mi>
           <mn xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00523"
+             id="ID.00524"
              intent=":silent"
             >
            <?MarkedContent page="2" ?>1
           </mn>
          </msub>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00524"
+            id="ID.00525"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3508,13 +3518,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00525"
+            id="ID.00526"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00526"
+            id="ID.00527"
             intent=":silent"
             lspace="0"
             rspace="0.167em"
@@ -3522,13 +3532,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>,
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00527"
+            id="ID.00528"
             arg="a2"
            >
           <?MarkedContent page="2" ?>𝑦
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00528"
+            id="ID.00529"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3544,46 +3554,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00529"
+       id="ID.00530"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00530"
+        id="ID.00531"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>42. Con prefix y concept true: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00531"
+         id="ID.00532"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00532"
+          id="ID.00533"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00533"
+           id="ID.00534"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00534"
+           id="ID.00535"
            intent="_la-función:prefix($f($a1))"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00535"
+            id="ID.00536"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00536"
+            id="ID.00537"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3592,13 +3602,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00537"
+            id="ID.00538"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00538"
+            id="ID.00539"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3614,46 +3624,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00539"
+       id="ID.00540"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00540"
+        id="ID.00541"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>43. Con prefix y concept false: el prefijo no se usa: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00541"
+         id="ID.00542"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00542"
+          id="ID.00543"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00543"
+           id="ID.00544"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00544"
+           id="ID.00545"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00545"
+            id="ID.00546"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00546"
+            id="ID.00547"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3662,13 +3672,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00547"
+            id="ID.00548"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00548"
+            id="ID.00549"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3684,46 +3694,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00549"
+       id="ID.00550"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00550"
+        id="ID.00551"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>44. Con todas las llaves: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00551"
+         id="ID.00552"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00552"
+          id="ID.00553"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00553"
+           id="ID.00554"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00554"
+           id="ID.00555"
            intent="_la-función:prefix($f($a1))"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00555"
+            id="ID.00556"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00556"
+            id="ID.00557"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3732,13 +3742,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00557"
+            id="ID.00558"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00558"
+            id="ID.00559"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -3755,62 +3765,62 @@ TEST 1: Show PDF Tags
     </semantic-para>
    </section>
    <section xmlns="https://www.latex-project.org/ns/dflt"
-      id="ID.00559"
+      id="ID.00560"
       rolemaps-to="Sect"
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00560"
+       id="ID.00561"
        title="F. Llave silent"
        rolemaps-to="H1"
       >
      <?MarkedContent page="2" ?>F. Llave silent
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00561"
+       id="ID.00562"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00562"
+        id="ID.00563"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>45. Con silent true: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00563"
+         id="ID.00564"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00564"
+          id="ID.00565"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00565"
+           id="ID.00566"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00566"
+           id="ID.00567"
            intent="_-"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00567"
+            id="ID.00568"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="2" ?>⁣
          </mi>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00568"
+            id="ID.00569"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00569"
+            id="ID.00570"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -3818,12 +3828,12 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00570"
+            id="ID.00571"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00571"
+            id="ID.00572"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -3838,51 +3848,51 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00572"
+       id="ID.00573"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00573"
+        id="ID.00574"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>46. Con silent true y dos argumentos: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00574"
+         id="ID.00575"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00575"
+          id="ID.00576"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00576"
+           id="ID.00577"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00577"
+           id="ID.00578"
            intent="_-"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00578"
+            id="ID.00579"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="2" ?>⁣
          </mi>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00579"
+            id="ID.00580"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00580"
+            id="ID.00581"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -3890,24 +3900,24 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00581"
+            id="ID.00582"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00582"
+            id="ID.00583"
             lspace="0"
             rspace="0.167em"
            >
           <?MarkedContent page="2" ?>,
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00583"
+            id="ID.00584"
            >
           <?MarkedContent page="2" ?>𝑦
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00584"
+            id="ID.00585"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -3922,60 +3932,60 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00585"
+       id="ID.00586"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00586"
+        id="ID.00587"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>47. Con silent true y subíndice: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00587"
+         id="ID.00588"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00588"
+          id="ID.00589"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00589"
+           id="ID.00590"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00590"
+           id="ID.00591"
            intent="_-"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00591"
+            id="ID.00592"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="2" ?>⁣
          </mi>
          <msub xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00592"
+            id="ID.00593"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00593"
+             id="ID.00594"
             >
            <?MarkedContent page="2" ?>𝑓
           </mi>
           <mn xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00594"
+             id="ID.00595"
             >
            <?MarkedContent page="2" ?>1
           </mn>
          </msub>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00595"
+            id="ID.00596"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -3983,12 +3993,12 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00596"
+            id="ID.00597"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00597"
+            id="ID.00598"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -4003,54 +4013,54 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00598"
+       id="ID.00599"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00599"
+        id="ID.00600"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>48. Con silent true y dos primas: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00600"
+         id="ID.00601"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00601"
+          id="ID.00602"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00602"
+           id="ID.00603"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00603"
+           id="ID.00604"
            intent="_-"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00604"
+            id="ID.00605"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="2" ?>⁣
          </mi>
          <msup xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00605"
+            id="ID.00606"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00606"
+             id="ID.00607"
             >
            <?MarkedContent page="2" ?>𝑓
           </mi>
           <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00607"
+             id="ID.00608"
              lspace="0"
              rspace="0"
             >
@@ -4058,7 +4068,7 @@ TEST 1: Show PDF Tags
           </mo>
          </msup>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00608"
+            id="ID.00609"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -4066,12 +4076,12 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00609"
+            id="ID.00610"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00610"
+            id="ID.00611"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -4086,51 +4096,51 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00611"
+       id="ID.00612"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00612"
+        id="ID.00613"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>49. Con silent true y algo después: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00613"
+         id="ID.00614"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00614"
+          id="ID.00615"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00615"
+           id="ID.00616"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00616"
+           id="ID.00617"
            intent="_-"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00617"
+            id="ID.00618"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="2" ?>⁣
          </mi>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00618"
+            id="ID.00619"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00619"
+            id="ID.00620"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -4138,12 +4148,12 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00620"
+            id="ID.00621"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00621"
+            id="ID.00622"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -4152,14 +4162,14 @@ TEST 1: Show PDF Tags
          </mo>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00622"
+           id="ID.00623"
            lspace="0.278em"
            rspace="0.278em"
           >
          <?MarkedContent page="2" ?>=
         </mo>
         <mn xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00623"
+           id="ID.00624"
           >
          <?MarkedContent page="2" ?>5
         </mn>
@@ -4170,46 +4180,46 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00624"
+       id="ID.00625"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00625"
+        id="ID.00626"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>50. Con silent false, el valor por defecto: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00626"
+         id="ID.00627"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00627"
+          id="ID.00628"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00628"
+           id="ID.00629"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00629"
+           id="ID.00630"
            intent="$f($a1)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00630"
+            id="ID.00631"
             arg="f"
             intent="_f-"
            >
           <?MarkedContent page="2" ?>𝑓
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00631"
+            id="ID.00632"
             intent=":silent"
             lspace="0"
             rspace="0"
@@ -4218,13 +4228,13 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00632"
+            id="ID.00633"
             arg="a1"
            >
           <?MarkedContent page="2" ?>𝑥
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00633"
+            id="ID.00634"
             intent=":silent"
             lspace="0"
             rspace="0"

@@ -5843,6 +5843,18 @@ end, "shekel_fallback_patch")
 %
 % \smallskip
 %
+% Un argumento puede ser a su vez una llamada, tantas veces como se quiera:
+% |$\spfun{f(g(x))}$| imprimirá `$f(g(x))$' y verbalizará
+% \emph{«f de g de x»}; |$\spfun{f(f^{-1}(y))}$| imprimirá `$f(f^{-1}(y))$' y
+% verbalizará \emph{«f de f inversa de y»}; |$\spfun{f(g(x),h(y))}$| imprimirá
+% `$f(g(x),h(y))$'. Una llamada anidada se valida igual que la exterior. Si
+% el argumento es otra cosa, como |g(x)+1|, se imprime y se verbaliza con
+% normalidad pero sin anotar la llamada que contiene. Las llaves
+% \mykey{read-cmd} y \mykey{silent} valen para todos los niveles;
+% \mykey{concept} y \mykey{prefix} solo para la llamada exterior.
+%
+% \smallskip
+%
 % Las comas que quedan dentro de llaves, de paréntesis o de corchetes no
 % separan argumentos. Por eso, un número decimal con coma debe escribirse
 % entre llaves: |$\spfun{f(1{,}5)}$| tiene un solo argumento.
@@ -5854,7 +5866,8 @@ end, "shekel_fallback_patch")
 % cuando el subíndice contiene algo distinto de letras o dígitos, cuando el
 % nombre no va seguido de paréntesis, cuando los paréntesis, las llaves o los
 % corchetes no están balanceados, cuando un argumento está vacío o cuando hay
-% algo después del paréntesis que cierra.
+% algo después del paréntesis que cierra. Lo mismo vale para una llamada
+% anidada en un argumento.
 %
 % \subsubsection*{Llaves para \cs[no-index]{spfun}}
 %
@@ -12609,6 +12622,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % |\l_@@_spfun_luaset_inv_str|); in that case the literal |intent| of the
 % name ends in |-inversa|, the exponent is typeset silenced and the
 % parentheses may be omitted (no arguments, |$f| as the whole |intent|).
+% An argument that is itself a call, |f(g(x))| or |f(g^{-1}(y))|, is analysed
+% recursively by Lua (kind |call|) and typeset by
+% \myhlc|\@@_spfun_nested:n|, which runs the same code in a group, one level
+% deeper; the |arg| names carry the depth.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spfun}}
 %
@@ -12642,6 +12659,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \str_new:N  \l_@@_spfun_luaset_nargs_str
 \str_new:N  \l_@@_spfun_luaset_inv_str
 \tl_new:N   \l_@@_spfun_call_tl
+\int_new:N  \l_@@_spfun_depth_int
 %    \end{macrocode}
 % \end{variable}
 %
@@ -12705,6 +12723,28 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %
 % \subsubsection{Internal functions for \cs[no-index]{spfun}}
 %
+% \begin{macro}[int]{\@@_spfun_fname:, \@@_spfun_aname:n}
+%   Names of the |arg| attributes at the current nesting depth
+%   \myhlc|\l_@@_spfun_depth_int|. At depth~1 they are |f| and |a<i>|; at
+%   a deeper level |f<d>| and |a<d>x<i>|, so that the references of a call
+%   nested in an argument never clash with those of the call around it.
+%    \begin{macrocode}
+\cs_new:Nn \@@_spfun_fname:
+  {
+    f
+    \int_compare:nNnF { \l_@@_spfun_depth_int } = { 1 }
+      { \int_use:N \l_@@_spfun_depth_int }
+  }
+\cs_new:Nn \@@_spfun_aname:n
+  {
+    a
+    \int_compare:nNnF { \l_@@_spfun_depth_int } = { 1 }
+      { \int_use:N \l_@@_spfun_depth_int x }
+    #1
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}[int]{\@@_spfun_name_plain:}
 %   Typesets the name without any annotation: the letter, followed by the
 %   subscript or by the primes when there are any.
@@ -12736,7 +12776,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \cs_new_protected:Nn \@@_spfun_name_school:
   {
     \tl_set:Ne \l_@@_spfun_kv_tl
-      { arg = "f", intent = "_ \l_@@_geo_luaset_intent_str -" }
+      { arg = " \@@_spfun_fname: ", intent = "_ \l_@@_geo_luaset_intent_str -" }
     \@@_luafun_mrow_intent_arg:nn { } { \l_@@_spfun_kv_tl }
     \str_case:VnF \l_@@_geo_luaset_tipo_str
       {
@@ -12770,28 +12810,37 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
     \bool_lazy_and:nnTF
       { \str_if_eq_p:Vn \l_@@_geo_luaset_tipo_str { } }
       { \str_if_eq_p:Vn \l_@@_spfun_luaset_inv_str { false } }
-      { \MathMLarg { f } { \@@_spfun_name_plain: } }
-      { \MathMLarg { f } { \@@_inner_sep: \@@_spfun_name_plain: } }
+      { \exp_args:Ne \MathMLarg { \@@_spfun_fname: } { \@@_spfun_name_plain: } }
+      { \exp_args:Ne \MathMLarg { \@@_spfun_fname: } { \@@_inner_sep: \@@_spfun_name_plain: } }
   }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spfun_arg:n}
-%   Tags argument number |#1| with |arg="a<i>"|. A single node (letter,
-%   number, a command such as |\alpha|) carries its |arg| directly; any other
-%   argument starts with the inner separator, which forces an |<mrow>| to
-%   hold the |arg|.
+%   Tags argument number |#1| with |arg="a<i>"| (see \myhlc|\@@_spfun_aname:n|).
+%   A single node (letter, number, a command such as |\alpha|) carries its
+%   |arg| directly; any other argument starts with the inner separator, which
+%   forces an |<mrow>| to hold the |arg|. An argument that is itself a call
+%   (|g(x)|, |g^{-1}(y)|) is typeset by \myhlc|\@@_spfun_nested:n|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfun_arg:n
   {
     \str_set_eq:Nc \l_@@_spfun_tmp_str { l_@@_spfun_luaset_simple_ #1 _str }
-    \str_if_eq:VnTF \l_@@_spfun_tmp_str { true }
+    \str_case:VnF \l_@@_spfun_tmp_str
       {
-        \MathMLarg { a #1 }
-          { \tl_use:c { l_@@_spfun_luaset_arg_ #1 _tl } }
+        { true }
+          {
+            \exp_args:Ne \MathMLarg { \@@_spfun_aname:n {#1} }
+              { \tl_use:c { l_@@_spfun_luaset_arg_ #1 _tl } }
+          }
+        { call }
+          {
+            \exp_args:Ne \MathMLarg { \@@_spfun_aname:n {#1} }
+              { \@@_inner_sep: \@@_spfun_nested:n {#1} }
+          }
       }
       {
-        \MathMLarg { a #1 }
+        \exp_args:Ne \MathMLarg { \@@_spfun_aname:n {#1} }
           { \@@_inner_sep: \tl_use:c { l_@@_spfun_luaset_arg_ #1 _tl } }
       }
   }
@@ -12839,11 +12888,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
     \int_step_inline:nn { \l_@@_spfun_nargs_int }
       {
         \tl_put_right:Ne \l_@@_spfun_refs_tl
-          { \int_compare:nNnF {##1} = {1} { , } $a ##1 }
+          { \int_compare:nNnF {##1} = {1} { , } $ \@@_spfun_aname:n {##1} }
       }
     \int_compare:nNnTF { \l_@@_spfun_nargs_int } = { 0 }
-      { \tl_set:Nn \l_@@_spfun_call_tl { $f } }
-      { \tl_set:Ne \l_@@_spfun_call_tl { $f ( \l_@@_spfun_refs_tl ) } }
+      { \tl_set:Ne \l_@@_spfun_call_tl { $ \@@_spfun_fname: } }
+      { \tl_set:Ne \l_@@_spfun_call_tl { $ \@@_spfun_fname: ( \l_@@_spfun_refs_tl ) } }
     \bool_if:NTF \l_@@_spfun_concept_bool
       {
         \tl_set:Ne \l_@@_spfun_intent_arg_tl
@@ -12869,6 +12918,17 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \cs_new_protected:Nn \@@_spfun_mathml:
   {
     \@@_invisible_sep:
+    \@@_spfun_body:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfun_body:}
+%   The call itself, without the outer separator: used by the top-level call
+%   and by every call nested in an argument.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_body:
+  {
     \bool_if:NTF \l_@@_spfun_silent_bool
       {
         \MathMLintent { _- }
@@ -12904,6 +12964,29 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}[int]{\@@_spfun_nested:n}
+%   Typesets argument number |#1| as a call of its own. Opens a group, so the
+%   values that Lua leaves in the variables for the nested call (name,
+%   arguments, number of arguments) vanish when it ends and the outer call
+%   keeps its own. The nested call raises the depth, never applies the
+%   \mykey{concept} and goes through \myhlc|\@@_spfun_body:| with no outer
+%   separator. It cannot fail to parse: the first analysis already validated
+%   every level.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_nested:n
+  {
+    \group_begin:
+      \exp_args:Ne \@@_luafun_spfun_parse_and_set:n
+        { \exp_not:v { l_@@_spfun_luaset_arg_ #1 _tl } }
+      \int_incr:N \l_@@_spfun_depth_int
+      \bool_set_false:N \l_@@_spfun_concept_bool
+      \int_set:Nn \l_@@_spfun_nargs_int { \l_@@_spfun_luaset_nargs_str }
+      \@@_spfun_body:
+    \group_end:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}[int]{\@@_spfun_exec:nn}
 %   Receives the optional \mymeta{keys} in `|#1|' and the \mymarg{argument}
 %   in `|#2|'. Parses first, reporting |spfun-invalid-arg| on error whatever
@@ -12919,6 +13002,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
       }
       {
         \int_set:Nn \l_@@_spfun_nargs_int { \l_@@_spfun_luaset_nargs_str }
+        \int_set:Nn \l_@@_spfun_depth_int { 1 }
         \@@_spfun_mathml:
       }
   }
@@ -21402,7 +21486,9 @@ end, { "string" })
 -- quedan dentro de llaves, paréntesis o corchetes no cuentan.
 -- Deja el nombre en las mismas variables que usa la familia geo
 -- (letra/sub/tipo/intent/print) y cada argumento en
--- l__spintent_spfun_luaset_arg_<i>_tl.
+-- l__spintent_spfun_luaset_arg_<i>_tl. Un argumento que es a su vez
+-- una llamada (f(g(x)), f(g^{-1}(y))) se analiza de forma recursiva y
+-- queda marcado "call"; expl3 vuelve a llamar a esta función con él.
 --
 -- \spdom, \sprec y \spcod reciben solo el nombre (con la misma
 -- gramática) y lo dejan en las mismas variables.
@@ -21472,6 +21558,50 @@ local function spintent_fun_is_simple(arg)
         or s_match(arg, "^\\%a+$") ~= nil
 end
 
+-- ¿El argumento es, entero, una llamada nombre(...) o nombre^{-1}?
+-- Se comprueba solo la forma; su validez se analiza aparte.
+local function spintent_fun_is_call(arg)
+    local nombre, inv, rest = spintent_fun_parse_name(arg)
+    if not nombre then return false end
+    local inner = s_match(rest, "^%s*%((.*)%)%s*$")
+    if inner then
+        return spintent_fun_split_args(inner) ~= nil
+    end
+    return inv and s_match(rest, "^%s*$") ~= nil
+end
+
+-- Analiza una llamada completa. Devuelve nombre, inv y la lista de
+-- argumentos { texto, tipo }, con tipo "true" (un solo nodo), "false"
+-- (expresión) o "call" (otra llamada, analizada también y de forma
+-- recursiva). Devuelve nil si algo no es válido en cualquier nivel.
+local function spintent_fun_analyze(raw)
+    local nombre, inv, rest = spintent_fun_parse_name(raw)
+    if not nombre then return nil end
+    local args
+    local inner = s_match(rest, "^%s*%((.*)%)%s*$")
+    if inner then
+        args = spintent_fun_split_args(inner)
+    elseif inv and s_match(rest, "^%s*$") then
+        args = {}
+    end
+    if not args then return nil end
+    for i = 1, #args do
+        local a = spintent_trim(args[i])
+        if a == "" then return nil end
+        local kind
+        if spintent_fun_is_simple(a) then
+            kind = "true"
+        elseif spintent_fun_is_call(a) then
+            if not spintent_fun_analyze(a) then return nil end
+            kind = "call"
+        else
+            kind = "false"
+        end
+        args[i] = { a, kind }
+    end
+    return nombre, inv, args
+end
+
 local function spintent_fun_set_error()
     token_set_macro("l__spintent_spfun_luaset_error_str", "true")
     token_set_macro("l__spintent_spfun_luaset_nargs_str", "0")
@@ -21504,37 +21634,17 @@ register_tex_cmd("luafun_spfun_parse_and_set", function(raw)
     raw = spintent_trim(raw)
     raw = spintent_geo_normalize_primes(raw)
 
-    local nombre, inv, rest = spintent_fun_parse_name(raw)
+    local nombre, inv, args = spintent_fun_analyze(raw)
     if not nombre then
         spintent_fun_set_error()
         return
     end
 
-    local args
-    local inner = s_match(rest, "^%s*%((.*)%)%s*$")
-    if inner then
-        args = spintent_fun_split_args(inner)
-    elseif inv and s_match(rest, "^%s*$") then
-        args = {}
-    end
-    if not args then
-        spintent_fun_set_error()
-        return
-    end
-    for i = 1, #args do
-        args[i] = spintent_trim(args[i])
-        if args[i] == "" then
-            spintent_fun_set_error()
-            return
-        end
-    end
-
     token_set_macro("l__spintent_spfun_luaset_error_str", "false")
     token_set_macro("l__spintent_spfun_luaset_nargs_str", tostring(#args))
     for i = 1, #args do
-        token_set_macro("l__spintent_spfun_luaset_arg_" .. i .. "_tl", args[i])
-        token_set_macro("l__spintent_spfun_luaset_simple_" .. i .. "_str",
-                        spintent_fun_is_simple(args[i]) and "true" or "false")
+        token_set_macro("l__spintent_spfun_luaset_arg_" .. i .. "_tl", args[i][1])
+        token_set_macro("l__spintent_spfun_luaset_simple_" .. i .. "_str", args[i][2])
     end
     spintent_fun_set_name(nombre, inv)
 end, { "string" })

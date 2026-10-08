@@ -1,0 +1,129 @@
+% test-023.tex -- spfun con llamadas anidadas
+%
+% Regresion:  l3build save test-023
+%             l3build check test-023
+%
+% Un argumento de \spfun que es a su vez una llamada, nombre(...) o
+% nombre^{-1}(...), se anota de forma recursiva: f(g(x)), f(f^{-1}(y)).
+% Cada nivel usa nombres de arg propios (f, f2, f3, a2x1, ...).
+% Las entradas invalidas (que detienen la compilacion) no van aqui.
+%
+% Los "doc:" son lecturas reales de NVDA con MathCAT (2026-10-08).
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-023: spfun anidado},
+  }
+\begin{document}
+
+\section*{A. Llamadas anidadas}
+
+% doc: «f de g de x»
+1. Dos niveles: $\spfun{f(g(x))}$.
+
+% doc: «f de g de h de x»
+2. Tres niveles: $\spfun{f(g(h(x)))}$.
+
+% doc: «f de g de h de k de x»
+3. Cuatro niveles: $\spfun{f(g(h(k(x))))}$.
+
+% doc: «f de g de f de x»
+4. Repite nombre: $\spfun{f(g(f(x)))}$.
+
+% doc: «f de g de x coma y»
+5. Dos argumentos en la interna: $\spfun{f(g(x,y))}$.
+
+% doc: «f de g de x coma h de y»
+6. Dos llamadas como argumentos: $\spfun{f(g(x),h(y))}$.
+
+% doc: «f de x coma g de y»
+7. Una letra y una llamada: $\spfun{f(x,g(y))}$.
+
+% doc: «f de g de x más 1»
+8. Una expresión que contiene una llamada: $\spfun{f(g(x)+1)}$.
+
+% doc: «f de g sub uno de x»
+9. Con subíndice en la interna: $\spfun{f(g_{1}(x))}$.
+
+% doc: «f de F doble prima de x»
+10. Con primas en la interna: $\spfun{f(F''(x))}$.
+
+% doc: «f de g de x»
+11. Con espacios: $\spfun{f( g ( x ) )}$.
+
+\section*{B. Anidación con la inversa}
+
+% doc: «f de f inversa de y»
+12. La inversa dentro: $\spfun{f(f^{-1}(y))}$.
+
+% doc: «f inversa de g de x»
+13. La inversa fuera: $\spfun{f^{-1}(g(x))}$.
+
+% doc: «f inversa de g inversa de x»
+14. Inversa de inversa: $\spfun{f^{-1}(g^{-1}(x))}$.
+
+% doc: «f de g inversa»
+15. Inversa sin argumentos dentro: $\spfun{f(g^{-1})}$.
+
+% doc: «f inversa de f de x es igual a x»
+16. La composición: $\spfun{f^{-1}(f(x))} = x$.
+
+% doc: «f de f inversa de y es igual a y»
+17. La otra composición: $\spfun{f(f^{-1}(y))} = y$.
+
+\section*{C. Contexto}
+
+% doc: «f de g de x es igual a h de x»
+18. Con un igual: $\spfun{f(g(x))} = \spfun{h(x)}$.
+
+% doc: «f de g de x más h de k de y»
+19. Dos anidadas en una suma: $\spfun{f(g(x))} + \spfun{h(k(y))}$.
+
+% doc: «f de g de x más h de y»
+20. Una anidada y una simple: $\spfun{f(g(x))} + \spfun{h(y)}$.
+
+\section*{D. Llaves}
+
+% doc: «f de g de x»
+21. read-cmd school: $\spfun[read-cmd=school]{f(g(x))}$.
+
+% doc: «f de g de x»
+22. read-cmd mathcat: $\spfun[read-cmd=mathcat]{f(g(x))}$.
+
+% doc: «función f de g de x»
+23. concept true (solo la exterior): $\spfun[concept=true]{f(g(x))}$.
+
+% doc: «la función f de g de x»
+24. concept y prefix: $\spfun[concept=true,prefix={la}]{f(g(x))}$.
+
+% doc: silencio
+25. silent true: $\spfun[silent=true]{f(g(x))}$.
+
+% doc: «es igual a 5»
+26. silent true y algo después: $\spfun[silent=true]{f(g(x))} = 5$.
+
+% doc: «f de g de x»
+27. silent false, el valor por defecto: $\spfun[silent=false]{f(g(x))}$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}
