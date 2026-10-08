@@ -1,0 +1,199 @@
+% test-021.tex -- comando \spfun
+%
+% Compilar:  lualatex-dev test-021.tex
+% Validar:   show-pdf-tags --xml test-021.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-021.pdf
+%
+% \spfun escribe una funcion: f(x), f_{1}(x), f''(x,y), F(x). El nombre es
+% una letra con subindice entre llaves (letras o digitos) o con primas; los
+% argumentos van separados por coma y pueden ser expresiones.
+% Las entradas invalidas (que detienen la compilacion) no van aqui.
+%
+% Los "doc:" son lecturas reales de NVDA con MathCAT (2026-10-08).
+% "f segunda de x" (read-cmd=mathcat con dos primas), "el raiz cuadrada" y
+% "x cuadrado" son lecturas propias de MathCAT, no del paquete. Una F
+% mayuscula sola se lee "f" (con prima o subindice se conserva: "F doble
+% prima"); el XML lleva intent="_F-".
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-021: spfun},
+  }
+\begin{document}
+
+\section*{A. El nombre de la función}
+
+% doc: «f de x»
+1. Una letra minúscula: $\spfun{f(x)}$.
+
+% doc: «g de x»
+2. Otra letra: $\spfun{g(x)}$.
+
+% doc: «f de x»
+3. Una letra mayúscula: $\spfun{F(x)}$.
+
+% doc: «f sub uno de x»
+4. Con subíndice: $\spfun{f_{1}(x)}$.
+
+% doc: «f sub 12 de x»
+5. Con subíndice de dos cifras: $\spfun{f_{12}(x)}$.
+
+% doc: «f sub n de x»
+6. Con subíndice de letra: $\spfun{f_{n}(x)}$.
+
+% doc: «f prima de x»
+7. Con una prima: $\spfun{f'(x)}$.
+
+% doc: «f doble prima de x»
+8. Con dos primas: $\spfun{f''(x)}$.
+
+% doc: «f triple prima de x»
+9. Con tres primas: $\spfun{f'''(x)}$.
+
+% doc: «F doble prima de x»
+10. Mayúscula con dos primas: $\spfun{F''(x)}$.
+
+% doc: «f prima de x»
+11. Prima escrita con superíndice: $\spfun{f^{\prime}(x)}$.
+
+\section*{B. Los argumentos}
+
+% doc: «f de x coma y»
+12. Dos argumentos: $\spfun{f(x,y)}$.
+
+% doc: «f de x coma y coma z»
+13. Tres argumentos: $\spfun{f(x,y,z)}$.
+
+% doc: «f doble prima de x coma y»
+14. Dos primas y dos argumentos: $\spfun{f''(x,y)}$.
+
+% doc: «f de x más 1»
+15. Una suma como argumento: $\spfun{f(x+1)}$.
+
+% doc: «f de 3»
+16. Un número: $\spfun{f(3)}$.
+
+% doc: «f de menos 3»
+17. Un número negativo: $\spfun{f(-3)}$.
+
+% doc: «f de 2 x»
+18. Un producto: $\spfun{f(2x)}$.
+
+% doc: «f de alfa»
+19. Una letra griega: $\spfun{f(\alpha)}$.
+
+% doc: «f de x subíndice 1»
+20. Un subíndice como argumento: $\spfun{f(x_{1})}$.
+
+% doc: «f de x cuadrado»
+21. Una potencia como argumento: $\spfun{f(x^{2})}$.
+
+% doc: «f de 1 mitad»
+22. Una fracción como argumento: $\spfun{f(\frac{1}{2})}$.
+
+% doc: «f de el raíz cuadrada de 2»
+23. Una raíz como argumento: $\spfun{f(\sqrt{2})}$.
+
+% doc: «f de g de x»
+24. Una función dentro de otra: $\spfun{f(g(x))}$.
+
+% doc: «f de 1,5»
+25. Decimal con coma entre llaves: $\spfun{f(1{,}5)}$.
+
+% doc: «f de x coma y»
+26. Espacios alrededor de los argumentos: $\spfun{f( x , y )}$.
+
+\section*{C. La función dentro de una fórmula}
+
+% doc: «f de x es igual a 5»
+27. Igual y un número: $\spfun{f(x)} = 5$.
+
+% doc: «f de x más g de x»
+28. Dos funciones: $\spfun{f(x)} + \spfun{g(x)}$.
+
+% doc: «f de x es igual a 2 x»
+29. Igual y un producto: $\spfun{f(x)} = 2x$.
+
+% doc: «f de x más 1»
+30. Una suma después: $\spfun{f(x)} + 1$.
+
+% doc: «y es igual a f de x»
+31. Una función después del igual: $y = \spfun{f(x)}$.
+
+% doc: «f de x es igual a g de x»
+32. Dos funciones con igual: $\spfun{f(x)} = \spfun{g(x)}$.
+
+% doc: «f de 1 es igual a f de 2»
+33. Dos valores de la misma función: $\spfun{f(1)} = \spfun{f(2)}$.
+
+\section*{D. Llave read-cmd}
+
+% doc: «f de x»
+34. Con read-cmd school, el valor por defecto: $\spfun[read-cmd=school]{F(x)}$.
+
+% doc: «f de x»
+35. Con read-cmd mathcat: $\spfun[read-cmd=mathcat]{f(x)}$.
+
+% doc: «f prima de x»
+36. Con read-cmd mathcat y una prima: $\spfun[read-cmd=mathcat]{f'(x)}$.
+
+% doc: «f segunda de x»
+37. Con read-cmd mathcat y dos primas: MathCAT lee el símbolo como segundos: $\spfun[read-cmd=mathcat]{f''(x)}$.
+
+% doc: «f subíndice 1 de x»
+38. Con read-cmd mathcat y subíndice: $\spfun[read-cmd=mathcat]{f_{1}(x)}$.
+
+\section*{E. Llaves concept y prefix}
+
+% doc: «f de x»
+39. Con concept false, el valor por defecto: $\spfun[concept=false]{f(x)}$.
+
+% doc: «función f de x»
+40. Con concept true: $\spfun[concept=true]{f(x)}$.
+
+% doc: «función f sub uno de x coma y»
+41. Con concept true, subíndice y dos argumentos: $\spfun[concept=true]{f_{1}(x,y)}$.
+
+% doc: «la función f de x»
+42. Con prefix y concept true: $\spfun[prefix={la},concept=true]{f(x)}$.
+
+% doc: «f de x»
+43. Con prefix y concept false: el prefijo no se usa: $\spfun[prefix={la}]{f(x)}$.
+
+% doc: «la función f de x»
+44. Con todas las llaves: $\spfun[read-cmd=school,prefix={la},concept=true,silent=false]{f(x)}$.
+
+\section*{F. Llave silent}
+
+% doc: «»
+45. Con silent true: $\spfun[silent=true]{f(x)}$.
+
+% doc: «»
+46. Con silent true y dos argumentos: $\spfun[silent=true]{f(x,y)}$.
+
+% doc: «»
+47. Con silent true y subíndice: $\spfun[silent=true]{f_{1}(x)}$.
+
+% doc: «»
+48. Con silent true y dos primas: $\spfun[silent=true]{f''(x)}$.
+
+% doc: «es igual a 5»
+49. Con silent true y algo después: $\spfun[silent=true]{f(x)} = 5$.
+
+% doc: «f de x»
+50. Con silent false, el valor por defecto: $\spfun[silent=false]{f(x)}$.
+
+\end{document}

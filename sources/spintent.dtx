@@ -196,7 +196,7 @@ end, "shekel_fallback_patch")
         spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, spang,
         spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle,
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
-        spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, %
+        spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, spfun, %
       }
   }
 % Colors
@@ -637,7 +637,7 @@ end, "shekel_fallback_patch")
                         spdate, spread, spdsym, spmsym, spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, %
                         spang, spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle, sparc, spmarc,%
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
-                        spProp, spnewread, spVol, spinterval, },%
+                        spProp, spnewread, spVol, spinterval, spfun, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -5806,6 +5806,98 @@ end, "shekel_fallback_patch")
 % Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la salida
 % del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT} sí
 % verbalizará la salida del comando.
+%
+% \subsection*{El comando \cs[no-index]{spfun}}\label{subsec:spfun}
+%
+% \vspace*{-0.5\baselineskip}
+%
+% \begin{function}{\spfun}
+%   \begin{syntax}
+%     |\spfun|\mymarg{función} \qquad\qquad |\spfun|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{función}
+%   \end{syntax}
+%   El comando \ics*{spfun} trabaja en \emph{modo matemático} y recibe el
+%   \emph{argumento} obligatorio \mymarg{función} de la forma
+%   \mymarg{f(x)}, donde `$f$' es el \emph{nombre} de la función y lo que va
+%   entre paréntesis son uno o más \emph{argumentos} separados por coma
+%   `\textcolor{red}{,}'. El nombre es una letra, mayúscula o minúscula, con
+%   prima(s) `|'|' o subíndice `|_{...}|' opcionales; el subíndice solo admite
+%   letras y dígitos. Los argumentos pueden ser letras, números o
+%   expresiones.
+% \end{function}
+%
+% \smallskip
+%
+% |$\spfun{f(x)}$| imprimirá `$f(x)$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«f de x»};
+% |$\spfun{f_{1}(x)}$| imprimirá `$f_{1}(x)$' y verbalizará
+% \emph{«f sub uno de x»}; |$\spfun{f'(x)}$| imprimirá `$f'(x)$' y
+% verbalizará \emph{«f prima de x»}; |$\spfun{f''(x)}$| imprimirá
+% `$f''(x)$' y verbalizará \emph{«f doble prima de x»}.
+%
+% \smallskip
+%
+% Con dos o más argumentos, |$\spfun{f(x,y)}$| imprimirá `$f(x,y)$' y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«f de x coma y»}. Un argumento
+% puede ser una expresión: |$\spfun{f(x+1)}$| imprimirá `$f(x+1)$' y
+% verbalizará \emph{«f de x más 1»}.
+%
+% \smallskip
+%
+% Las comas que quedan dentro de llaves, de paréntesis o de corchetes no
+% separan argumentos. Por eso, un número decimal con coma debe escribirse
+% entre llaves: |$\spfun{f(1{,}5)}$| tiene un solo argumento.
+%
+% \smallskip
+%
+% El comando |\spfun| devuelve un \enquote{error} y se detiene la compilación
+% del documento cuando el \mymarg{función} no comienza con un nombre válido,
+% cuando el subíndice contiene algo distinto de letras o dígitos, cuando el
+% nombre no va seguido de paréntesis, cuando los paréntesis, las llaves o los
+% corchetes no están balanceados, cuando un argumento está vacío o cuando hay
+% algo después del paréntesis que cierra.
+%
+% \subsubsection*{Llaves para \cs[no-index]{spfun}}
+%
+% \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
+%   mathcat}{school}[spfun]
+% \smallskip
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará el
+% nombre de la función. Si se establece en |school|, \mynvmath{NVDA/MathCAT}
+% verbaliza el nombre sin el prefijo «mayúscula»: |$\spfun{F''(x)}$| se
+% verbaliza \emph{«F doble prima de x»}; si se establece en |mathcat|,
+% \mynvmath{NVDA/MathCAT} aplica sus propias reglas, que pueden incluir el
+% prefijo «mayúscula» dependiendo de la configuración del usuario.
+%
+% \smallskip
+%
+% \keyexampcmd{prefix}{prefijo}{no usado}[spfun]
+% \smallskip
+% Establece el \emph{prefijo} que será verbalizado por
+% \mynvmath{NVDA/MathCAT} \emph{antes} de verbalizar el concepto
+% \emph{«función»}. El valor de esta llave \emph{siempre} debe pasarse entre
+% llaves `|{ }|'. Solo se verbaliza cuando \mykey{concept} es |true|.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spfun]
+% \smallskip
+% Establece si se verbaliza el concepto \emph{«función»} antes de la
+% función. Si se establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará el
+% concepto, el prefijo establecido por la llave \mykey{prefix} y la función;
+% si se establece en |false|, solo verbalizará la función.
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spfun]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} del \mymarg{función} pasado al comando sin
+% modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se
+% establece en |false|, sí verbalizará la salida del comando. El argumento
+% se valida igual en ambos casos.
 %
 %
 % \newpage
@@ -12496,6 +12588,328 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spinterval } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spfun}}\label{cmd:spfun}
+%
+% The user command |\spfun| typesets a function call such as |f(x)|,
+% |f_{1}(x)|, |f''(x,y)|. The Lua function
+% \myhlc|\@@_luafun_spfun_parse_and_set:n| splits the \mymarg{argument}
+% into the function name (a letter with an optional subscript or primes,
+% left in the shared |\l_@@_geo_luaset_*| variables) and the list of
+% arguments, cut at the top-level commas, each one stored in
+% |\l_@@_spfun_luaset_arg_<i>_tl| together with a flag
+% |\l_@@_spfun_luaset_simple_<i>_str| telling whether it is a single
+% node. The whole call is tagged with a native |\MathMLintent| whose
+% |intent| is |$f($a1,$a2,...)|; the name is tagged |arg="f"| and each
+% argument |arg="a<i>"|, while the parentheses and the commas are silenced.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spfun}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spfun_mode_str,
+%     \l_@@_spfun_prefix_tl,
+%     \l_@@_spfun_intent_arg_tl,
+%     \l_@@_spfun_kv_tl,
+%     \l_@@_spfun_refs_tl,
+%     \l_@@_spfun_tmp_str,
+%     \l_@@_spfun_nargs_int,
+%     \l_@@_spfun_luaset_error_str,
+%     \l_@@_spfun_luaset_nargs_str,
+%   }
+%   The variable \myhlc|\l_@@_spfun_mode_str| stores the value set by the
+%   key \mykey[spfun]{read-cmd} and \myhlc|\l_@@_spfun_prefix_tl| the one
+%   set by \mykey[spfun]{prefix}. The two |luaset| variables are set from
+%   Lua.
+%    \begin{macrocode}
+\str_new:N  \l_@@_spfun_mode_str
+\tl_new:N   \l_@@_spfun_prefix_tl
+\tl_new:N   \l_@@_spfun_intent_arg_tl
+\tl_new:N   \l_@@_spfun_kv_tl
+\tl_new:N   \l_@@_spfun_refs_tl
+\str_new:N  \l_@@_spfun_tmp_str
+\int_new:N  \l_@@_spfun_nargs_int
+\bool_new:N \l_@@_spfun_silent_bool
+\bool_new:N \l_@@_spfun_concept_bool
+\str_new:N  \l_@@_spfun_luaset_error_str
+\str_new:N  \l_@@_spfun_luaset_nargs_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spfun}}
+%
+% \begin{macro}[int]{spfun-invalid-arg}
+%   The \enquote{error} |spfun-invalid-arg| is raised when the argument
+%   fails to parse: no valid name, no parentheses, unbalanced delimiters,
+%   an empty argument or text after the closing parenthesis. It is raised
+%   whatever the value of \mykey{silent}.
+%    \begin{macrocode}
+\msg_new:nnn { spintent } { spfun-invalid-arg }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spfun.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spfun}}
+%
+% \begin{macro}[int]{read-cmd, prefix, concept, silent, unknown}
+%   We define the \mymeta{keys} \mykey[spfun]{read-cmd},
+%   \mykey[spfun]{prefix}, \mykey[spfun]{concept} and
+%   \mykey[spfun]{silent}. Unlike the geometry commands, \mykey{concept}
+%   is |false| by default: \emph{f de x} is already how the function is read.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spfun }
+  {
+    read-cmd            .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l_@@_spfun_mode_str { school  } }
+            {2} { \str_set:Nn \l_@@_spfun_mode_str { mathcat } }
+          }
+      },
+    read-cmd            .initial:n  = school,
+    read-cmd            .value_required:n = true,
+    read-cmd / unknown  .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
+    prefix              .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spfun_prefix_tl {#1} },
+    prefix              .initial:n  = ,
+    prefix              .value_required:n = true,
+    silent              .bool_set:N = \l_@@_spfun_silent_bool,
+    silent              .initial:n = false,
+    silent              .value_required:n = true,
+    concept             .bool_set:N = \l_@@_spfun_concept_bool,
+    concept             .initial:n  = false,
+    concept             .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spfun }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spfun}}
+%
+% \begin{macro}[int]{\@@_spfun_name_plain:}
+%   Typesets the name without any annotation: the letter, followed by the
+%   subscript or by the primes when there are any.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_name_plain:
+  {
+    \l_@@_geo_luaset_letra_str
+    \str_case:VnF \l_@@_geo_luaset_tipo_str
+      {
+        { sub }   { \c_math_subscript_token { \l_@@_geo_luaset_sub_str } }
+        { prima } { \l_@@_geo_luaset_sub_str }
+      }
+      { }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfun_name_school:}
+%   For |read-cmd=school| the name is tagged |arg="f"| with a literal
+%   |intent| (|_f-sub-uno-|, |_F-doble-prima-|, \ldots) through the shared
+%   queue, so \mynvmath{MathCAT} neither announces a capital letter nor reads
+%   the Unicode double prime as seconds. A subscript is typeset silenced; a
+%   prime is not, since it is not spoken on the base.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_name_school:
+  {
+    \tl_set:Ne \l_@@_spfun_kv_tl
+      { arg = "f", intent = "_ \l_@@_geo_luaset_intent_str -" }
+    \@@_luafun_mrow_intent_arg:nn { } { \l_@@_spfun_kv_tl }
+    \str_case:VnF \l_@@_geo_luaset_tipo_str
+      {
+        { sub }
+          {
+            \l_@@_geo_luaset_letra_str
+            \c_math_subscript_token
+              { \MathMLintent { :silent } { \l_@@_geo_luaset_sub_str } }
+          }
+        { prima }
+          { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
+      }
+      { \l_@@_geo_luaset_letra_str }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfun_name_mathcat:}
+%   For |read-cmd=mathcat| the name is tagged |arg="f"| through a native
+%   |\MathMLarg|, never mixed with the shared queue for the same name. With
+%   a subscript or primes the inner separator keeps the |arg| on a wrapping
+%   |<mrow>|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_name_mathcat:
+  {
+    \str_if_eq:VnTF \l_@@_geo_luaset_tipo_str { }
+      { \MathMLarg { f } { \@@_spfun_name_plain: } }
+      { \MathMLarg { f } { \@@_inner_sep: \@@_spfun_name_plain: } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfun_arg:n}
+%   Tags argument number |#1| with |arg="a<i>"|. A single node (letter,
+%   number, a command such as |\alpha|) carries its |arg| directly; any other
+%   argument starts with the inner separator, which forces an |<mrow>| to
+%   hold the |arg|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_arg:n
+  {
+    \str_set_eq:Nc \l_@@_spfun_tmp_str { l_@@_spfun_luaset_simple_ #1 _str }
+    \str_if_eq:VnTF \l_@@_spfun_tmp_str { true }
+      {
+        \MathMLarg { a #1 }
+          { \tl_use:c { l_@@_spfun_luaset_arg_ #1 _tl } }
+      }
+      {
+        \MathMLarg { a #1 }
+          { \@@_inner_sep: \tl_use:c { l_@@_spfun_luaset_arg_ #1 _tl } }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfun_args:}
+%   Walks the arguments, silencing the comma between them.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_args:
+  {
+    \int_step_inline:nn { \l_@@_spfun_nargs_int }
+      {
+        \int_compare:nNnF {##1} = {1}
+          { \MathMLintent { :silent } { , } }
+        \@@_spfun_arg:n {##1}
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfun_args_plain:}
+%   Typesets the arguments with no annotation (\mykey{silent}).
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_args_plain:
+  {
+    \int_step_inline:nn { \l_@@_spfun_nargs_int }
+      {
+        \int_compare:nNnF {##1} = {1} { , }
+        \tl_use:c { l_@@_spfun_luaset_arg_ ##1 _tl }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfun_set_intent:}
+%   Builds the concept |intent| in \myhlc|\l_@@_spfun_intent_arg_tl|:
+%   |$f($a1,$a2,...)| when \mykey{concept} is |false|, and
+%   |_prefix-función:prefix($f($a1,$a2,...))| otherwise.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_set_intent:
+  {
+    \tl_clear:N \l_@@_spfun_refs_tl
+    \int_step_inline:nn { \l_@@_spfun_nargs_int }
+      {
+        \tl_put_right:Ne \l_@@_spfun_refs_tl
+          { \int_compare:nNnF {##1} = {1} { , } $a ##1 }
+      }
+    \bool_if:NTF \l_@@_spfun_concept_bool
+      {
+        \tl_set:Ne \l_@@_spfun_intent_arg_tl
+          {
+            _
+            \tl_if_empty:NF \l_@@_spfun_prefix_tl
+              { \tl_use:N \l_@@_spfun_prefix_tl - }
+            función:prefix( $f ( \l_@@_spfun_refs_tl ) )
+          }
+      }
+      {
+        \tl_set:Ne \l_@@_spfun_intent_arg_tl
+          { $f ( \l_@@_spfun_refs_tl ) }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfun_mathml:}
+%   Calls \myhlc|\@@_invisible_sep:| first, then wraps name, parentheses and
+%   arguments in a native |\MathMLintent|. With \mykey{silent} set to |true|
+%   the intent is |_-| and nothing inside is annotated.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_mathml:
+  {
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_spfun_silent_bool
+      {
+        \MathMLintent { _- }
+          {
+            \@@_inner_sep:
+            \@@_spfun_name_plain:
+            (
+            \@@_spfun_args_plain:
+            )
+          }
+      }
+      {
+        \@@_spfun_set_intent:
+        \MathMLintent { \l_@@_spfun_intent_arg_tl }
+          {
+            \str_if_eq:VnTF \l_@@_spfun_mode_str { school }
+              { \@@_spfun_name_school: }
+              { \@@_spfun_name_mathcat: }
+            \MathMLintent { :silent } { ( }
+            \@@_spfun_args:
+            \MathMLintent { :silent } { ) }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfun_exec:nn}
+%   Receives the optional \mymeta{keys} in `|#1|' and the \mymarg{argument}
+%   in `|#2|'. Parses first, reporting |spfun-invalid-arg| on error whatever
+%   \mykey{silent} is.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfun_exec:nn
+  {
+    \keys_set:nn { spintent / spfun } {#1}
+    \@@_luafun_spfun_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnTF \l_@@_spfun_luaset_error_str { true }
+      {
+        \msg_error:nne { spintent } { spfun-invalid-arg } { \exp_not:n {#2} }
+      }
+      {
+        \int_set:Nn \l_@@_spfun_nargs_int { \l_@@_spfun_luaset_nargs_str }
+        \@@_spfun_mathml:
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spfun}
+%   The public command enforces \emph{math mode}, opens a local group,
+%   and delegates to \myhlc|\@@_spfun_exec:nn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spfun { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \@@_spfun_exec:nn {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spfun } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -19886,12 +20300,14 @@ local function spintent_geo_normalize_primes(str)
     str = s_gsub(str, "″", "''")
     str = s_gsub(str, "′", "'")
 
+    -- Los espacios que TeX deja tras un comando (\prime }) no cuentan.
     str = s_gsub(str, "%^%{([^%}]*)%}", function(inner)
-        if inner == "\\prime" then return "'" end
-        if inner == "\\prime\\prime" then return "''" end
-        if inner == "\\prime\\prime\\prime" then return "'''" end
-        if inner == "\\dprime" then return "''" end
-        if inner == "\\trprime" then return "'''" end
+        local compact = (s_gsub(inner, "%s+", ""))
+        if compact == "\\prime" then return "'" end
+        if compact == "\\prime\\prime" then return "''" end
+        if compact == "\\prime\\prime\\prime" then return "'''" end
+        if compact == "\\dprime" then return "''" end
+        if compact == "\\trprime" then return "'''" end
         return "^{" .. inner .. "}"
     end)
 
@@ -20743,6 +21159,122 @@ register_tex_cmd("luafun_spinterval_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spinterval_luaset_b_inf_str",       b_inf)
     token_set_macro("l__spintent_spinterval_luaset_b_tall_str",      b_tall)
     token_set_macro("l__spintent_spinterval_luaset_b_composite_str", b_comp)
+end, { "string" })
+
+-- ------------------------------------------------------------
+-- §13  FUNCIONES — \spfun
+--
+-- Reconoce  nombre(arg, arg, ...)  donde nombre es una letra
+-- (mayúscula o minúscula) con subíndice entre llaves (letras o
+-- dígitos) o con primas, igual que un punto de la geometría. Los
+-- argumentos se separan por las comas de nivel superior: las que
+-- quedan dentro de llaves, paréntesis o corchetes no cuentan.
+-- Deja el nombre en las mismas variables que usa la familia geo
+-- (letra/sub/tipo/intent/print) y cada argumento en
+-- l__spintent_spfun_luaset_arg_<i>_tl.
+-- ------------------------------------------------------------
+local spintent_fun_alnum = R"09" + R"az" + R"AZ"
+
+local spintent_fun_head = Ct(
+    C(R"az" + R"AZ") *
+    (
+        P"_{" * C(spintent_fun_alnum^1) * P"}" * Cc"sub"
+        + spintent_geo_primas               * Cc"prima"
+        + Cc""                              * Cc""
+    )
+) * lpeg_base.Cp()
+
+-- Separa por las comas de nivel superior. Devuelve nil si los
+-- delimitadores no quedan balanceados.
+local function spintent_fun_split_args(inner)
+    local args, depth, start = {}, 0, 1
+    local i, n = 1, #inner
+    while i <= n do
+        local c = s_sub(inner, i, i)
+        if c == "\\" then
+            i = i + 2
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+                if depth < 0 then return nil end
+            elseif c == "," and depth == 0 then
+                args[#args + 1] = s_sub(inner, start, i - 1)
+                start = i + 1
+            end
+            i = i + 1
+        end
+    end
+    if depth ~= 0 then return nil end
+    args[#args + 1] = s_sub(inner, start)
+    return args
+end
+
+-- Un argumento "simple" es un único nodo (letra, número o comando
+-- como \alpha): lleva su arg directo. Cualquier otro (2x, x+1,
+-- x_{1}, \frac{1}{2}, \sqrt{2}) necesita el separador interno para
+-- que luamml le conserve el arg.
+local function spintent_fun_is_simple(arg)
+    return s_match(arg, "^%w$") ~= nil
+        or s_match(arg, "^%d+$") ~= nil
+        or s_match(arg, "^\\%a+$") ~= nil
+end
+
+local function spintent_fun_set_error()
+    token_set_macro("l__spintent_spfun_luaset_error_str", "true")
+    token_set_macro("l__spintent_spfun_luaset_nargs_str", "0")
+    token_set_macro("l__spintent_geo_luaset_intent_str",  "")
+    token_set_macro("l__spintent_geo_luaset_print_tl",    "")
+    token_set_macro("l__spintent_geo_luaset_letra_str",   "")
+    token_set_macro("l__spintent_geo_luaset_sub_str",     "")
+    token_set_macro("l__spintent_geo_luaset_tipo_str",    "")
+end
+
+register_tex_cmd("luafun_spfun_parse_and_set", function(raw)
+    raw = spintent_trim(raw)
+    raw = spintent_geo_normalize_primes(raw)
+
+    local nombre, pos = spintent_fun_head:match(raw)
+    if not nombre then
+        spintent_fun_set_error()
+        return
+    end
+
+    local inner = s_match(s_sub(raw, pos), "^%s*%((.*)%)%s*$")
+    if not inner then
+        spintent_fun_set_error()
+        return
+    end
+
+    local args = spintent_fun_split_args(inner)
+    if not args then
+        spintent_fun_set_error()
+        return
+    end
+    for i = 1, #args do
+        args[i] = spintent_trim(args[i])
+        if args[i] == "" then
+            spintent_fun_set_error()
+            return
+        end
+    end
+
+    token_set_macro("l__spintent_spfun_luaset_error_str", "false")
+    token_set_macro("l__spintent_spfun_luaset_nargs_str", tostring(#args))
+    for i = 1, #args do
+        token_set_macro("l__spintent_spfun_luaset_arg_" .. i .. "_tl", args[i])
+        token_set_macro("l__spintent_spfun_luaset_simple_" .. i .. "_str",
+                        spintent_fun_is_simple(args[i]) and "true" or "false")
+    end
+
+    token_set_macro("l__spintent_geo_luaset_intent_str",
+                    spintent_geo_build_body_nombre(nombre))
+    token_set_macro("l__spintent_geo_luaset_print_tl",
+                    spintent_geo_build_visual_nombre(nombre))
+    token_set_macro("l__spintent_geo_luaset_letra_str", nombre[1])
+    token_set_macro("l__spintent_geo_luaset_sub_str",   nombre[2] or "")
+    token_set_macro("l__spintent_geo_luaset_tipo_str",  nombre[3] or "")
 end, { "string" })
 % \iffalse
 %</spintentlua>
