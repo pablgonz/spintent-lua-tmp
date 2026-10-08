@@ -196,7 +196,7 @@ end, "shekel_fallback_patch")
         spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, spang,
         spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle,
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
-        spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, %
+        spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, %
       }
   }
 % Colors
@@ -637,7 +637,7 @@ end, "shekel_fallback_patch")
                         spdate, spread, spdsym, spmsym, spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, %
                         spang, spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle, sparc, spmarc,%
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
-                        spProp, spnewread, spVol, },%
+                        spProp, spnewread, spVol, spinterval, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -649,7 +649,7 @@ end, "shekel_fallback_patch")
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
                     lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent, en-US, math, mathml-SE, es-CL, on, off, %
                     setup, tagging, tagging-setup, lang, pdfversion, pdfstandard, arg, auto, read-sub, radio-sty, diameter, %
-                    circun, circle, side, mside, usual, sub-index, odot, concept, upper-case, },%
+                    circun, circle, side, mside, usual, sub-index, odot, concept, upper-case, prefix, big, Big, bigg, Bigg, },%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
@@ -5635,6 +5635,177 @@ end, "shekel_fallback_patch")
 % este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará
 % la salida del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT}
 % sí verbalizará la salida del comando.
+%
+% \section{Utilidades para álgebra}
+%
+% El paquete \mypkg*[no-index]{spintent} provee utilidades para trabajar con álgebra
+% descritas en esta sección.
+%
+% \subsection*{El comando \cs[no-index]{spinterval}}\label{subsec:spinterval}
+%
+% \vspace*{-0.5\baselineskip}
+%
+% \begin{function}{\spinterval}
+%   \begin{syntax}
+%     |\spinterval|\mymarg{intervalo} \qquad\qquad |\spinterval|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{intervalo}
+%   \end{syntax}
+%   El comando \ics*{spinterval} trabaja en \emph{modo matemático} y recibe
+%   el \emph{argumento} obligatorio \mymarg{intervalo} de la forma
+%   \mymarg{(a\textnormal{\textcolor{red}{;}} b)}, donde `$a$' y `$b$' son los
+%   \emph{extremos} del intervalo separados por un punto y coma
+%   `\textcolor{red}{;}' o, si no hay punto y coma, por una única coma
+%   `\textcolor{red}{,}'. El delimitador izquierdo puede ser `|(|', `|[|' o
+%   `|]|' y el derecho `|)|', `|]|' o `|[|', en cualquier combinación.
+%   Los extremos numéricos se procesan internamente bajo el comando
+%   |\spnum|; cualquier otro extremo, como una letra, un subíndice, una
+%   fracción o una raíz, se imprime tal cual y lo verbaliza
+%   \mynvmath{NVDA/MathCAT}.
+% \end{function}
+%
+% \smallskip
+%
+% Un delimitador `|(|' o `|]|' a la izquierda, y `|)|' o `|[|' a la derecha,
+% \emph{excluye} su extremo y el intervalo es \emph{abierto} en él; los demás
+% delimitadores lo \emph{incluyen} y el intervalo es \emph{cerrado} en él.
+%
+% \smallskip
+%
+% Si el intervalo es abierto en sus dos extremos, |$\spinterval{(1,5)}$|
+% imprimirá `$(1,5)$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«intervalo abierto de uno a cinco»}; la notación
+% chilena |$\spinterval{]1,5[}$| imprimirá `$]1,5[$' y se verbalizará igual.
+%
+% \smallskip
+%
+% Si el intervalo es cerrado en sus dos extremos, |$\spinterval{[1,5]}$|
+% imprimirá `$[1,5]$' y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«intervalo cerrado de uno a cinco»}.
+%
+% \smallskip
+%
+% Si el intervalo es abierto en un extremo y cerrado en el otro,
+% |$\spinterval{]1,5]}$| imprimirá `$]1,5]$' y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«intervalo abierto en uno y cerrado en cinco»};
+% |$\spinterval{[1,5[}$| imprimirá `$[1,5[$' y verbalizará
+% \emph{«intervalo cerrado en uno y abierto en cinco»}.
+%
+% \smallskip
+%
+% Si un extremo es infinito, |$\spinterval{]-\infty,3]}$| imprimirá
+% `$]-\infty,3]$' y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«intervalo abierto en menos infinito y cerrado en tres»}.
+%
+% \smallskip
+%
+% Si los extremos son números decimales con coma, el separador debe ser
+% el punto y coma: |$\spinterval{[3,5;4,2]}$| imprimirá `$[3{,}5;4{,}2]$' y
+% \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«intervalo cerrado de tres coma cinco a cuatro coma dos»}.
+%
+% \smallskip
+%
+% El comando |\spinterval| devuelve un \enquote{error} y se detiene la
+% compilación del documento cuando el \mymarg{intervalo} no comienza con un
+% delimitador izquierdo y termina con uno derecho de los indicados, cuando un
+% extremo está vacío, cuando no hay separador, cuando hay más de una coma sin
+% punto y coma, cuando las llaves no están balanceadas o cuando el infinito
+% está mal ubicado o se incluye en el intervalo.
+%
+% \smallskip
+%
+% \begin{important}*
+%   El argumento \mymarg{intervalo} siempre debe pasarse entre llaves
+%   `|{ }|', incluso cuando comienza con un corchete: sin ellas,
+%   |\spinterval[1,5]| interpreta los corchetes como el argumento opcional
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val}.
+% \end{important}
+%
+% \smallskip
+%
+% \begin{important}*
+%   El infinito `$\infty$' nunca se incluye en el intervalo: `$-\infty$' solo
+%   puede ir en el extremo izquierdo y `$\infty$' en el derecho, ambos junto
+%   a un delimitador que los excluya.
+% \end{important}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spinterval}}
+%
+% \keyexampcmd{read-cmd}{school \textnormal{\textcolor{lightgray}{\textbar}}
+%   mathcat}{school}[spinterval]
+% \smallskip
+% Establece la \emph{forma} en la que \mynvmath{NVDA/MathCAT} verbalizará los
+% extremos del intervalo. Si se establece en |school|,
+% |$\spinterval[read-cmd=school]{]-2,+4[}$| se verbalizará
+% \emph{«intervalo abierto de menos dos a más cuatro»}; si se establece en
+% |mathcat|, \mynvmath{NVDA/MathCAT} aplica sus propias reglas y
+% |$\spinterval[read-cmd=mathcat]{]-2,+4[}$| se verbalizará
+% \emph{«intervalo abierto de menos dos a positivo cuatro»}.
+%
+% \smallskip
+%
+% \keyexampcmd{prefix}{prefijo}{no usado}[spinterval]
+% \smallskip
+% Establece el \emph{prefijo} que será verbalizado por \mynvmath{NVDA/MathCAT}
+% \emph{antes} de verbalizar el \emph{«concepto»} intervalo. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
+% |$\spinterval[prefix={el}]{(1,5)}$| imprimirá `$(1,5)$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«el intervalo abierto de uno a cinco»}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spinterval]
+% \smallskip
+% Sobrescribe la verbalización del \emph{intervalo} completo que será
+% verbalizada por \mynvmath{NVDA/MathCAT} al ejecutar el comando sin modificar
+% la impresión de este. El valor de esta llave \emph{siempre} debe pasarse
+% entre llaves `|{ }|'. Por ejemplo: |$\spinterval[read-arg={rango}]{[1,5]}$|
+% imprimirá `$[1,5]$' en la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«rango»}.
+%
+% \smallskip
+%
+% \keyexampcmd{concept}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spinterval]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del \emph{«concepto»} intervalo y del prefijo establecido por la llave
+% \mykey{prefix} al ejecutar el comando sin modificar la impresión de este. Si
+% se establece en |true|, \mynvmath{NVDA/MathCAT} verbalizará el
+% \emph{«concepto»} y los extremos; si se establece en |false|,
+% |$\spinterval[concept=false]{(1,5)}$| se verbalizará
+% \emph{«abierto de uno a cinco»}.
+%
+% \smallskip
+%
+% \keyexampcmd{size}{auto \textnormal{\textcolor{lightgray}{\textbar}}
+%   none \textnormal{\textcolor{lightgray}{\textbar}}
+%   big \textnormal{\textcolor{lightgray}{\textbar}}
+%   Big \textnormal{\textcolor{lightgray}{\textbar}}
+%   bigg \textnormal{\textcolor{lightgray}{\textbar}}
+%   Bigg}{auto}[spinterval]
+% \smallskip
+% Establece el \emph{tamaño} de los delimitadores del intervalo sin modificar
+% la verbalización de este. Si se establece en \mykey{auto}, los delimitadores
+% conservan su tamaño normal salvo que algún extremo contenga una fracción
+% |\frac| o |\dfrac|, en cualquier posición del extremo: en ese caso se usan
+% |\bigl| y |\bigr| en estilo texto, |\Bigl| y |\Bigr| en estilo display, y
+% siempre |\Bigl| y |\Bigr| cuando la fracción es |\dfrac|. Si se establece en
+% \mykey{none}, los delimitadores nunca cambian de tamaño; si se establece en
+% \mykey{big}, \mykey{Big}, \mykey{bigg} o \mykey{Bigg}, se usan siempre
+% |\bigl| y |\bigr|, |\Bigl| y |\Bigr|, |\biggl| y |\biggr|, o |\Biggl| y
+% |\Biggr|, respectivamente.
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spinterval]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en \mynvmath{NVDA/MathCAT}
+% del \mymarg{intervalo} pasado al comando sin modificar la impresión de este.
+% Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO verbalizará la salida
+% del comando; si se establece en |false|, \mynvmath{NVDA/MathCAT} sí
+% verbalizará la salida del comando.
 %
 %
 % \newpage
@@ -11743,7 +11914,12 @@ end, "shekel_fallback_patch")
 %
 % \subsection{The command \cs{spinterval}}\label{cmd:spinterval}
 %
-% (Documentation pending.)
+% The user command |\spinterval| receives the \mymarg{argument} written as a
+% left delimiter |(|, |[| or |]|, two endpoints separated by a semicolon or by
+% a single comma, and a right delimiter |)|, |]| or |[|. A delimiter |(| or |]|
+% on the left, and |)| or |[| on the right, excludes its endpoint; the others
+% include it. The type of interval, the endpoints and the separator are
+% automatically detected by the Lua module.
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spinterval}}
 %
@@ -11816,7 +11992,22 @@ end, "shekel_fallback_patch")
 %     \l_@@_spinterval_delim_r_tl,
 %     \l_@@_spinterval_tmp_tl,
 %   }
-%   (Documentation pending.)
+%   The variable \myhlc|\l_@@_spinterval_raw_arg_tl| stores the \mymarg{argument}
+%   as it was received. The variables \myhlc|\l_@@_spinterval_mode_str|,
+%   \myhlc|\l_@@_spinterval_prefix_tl|, \myhlc|\l_@@_spinterval_read_arg_tl| and
+%   \myhlc|\l_@@_spinterval_size_str| store the values set by the keys
+%   \mykey[spinterval]{read-cmd}, \mykey[spinterval]{prefix},
+%   \mykey[spinterval]{read-arg} and \mykey[spinterval]{size}, and
+%   \myhlc|\l_@@_spinterval_reason_str| the text of the error reason. The variables
+%   \myhlc|\l_@@_spinterval_word_w_tl| and \myhlc|\l_@@_spinterval_word_g_tl| store
+%   the word that names the interval and the word that joins its endpoints, and
+%   \myhlc|\l_@@_spinterval_intent_arg_tl| and \myhlc|\l_@@_spinterval_intent_group_tl|
+%   the intents of the whole interval and of the group of endpoints. The variables
+%   \myhlc|\l_@@_spinterval_sym_l_tl|, \myhlc|\l_@@_spinterval_sym_r_tl|,
+%   \myhlc|\l_@@_spinterval_size_l_tl|, \myhlc|\l_@@_spinterval_size_r_tl|,
+%   \myhlc|\l_@@_spinterval_delim_l_tl| and \myhlc|\l_@@_spinterval_delim_r_tl| store
+%   the delimiter symbols, their size commands and the delimiters ready to be
+%   typeset; \myhlc|\l_@@_spinterval_tmp_tl| is a scratch variable.
 %    \begin{macrocode}
 \tl_new:N  \l_@@_spinterval_raw_arg_tl
 \tl_new:N  \l_@@_spinterval_prefix_tl
@@ -11841,7 +12032,9 @@ end, "shekel_fallback_patch")
 % \subsubsection{Definition of error messages for \cs[no-index]{spinterval}}
 %
 % \begin{macro}[int]{spinterval-invalid-arg}
-%   (Documentation pending.)
+%   The \enquote{error} |spinterval-invalid-arg| is raised when the Lua module
+%   rejects the \mymarg{argument}; it reports the argument and the reason set by
+%   \myhlc|\@@_spinterval_set_reason:|.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spinterval-invalid-arg }
   {
@@ -11856,7 +12049,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \subsubsection{Definition of keys for \cs[no-index]{spinterval}}
 %
 % \begin{macro}[int]{read-cmd, prefix, read-arg, size, silent, concept, unknown}
-%   (Documentation pending.)
+%   We define the \mymeta{keys} \mykey[spinterval]{read-cmd}, \mykey[spinterval]{prefix},
+%   \mykey[spinterval]{read-arg}, \mykey[spinterval]{size}, \mykey[spinterval]{silent}
+%   and \mykey[spinterval]{concept}.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spinterval }
   {
@@ -11916,7 +12111,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \subsubsection{Internal functions for \cs[no-index]{spinterval}}
 %
 % \begin{macro}[int]{\@@_spinterval_set_reason:}
-%   (Documentation pending.)
+%   The internal function \myhlc|\@@_spinterval_set_reason:| stores in
+%   \myhlc|\l_@@_spinterval_reason_str| the text that describes the error code
+%   returned by the Lua module, or |invalid argument| when the code is not known.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_set_reason:
   {
@@ -11958,7 +12155,15 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_set_delims:}
-%   (Documentation pending.)
+%   The internal function \myhlc|\@@_spinterval_set_delims:| sets the symbols of the
+%   left and right delimiters from the characters returned by the Lua module, and
+%   their size commands from the key \mykey[spinterval]{size}. With |big|, |Big|,
+%   |bigg| and |Bigg| the size is fixed, and with |none| there is no size command.
+%   With |auto| there is none unless an endpoint contains a fraction, in which case it
+%   is |\Bigl|/|\Bigr| in display style and |\bigl|/|\bigr| in text style, and always
+%   |\Bigl|/|\Bigr| when the fraction is a |\dfrac|. Without a size command each
+%   delimiter is wrapped in |\mathopen| or |\mathclose|; with one, the delimiter
+%   follows the size command.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_set_delims:
   {
@@ -12052,7 +12257,16 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_set_intents:}
-%   (Documentation pending.)
+%   The internal function \myhlc|\@@_spinterval_set_intents:| sets the two words used
+%   in the intents from the type returned by the Lua module: |abierto-de| and |a| for
+%   an open interval, |cerrado-de| and |a| for a closed one, |abierto-en| and
+%   |y-cerrado-en| for an open-closed one, and |cerrado-en| and |y-abierto-en| for a
+%   closed-open one. The intent of the group of endpoints is |_<word>:infix($a,$b)|
+%   with the second word. The intent of the whole interval is |_-| when
+%   \mykey[spinterval]{silent} is |true|, |_| followed by the value of
+%   \mykey[spinterval]{read-arg} when it is not empty, and otherwise |_<word>:prefix($ab)|
+%   with the first word, preceded by the \mykey[spinterval]{prefix}, if any, and
+%   |intervalo-| when \mykey[spinterval]{concept} is |true|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_set_intents:
   {
@@ -12108,7 +12322,8 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_inner_sep:n}
-%   (Documentation pending.)
+%   The internal function \myhlc|\@@_spinterval_inner_sep:n| calls
+%   \myhlc|\@@_inner_sep:| when the endpoint |a| or |b| passed in `|#1|' is composite.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_inner_sep:n
   {
@@ -12120,10 +12335,13 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_plain_number:n}
-%   (Documentation pending.)
+%   The internal function \myhlc|\@@_spinterval_plain_number:n| typesets the value of
+%   the endpoint passed in `|#1|' as a number, preceded by \myhlc|\@@_inner_sep:| and
+%   with each comma protected by braces.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_plain_number:n
   {
+    \@@_inner_sep:
     \tl_set:Ne \l_@@_spinterval_tmp_tl
       { \str_use:c { l_@@_spinterval_luaset_ #1 _value_str } }
     \tl_replace_all:Nnn \l_@@_spinterval_tmp_tl { , } { {,} }
@@ -12133,10 +12351,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_value:n}
-%   A numeric endpoint is always preceded by \myhlc|\@@_inner_sep:|, since
-%   \myhlc|\spnum| only emits its own separator for the first number of the
-%   formula, and a bare |<mn>| next to the comma would be merged by
-%   \mynvmath{MathCAT} with its neighbour.
+%   The internal function \myhlc|\@@_spinterval_value:n| typesets the value of the
+%   endpoint passed in `|#1|' according to its type: |\infty| for infinity; for a number,
+%   \myhlc|\@@_inner_sep:| followed by |\spnum| when \mykey[spinterval]{read-cmd} is
+%   |school|, or \myhlc|\@@_spinterval_plain_number:n| otherwise; and the value as
+%   written for any other type.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_value:n
   {
@@ -12159,7 +12378,13 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_print:n}
-%   (Documentation pending.)
+%   The internal function \myhlc|\@@_spinterval_print:n| typesets the endpoint passed
+%   in `|#1|' with its sign. With |read-cmd=school| a sign |+| or |-| is wrapped, with
+%   its value, in a native |\MathMLintent| with the intent |_más:prefix($vp)| or
+%   |_menos:prefix($vn)|, the value tagged with |\MathMLarg| and preceded by
+%   \myhlc|\@@_spinterval_inner_sep:n|; an endpoint without sign is typeset through
+%   \myhlc|\@@_spinterval_value:n|. With |read-cmd=mathcat| the sign is typeset as is,
+%   followed by the value.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_print:n
   {
@@ -12197,7 +12422,13 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_mathml:}
-%   (Documentation pending.)
+%   The internal function \myhlc|\@@_spinterval_mathml:| builds the annotated interval
+%   with a native |\MathMLintent| that carries the intent of the whole interval. It
+%   contains the left delimiter silenced, a |\MathMLarg| named |ab| that wraps
+%   \myhlc|\@@_inner_sep:| and a |\MathMLintent| with the intent of the group of
+%   endpoints, and the right delimiter silenced. The group holds the endpoints |a| and
+%   |b|, each tagged with |\MathMLarg| and typeset by \myhlc|\@@_spinterval_print:n|,
+%   separated by the silenced separator.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_mathml:
   {
@@ -12223,9 +12454,14 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}[int]{\@@_spinterval_exec:nn}
-%   The outer sibling is \myhlc|\@@_invisible_sep:|, which fires once per formula:
-%   with two intervals in the same formula, a separator before each one makes
-%   \mynvmath{MathCAT} drop the operand on the right of the operator.
+%   The internal function \myhlc|\@@_spinterval_exec:nn| receives the optional
+%   \mymeta{keys} passed in `|#1|' and the \mymarg{argument} passed in `|#2|'. It calls
+%   \myhlc|\@@_luafun_spinterval_parse_and_set:n|; if the Lua module reports an error,
+%   it typesets the \mymarg{argument} as written under the intent |_-| when
+%   \mykey[spinterval]{silent} is |true|, and reports |spinterval-invalid-arg|
+%   otherwise. When there is no error, it calls \myhlc|\@@_spinterval_set_delims:| and
+%   \myhlc|\@@_spinterval_set_intents:|, places \myhlc|\@@_invisible_sep:| and
+%   delegates the rendering to \myhlc|\@@_spinterval_mathml:|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spinterval_exec:nn
   {
@@ -12256,7 +12492,8 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \end{macro}
 %
 % \begin{macro}{\spinterval}
-%   (Documentation pending.)
+%   The public command enforces \emph{math mode}, opens a local group,
+%   and delegates to \myhlc|\@@_spinterval_exec:nn|.
 %    \begin{macrocode}
 \NewDocumentCommand \spinterval { O{} m }
   {
@@ -20342,19 +20579,8 @@ end, { "string" })
 
 -- Intervalos
 
--- \spinterval (modo school): "<izq> a <sep> b <der>". Delimitador
--- izquierdo ( [ ]  y derecho ) ] [  -- cualquier combinacion; la notacion
--- chilena ]a, b[ es un intervalo abierto. Un delimitador "abierto"
--- excluye el extremo: ( ) ] [ ; "cerrado" lo incluye: [ ] .
---
--- Separador: un ";" a profundidad de llaves 0 (las comas son decimales);
--- si no hay ";", exactamente una "," a profundidad 0. \, y \; no cuentan
--- como separador. El infinito (\infty, +\infty, -\infty) nunca se incluye:
--- un delimitador cerrado junto al infinito es un error, y -\infty solo
--- puede ir a la izquierda y \infty a la derecha.
---
--- La fraccion se detecta en CUALQUIER posicion del extremo (spcoord solo
--- mira el comienzo), para decidir el tamano del delimitador en expl3.
+-- \spinterval: delimitador ( [ ] a la izquierda y ) ] [ a la derecha; el
+-- separador es un ";" o, si no hay, una única "," a profundidad de llaves 0.
 
 local spintent_interval_left_open  = { ["("] = true,  ["["] = false, ["]"] = true }
 local spintent_interval_right_open = { [")"] = true,  ["]"] = false, ["["] = true }

@@ -5,10 +5,10 @@
 %            verapdf --flavour ua2 --format text test-019.pdf
 %
 % Cada caso es un parrafo numerado, para poder referirse a el al escuchar
-% el PDF. Los comentarios "doc:" de ESTE archivo son lecturas ESPERADAS por
-% diseno, todavia no grabadas con NVDA: al verificar, reemplazarlas por las
-% reales. Donde dice "..." el resto lo lee MathCAT. Los casos con \sqrt
-% dependen de la regla de MathCAT para la raiz cuadrada.
+% el PDF. Los comentarios "doc:" son las lecturas reales de NVDA con
+% MathCAT (grabadas el 2026-10-07). Los casos con \sqrt reflejan la regla
+% de MathCAT para la raiz cuadrada («el raiz»), y los de subindice y
+% fraccion, su forma de leerlos.
 %
 % \spinterval recibe SIEMPRE el intervalo entre llaves: \spinterval{[a,b]}.
 % Sin llaves, \spinterval[a,b] se leeria como las llaves de configuracion.
@@ -87,10 +87,10 @@
 % doc: «intervalo cerrado en a y abierto en b»
 14. Dos letras, cerrado-abierto: $\spinterval{[a,b[}$.
 
-% doc: «intervalo cerrado de x sub uno a x sub dos»
+% doc: «intervalo cerrado de x subíndice 1 a x subíndice 2»
 15. Subíndices, cerrado: $\spinterval{[x_{1}, x_{2}]}$.
 
-% doc: «intervalo abierto de x sub uno a x sub dos»
+% doc: «intervalo abierto de x subíndice 1 a x subíndice 2»
 16. Subíndices, abierto: $\spinterval{]x_{1}, x_{2}[}$.
 
 \section*{Signos y decimales}
@@ -147,27 +147,27 @@
 % doc: «intervalo cerrado de 1 más 1 mitad a 3»
 32. Una fracción que no está al comienzo: $\spinterval{[1+\frac{1}{2}, 3]}$.
 
-% doc: «intervalo cerrado de 1 a 3 medios»
+% doc: «intervalo cerrado de 1 a 3 mitades»
 33. Una fracción con dfrac, en línea: $\spinterval{[1, \dfrac{3}{2}]}$.
 
-% doc: «intervalo cerrado de raíz cuadrada de 1 mitad a 1»
+% doc: «intervalo cerrado de el raíz cuadrada de 1 mitad a 1»
 34. Una fracción dentro de una raíz: $\spinterval{[\sqrt{\frac{1}{2}}, 1]}$.
 
-% doc: «intervalo cerrado de 1 mitad a 3 medios»
+% doc: «intervalo cerrado de 1 mitad a 3 mitades»
 35. Fracción y dfrac juntas: $\spinterval{[\frac{1}{2}, \dfrac{3}{2}]}$.
 
 \section*{Raíces, potencias y subíndices}
 
-% doc: «intervalo cerrado de raíz cuadrada de 2 a 3»
+% doc: «intervalo cerrado de el raíz cuadrada de 2 a 3»
 36. Una raíz en un extremo: $\spinterval{[\sqrt{2}, 3]}$.
 
-% doc: «intervalo cerrado de menos raíz cuadrada de 2 a raíz cuadrada de 2»
+% doc: «intervalo cerrado de menos el raíz cuadrada de 2 a el raíz cuadrada de 2»
 37. Raíces con signo: $\spinterval{[-\sqrt{2}, \sqrt{2}]}$.
 
 % doc: «intervalo cerrado de a cuadrado a b cuadrado»
 38. Potencias: $\spinterval{[a^2, b^2]}$.
 
-% doc: «intervalo abierto de x sub uno a menos raíz cuadrada de 2»
+% doc: «intervalo abierto de x subíndice 1 a menos el raíz cuadrada de 2»
 39. Subíndice y raíz con signo: $\spinterval{]x_{1}, -\sqrt{2}[}$.
 
 \section*{La llave size}
@@ -193,7 +193,7 @@
 % doc: «intervalo abierto de 1 a 5»
 46. Con size Big y corchetes invertidos: $\spinterval[size=Big]{]1,5[}$.
 
-% doc: «intervalo cerrado de raíz cuadrada de 2 a raíz cuadrada de 3»
+% doc: «intervalo cerrado de el raíz cuadrada de 2 a el raíz cuadrada de 3»
 47. Con size big y una raíz que lo necesita: $\spinterval[size=big]{[\sqrt{2}, \sqrt{3}]}$.
 
 \section*{Las llaves prefix, concept, read-arg y silent}
@@ -239,10 +239,10 @@
 % doc: «intervalo cerrado de menos 3 a 5»
 60. Con mathcat, un extremo negativo: $\spinterval[read-cmd=mathcat]{[-3,5]}$.
 
-% doc: «intervalo cerrado de 3 coma 5 a 4 coma 2»
+% doc: «intervalo cerrado de 3,5 a 4,2»
 61. Con mathcat, decimales: $\spinterval[read-cmd=mathcat]{[3,5 ; 4,2]}$.
 
-% doc: «intervalo abierto de menos 2 a más 4»
+% doc: «intervalo abierto de menos 2 a positivo 4»
 62. Con mathcat, signos y corchetes invertidos: $\spinterval[read-cmd=mathcat]{]-2,+4[}$.
 
 % doc: «intervalo abierto en menos infinito y cerrado en 3»
@@ -253,13 +253,13 @@
 
 \section*{Dentro de fórmulas}
 
-% doc: «x … intervalo abierto de 1 a 5»
+% doc: «x es miembro de intervalo abierto de 1 a 5»
 65. Un elemento en un intervalo: $x \in \spinterval{]1,5[}$.
 
-% doc: «I es igual a intervalo cerrado de a a b»
+% doc: «i es igual a intervalo cerrado de a a b»
 66. Un intervalo igualado a otro símbolo: $I = \spinterval{[a,b]}$.
 
-% doc: «A es igual a intervalo abierto en menos infinito y cerrado en 0»
+% doc: «a es igual a intervalo abierto en menos infinito y cerrado en 0»
 67. Un conjunto igual a un intervalo con infinito: $A = \spinterval{]-\infty, 0]}$.
 
 % doc: «intervalo abierto en menos infinito y cerrado en 2 unión intervalo cerrado en 3 y abierto en más infinito»
@@ -268,15 +268,15 @@
 % doc: «intervalo cerrado de 1 a 4 intersección intervalo abierto en 2 y cerrado en 6»
 69. Intersección de dos intervalos: $\spinterval{[1,4]} \cap \spinterval{]2,6]}$.
 
-% doc: «intervalo abierto de 1 a 5 … intervalo cerrado de 0 a 6»
+% doc: «intervalo abierto de 1 a 5 es un subconjunto de intervalo cerrado de 0 a 6»
 70. Un intervalo contenido en otro: $\spinterval{]1,5[} \subset \spinterval{[0,6]}$.
 
-% doc: «x … intervalo cerrado de 1 mitad a 3»
+% doc: «x es miembro de intervalo cerrado de 1 mitad a 3»
 71. Un elemento en un intervalo con fracción: $x \in \spinterval{[\frac{1}{2}, 3]}$.
 
 \section*{En fórmula destacada}
 
-% doc: «x … intervalo cerrado de 1 mitad a 3»
+% doc: «x es miembro de intervalo cerrado de 1 mitad a 3»
 72. Un elemento en un intervalo con fracción:
 \[ x \in \spinterval{[\frac{1}{2}, 3]} \].
 
@@ -284,11 +284,11 @@
 73. Unión de intervalos:
 \[ \spinterval{]-\infty, 2]} \cup \spinterval{[3, +\infty[} \].
 
-% doc: «intervalo cerrado de 1 a 3 medios»
+% doc: «intervalo cerrado de 1 a 3 mitades»
 74. Un intervalo con dfrac:
 \[ \spinterval{[1, \dfrac{3}{2}]} \].
 
-% doc: «A es igual a intervalo abierto de 1 mitad a 3 medios»
+% doc: «a es igual a intervalo abierto de 1 mitad a 3 mitades»
 75. Un conjunto igual a un intervalo con fracciones:
 \[ A = \spinterval{]\frac{1}{2}, \frac{3}{2}[} \].
 
