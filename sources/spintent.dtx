@@ -12605,6 +12605,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % node. The whole call is tagged with a native |\MathMLintent| whose
 % |intent| is |$f($a1,$a2,...)|; the name is tagged |arg="f"| and each
 % argument |arg="a<i>"|, while the parentheses and the commas are silenced.
+% The name may carry the inverse exponent |^{-1}| (flag
+% |\l_@@_spfun_luaset_inv_str|); in that case the literal |intent| of the
+% name ends in |-inversa|, the exponent is typeset silenced and the
+% parentheses may be omitted (no arguments, |$f| as the whole |intent|).
 %
 % \subsubsection{Definition of variables for \cs[no-index]{spfun}}
 %
@@ -12636,6 +12640,8 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \bool_new:N \l_@@_spfun_concept_bool
 \str_new:N  \l_@@_spfun_luaset_error_str
 \str_new:N  \l_@@_spfun_luaset_nargs_str
+\str_new:N  \l_@@_spfun_luaset_inv_str
+\tl_new:N   \l_@@_spfun_call_tl
 %    \end{macrocode}
 % \end{variable}
 %
@@ -12643,9 +12649,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %
 % \begin{macro}[int]{spfun-invalid-arg}
 %   The \enquote{error} |spfun-invalid-arg| is raised when the argument
-%   fails to parse: no valid name, no parentheses, unbalanced delimiters,
-%   an empty argument or text after the closing parenthesis. It is raised
-%   whatever the value of \mykey{silent}.
+%   fails to parse: no valid name, no parentheses (except for the inverse
+%   function), a malformed or misplaced inverse exponent, unbalanced
+%   delimiters, an empty argument or text after the closing parenthesis. It
+%   is raised whatever the value of \mykey{silent}.
 %    \begin{macrocode}
 \msg_new:nnn { spintent } { spfun-invalid-arg }
   {
@@ -12711,6 +12718,8 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         { prima } { \l_@@_geo_luaset_sub_str }
       }
       { }
+    \str_if_eq:VnT \l_@@_spfun_luaset_inv_str { true }
+      { \c_math_superscript_token { -1 } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -12720,7 +12729,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   |intent| (|_f-sub-uno-|, |_F-doble-prima-|, \ldots) through the shared
 %   queue, so \mynvmath{MathCAT} neither announces a capital letter nor reads
 %   the Unicode double prime as seconds. A subscript is typeset silenced; a
-%   prime is not, since it is not spoken on the base.
+%   prime is not, since it is not spoken on the base. The inverse exponent
+%   |^{-1}|, when present, is typeset silenced too: the literal |intent|
+%   (|_f-inversa-|) already says everything.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfun_name_school:
   {
@@ -12739,6 +12750,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
           { \l_@@_geo_luaset_letra_str \l_@@_geo_luaset_sub_str }
       }
       { \l_@@_geo_luaset_letra_str }
+    \str_if_eq:VnT \l_@@_spfun_luaset_inv_str { true }
+      {
+        \c_math_superscript_token
+          { \MathMLintent { :silent } { -1 } }
+      }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -12751,7 +12767,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfun_name_mathcat:
   {
-    \str_if_eq:VnTF \l_@@_geo_luaset_tipo_str { }
+    \bool_lazy_and:nnTF
+      { \str_if_eq_p:Vn \l_@@_geo_luaset_tipo_str { } }
+      { \str_if_eq_p:Vn \l_@@_spfun_luaset_inv_str { false } }
       { \MathMLarg { f } { \@@_spfun_name_plain: } }
       { \MathMLarg { f } { \@@_inner_sep: \@@_spfun_name_plain: } }
   }
@@ -12812,7 +12830,8 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \begin{macro}[int]{\@@_spfun_set_intent:}
 %   Builds the concept |intent| in \myhlc|\l_@@_spfun_intent_arg_tl|:
 %   |$f($a1,$a2,...)| when \mykey{concept} is |false|, and
-%   |_prefix-función:prefix($f($a1,$a2,...))| otherwise.
+%   |_prefix-función:prefix($f($a1,$a2,...))| otherwise. Without arguments
+%   (the inverse function written bare) the call is just |$f|.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfun_set_intent:
   {
@@ -12822,6 +12841,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \tl_put_right:Ne \l_@@_spfun_refs_tl
           { \int_compare:nNnF {##1} = {1} { , } $a ##1 }
       }
+    \int_compare:nNnTF { \l_@@_spfun_nargs_int } = { 0 }
+      { \tl_set:Nn \l_@@_spfun_call_tl { $f } }
+      { \tl_set:Ne \l_@@_spfun_call_tl { $f ( \l_@@_spfun_refs_tl ) } }
     \bool_if:NTF \l_@@_spfun_concept_bool
       {
         \tl_set:Ne \l_@@_spfun_intent_arg_tl
@@ -12829,12 +12851,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
             _
             \tl_if_empty:NF \l_@@_spfun_prefix_tl
               { \tl_use:N \l_@@_spfun_prefix_tl - }
-            función:prefix( $f ( \l_@@_spfun_refs_tl ) )
+            función:prefix( \l_@@_spfun_call_tl )
           }
       }
       {
-        \tl_set:Ne \l_@@_spfun_intent_arg_tl
-          { $f ( \l_@@_spfun_refs_tl ) }
+        \tl_set_eq:NN \l_@@_spfun_intent_arg_tl \l_@@_spfun_call_tl
       }
   }
 %    \end{macrocode}
@@ -12854,21 +12875,29 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
           {
             \@@_inner_sep:
             \@@_spfun_name_plain:
-            (
-            \@@_spfun_args_plain:
-            )
+            \int_compare:nNnF { \l_@@_spfun_nargs_int } = { 0 }
+              {
+                (
+                \@@_spfun_args_plain:
+                )
+              }
           }
       }
       {
         \@@_spfun_set_intent:
         \MathMLintent { \l_@@_spfun_intent_arg_tl }
           {
+            \int_compare:nNnT { \l_@@_spfun_nargs_int } = { 0 }
+              { \@@_inner_sep: }
             \str_if_eq:VnTF \l_@@_spfun_mode_str { school }
               { \@@_spfun_name_school: }
               { \@@_spfun_name_mathcat: }
-            \MathMLintent { :silent } { ( }
-            \@@_spfun_args:
-            \MathMLintent { :silent } { ) }
+            \int_compare:nNnF { \l_@@_spfun_nargs_int } = { 0 }
+              {
+                \MathMLintent { :silent } { ( }
+                \@@_spfun_args:
+                \MathMLintent { :silent } { ) }
+              }
           }
       }
   }
@@ -12910,6 +12939,206 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spfun } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The commands \cs{spdom}, \cs{sprec} and \cs{spcod}}\label{cmd:spdom}
+%
+% The user commands |\spdom|, |\sprec| and |\spcod| typeset the domain
+% |\operatorname{Dom}(f)|, the range |\operatorname{Rec}(f)| and the
+% codomain |\operatorname{Cod}(f)| of a function. They share one
+% implementation, \myhlc|\@@_spdom_exec:nnnnn|, which receives the command
+% name, the operator, the spoken word, the \mymeta{keys} and the
+% \mymarg{argument}. The Lua function \myhlc|\@@_luafun_spdom_parse_and_set:n|
+% accepts exactly a function name, as \cs{spfun} does (a letter with an
+% optional subscript or primes, and the optional exponent |^{-1}|), and
+% leaves it in the shared |\l_@@_geo_luaset_*| variables. The whole is tagged
+% with a native |\MathMLintent| whose |intent| is
+% |_[prefix-]dominio-de:prefix($f)| (|recorrido|, |codominio|); the operator,
+% the parentheses are silenced and the name carries |arg="f"| wrapped in its
+% own literal |intent| (|_f-|, |_F-doble-prima-|, |_f-inversa-|, \ldots) so
+% \mynvmath{MathCAT} neither announces a capital letter nor reads the
+% inverse as a power. No \mykey{read-cmd} nor \mykey{concept} keys exist:
+% the native reading of |Dom(f)| is not useful, and the concept is already
+% the spoken word.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spdom}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spdom_cmd_str,
+%     \l_@@_spdom_op_tl,
+%     \l_@@_spdom_word_tl,
+%     \l_@@_spdom_prefix_tl,
+%     \l_@@_spdom_intent_arg_tl,
+%     \l_@@_spdom_luaset_error_str,
+%   }
+%   Command name (for the messages), operator and word (set by each public
+%   command), the value of the key \mykey[spdom]{prefix}, the |intent|
+%   being built and the error flag set from Lua.
+%    \begin{macrocode}
+\str_new:N  \l_@@_spdom_cmd_str
+\tl_new:N   \l_@@_spdom_op_tl
+\tl_new:N   \l_@@_spdom_word_tl
+\tl_new:N   \l_@@_spdom_prefix_tl
+\tl_new:N   \l_@@_spdom_intent_arg_tl
+\bool_new:N \l_@@_spdom_silent_bool
+\str_new:N  \l_@@_spdom_luaset_error_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spdom}}
+%
+% \begin{macro}[int]{spdom-invalid-arg}
+%   The \enquote{error} |spdom-invalid-arg| is raised when the argument is
+%   not a function name. It receives the command name and the argument, and
+%   is raised whatever the value of \mykey{silent}.
+%    \begin{macrocode}
+\msg_new:nnn { spintent } { spdom-invalid-arg }
+  {
+    Invalid~argument~'#2'~for~\c_backslash_str #1.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spdom}}
+%
+% \begin{macro}[int]{prefix, silent, unknown}
+%   We define the \mymeta{keys} \mykey[spdom]{prefix} and
+%   \mykey[spdom]{silent}.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spdom }
+  {
+    prefix              .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spdom_prefix_tl {#1} },
+    prefix              .initial:n  = ,
+    prefix              .value_required:n = true,
+    silent              .bool_set:N = \l_@@_spdom_silent_bool,
+    silent              .initial:n = false,
+    silent              .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set_eq:NN \l_@@_command_name_str \l_@@_spdom_cmd_str
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spdom}}
+%
+% \begin{macro}[int]{\@@_spdom_name:}
+%   Tags the name with |arg="f"| through a native |\MathMLarg|; inside it, a
+%   native |\MathMLintent| gives the name its literal |intent|. Both groups
+%   start with the inner separator, so each one gets its own |<mrow>| even
+%   when the name is a single node.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spdom_name:
+  {
+    \MathMLarg { f }
+      {
+        \@@_inner_sep:
+        \MathMLintent { _ \l_@@_geo_luaset_intent_str - }
+          { \@@_inner_sep: \@@_spfun_name_plain: }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spdom_mathml:}
+%   Calls \myhlc|\@@_invisible_sep:| first, then wraps operator,
+%   parentheses and name in a native |\MathMLintent|. With \mykey{silent}
+%   set to |true| the |intent| is |_-| and nothing inside is annotated.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spdom_mathml:
+  {
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_spdom_silent_bool
+      {
+        \MathMLintent { _- }
+          {
+            \@@_inner_sep:
+            \operatorname { \l_@@_spdom_op_tl }
+            ( \@@_spfun_name_plain: )
+          }
+      }
+      {
+        \tl_set:Ne \l_@@_spdom_intent_arg_tl
+          {
+            _
+            \tl_if_empty:NF \l_@@_spdom_prefix_tl
+              { \tl_use:N \l_@@_spdom_prefix_tl - }
+            \l_@@_spdom_word_tl -de:prefix( $f )
+          }
+        \MathMLintent { \l_@@_spdom_intent_arg_tl }
+          {
+            \MathMLintent { :silent } { \operatorname { \l_@@_spdom_op_tl } }
+            \MathMLintent { :silent } { ( }
+            \@@_spdom_name:
+            \MathMLintent { :silent } { ) }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spdom_exec:nnnnn}
+%   Receives the command name in `|#1|', the operator in `|#2|', the spoken
+%   word in `|#3|', the optional \mymeta{keys} in `|#4|' and the
+%   \mymarg{argument} in `|#5|'. Parses first, reporting
+%   |spdom-invalid-arg| on error whatever \mykey{silent} is.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spdom_exec:nnnnn
+  {
+    \str_set:Nn \l_@@_spdom_cmd_str {#1}
+    \tl_set:Nn  \l_@@_spdom_op_tl   {#2}
+    \tl_set:Nn  \l_@@_spdom_word_tl {#3}
+    \keys_set:nn { spintent / spdom } {#4}
+    \@@_luafun_spdom_parse_and_set:n { \exp_not:n {#5} }
+    \str_if_eq:VnTF \l_@@_spdom_luaset_error_str { true }
+      {
+        \msg_error:nnee { spintent } { spdom-invalid-arg }
+          {#1} { \exp_not:n {#5} }
+      }
+      { \@@_spdom_mathml: }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spdom, \sprec, \spcod}
+%   The public commands enforce \emph{math mode}, open a local group, and
+%   delegate to \myhlc|\@@_spdom_exec:nnnnn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spdom { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_spdom_exec:nnnnn { spdom } { Dom } { dominio } {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spdom } }
+  }
+\NewDocumentCommand \sprec { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_spdom_exec:nnnnn { sprec } { Rec } { recorrido } {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \sprec } }
+  }
+\NewDocumentCommand \spcod { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_spdom_exec:nnnnn { spcod } { Cod } { codominio } {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spcod } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -21162,16 +21391,21 @@ register_tex_cmd("luafun_spinterval_parse_and_set", function(raw_content)
 end, { "string" })
 
 -- ------------------------------------------------------------
--- §13  FUNCIONES — \spfun
+-- §13  FUNCIONES — \spfun, \spdom, \sprec, \spcod
 --
--- Reconoce  nombre(arg, arg, ...)  donde nombre es una letra
+-- \spfun reconoce  nombre(arg, arg, ...)  donde nombre es una letra
 -- (mayúscula o minúscula) con subíndice entre llaves (letras o
--- dígitos) o con primas, igual que un punto de la geometría. Los
+-- dígitos) o con primas, igual que un punto de la geometría, y con
+-- el exponente ^{-1} opcional de la función inversa (que no se
+-- combina con primas). Solo la inversa puede ir sin paréntesis. Los
 -- argumentos se separan por las comas de nivel superior: las que
 -- quedan dentro de llaves, paréntesis o corchetes no cuentan.
 -- Deja el nombre en las mismas variables que usa la familia geo
 -- (letra/sub/tipo/intent/print) y cada argumento en
 -- l__spintent_spfun_luaset_arg_<i>_tl.
+--
+-- \spdom, \sprec y \spcod reciben solo el nombre (con la misma
+-- gramática) y lo dejan en las mismas variables.
 -- ------------------------------------------------------------
 local spintent_fun_alnum = R"09" + R"az" + R"AZ"
 
@@ -21183,6 +21417,23 @@ local spintent_fun_head = Ct(
         + Cc""                              * Cc""
     )
 ) * lpeg_base.Cp()
+
+-- Nombre + exponente ^{-1} opcional. Devuelve nombre, inv (booleano) y
+-- el resto del texto; nil si no empieza con un nombre válido o si la
+-- inversa va junto a primas. Los espacios dentro del exponente y antes
+-- de él no cuentan.
+local function spintent_fun_parse_name(raw)
+    local nombre, pos = spintent_fun_head:match(raw)
+    if not nombre then return nil end
+    local rest = s_sub(raw, pos)
+    local inv = false
+    local after = s_match(rest, "^%s*%^%s*%{%s*%-%s*1%s*%}(.*)$")
+    if after then
+        if nombre[3] == "prima" then return nil end
+        inv, rest = true, after
+    end
+    return nombre, inv, rest
+end
 
 -- Separa por las comas de nivel superior. Devuelve nil si los
 -- delimitadores no quedan balanceados.
@@ -21224,6 +21475,7 @@ end
 local function spintent_fun_set_error()
     token_set_macro("l__spintent_spfun_luaset_error_str", "true")
     token_set_macro("l__spintent_spfun_luaset_nargs_str", "0")
+    token_set_macro("l__spintent_spfun_luaset_inv_str",   "false")
     token_set_macro("l__spintent_geo_luaset_intent_str",  "")
     token_set_macro("l__spintent_geo_luaset_print_tl",    "")
     token_set_macro("l__spintent_geo_luaset_letra_str",   "")
@@ -21231,23 +21483,40 @@ local function spintent_fun_set_error()
     token_set_macro("l__spintent_geo_luaset_tipo_str",    "")
 end
 
+-- Deja el nombre en las variables compartidas. Con la inversa, el
+-- intent literal termina en "-inversa" (f-inversa, f-sub-uno-inversa).
+local function spintent_fun_set_name(nombre, inv)
+    local intent = spintent_geo_build_body_nombre(nombre)
+    local visual = spintent_geo_build_visual_nombre(nombre)
+    if inv then
+        intent = intent .. "-inversa"
+        visual = visual .. "^{-1}"
+    end
+    token_set_macro("l__spintent_geo_luaset_intent_str", intent)
+    token_set_macro("l__spintent_geo_luaset_print_tl",   visual)
+    token_set_macro("l__spintent_geo_luaset_letra_str",  nombre[1])
+    token_set_macro("l__spintent_geo_luaset_sub_str",    nombre[2] or "")
+    token_set_macro("l__spintent_geo_luaset_tipo_str",   nombre[3] or "")
+    token_set_macro("l__spintent_spfun_luaset_inv_str",  inv and "true" or "false")
+end
+
 register_tex_cmd("luafun_spfun_parse_and_set", function(raw)
     raw = spintent_trim(raw)
     raw = spintent_geo_normalize_primes(raw)
 
-    local nombre, pos = spintent_fun_head:match(raw)
+    local nombre, inv, rest = spintent_fun_parse_name(raw)
     if not nombre then
         spintent_fun_set_error()
         return
     end
 
-    local inner = s_match(s_sub(raw, pos), "^%s*%((.*)%)%s*$")
-    if not inner then
-        spintent_fun_set_error()
-        return
+    local args
+    local inner = s_match(rest, "^%s*%((.*)%)%s*$")
+    if inner then
+        args = spintent_fun_split_args(inner)
+    elseif inv and s_match(rest, "^%s*$") then
+        args = {}
     end
-
-    local args = spintent_fun_split_args(inner)
     if not args then
         spintent_fun_set_error()
         return
@@ -21267,14 +21536,21 @@ register_tex_cmd("luafun_spfun_parse_and_set", function(raw)
         token_set_macro("l__spintent_spfun_luaset_simple_" .. i .. "_str",
                         spintent_fun_is_simple(args[i]) and "true" or "false")
     end
+    spintent_fun_set_name(nombre, inv)
+end, { "string" })
 
-    token_set_macro("l__spintent_geo_luaset_intent_str",
-                    spintent_geo_build_body_nombre(nombre))
-    token_set_macro("l__spintent_geo_luaset_print_tl",
-                    spintent_geo_build_visual_nombre(nombre))
-    token_set_macro("l__spintent_geo_luaset_letra_str", nombre[1])
-    token_set_macro("l__spintent_geo_luaset_sub_str",   nombre[2] or "")
-    token_set_macro("l__spintent_geo_luaset_tipo_str",  nombre[3] or "")
+register_tex_cmd("luafun_spdom_parse_and_set", function(raw)
+    raw = spintent_trim(raw)
+    raw = spintent_geo_normalize_primes(raw)
+
+    local nombre, inv, rest = spintent_fun_parse_name(raw)
+    if not nombre or not s_match(rest, "^%s*$") then
+        spintent_fun_set_error()
+        token_set_macro("l__spintent_spdom_luaset_error_str", "true")
+        return
+    end
+    token_set_macro("l__spintent_spdom_luaset_error_str", "false")
+    spintent_fun_set_name(nombre, inv)
 end, { "string" })
 % \iffalse
 %</spintentlua>

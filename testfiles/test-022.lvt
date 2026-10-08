@@ -1,0 +1,207 @@
+% test-022.tex -- comandos \spfun (inversa), \spdom, \sprec y \spcod
+%
+% Regresion:  l3build save test-022
+%             l3build check test-022
+%
+% \spfun acepta la funcion inversa: f^{-1}(x), f_{1}^{-1}(x) y, sin
+% parentesis, f^{-1}. \spdom, \sprec y \spcod escriben Dom(f), Rec(f) y
+% Cod(f); su argumento es solo el nombre de una funcion (letra con
+% subindice o primas, y el exponente ^{-1}).
+% Las entradas invalidas (que detienen la compilacion) no van aqui.
+%
+% Los "doc:" son lecturas reales de NVDA con MathCAT (2026-10-08).
+% La de read-cmd=mathcat y la inversa dentro de un argumento (caso 17) son
+% lecturas propias de MathCAT, no del paquete.
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-022: spfun inversa, spdom, sprec y spcod},
+  }
+\begin{document}
+
+\section*{A. La función inversa en spfun}
+
+% doc: «f inversa de x»
+1. Una letra: $\spfun{f^{-1}(x)}$.
+
+% doc: «g inversa de y»
+2. Otra letra: $\spfun{g^{-1}(y)}$.
+
+% doc: «F inversa de x»
+3. Una letra mayúscula: $\spfun{F^{-1}(x)}$.
+
+% doc: «f sub uno inversa de x»
+4. Con subíndice: $\spfun{f_{1}^{-1}(x)}$.
+
+% doc: «f sub n inversa de x»
+5. Con subíndice de letra: $\spfun{f_{n}^{-1}(x)}$.
+
+% doc: «f inversa de x coma y»
+6. Con dos argumentos: $\spfun{f^{-1}(x,y)}$.
+
+% doc: «f inversa de x más 1»
+7. Con una expresión como argumento: $\spfun{f^{-1}(x+1)}$.
+
+% doc: «f inversa de f de x»
+8. Con una función como argumento: $\spfun{f^{-1}(f(x))}$.
+
+% doc: «f inversa de x»
+9. Con espacios en el exponente: $\spfun{f ^{ -1 } (x)}$.
+
+\section*{B. La función inversa sin argumentos}
+
+% doc: «f inversa»
+10. Sin paréntesis: $\spfun{f^{-1}}$.
+
+% doc: «g inversa»
+11. Otra letra, sin paréntesis: $\spfun{g^{-1}}$.
+
+% doc: «f sub uno inversa»
+12. Con subíndice, sin paréntesis: $\spfun{f_{1}^{-1}}$.
+
+% doc: «f inversa es igual a g»
+13. Seguida de algo: $\spfun{f^{-1}} = g$.
+
+% doc: «f de x es igual a y»
+14. Una función: $\spfun{f(x)} = y$.
+
+% doc: «f inversa de y es igual a x»
+15. Y su inversa: $\spfun{f^{-1}(y)} = x$.
+
+\section*{C. Contexto de la inversa}
+
+% doc: «f inversa de f de x es igual a x»
+16. La composición: $\spfun{f^{-1}(f(x))} = x$.
+
+% doc: «f de la menos 1 a la potencia de f de y es igual a y» (la inversa dentro de un argumento queda sin anotar: lectura nativa de MathCAT)
+17. La otra composición: $\spfun{f(f^{-1}(y))} = y$.
+
+% doc: «f inversa de 2 más g de 3»
+18. Dos funciones en una suma: $\spfun{f^{-1}(2)} + \spfun{g(3)}$.
+
+\section*{D. Llaves de la inversa}
+
+% doc: «f inversa de x»
+19. read-cmd school: $\spfun[read-cmd=school]{f^{-1}(x)}$.
+
+% doc: «f a la menos 1 potencia de x» (lectura nativa de MathCAT)
+20. read-cmd mathcat: $\spfun[read-cmd=mathcat]{f^{-1}(x)}$.
+
+% doc: «función f inversa de x»
+21. concept true: $\spfun[concept=true]{f^{-1}(x)}$.
+
+% doc: «la función f inversa de x»
+22. concept y prefix: $\spfun[concept=true,prefix={la}]{f^{-1}(x)}$.
+
+% doc: «función f inversa»
+23. concept sin argumentos: $\spfun[concept=true]{f^{-1}}$.
+
+% doc: silencio
+24. silent true: $\spfun[silent=true]{f^{-1}(x)}$.
+
+% doc: «es igual a 5»
+25. silent true y algo después: $\spfun[silent=true]{f^{-1}(x)} = 5$.
+
+% doc: silencio
+26. silent true sin argumentos: $\spfun[silent=true]{f^{-1}}$.
+
+\section*{E. Dominio, recorrido y codominio}
+
+% doc: «dominio de f»
+27. El dominio: $\spdom{f}$.
+
+% doc: «recorrido de f»
+28. El recorrido: $\sprec{f}$.
+
+% doc: «codominio de f»
+29. El codominio: $\spcod{f}$.
+
+% doc: «dominio de g»
+30. Otra letra: $\spdom{g}$.
+
+% doc: «dominio de F»
+31. Una letra mayúscula: $\spdom{F}$.
+
+% doc: «dominio de f sub uno»
+32. Con subíndice: $\spdom{f_{1}}$.
+
+% doc: «dominio de f prima»
+33. Con prima: $\spdom{f'}$.
+
+% doc: «dominio de f doble prima»
+34. Con dos primas: $\spdom{f''}$.
+
+% doc: «dominio de f inversa»
+35. Con la inversa: $\spdom{f^{-1}}$.
+
+% doc: «recorrido de f inversa»
+36. El recorrido de la inversa: $\sprec{f^{-1}}$.
+
+% doc: «codominio de f sub uno inversa»
+37. El codominio con subíndice e inversa: $\spcod{f_{1}^{-1}}$.
+
+% doc: «dominio de f»
+38. Con espacios: $\spdom{ f }$.
+
+\section*{F. Contexto de dominio, recorrido y codominio}
+
+% doc: «dominio de f es igual a números reales»
+39. Con un valor: $\spdom{f} = \mathbb{R}$.
+
+% doc: «recorrido de f es igual a intervalo cerrado en 0 y abierto en más infinito»
+40. Con un intervalo: $\sprec{f} = \spinterval{[0,+\infty[}$.
+
+% doc: «codominio de f es igual a números reales»
+41. El codominio con un valor: $\spcod{f} = \mathbb{R}$.
+
+% doc: «dominio de f es un subconjunto o igual a números reales»
+42. Con inclusión: $\spdom{f} \subseteq \mathbb{R}$.
+
+% doc: «dominio de f es igual a dominio de g»
+43. Dos dominios: $\spdom{f} = \spdom{g}$.
+
+% doc: «dominio de f inversa es igual a recorrido de f»
+44. Dominio de la inversa y recorrido: $\spdom{f^{-1}} = \sprec{f}$.
+
+\section*{G. Llaves de dominio, recorrido y codominio}
+
+% doc: «el dominio de f»
+45. prefix: $\spdom[prefix={el}]{f}$.
+
+% doc: «el recorrido de f»
+46. prefix en el recorrido: $\sprec[prefix={el}]{f}$.
+
+% doc: «el codominio de f»
+47. prefix en el codominio: $\spcod[prefix={el}]{f}$.
+
+% doc: silencio
+48. silent true: $\spdom[silent=true]{f}$.
+
+% doc: «es igual a números reales»
+49. silent true y algo después: $\spdom[silent=true]{f} = \mathbb{R}$.
+
+% doc: «dominio de f»
+50. silent false, el valor por defecto: $\spdom[silent=false]{f}$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}
