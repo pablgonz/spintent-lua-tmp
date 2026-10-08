@@ -196,7 +196,7 @@ end, "shekel_fallback_patch")
         spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, spang,
         spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle,
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
-        spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, spfun, %
+        spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
       }
   }
 % Colors
@@ -637,7 +637,7 @@ end, "shekel_fallback_patch")
                         spdate, spread, spdsym, spmsym, spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, %
                         spang, spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle, sparc, spmarc,%
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
-                        spProp, spnewread, spVol, spinterval, spfun, },%
+                        spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -5911,6 +5911,116 @@ end, "shekel_fallback_patch")
 % \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se
 % establece en |false|, sí verbalizará la salida del comando. El argumento
 % se valida igual en ambos casos.
+%
+%
+% \subsection*{Los comandos \cs[no-index]{spdom}, \cs[no-index]{sprec} y \cs[no-index]{spcod}}\label{subsec:spdom}
+%
+% \vspace*{-0.5\baselineskip}
+%
+% \begin{function}{\spdom, \sprec, \spcod}
+%   \begin{syntax}
+%     |\spdom|\mymarg{función} \qquad\qquad |\spdom|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{función}
+%   \end{syntax}
+%   Los comandos \ics*{spdom}, \ics*{sprec} y \ics*{spcod} trabajan en
+%   \emph{modo matemático} y reciben el \emph{argumento} obligatorio
+%   \mymarg{función}: el nombre de una función como en \ics*{spfun} (una letra
+%   con prima(s) o subíndice opcionales y, si se quiere, el exponente
+%   `|^{-1}|'), sin argumentos. Imprimen respectivamente $\operatorname{Dom}$,
+%   $\operatorname{Rec}$ y $\operatorname{Cod}$ seguidos de la función entre
+%   paréntesis.
+% \end{function}
+%
+% \smallskip
+%
+% |$\spdom{f}$| imprimirá `$\operatorname{Dom}(f)$' y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«dominio de f»};
+% |$\sprec{f}$| verbalizará \emph{«recorrido de f»} y |$\spcod{f}$|
+% \emph{«codominio de f»}. Con la inversa, |$\spdom{f^{-1}}$| verbalizará
+% \emph{«dominio de f inversa»}. El nombre de la función se verbaliza sin
+% anunciar la mayúscula.
+%
+% \smallskip
+%
+% Los comandos devuelven un \enquote{error} y se detiene la compilación
+% cuando el argumento no es el nombre de una función.
+%
+% \subsubsection*{Llaves para \cs[no-index]{spdom}, \cs[no-index]{sprec} y \cs[no-index]{spcod}}
+%
+% \keyexampcmd{prefix}{prefijo}{no usado}[spdom]
+% \smallskip
+% Establece el \emph{prefijo} que será verbalizado por
+% \mynvmath{NVDA/MathCAT} \emph{antes} de la palabra del concepto. El valor
+% de esta llave \emph{siempre} debe pasarse entre llaves `|{ }|'.
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spdom]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} del \mymarg{función} pasado al comando sin
+% modificar la impresión de este.
+%
+%
+% \subsection*{El comando \cs[no-index]{spfuncomp}}\label{subsec:spfuncomp}
+%
+% \vspace*{-0.5\baselineskip}
+%
+% \begin{function}{\spfuncomp}
+%   \begin{syntax}
+%     |\spfuncomp|\mymarg{composición} \qquad\qquad |\spfuncomp|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{composición}
+%   \end{syntax}
+%   El comando \ics*{spfuncomp} trabaja en \emph{modo matemático} y recibe el
+%   \emph{argumento} obligatorio \mymarg{composición}: dos o más
+%   \emph{funciones} separadas por |\circ|, como en \mymarg{f\circ g} o
+%   \mymarg{f\circ g\circ h}. Cada función es un nombre como en \ics*{spfun}:
+%   una letra, mayúscula o minúscula, con prima(s) o subíndice opcionales, y el
+%   exponente `|^{-1}|' de la función inversa. La composición puede ir entre
+%   paréntesis, \mymarg{(f\circ g)}, y puede aplicarse a uno o más argumentos
+%   entre paréntesis separados por coma, \mymarg{(f\circ g)(x)}. Los
+%   argumentos siguen las reglas de \ics*{spfun}: pueden ser letras, números,
+%   expresiones o llamadas.
+% \end{function}
+%
+% \smallskip
+%
+% |$\spfuncomp{f\circ g}$| imprimirá `$f\circ g$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«f compuesta con g»};
+% |$\spfuncomp{f\circ g\circ h}$| imprimirá `$f\circ g\circ h$' y verbalizará
+% \emph{«f compuesta con g compuesta con h»};
+% |$\spfuncomp{(f\circ g)(x)}$| imprimirá `$(f\circ g)(x)$' y verbalizará
+% \emph{«f compuesta con g de x»}; |$\spfuncomp{(f^{-1}\circ g)(x)}$| imprimirá
+% `$(f^{-1}\circ g)(x)$' y verbalizará \emph{«f inversa compuesta con g de x»}.
+% Un argumento puede ser una llamada: |$\spfuncomp{(f\circ g)(h(x))}$|
+% verbalizará \emph{«f compuesta con g de h de x»}.
+%
+% \smallskip
+%
+% El comando |\spfuncomp| devuelve un \enquote{error} y se detiene la
+% compilación del documento cuando hay menos de dos funciones, cuando algo
+% entre los |\circ| no es el nombre de una función, cuando los paréntesis no
+% están balanceados, cuando lo que sigue a la composición no es una lista de
+% argumentos entre paréntesis o cuando un argumento está vacío. La forma
+% |f\circ g(x)|, sin paréntesis alrededor de la composición, no es válida
+% porque es ambigua.
+%
+% \subsubsection*{Llaves para \cs[no-index]{spfuncomp}}
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spfuncomp]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} del \mymarg{composición} pasado al comando sin
+% modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se
+% establece en |false|, sí verbalizará la salida del comando. El argumento
+% se valida igual en ambos casos.
+%
+% \smallskip
+%
+% La composición no admite \mykey{prefix} ni \mykey{read-cmd}: no lleva
+% palabra de concepto y su lectura es fija. Los nombres se verbalizan sin
+% anunciar la mayúscula.
 %
 %
 % \newpage
@@ -13023,6 +13133,296 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spfun } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spfuncomp}}\label{cmd:spfuncomp}
+%
+% The user command |\spfuncomp| typesets the linear composition of
+% functions: |f\circ g|, |f\circ g\circ h|, |(f\circ g)| and the
+% composition applied to arguments, |(f\circ g)(x)|. The Lua function
+% \myhlc|\@@_luafun_spfuncomp_parse_and_set:n| splits the \mymarg{argument}
+% at the top-level |\circ| (or |∘|); every function is a name as in
+% \cs{spfun} and gets its literal |intent| (|_f-|, |_f-inversa-|, \ldots), so
+% \mynvmath{MathCAT} neither announces a capital letter nor reads |ℎ| as
+% Planck's constant. The arguments of the application, if any, are left in
+% the \cs{spfun} variables and typeset with its own functions, so an
+% argument may be a call. The whole is tagged with a native
+% |\MathMLintent| whose |intent| is |_compuesta-con:infix($k1,$k2,...)|; the
+% application adds |$c($a1,...)| around it, with the composition tagged
+% |arg="c"|. With two or more arguments they are grouped under their own
+% |intent|, |_coma:infix($a1,$a2,...)|, tagged |arg="l"|, because
+% \mynvmath{MathCAT} drops the commas of a call whose head is not a single
+% letter. The |\circ| and the parentheses are silenced.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spfuncomp}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spfuncomp_n_int,
+%     \l_@@_spfuncomp_refs_tl,
+%     \l_@@_spfuncomp_intent_tl,
+%     \l_@@_spfuncomp_luaset_error_str,
+%     \l_@@_spfuncomp_luaset_n_str,
+%     \l_@@_spfuncomp_luaset_paren_str,
+%     \l_@@_spfuncomp_luaset_apply_str,
+%   }
+%   Number of functions, the references and the |intent| being built, and
+%   the values that Lua leaves: error flag, number of functions, whether the
+%   composition is in parentheses and whether it is applied to arguments.
+%    \begin{macrocode}
+\int_new:N  \l_@@_spfuncomp_n_int
+\tl_new:N   \l_@@_spfuncomp_refs_tl
+\tl_new:N   \l_@@_spfuncomp_intent_tl
+\bool_new:N \l_@@_spfuncomp_silent_bool
+\tl_new:N   \l_@@_spfuncomp_kv_tl
+\str_new:N  \l_@@_spfuncomp_tipo_str
+\str_new:N  \l_@@_spfuncomp_luaset_error_str
+\str_new:N  \l_@@_spfuncomp_luaset_n_str
+\str_new:N  \l_@@_spfuncomp_luaset_paren_str
+\str_new:N  \l_@@_spfuncomp_luaset_apply_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spfuncomp}}
+%
+% \begin{macro}[int]{spfuncomp-invalid-arg}
+%   Raised when the argument is not a composition of at least two function
+%   names, optionally in parentheses and optionally applied to arguments
+%   written in parentheses, whatever the value of \mykey{silent}.
+%    \begin{macrocode}
+\msg_new:nnn { spintent } { spfuncomp-invalid-arg }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spfuncomp.
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spfuncomp}}
+%
+% \begin{macro}[int]{silent, unknown}
+%   Only \mykey[spfuncomp]{silent}: the composition has no concept word and
+%   its reading is fixed, so \mykey{prefix} and \mykey{read-cmd} would have
+%   nothing to act on.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spfuncomp }
+  {
+    silent              .bool_set:N = \l_@@_spfuncomp_silent_bool,
+    silent              .initial:n = false,
+    silent              .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spfuncomp }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spfuncomp}}
+%
+% \begin{macro}[int]{\@@_spfuncomp_fun:n}
+%   Function number |#1| of the chain. Its first letter is tagged
+%   |arg="k<i>"| with the literal |intent| of the name (|_f-|,
+%   |_f-inversa-|, \ldots) through the shared queue, exactly as
+%   \cs{spfun} does with its name: a native |\MathMLintent| around the
+%   name would leave its letter free for the queue to claim by mistake when
+%   the arguments contain calls. A subscript is typeset silenced; a prime is
+%   not; the inverse exponent |^{-1}| is silenced too.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfuncomp_fun:n
+  {
+    \tl_set:Ne \l_@@_spfuncomp_kv_tl
+      {
+        arg = " k #1 ",
+        intent = "_ \use:c { l_@@_spfuncomp_luaset_intent_ #1 _str } -"
+      }
+    \@@_luafun_mrow_intent_arg:nn { } { \l_@@_spfuncomp_kv_tl }
+    \str_set_eq:Nc \l_@@_spfuncomp_tipo_str
+      { l_@@_spfuncomp_luaset_tipo_ #1 _str }
+    \str_case:VnF \l_@@_spfuncomp_tipo_str
+      {
+        { sub }
+          {
+            \use:c { l_@@_spfuncomp_luaset_letra_ #1 _str }
+            \c_math_subscript_token
+              {
+                \MathMLintent { :silent }
+                  { \use:c { l_@@_spfuncomp_luaset_sub_ #1 _str } }
+              }
+          }
+        { prima }
+          {
+            \use:c { l_@@_spfuncomp_luaset_letra_ #1 _str }
+            \use:c { l_@@_spfuncomp_luaset_sub_ #1 _str }
+          }
+      }
+      { \use:c { l_@@_spfuncomp_luaset_letra_ #1 _str } }
+    \str_set_eq:Nc \l_@@_spfuncomp_tipo_str
+      { l_@@_spfuncomp_luaset_inv_ #1 _str }
+    \str_if_eq:VnT \l_@@_spfuncomp_tipo_str { true }
+      {
+        \c_math_superscript_token
+          { \MathMLintent { :silent } { -1 } }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfuncomp_group:}
+%   The composition, with its own |intent|, in parentheses when the argument
+%   was written in parentheses.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfuncomp_group:
+  {
+    \tl_clear:N \l_@@_spfuncomp_refs_tl
+    \int_step_inline:nn { \l_@@_spfuncomp_n_int }
+      {
+        \tl_put_right:Ne \l_@@_spfuncomp_refs_tl
+          { \int_compare:nNnF {##1} = {1} { , } $k ##1 }
+      }
+    \tl_set:Ne \l_@@_spfuncomp_intent_tl
+      { _compuesta-con:infix( \l_@@_spfuncomp_refs_tl ) }
+    \exp_args:NV \MathMLintent \l_@@_spfuncomp_intent_tl
+      {
+        \str_if_eq:VnT \l_@@_spfuncomp_luaset_paren_str { true }
+          { \MathMLintent { :silent } { ( } }
+        \int_step_inline:nn { \l_@@_spfuncomp_n_int }
+          {
+            \int_compare:nNnF {##1} = {1}
+              { \MathMLintent { :silent } { \circ } }
+            \@@_spfuncomp_fun:n {##1}
+          }
+        \str_if_eq:VnT \l_@@_spfuncomp_luaset_paren_str { true }
+          { \MathMLintent { :silent } { ) } }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfuncomp_plain:}
+%   Typesets the whole with no annotation (\mykey{silent}).
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfuncomp_plain:
+  {
+    \str_if_eq:VnT \l_@@_spfuncomp_luaset_paren_str { true } { ( }
+    \int_step_inline:nn { \l_@@_spfuncomp_n_int }
+      {
+        \int_compare:nNnF {##1} = {1} { \circ }
+        \tl_use:c { l_@@_spfuncomp_luaset_print_ ##1 _tl }
+      }
+    \str_if_eq:VnT \l_@@_spfuncomp_luaset_paren_str { true } { ) }
+    \str_if_eq:VnT \l_@@_spfuncomp_luaset_apply_str { true }
+      {
+        ( \@@_spfun_args_plain: )
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfuncomp_mathml:}
+%   Calls \myhlc|\@@_invisible_sep:| first. With \mykey{silent} the |intent|
+%   is |_-|. Otherwise an application wraps the composition (|arg="c"|) and
+%   the arguments in |$c($a1,...)|; the arguments reuse the \cs{spfun}
+%   machinery, including calls nested in them.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfuncomp_mathml:
+  {
+    \@@_invisible_sep:
+    \str_if_eq:VnT \l_@@_spfuncomp_luaset_apply_str { true }
+      {
+        \int_set:Nn \l_@@_spfun_nargs_int { \l_@@_spfun_luaset_nargs_str }
+      }
+    \int_set:Nn \l_@@_spfun_depth_int { 1 }
+    \str_set:Nn \l_@@_spfun_mode_str { school }
+    \bool_set_false:N \l_@@_spfun_silent_bool
+    \bool_set_false:N \l_@@_spfun_concept_bool
+    \bool_if:NTF \l_@@_spfuncomp_silent_bool
+      {
+        \MathMLintent { _- }
+          { \@@_inner_sep: \@@_spfuncomp_plain: }
+      }
+      {
+        \str_if_eq:VnTF \l_@@_spfuncomp_luaset_apply_str { true }
+          {
+            \tl_clear:N \l_@@_spfun_refs_tl
+            \int_step_inline:nn { \l_@@_spfun_nargs_int }
+              {
+                \tl_put_right:Ne \l_@@_spfun_refs_tl
+                  { \int_compare:nNnF {##1} = {1} { , } $ \@@_spfun_aname:n {##1} }
+              }
+            \int_compare:nNnTF { \l_@@_spfun_nargs_int } > { 1 }
+              {
+                \tl_set:Ne \l_@@_spfun_call_tl { $c ( $l ) }
+                \exp_args:NV \MathMLintent \l_@@_spfun_call_tl
+                  {
+                    \MathMLarg { c } { \@@_inner_sep: \@@_spfuncomp_group: }
+                    \MathMLintent { :silent } { ( }
+                    \MathMLarg { l }
+                      {
+                        \@@_inner_sep:
+                        \exp_args:Ne \MathMLintent
+                          { _coma:infix ( \l_@@_spfun_refs_tl ) }
+                          { \@@_spfun_args: }
+                      }
+                    \MathMLintent { :silent } { ) }
+                  }
+              }
+              {
+                \tl_set:Ne \l_@@_spfun_call_tl { $c ( \l_@@_spfun_refs_tl ) }
+                \exp_args:NV \MathMLintent \l_@@_spfun_call_tl
+                  {
+                    \MathMLarg { c } { \@@_inner_sep: \@@_spfuncomp_group: }
+                    \MathMLintent { :silent } { ( }
+                    \@@_spfun_args:
+                    \MathMLintent { :silent } { ) }
+                  }
+              }
+          }
+          { \@@_spfuncomp_group: }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfuncomp_exec:nn}
+%   Receives the optional \mymeta{keys} in `|#1|' and the \mymarg{argument}
+%   in `|#2|'. Parses first, reporting |spfuncomp-invalid-arg| on error
+%   whatever \mykey{silent} is.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfuncomp_exec:nn
+  {
+    \keys_set:nn { spintent / spfuncomp } {#1}
+    \@@_luafun_spfuncomp_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnTF \l_@@_spfuncomp_luaset_error_str { true }
+      {
+        \msg_error:nne { spintent } { spfuncomp-invalid-arg }
+          { \exp_not:n {#2} }
+      }
+      {
+        \int_set:Nn \l_@@_spfuncomp_n_int { \l_@@_spfuncomp_luaset_n_str }
+        \@@_spfuncomp_mathml:
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spfuncomp}
+%   The public command enforces \emph{math mode}, opens a local group
+%   (with the scope attribute, for the calls that an argument may contain)
+%   and delegates to \myhlc|\@@_spfuncomp_exec:nn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spfuncomp { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \@@_spfuncomp_exec:nn {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spfuncomp } }
   }
 %    \end{macrocode}
 % \end{macro}
@@ -21570,21 +21970,12 @@ local function spintent_fun_is_call(arg)
     return inv and s_match(rest, "^%s*$") ~= nil
 end
 
--- Analiza una llamada completa. Devuelve nombre, inv y la lista de
--- argumentos { texto, tipo }, con tipo "true" (un solo nodo), "false"
--- (expresión) o "call" (otra llamada, analizada también y de forma
--- recursiva). Devuelve nil si algo no es válido en cualquier nivel.
-local function spintent_fun_analyze(raw)
-    local nombre, inv, rest = spintent_fun_parse_name(raw)
-    if not nombre then return nil end
-    local args
-    local inner = s_match(rest, "^%s*%((.*)%)%s*$")
-    if inner then
-        args = spintent_fun_split_args(inner)
-    elseif inv and s_match(rest, "^%s*$") then
-        args = {}
-    end
-    if not args then return nil end
+local spintent_fun_analyze
+
+-- Clasifica una lista de argumentos en crudo: devuelve { texto, tipo }
+-- por argumento ("true" un solo nodo, "false" expresión, "call" otra
+-- llamada ya validada de forma recursiva) o nil si alguno es inválido.
+local function spintent_fun_classify_args(args)
     for i = 1, #args do
         local a = spintent_trim(args[i])
         if a == "" then return nil end
@@ -21599,6 +21990,25 @@ local function spintent_fun_analyze(raw)
         end
         args[i] = { a, kind }
     end
+    return args
+end
+
+-- Analiza una llamada completa. Devuelve nombre, inv y la lista de
+-- argumentos { texto, tipo }; nil si algo no es válido en cualquier
+-- nivel.
+spintent_fun_analyze = function(raw)
+    local nombre, inv, rest = spintent_fun_parse_name(raw)
+    if not nombre then return nil end
+    local args
+    local inner = s_match(rest, "^%s*%((.*)%)%s*$")
+    if inner then
+        args = spintent_fun_split_args(inner)
+    elseif inv and s_match(rest, "^%s*$") then
+        args = {}
+    end
+    if not args then return nil end
+    args = spintent_fun_classify_args(args)
+    if not args then return nil end
     return nombre, inv, args
 end
 
@@ -21661,6 +22071,142 @@ register_tex_cmd("luafun_spdom_parse_and_set", function(raw)
     end
     token_set_macro("l__spintent_spdom_luaset_error_str", "false")
     spintent_fun_set_name(nombre, inv)
+end, { "string" })
+
+-- ------------------------------------------------------------
+-- §13b  \spfuncomp — composición lineal  f\circ g,  (f\circ g)(x)
+--
+-- Formas: f\circ g\circ ...   |   (f\circ g)   |   (f\circ g)(args)
+-- Cada función es un nombre como en \spfun (letra con subíndice,
+-- primas o ^{-1}); hay al menos dos. Los argumentos se analizan
+-- igual que en \spfun (simple / expresión / llamada).
+-- ------------------------------------------------------------
+
+-- Índice del paréntesis que cierra al de la posición i, o nil.
+local function spintent_fun_match_paren(str, i)
+    local depth = 0
+    local n = #str
+    while i <= n do
+        local c = s_sub(str, i, i)
+        if c == "\\" then
+            i = i + 2
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+                if depth == 0 then return i end
+                if depth < 0 then return nil end
+            end
+            i = i + 1
+        end
+    end
+    return nil
+end
+
+-- Parte por los \circ (o ∘) de nivel superior.
+local function spintent_fun_split_circ(str)
+    local parts, depth, start = {}, 0, 1
+    local i, n = 1, #str
+    while i <= n do
+        local c = s_sub(str, i, i)
+        if c == "\\" then
+            if depth == 0 and s_sub(str, i, i + 4) == "\\circ"
+               and not s_match(s_sub(str, i + 5, i + 5), "%a") then
+                parts[#parts + 1] = s_sub(str, start, i - 1)
+                i = i + 5
+                start = i
+            else
+                i = i + 2
+            end
+        elseif depth == 0 and s_sub(str, i, i + 2) == "∘" then
+            parts[#parts + 1] = s_sub(str, start, i - 1)
+            i = i + 3
+            start = i
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+                if depth < 0 then return nil end
+            end
+            i = i + 1
+        end
+    end
+    if depth ~= 0 then return nil end
+    parts[#parts + 1] = s_sub(str, start)
+    return parts
+end
+
+-- Lista de funciones { intent, visual } separadas por \circ; al menos
+-- dos y cada una un nombre completo. nil si algo no es válido.
+local function spintent_fun_comp_funs(str)
+    local parts = spintent_fun_split_circ(str)
+    if not parts or #parts < 2 then return nil end
+    local funs = {}
+    for i = 1, #parts do
+        local nombre, inv, rest = spintent_fun_parse_name(spintent_trim(parts[i]))
+        if not nombre or not s_match(rest, "^%s*$") then return nil end
+        local intent = spintent_geo_build_body_nombre(nombre)
+        local visual = spintent_geo_build_visual_nombre(nombre)
+        if inv then
+            intent = intent .. "-inversa"
+            visual = visual .. "^{-1}"
+        end
+        funs[i] = { intent, visual, nombre[1], nombre[2] or "", nombre[3] or "", inv }
+    end
+    return funs
+end
+
+local function spintent_fun_comp_error()
+    token_set_macro("l__spintent_spfuncomp_luaset_error_str", "true")
+end
+
+register_tex_cmd("luafun_spfuncomp_parse_and_set", function(raw)
+    raw = spintent_trim(raw)
+    raw = spintent_geo_normalize_primes(raw)
+
+    local funs, args, paren
+    if s_sub(raw, 1, 1) == "(" then
+        local close = spintent_fun_match_paren(raw, 1)
+        if not close then spintent_fun_comp_error() return end
+        paren = true
+        funs = spintent_fun_comp_funs(s_sub(raw, 2, close - 1))
+        local rest = spintent_trim(s_sub(raw, close + 1))
+        if rest ~= "" then
+            if s_sub(rest, 1, 1) ~= "(" then spintent_fun_comp_error() return end
+            local c2 = spintent_fun_match_paren(rest, 1)
+            if c2 ~= #rest then spintent_fun_comp_error() return end
+            args = spintent_fun_split_args(s_sub(rest, 2, c2 - 1))
+            if not args then spintent_fun_comp_error() return end
+            args = spintent_fun_classify_args(args)
+            if not args then spintent_fun_comp_error() return end
+        end
+    else
+        paren = false
+        funs = spintent_fun_comp_funs(raw)
+    end
+    if not funs then spintent_fun_comp_error() return end
+
+    token_set_macro("l__spintent_spfuncomp_luaset_error_str", "false")
+    token_set_macro("l__spintent_spfuncomp_luaset_n_str", tostring(#funs))
+    token_set_macro("l__spintent_spfuncomp_luaset_paren_str", paren and "true" or "false")
+    token_set_macro("l__spintent_spfuncomp_luaset_apply_str", args and "true" or "false")
+    for i = 1, #funs do
+        token_set_macro("l__spintent_spfuncomp_luaset_intent_" .. i .. "_str", funs[i][1])
+        token_set_macro("l__spintent_spfuncomp_luaset_print_" .. i .. "_tl",  funs[i][2])
+        token_set_macro("l__spintent_spfuncomp_luaset_letra_" .. i .. "_str", funs[i][3])
+        token_set_macro("l__spintent_spfuncomp_luaset_sub_" .. i .. "_str",   funs[i][4])
+        token_set_macro("l__spintent_spfuncomp_luaset_tipo_" .. i .. "_str",  funs[i][5])
+        token_set_macro("l__spintent_spfuncomp_luaset_inv_" .. i .. "_str",   funs[i][6] and "true" or "false")
+    end
+    if args then
+        token_set_macro("l__spintent_spfun_luaset_nargs_str", tostring(#args))
+        for i = 1, #args do
+            token_set_macro("l__spintent_spfun_luaset_arg_" .. i .. "_tl", args[i][1])
+            token_set_macro("l__spintent_spfun_luaset_simple_" .. i .. "_str", args[i][2])
+        end
+    end
 end, { "string" })
 % \iffalse
 %</spintentlua>

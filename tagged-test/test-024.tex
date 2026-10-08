@@ -1,0 +1,141 @@
+% test-024.tex -- spfuncomp: composicion lineal
+%
+% Compilar:  lualatex-dev test-024.tex
+% Validar:   show-pdf-tags --xml test-024.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-024.pdf
+%
+% \spfuncomp escribe la composicion lineal f\circ g, (f\circ g) y
+% (f\circ g)(x). Intent propio: _compuesta-con:infix(...).
+% Las entradas invalidas (que detienen la compilacion) no van aqui.
+%
+% Los "doc:" son lecturas reales de NVDA con MathCAT (2026-10-08).
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-024: spfuncomp},
+  }
+\begin{document}
+
+\section*{A. Composición lineal}
+
+% doc: «f compuesta con g»
+1. Dos funciones: $\spfuncomp{f\circ g}$.
+
+% doc: «f compuesta con g compuesta con h»
+2. Tres funciones: $\spfuncomp{f\circ g\circ h}$.
+
+% doc: «f compuesta con g compuesta con h compuesta con k»
+3. Cuatro funciones: $\spfuncomp{f\circ g\circ h\circ k}$.
+
+% doc: «f compuesta con g»
+4. Con espacios: $\spfuncomp{ f \circ g }$.
+
+% doc: «f compuesta con g»
+5. Con el carácter Unicode: $\spfuncomp{f ∘ g}$.
+
+% doc: «f sub uno compuesta con g sub dos»
+6. Con subíndices: $\spfuncomp{f_{1}\circ g_{2}}$.
+
+% doc: «f prima compuesta con g doble prima»
+7. Con primas: $\spfuncomp{f'\circ g''}$.
+
+% doc: «F compuesta con G»
+8. Con mayúsculas: $\spfuncomp{F\circ G}$.
+
+% doc: «f inversa compuesta con g»
+9. Con la inversa: $\spfuncomp{f^{-1}\circ g}$.
+
+% doc: «f inversa compuesta con g inversa»
+10. Dos inversas: $\spfuncomp{f^{-1}\circ g^{-1}}$.
+
+\section*{B. Entre paréntesis}
+
+% doc: «f compuesta con g»
+11. Entre paréntesis: $\spfuncomp{(f\circ g)}$.
+
+% doc: «f compuesta con g compuesta con h»
+12. Tres entre paréntesis: $\spfuncomp{(f\circ g\circ h)}$.
+
+\section*{C. Aplicada a argumentos}
+
+% doc: «f compuesta con g de x»
+13. Aplicada a x: $\spfuncomp{(f\circ g)(x)}$.
+
+% doc: «f compuesta con g de x»
+14. Con espacios: $\spfuncomp{( f \circ g ) ( x )}$.
+
+% doc: «f compuesta con g de x coma y»
+15. Dos argumentos: $\spfuncomp{(f\circ g)(x,y)}$.
+
+% doc: «f compuesta con g compuesta con h de x»
+16. Tres funciones: $\spfuncomp{(f\circ g\circ h)(x)}$.
+
+% doc: «f inversa compuesta con g de x»
+17. Con la inversa: $\spfuncomp{(f^{-1}\circ g)(x)}$.
+
+% doc: «f compuesta con g de x más 1»
+18. Argumento expresión: $\spfuncomp{(f\circ g)(x+1)}$.
+
+% doc: «f compuesta con g de h de x»
+19. Argumento llamada: $\spfuncomp{(f\circ g)(h(x))}$.
+
+% doc: «f compuesta con g de h de k de x»
+20. Llamada anidada: $\spfuncomp{(f\circ g)(h(k(x)))}$.
+
+% doc: «f compuesta con g de h inversa de y»
+21. Llamada con inversa: $\spfuncomp{(f\circ g)(h^{-1}(y))}$.
+
+% doc: «f compuesta con g de x coma h de y»
+22. Letra y llamada: $\spfuncomp{(f\circ g)(x,h(y))}$.
+
+% doc: «f compuesta con g de x coma y coma z»
+23. Tres argumentos: $\spfuncomp{(f\circ g)(x,y,z)}$.
+
+% doc: «f compuesta con g de h de x coma k de y»
+24. Dos llamadas: $\spfuncomp{(f\circ g)(h(x),k(y))}$.
+
+% doc: «f inversa compuesta con g de x coma y»
+25. Inversa y dos argumentos: $\spfuncomp{(f^{-1}\circ g)(x,y)}$.
+
+\section*{D. Contexto}
+
+% doc: «f compuesta con g de x es igual a f de g de x»
+26. Con un igual y una llamada: $\spfuncomp{(f\circ g)(x)} = \spfun{f(g(x))}$.
+
+% doc: «f compuesta con g es igual a k»
+27. Función igual a otra: $\spfuncomp{f\circ g} = k$.
+
+% doc: «f compuesta con g de x más h de x»
+28. En una suma: $\spfuncomp{(f\circ g)(x)} + \spfun{h(x)}$.
+
+% doc: «f compuesta con g de x mayor que 0»
+29. Con una desigualdad: $\spfuncomp{(f\circ g)(x)} > 0$.
+
+\section*{E. Llaves}
+
+% doc: silencio
+30. silent true: $\spfuncomp[silent=true]{f\circ g}$.
+
+% doc: silencio
+31. silent true aplicada: $\spfuncomp[silent=true]{(f\circ g)(x)}$.
+
+% doc: «es igual a 5»
+32. silent true y algo después: $\spfuncomp[silent=true]{(f\circ g)(x)} = 5$.
+
+% doc: «f compuesta con g de x»
+33. silent false, el valor por defecto: $\spfuncomp[silent=false]{(f\circ g)(x)}$.
+
+\end{document}
