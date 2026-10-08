@@ -11683,7 +11683,10 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{\@@_spcoord_set_wrap_parens_size:}
 %   With neither side carrying a fraction, the parentheses stay
-%   unsized. Otherwise, \myhlc|\mathstyle| picks |\Bigl|/|\Bigr| for
+%   unsized. A fraction counts wherever it appears in the value
+%   (|\frac|, |\dfrac| or a |\spmQ|, which prints one), except inside
+%   a subscript or superscript, where it does not make the line taller.
+%   Otherwise, \myhlc|\mathstyle| picks |\Bigl|/|\Bigr| for
 %   display, |\bigl|/|\bigr| for text. When either side is
 %   |dfrac|, the parentheses are forced to |\Bigl|/|\Bigr| regardless
 %   of \myhlc|\mathstyle|, since |\dfrac| always renders at display
@@ -11867,8 +11870,11 @@ end, "shekel_fallback_patch")
 %   on error. Either way, sizes the parentheses, then delegates to
 %   \myhlc|\@@_spcoord_mathml:| unless there was an error, preceded by an
 %   invisible separator — placed \emph{before} the opening parenthesis, as
-%   \myhlc|\@@_spvec_exec:nnn| and \myhlc|\@@_spPoint_exec:nnn| do — so that
-%   \mynvmath{MathCAT} does not read the pair as an interval after an equals sign.
+%   \myhlc|\@@_spvec_exec:nnn| and \myhlc|\@@_spPoint_exec:nnn| do — and the
+%   whole pair is wrapped in |\mathord|. The wrapper is what keeps
+%   \mynvmath{MathCAT} from reading |(1,2)| as an interval when an equals
+%   sign or |\in| follows it; a silent separator after the closing
+%   parenthesis does not help, as it makes the relation disappear.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spcoord_exec:nn
   {
@@ -11887,8 +11893,11 @@ end, "shekel_fallback_patch")
     \@@_spcoord_set_wrap_parens_size:
     \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
       {
-        \MathMLintent { :silent } { \c_@@_invisible_sep_int } % previene lectura de intervalo
-        \@@_spcoord_mathml:
+        \mathord
+          {
+            \MathMLintent { :silent } { \c_@@_invisible_sep_int } % previene lectura de intervalo
+            \@@_spcoord_mathml:
+          }
       }
   }
 %    \end{macrocode}
@@ -20470,6 +20479,21 @@ end, { "string" })
 -- esa funcion completa ni disparar sus propios token_set_macro de
 -- unidades/millones/exponente, que no aplican aca.
 
+-- Altura "alta" de un valor: busca \dfrac, \frac o \spmQ en CUALQUIER
+-- posicion (como \spinterval), pero ignora lo que quede dentro de un
+-- subindice o superindice (x_{\frac{1}{2}} no agranda el parentesis).
+-- Devuelve "dfrac", "frac" o "none".
+local function spintent_spcoord_tall(value)
+    local v = value
+    v = v:gsub("[_^]%s*%b{}", "")
+    v = v:gsub("[_^]%s*\\%a+", "")
+    v = v:gsub("[_^]%s*[^%s{\\]", "")
+    if s_match(v, "\\dfrac%f[%A]") then return "dfrac" end
+    if s_match(v, "\\spmQ%s*%[[^%]]*use%-dfrac%s*=%s*true") then return "dfrac" end
+    if s_match(v, "\\frac%f[%A]") or s_match(v, "\\spmQ%f[%A]") then return "frac" end
+    return "none"
+end
+
 local function spintent_spcoord_classify_base(part)
     local sign, rest = "", part
     local first = s_sub(part, 1, 1)
@@ -20478,11 +20502,9 @@ local function spintent_spcoord_classify_base(part)
         rest = spintent_trim(s_sub(part, 2))
     end
 
-    if s_match(rest, "^\\dfrac%s*%{") then
-        return sign, "raw", rest, "dfrac"
-    end
-    if s_match(rest, "^\\frac%s*%{") then
-        return sign, "raw", rest, "frac"
+    local tall = spintent_spcoord_tall(rest)
+    if tall ~= "none" then
+        return sign, "raw", rest, tall
     end
 
     local num_result = spintent_number_pattern:match(rest)
@@ -20501,7 +20523,8 @@ end
 local function spintent_spcoord_classify(part)
     local sign, type_, value, has_frac = spintent_spcoord_classify_base(part)
     local comp = "false"
-    if type_ == "raw" and has_frac == "none"
+    if type_ == "raw"
+       and not s_match(value, "^\\d?frac%f[%A]")
        and (s_match(value, "[_^]") or s_match(value, "\\sqrt")) then
         comp = "true"
     end
