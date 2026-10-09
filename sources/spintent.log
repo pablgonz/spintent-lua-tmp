@@ -1,4 +1,4 @@
-This is LuaTeX, Version 1.24.0 (TeX Live 2026)  (format=luatex 2026.9.26)  7 OCT 2026 23:36
+This is LuaTeX, Version 1.24.0 (TeX Live 2026)  (format=luatex 2026.9.26)  9 OCT 2026 09:10
  restricted system commands enabled.
 **spintent.ins
 (./spintent.ins (/usr/local/texlive/2026/texmf-dist/tex/latex/base/docstrip.tex
@@ -54,21 +54,24 @@ Generating file(s) spintent.sty
 \openout0 = spintent.sty
 
 Processing file spintent.dtx (package) -> spintent.sty
-Lines  processed: 20781
-Comments removed: 10567
+Lines  processed: 22952
+Comments removed: 11164
 Comments  passed: 14
-Codelines passed: 10175
+Codelines passed: 11746
 
 
-Generating file(s) spintent.lua 
+Generating file(s) spintent.lua spitool.lua 
 
 \openout0 = spintent.lua
 
+\openout1 = spitool.lua
+
 Processing file spintent.dtx (spintentlua) -> spintent.lua
-Lines  processed: 20781
-Comments removed: 10567
+                             (spitool) -> spitool.lua
+Lines  processed: 22952
+Comments removed: 11164
 Comments  passed: 14
-Codelines passed: 10175
+Codelines passed: 11746
 
 *****************************************************************
 *
@@ -83,10 +86,10 @@ Codelines passed: 10175
 *****************************************************************
 Overall statistics:
 Files  processed: 2
-Lines  processed: 41562
-Comments removed: 21134
+Lines  processed: 45904
+Comments removed: 22328
 Comments  passed: 28
-Codelines passed: 20350
+Codelines passed: 23492
 )
 warning  (pdf backend): no pages of output.
 

@@ -38,7 +38,7 @@
         later.~Update~your~TeX~distribution.
       }
   }
-\ProvidesExplPackage {spintent} {2026-10-07} {0.99} {Spanish parse intents}
+\ProvidesExplPackage {spintent} {2026-10-09} {0.99} {Spanish parse intents}
 \keys_define:nn { spintent }
   {
     mathcal .usage:n    = load,
@@ -3055,16 +3055,9 @@
   {
     \keys_set:nn { spintent / spcoord } {#1}
     \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#2}
-    \bool_if:NTF \l__spintent_spcoord_silent_bool
-      {
-        \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
-        \str_set:Nn \l__spintent_spcoord_luaset_error_str { false }
-      }
-      {
-        \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
-        \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
-          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
-      }
+    \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
+      { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
     \__spintent_spcoord_set_wrap_parens_size:
     \str_if_eq:VnF \l__spintent_spcoord_luaset_error_str { true }
       {
@@ -3444,16 +3437,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
     \__spintent_luafun_spinterval_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnTF \l__spintent_spinterval_luaset_error_str { true }
       {
-        \bool_if:NTF \l__spintent_spinterval_silent_bool
-          {
-            \MathMLintent { _- }
-              { \__spintent_inner_sep: \l__spintent_spinterval_raw_arg_tl }
-          }
-          {
-            \__spintent_spinterval_set_reason:
-            \msg_error:nnee { spintent } { spinterval-invalid-arg }
-              { \exp_not:n {#2} } { \l__spintent_spinterval_reason_str }
-          }
+        \__spintent_spinterval_set_reason:
+        \msg_error:nnee { spintent } { spinterval-invalid-arg }
+          { \exp_not:n {#2} } { \l__spintent_spinterval_reason_str }
       }
       {
         \__spintent_spinterval_set_delims:
@@ -3472,6 +3458,537 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spinterval } }
+  }
+\str_new:N  \l__spintent_spfun_mode_str
+\tl_new:N   \l__spintent_spfun_prefix_tl
+\tl_new:N   \l__spintent_spfun_intent_arg_tl
+\tl_new:N   \l__spintent_spfun_kv_tl
+\tl_new:N   \l__spintent_spfun_refs_tl
+\str_new:N  \l__spintent_spfun_tmp_str
+\int_new:N  \l__spintent_spfun_nargs_int
+\bool_new:N \l__spintent_spfun_silent_bool
+\bool_new:N \l__spintent_spfun_concept_bool
+\str_new:N  \l__spintent_spfun_luaset_error_str
+\str_new:N  \l__spintent_spfun_luaset_nargs_str
+\str_new:N  \l__spintent_spfun_luaset_inv_str
+\tl_new:N   \l__spintent_spfun_call_tl
+\int_new:N  \l__spintent_spfun_depth_int
+\msg_new:nnn { spintent } { spfun-invalid-arg }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spfun.
+  }
+\keys_define:nn { spintent / spfun }
+  {
+    read-cmd            .choices:nn = { school , mathcat }
+      {
+        \int_case:nn { \l_keys_choice_int }
+          {
+            {1} { \str_set:Nn \l__spintent_spfun_mode_str { school  } }
+            {2} { \str_set:Nn \l__spintent_spfun_mode_str { mathcat } }
+          }
+      },
+    read-cmd            .initial:n  = school,
+    read-cmd            .value_required:n = true,
+    read-cmd / unknown  .code:n =
+      \msg_error:nneee { spintent } { unknown-choice }
+        { read-cmd } { school,~mathcat } { \exp_not:n {#1} },
+    prefix              .code:n =
+      { \__spintent_sanitize_affix:Nn \l__spintent_spfun_prefix_tl {#1} },
+    prefix              .initial:n  = ,
+    prefix              .value_required:n = true,
+    silent              .bool_set:N = \l__spintent_spfun_silent_bool,
+    silent              .initial:n = false,
+    silent              .value_required:n = true,
+    concept             .bool_set:N = \l__spintent_spfun_concept_bool,
+    concept             .initial:n  = false,
+    concept             .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set:Nn \l__spintent_command_name_str { spfun }
+        \__spintent_unknown_keys_cmd:n {#1}
+      },
+  }
+\cs_new:Nn \__spintent_spfun_fname:
+  {
+    f
+    \int_compare:nNnF { \l__spintent_spfun_depth_int } = { 1 }
+      { \int_use:N \l__spintent_spfun_depth_int }
+  }
+\cs_new:Nn \__spintent_spfun_aname:n
+  {
+    a
+    \int_compare:nNnF { \l__spintent_spfun_depth_int } = { 1 }
+      { \int_use:N \l__spintent_spfun_depth_int x }
+    #1
+  }
+\cs_new_protected:Nn \__spintent_spfun_name_plain:
+  {
+    \l__spintent_geo_luaset_letra_str
+    \str_case:VnF \l__spintent_geo_luaset_tipo_str
+      {
+        { sub }   { \c_math_subscript_token { \l__spintent_geo_luaset_sub_str } }
+        { prima } { \l__spintent_geo_luaset_sub_str }
+      }
+      { }
+    \str_if_eq:VnT \l__spintent_spfun_luaset_inv_str { true }
+      { \c_math_superscript_token { -1 } }
+  }
+\cs_new_protected:Nn \__spintent_spfun_name_school:
+  {
+    \tl_set:Ne \l__spintent_spfun_kv_tl
+      { arg = " \__spintent_spfun_fname: ", intent = "_ \l__spintent_geo_luaset_intent_str -" }
+    \__spintent_luafun_mrow_intent_arg:nn { } { \l__spintent_spfun_kv_tl }
+    \str_case:VnF \l__spintent_geo_luaset_tipo_str
+      {
+        { sub }
+          {
+            \l__spintent_geo_luaset_letra_str
+            \c_math_subscript_token
+              { \MathMLintent { :silent } { \l__spintent_geo_luaset_sub_str } }
+          }
+        { prima }
+          { \l__spintent_geo_luaset_letra_str \l__spintent_geo_luaset_sub_str }
+      }
+      { \l__spintent_geo_luaset_letra_str }
+    \str_if_eq:VnT \l__spintent_spfun_luaset_inv_str { true }
+      {
+        \c_math_superscript_token
+          { \MathMLintent { :silent } { -1 } }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfun_name_mathcat:
+  {
+    \bool_lazy_and:nnTF
+      { \str_if_eq_p:Vn \l__spintent_geo_luaset_tipo_str { } }
+      { \str_if_eq_p:Vn \l__spintent_spfun_luaset_inv_str { false } }
+      { \exp_args:Ne \MathMLarg { \__spintent_spfun_fname: } { \__spintent_spfun_name_plain: } }
+      { \exp_args:Ne \MathMLarg { \__spintent_spfun_fname: } { \__spintent_inner_sep: \__spintent_spfun_name_plain: } }
+  }
+\cs_new_protected:Nn \__spintent_spfun_arg:n
+  {
+    \str_set_eq:Nc \l__spintent_spfun_tmp_str { l__spintent_spfun_luaset_simple_ #1 _str }
+    \str_case:VnF \l__spintent_spfun_tmp_str
+      {
+        { true }
+          {
+            \exp_args:Ne \MathMLarg { \__spintent_spfun_aname:n {#1} }
+              { \tl_use:c { l__spintent_spfun_luaset_arg_ #1 _tl } }
+          }
+        { call }
+          {
+            \exp_args:Ne \MathMLarg { \__spintent_spfun_aname:n {#1} }
+              { \__spintent_inner_sep: \__spintent_spfun_nested:n {#1} }
+          }
+      }
+      {
+        \exp_args:Ne \MathMLarg { \__spintent_spfun_aname:n {#1} }
+          { \__spintent_inner_sep: \tl_use:c { l__spintent_spfun_luaset_arg_ #1 _tl } }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfun_args:
+  {
+    \int_step_inline:nn { \l__spintent_spfun_nargs_int }
+      {
+        \int_compare:nNnF {##1} = {1}
+          { \MathMLintent { :silent } { , } }
+        \__spintent_spfun_arg:n {##1}
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfun_args_plain:
+  {
+    \int_step_inline:nn { \l__spintent_spfun_nargs_int }
+      {
+        \int_compare:nNnF {##1} = {1} { , }
+        \tl_use:c { l__spintent_spfun_luaset_arg_ ##1 _tl }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfun_set_intent:
+  {
+    \tl_clear:N \l__spintent_spfun_refs_tl
+    \int_step_inline:nn { \l__spintent_spfun_nargs_int }
+      {
+        \tl_put_right:Ne \l__spintent_spfun_refs_tl
+          { \int_compare:nNnF {##1} = {1} { , } $ \__spintent_spfun_aname:n {##1} }
+      }
+    \int_compare:nNnTF { \l__spintent_spfun_nargs_int } = { 0 }
+      { \tl_set:Ne \l__spintent_spfun_call_tl { $ \__spintent_spfun_fname: } }
+      { \tl_set:Ne \l__spintent_spfun_call_tl { $ \__spintent_spfun_fname: ( \l__spintent_spfun_refs_tl ) } }
+    \bool_if:NTF \l__spintent_spfun_concept_bool
+      {
+        \tl_set:Ne \l__spintent_spfun_intent_arg_tl
+          {
+            _
+            \tl_if_empty:NF \l__spintent_spfun_prefix_tl
+              { \tl_use:N \l__spintent_spfun_prefix_tl - }
+            función:prefix( \l__spintent_spfun_call_tl )
+          }
+      }
+      {
+        \tl_set_eq:NN \l__spintent_spfun_intent_arg_tl \l__spintent_spfun_call_tl
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfun_mathml:
+  {
+    \__spintent_invisible_sep:
+    \__spintent_spfun_body:
+  }
+\cs_new_protected:Nn \__spintent_spfun_body:
+  {
+    \bool_if:NTF \l__spintent_spfun_silent_bool
+      {
+        \MathMLintent { _- }
+          {
+            \__spintent_inner_sep:
+            \__spintent_spfun_name_plain:
+            \int_compare:nNnF { \l__spintent_spfun_nargs_int } = { 0 }
+              {
+                (
+                \__spintent_spfun_args_plain:
+                )
+              }
+          }
+      }
+      {
+        \__spintent_spfun_set_intent:
+        \MathMLintent { \l__spintent_spfun_intent_arg_tl }
+          {
+            \int_compare:nNnT { \l__spintent_spfun_nargs_int } = { 0 }
+              { \__spintent_inner_sep: }
+            \str_if_eq:VnTF \l__spintent_spfun_mode_str { school }
+              { \__spintent_spfun_name_school: }
+              { \__spintent_spfun_name_mathcat: }
+            \int_compare:nNnF { \l__spintent_spfun_nargs_int } = { 0 }
+              {
+                \MathMLintent { :silent } { ( }
+                \__spintent_spfun_args:
+                \MathMLintent { :silent } { ) }
+              }
+          }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfun_nested:n
+  {
+    \group_begin:
+      \exp_args:Ne \__spintent_luafun_spfun_parse_and_set:n
+        { \exp_not:v { l__spintent_spfun_luaset_arg_ #1 _tl } }
+      \int_incr:N \l__spintent_spfun_depth_int
+      \bool_set_false:N \l__spintent_spfun_concept_bool
+      \int_set:Nn \l__spintent_spfun_nargs_int { \l__spintent_spfun_luaset_nargs_str }
+      \__spintent_spfun_body:
+    \group_end:
+  }
+\cs_new_protected:Nn \__spintent_spfun_exec:nn
+  {
+    \keys_set:nn { spintent / spfun } {#1}
+    \__spintent_luafun_spfun_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnTF \l__spintent_spfun_luaset_error_str { true }
+      {
+        \msg_error:nne { spintent } { spfun-invalid-arg } { \exp_not:n {#2} }
+      }
+      {
+        \int_set:Nn \l__spintent_spfun_nargs_int { \l__spintent_spfun_luaset_nargs_str }
+        \int_set:Nn \l__spintent_spfun_depth_int { 1 }
+        \__spintent_spfun_mathml:
+      }
+  }
+\NewDocumentCommand \spfun { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l__spintent_scope_attr_int = 1
+          \__spintent_spfun_exec:nn {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spfun } }
+  }
+\int_new:N  \l__spintent_spfuncomp_n_int
+\tl_new:N   \l__spintent_spfuncomp_refs_tl
+\tl_new:N   \l__spintent_spfuncomp_intent_tl
+\bool_new:N \l__spintent_spfuncomp_silent_bool
+\tl_new:N   \l__spintent_spfuncomp_kv_tl
+\str_new:N  \l__spintent_spfuncomp_tipo_str
+\str_new:N  \l__spintent_spfuncomp_luaset_error_str
+\str_new:N  \l__spintent_spfuncomp_luaset_n_str
+\str_new:N  \l__spintent_spfuncomp_luaset_paren_str
+\str_new:N  \l__spintent_spfuncomp_luaset_apply_str
+\msg_new:nnn { spintent } { spfuncomp-invalid-arg }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spfuncomp.
+  }
+\keys_define:nn { spintent / spfuncomp }
+  {
+    silent              .bool_set:N = \l__spintent_spfuncomp_silent_bool,
+    silent              .initial:n = false,
+    silent              .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set:Nn \l__spintent_command_name_str { spfuncomp }
+        \__spintent_unknown_keys_cmd:n {#1}
+      },
+  }
+\cs_new_protected:Nn \__spintent_spfuncomp_fun:n
+  {
+    \tl_set:Ne \l__spintent_spfuncomp_kv_tl
+      {
+        arg = " k #1 ",
+        intent = "_ \use:c { l__spintent_spfuncomp_luaset_intent_ #1 _str } -"
+      }
+    \__spintent_luafun_mrow_intent_arg:nn { } { \l__spintent_spfuncomp_kv_tl }
+    \str_set_eq:Nc \l__spintent_spfuncomp_tipo_str
+      { l__spintent_spfuncomp_luaset_tipo_ #1 _str }
+    \str_case:VnF \l__spintent_spfuncomp_tipo_str
+      {
+        { sub }
+          {
+            \use:c { l__spintent_spfuncomp_luaset_letra_ #1 _str }
+            \c_math_subscript_token
+              {
+                \MathMLintent { :silent }
+                  { \use:c { l__spintent_spfuncomp_luaset_sub_ #1 _str } }
+              }
+          }
+        { prima }
+          {
+            \use:c { l__spintent_spfuncomp_luaset_letra_ #1 _str }
+            \use:c { l__spintent_spfuncomp_luaset_sub_ #1 _str }
+          }
+      }
+      { \use:c { l__spintent_spfuncomp_luaset_letra_ #1 _str } }
+    \str_set_eq:Nc \l__spintent_spfuncomp_tipo_str
+      { l__spintent_spfuncomp_luaset_inv_ #1 _str }
+    \str_if_eq:VnT \l__spintent_spfuncomp_tipo_str { true }
+      {
+        \c_math_superscript_token
+          { \MathMLintent { :silent } { -1 } }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfuncomp_group:
+  {
+    \tl_clear:N \l__spintent_spfuncomp_refs_tl
+    \int_step_inline:nn { \l__spintent_spfuncomp_n_int }
+      {
+        \tl_put_right:Ne \l__spintent_spfuncomp_refs_tl
+          { \int_compare:nNnF {##1} = {1} { , } $k ##1 }
+      }
+    \tl_set:Ne \l__spintent_spfuncomp_intent_tl
+      { _compuesta-con:infix( \l__spintent_spfuncomp_refs_tl ) }
+    \exp_args:NV \MathMLintent \l__spintent_spfuncomp_intent_tl
+      {
+        \str_if_eq:VnT \l__spintent_spfuncomp_luaset_paren_str { true }
+          { \MathMLintent { :silent } { ( } }
+        \int_step_inline:nn { \l__spintent_spfuncomp_n_int }
+          {
+            \int_compare:nNnF {##1} = {1}
+              { \MathMLintent { :silent } { \circ } }
+            \__spintent_spfuncomp_fun:n {##1}
+          }
+        \str_if_eq:VnT \l__spintent_spfuncomp_luaset_paren_str { true }
+          { \MathMLintent { :silent } { ) } }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfuncomp_plain:
+  {
+    \str_if_eq:VnT \l__spintent_spfuncomp_luaset_paren_str { true } { ( }
+    \int_step_inline:nn { \l__spintent_spfuncomp_n_int }
+      {
+        \int_compare:nNnF {##1} = {1} { \circ }
+        \tl_use:c { l__spintent_spfuncomp_luaset_print_ ##1 _tl }
+      }
+    \str_if_eq:VnT \l__spintent_spfuncomp_luaset_paren_str { true } { ) }
+    \str_if_eq:VnT \l__spintent_spfuncomp_luaset_apply_str { true }
+      {
+        ( \__spintent_spfun_args_plain: )
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfuncomp_mathml:
+  {
+    \__spintent_invisible_sep:
+    \str_if_eq:VnT \l__spintent_spfuncomp_luaset_apply_str { true }
+      {
+        \int_set:Nn \l__spintent_spfun_nargs_int { \l__spintent_spfun_luaset_nargs_str }
+      }
+    \int_set:Nn \l__spintent_spfun_depth_int { 1 }
+    \str_set:Nn \l__spintent_spfun_mode_str { school }
+    \bool_set_false:N \l__spintent_spfun_silent_bool
+    \bool_set_false:N \l__spintent_spfun_concept_bool
+    \bool_if:NTF \l__spintent_spfuncomp_silent_bool
+      {
+        \MathMLintent { _- }
+          { \__spintent_inner_sep: \__spintent_spfuncomp_plain: }
+      }
+      {
+        \str_if_eq:VnTF \l__spintent_spfuncomp_luaset_apply_str { true }
+          {
+            \tl_clear:N \l__spintent_spfun_refs_tl
+            \int_step_inline:nn { \l__spintent_spfun_nargs_int }
+              {
+                \tl_put_right:Ne \l__spintent_spfun_refs_tl
+                  { \int_compare:nNnF {##1} = {1} { , } $ \__spintent_spfun_aname:n {##1} }
+              }
+            \int_compare:nNnTF { \l__spintent_spfun_nargs_int } > { 1 }
+              {
+                \tl_set:Ne \l__spintent_spfun_call_tl { $c ( $l ) }
+                \exp_args:NV \MathMLintent \l__spintent_spfun_call_tl
+                  {
+                    \MathMLarg { c } { \__spintent_inner_sep: \__spintent_spfuncomp_group: }
+                    \MathMLintent { :silent } { ( }
+                    \MathMLarg { l }
+                      {
+                        \__spintent_inner_sep:
+                        \exp_args:Ne \MathMLintent
+                          { _coma:infix ( \l__spintent_spfun_refs_tl ) }
+                          { \__spintent_spfun_args: }
+                      }
+                    \MathMLintent { :silent } { ) }
+                  }
+              }
+              {
+                \tl_set:Ne \l__spintent_spfun_call_tl { $c ( \l__spintent_spfun_refs_tl ) }
+                \exp_args:NV \MathMLintent \l__spintent_spfun_call_tl
+                  {
+                    \MathMLarg { c } { \__spintent_inner_sep: \__spintent_spfuncomp_group: }
+                    \MathMLintent { :silent } { ( }
+                    \__spintent_spfun_args:
+                    \MathMLintent { :silent } { ) }
+                  }
+              }
+          }
+          { \__spintent_spfuncomp_group: }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spfuncomp_exec:nn
+  {
+    \keys_set:nn { spintent / spfuncomp } {#1}
+    \__spintent_luafun_spfuncomp_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnTF \l__spintent_spfuncomp_luaset_error_str { true }
+      {
+        \msg_error:nne { spintent } { spfuncomp-invalid-arg }
+          { \exp_not:n {#2} }
+      }
+      {
+        \int_set:Nn \l__spintent_spfuncomp_n_int { \l__spintent_spfuncomp_luaset_n_str }
+        \__spintent_spfuncomp_mathml:
+      }
+  }
+\NewDocumentCommand \spfuncomp { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l__spintent_scope_attr_int = 1
+          \__spintent_spfuncomp_exec:nn {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spfuncomp } }
+  }
+\str_new:N  \l__spintent_spdom_cmd_str
+\tl_new:N   \l__spintent_spdom_op_tl
+\tl_new:N   \l__spintent_spdom_word_tl
+\tl_new:N   \l__spintent_spdom_prefix_tl
+\tl_new:N   \l__spintent_spdom_intent_arg_tl
+\bool_new:N \l__spintent_spdom_silent_bool
+\str_new:N  \l__spintent_spdom_luaset_error_str
+\msg_new:nnn { spintent } { spdom-invalid-arg }
+  {
+    Invalid~argument~'#2'~for~\c_backslash_str #1.
+  }
+\keys_define:nn { spintent / spdom }
+  {
+    prefix              .code:n =
+      { \__spintent_sanitize_affix:Nn \l__spintent_spdom_prefix_tl {#1} },
+    prefix              .initial:n  = ,
+    prefix              .value_required:n = true,
+    silent              .bool_set:N = \l__spintent_spdom_silent_bool,
+    silent              .initial:n = false,
+    silent              .value_required:n = true,
+    unknown             .code:n =
+      {
+        \str_set_eq:NN \l__spintent_command_name_str \l__spintent_spdom_cmd_str
+        \__spintent_unknown_keys_cmd:n {#1}
+      },
+  }
+\cs_new_protected:Nn \__spintent_spdom_name:
+  {
+    \MathMLarg { f }
+      {
+        \__spintent_inner_sep:
+        \MathMLintent { _ \l__spintent_geo_luaset_intent_str - }
+          { \__spintent_inner_sep: \__spintent_spfun_name_plain: }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spdom_mathml:
+  {
+    \__spintent_invisible_sep:
+    \bool_if:NTF \l__spintent_spdom_silent_bool
+      {
+        \MathMLintent { _- }
+          {
+            \__spintent_inner_sep:
+            \operatorname { \l__spintent_spdom_op_tl }
+            ( \__spintent_spfun_name_plain: )
+          }
+      }
+      {
+        \tl_set:Ne \l__spintent_spdom_intent_arg_tl
+          {
+            _
+            \tl_if_empty:NF \l__spintent_spdom_prefix_tl
+              { \tl_use:N \l__spintent_spdom_prefix_tl - }
+            \l__spintent_spdom_word_tl -de:prefix( $f )
+          }
+        \MathMLintent { \l__spintent_spdom_intent_arg_tl }
+          {
+            \MathMLintent { :silent } { \operatorname { \l__spintent_spdom_op_tl } }
+            \MathMLintent { :silent } { ( }
+            \__spintent_spdom_name:
+            \MathMLintent { :silent } { ) }
+          }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spdom_exec:nnnnn
+  {
+    \str_set:Nn \l__spintent_spdom_cmd_str {#1}
+    \tl_set:Nn  \l__spintent_spdom_op_tl   {#2}
+    \tl_set:Nn  \l__spintent_spdom_word_tl {#3}
+    \keys_set:nn { spintent / spdom } {#4}
+    \__spintent_luafun_spdom_parse_and_set:n { \exp_not:n {#5} }
+    \str_if_eq:VnTF \l__spintent_spdom_luaset_error_str { true }
+      {
+        \msg_error:nnee { spintent } { spdom-invalid-arg }
+          {#1} { \exp_not:n {#5} }
+      }
+      { \__spintent_spdom_mathml: }
+  }
+\NewDocumentCommand \spdom { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_spdom_exec:nnnnn { spdom } { Dom } { dominio } {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spdom } }
+  }
+\NewDocumentCommand \sprec { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_spdom_exec:nnnnn { sprec } { Rec } { recorrido } {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \sprec } }
+  }
+\NewDocumentCommand \spcod { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \__spintent_spdom_exec:nnnnn { spcod } { Cod } { codominio } {#1} {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spcod } }
   }
 \tl_new:N   \l__spintent_mathmlarg_point_ref_tl
 \str_new:N  \l__spintent_mathmlarg_point_mode_str
@@ -3666,16 +4183,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % silencia el "por"
         \bool_set_eq:NN \l__spintent_spcoord_silent_bool \l__spintent_spPoint_silent_bool
         \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l__spintent_spcoord_silent_bool
-          {
-            \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
-            \str_set:Nn \l__spintent_spcoord_luaset_error_str { false }
-          }
-          {
-            \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
-            \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
-              { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
-          }
+        \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+        \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
+          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
         \__spintent_spcoord_set_wrap_parens_size:
         \str_if_eq:VnF \l__spintent_spcoord_luaset_error_str { true }
           { \__spintent_spcoord_mathml: }
@@ -3913,16 +4423,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \MathMLintent { :silent } { \c__spintent_invisible_sep_int } % previene lectura de intervalo
         \bool_set_eq:NN \l__spintent_spcoord_silent_bool \l__spintent_spvec_silent_bool
         \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
-        \bool_if:NTF \l__spintent_spvec_silent_bool
-          {
-            \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
-            \str_set:Nn \l__spintent_spcoord_luaset_error_str { false }
-          }
-          {
-            \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
-            \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
-              { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
-          }
+        \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
+        \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
+          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
         \__spintent_spcoord_set_wrap_parens_size:
         \str_if_eq:VnF \l__spintent_spcoord_luaset_error_str { true }
           { \__spintent_spcoord_mathml: }

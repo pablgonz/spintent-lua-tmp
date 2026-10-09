@@ -1,5 +1,5 @@
 --[[
-     Lua module spintent.lua for spintent package - v0.99 [2026-10-07]
+     Lua module spintent.lua for spintent package - v0.99 [2026-10-09]
 --]]
 
 -- CACHÉ, LPEG Y HERRAMIENTAS GLOBALES
@@ -1957,12 +1957,14 @@ local function spintent_geo_normalize_primes(str)
     str = s_gsub(str, "″", "''")
     str = s_gsub(str, "′", "'")
 
+    -- Los espacios que TeX deja tras un comando (\prime }) no cuentan.
     str = s_gsub(str, "%^%{([^%}]*)%}", function(inner)
-        if inner == "\\prime" then return "'" end
-        if inner == "\\prime\\prime" then return "''" end
-        if inner == "\\prime\\prime\\prime" then return "'''" end
-        if inner == "\\dprime" then return "''" end
-        if inner == "\\trprime" then return "'''" end
+        local compact = (s_gsub(inner, "%s+", ""))
+        if compact == "\\prime" then return "'" end
+        if compact == "\\prime\\prime" then return "''" end
+        if compact == "\\prime\\prime\\prime" then return "'''" end
+        if compact == "\\dprime" then return "''" end
+        if compact == "\\trprime" then return "'''" end
         return "^{" .. inner .. "}"
     end)
 
@@ -2814,4 +2816,339 @@ register_tex_cmd("luafun_spinterval_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spinterval_luaset_b_inf_str",       b_inf)
     token_set_macro("l__spintent_spinterval_luaset_b_tall_str",      b_tall)
     token_set_macro("l__spintent_spinterval_luaset_b_composite_str", b_comp)
+end, { "string" })
+
+-- ------------------------------------------------------------
+-- §13  FUNCIONES — \spfun, \spdom, \sprec, \spcod
+--
+-- \spfun reconoce  nombre(arg, arg, ...)  donde nombre es una letra
+-- (mayúscula o minúscula) con subíndice entre llaves (letras o
+-- dígitos) o con primas, igual que un punto de la geometría, y con
+-- el exponente ^{-1} opcional de la función inversa (que no se
+-- combina con primas). Solo la inversa puede ir sin paréntesis. Los
+-- argumentos se separan por las comas de nivel superior: las que
+-- quedan dentro de llaves, paréntesis o corchetes no cuentan.
+-- Deja el nombre en las mismas variables que usa la familia geo
+-- (letra/sub/tipo/intent/print) y cada argumento en
+-- l__spintent_spfun_luaset_arg_<i>_tl. Un argumento que es a su vez
+-- una llamada (f(g(x)), f(g^{-1}(y))) se analiza de forma recursiva y
+-- queda marcado "call"; expl3 vuelve a llamar a esta función con él.
+--
+-- \spdom, \sprec y \spcod reciben solo el nombre (con la misma
+-- gramática) y lo dejan en las mismas variables.
+-- ------------------------------------------------------------
+local spintent_fun_alnum = R"09" + R"az" + R"AZ"
+
+local spintent_fun_head = Ct(
+    C(R"az" + R"AZ") *
+    (
+        P"_{" * C(spintent_fun_alnum^1) * P"}" * Cc"sub"
+        + spintent_geo_primas               * Cc"prima"
+        + Cc""                              * Cc""
+    )
+) * lpeg_base.Cp()
+
+-- Nombre + exponente ^{-1} opcional. Devuelve nombre, inv (booleano) y
+-- el resto del texto; nil si no empieza con un nombre válido o si la
+-- inversa va junto a primas. Los espacios dentro del exponente y antes
+-- de él no cuentan.
+local function spintent_fun_parse_name(raw)
+    local nombre, pos = spintent_fun_head:match(raw)
+    if not nombre then return nil end
+    local rest = s_sub(raw, pos)
+    local inv = false
+    local after = s_match(rest, "^%s*%^%s*%{%s*%-%s*1%s*%}(.*)$")
+    if after then
+        if nombre[3] == "prima" then return nil end
+        inv, rest = true, after
+    end
+    return nombre, inv, rest
+end
+
+-- Separa por las comas de nivel superior. Devuelve nil si los
+-- delimitadores no quedan balanceados.
+local function spintent_fun_split_args(inner)
+    local args, depth, start = {}, 0, 1
+    local i, n = 1, #inner
+    while i <= n do
+        local c = s_sub(inner, i, i)
+        if c == "\\" then
+            i = i + 2
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+                if depth < 0 then return nil end
+            elseif c == "," and depth == 0 then
+                args[#args + 1] = s_sub(inner, start, i - 1)
+                start = i + 1
+            end
+            i = i + 1
+        end
+    end
+    if depth ~= 0 then return nil end
+    args[#args + 1] = s_sub(inner, start)
+    return args
+end
+
+-- Un argumento "simple" es un único nodo (letra, número o comando
+-- como \alpha): lleva su arg directo. Cualquier otro (2x, x+1,
+-- x_{1}, \frac{1}{2}, \sqrt{2}) necesita el separador interno para
+-- que luamml le conserve el arg.
+local function spintent_fun_is_simple(arg)
+    return s_match(arg, "^%w$") ~= nil
+        or s_match(arg, "^%d+$") ~= nil
+        or s_match(arg, "^\\%a+$") ~= nil
+end
+
+-- ¿El argumento es, entero, una llamada nombre(...) o nombre^{-1}?
+-- Se comprueba solo la forma; su validez se analiza aparte.
+local function spintent_fun_is_call(arg)
+    local nombre, inv, rest = spintent_fun_parse_name(arg)
+    if not nombre then return false end
+    local inner = s_match(rest, "^%s*%((.*)%)%s*$")
+    if inner then
+        return spintent_fun_split_args(inner) ~= nil
+    end
+    return inv and s_match(rest, "^%s*$") ~= nil
+end
+
+local spintent_fun_analyze
+
+-- Clasifica una lista de argumentos en crudo: devuelve { texto, tipo }
+-- por argumento ("true" un solo nodo, "false" expresión, "call" otra
+-- llamada ya validada de forma recursiva) o nil si alguno es inválido.
+local function spintent_fun_classify_args(args)
+    for i = 1, #args do
+        local a = spintent_trim(args[i])
+        if a == "" then return nil end
+        local kind
+        if spintent_fun_is_simple(a) then
+            kind = "true"
+        elseif spintent_fun_is_call(a) then
+            if not spintent_fun_analyze(a) then return nil end
+            kind = "call"
+        else
+            kind = "false"
+        end
+        args[i] = { a, kind }
+    end
+    return args
+end
+
+-- Analiza una llamada completa. Devuelve nombre, inv y la lista de
+-- argumentos { texto, tipo }; nil si algo no es válido en cualquier
+-- nivel.
+spintent_fun_analyze = function(raw)
+    local nombre, inv, rest = spintent_fun_parse_name(raw)
+    if not nombre then return nil end
+    local args
+    local inner = s_match(rest, "^%s*%((.*)%)%s*$")
+    if inner then
+        args = spintent_fun_split_args(inner)
+    elseif inv and s_match(rest, "^%s*$") then
+        args = {}
+    end
+    if not args then return nil end
+    args = spintent_fun_classify_args(args)
+    if not args then return nil end
+    return nombre, inv, args
+end
+
+local function spintent_fun_set_error()
+    token_set_macro("l__spintent_spfun_luaset_error_str", "true")
+    token_set_macro("l__spintent_spfun_luaset_nargs_str", "0")
+    token_set_macro("l__spintent_spfun_luaset_inv_str",   "false")
+    token_set_macro("l__spintent_geo_luaset_intent_str",  "")
+    token_set_macro("l__spintent_geo_luaset_print_tl",    "")
+    token_set_macro("l__spintent_geo_luaset_letra_str",   "")
+    token_set_macro("l__spintent_geo_luaset_sub_str",     "")
+    token_set_macro("l__spintent_geo_luaset_tipo_str",    "")
+end
+
+-- Deja el nombre en las variables compartidas. Con la inversa, el
+-- intent literal termina en "-inversa" (f-inversa, f-sub-uno-inversa).
+local function spintent_fun_set_name(nombre, inv)
+    local intent = spintent_geo_build_body_nombre(nombre)
+    local visual = spintent_geo_build_visual_nombre(nombre)
+    if inv then
+        intent = intent .. "-inversa"
+        visual = visual .. "^{-1}"
+    end
+    token_set_macro("l__spintent_geo_luaset_intent_str", intent)
+    token_set_macro("l__spintent_geo_luaset_print_tl",   visual)
+    token_set_macro("l__spintent_geo_luaset_letra_str",  nombre[1])
+    token_set_macro("l__spintent_geo_luaset_sub_str",    nombre[2] or "")
+    token_set_macro("l__spintent_geo_luaset_tipo_str",   nombre[3] or "")
+    token_set_macro("l__spintent_spfun_luaset_inv_str",  inv and "true" or "false")
+end
+
+register_tex_cmd("luafun_spfun_parse_and_set", function(raw)
+    raw = spintent_trim(raw)
+    raw = spintent_geo_normalize_primes(raw)
+
+    local nombre, inv, args = spintent_fun_analyze(raw)
+    if not nombre then
+        spintent_fun_set_error()
+        return
+    end
+
+    token_set_macro("l__spintent_spfun_luaset_error_str", "false")
+    token_set_macro("l__spintent_spfun_luaset_nargs_str", tostring(#args))
+    for i = 1, #args do
+        token_set_macro("l__spintent_spfun_luaset_arg_" .. i .. "_tl", args[i][1])
+        token_set_macro("l__spintent_spfun_luaset_simple_" .. i .. "_str", args[i][2])
+    end
+    spintent_fun_set_name(nombre, inv)
+end, { "string" })
+
+register_tex_cmd("luafun_spdom_parse_and_set", function(raw)
+    raw = spintent_trim(raw)
+    raw = spintent_geo_normalize_primes(raw)
+
+    local nombre, inv, rest = spintent_fun_parse_name(raw)
+    if not nombre or not s_match(rest, "^%s*$") then
+        spintent_fun_set_error()
+        token_set_macro("l__spintent_spdom_luaset_error_str", "true")
+        return
+    end
+    token_set_macro("l__spintent_spdom_luaset_error_str", "false")
+    spintent_fun_set_name(nombre, inv)
+end, { "string" })
+
+-- ------------------------------------------------------------
+-- §13b  \spfuncomp — composición lineal  f\circ g,  (f\circ g)(x)
+--
+-- Formas: f\circ g\circ ...   |   (f\circ g)   |   (f\circ g)(args)
+-- Cada función es un nombre como en \spfun (letra con subíndice,
+-- primas o ^{-1}); hay al menos dos. Los argumentos se analizan
+-- igual que en \spfun (simple / expresión / llamada).
+-- ------------------------------------------------------------
+
+-- Índice del paréntesis que cierra al de la posición i, o nil.
+local function spintent_fun_match_paren(str, i)
+    local depth = 0
+    local n = #str
+    while i <= n do
+        local c = s_sub(str, i, i)
+        if c == "\\" then
+            i = i + 2
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+                if depth == 0 then return i end
+                if depth < 0 then return nil end
+            end
+            i = i + 1
+        end
+    end
+    return nil
+end
+
+-- Parte por los \circ (o ∘) de nivel superior.
+local function spintent_fun_split_circ(str)
+    local parts, depth, start = {}, 0, 1
+    local i, n = 1, #str
+    while i <= n do
+        local c = s_sub(str, i, i)
+        if c == "\\" then
+            if depth == 0 and s_sub(str, i, i + 4) == "\\circ"
+               and not s_match(s_sub(str, i + 5, i + 5), "%a") then
+                parts[#parts + 1] = s_sub(str, start, i - 1)
+                i = i + 5
+                start = i
+            else
+                i = i + 2
+            end
+        elseif depth == 0 and s_sub(str, i, i + 2) == "∘" then
+            parts[#parts + 1] = s_sub(str, start, i - 1)
+            i = i + 3
+            start = i
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+                if depth < 0 then return nil end
+            end
+            i = i + 1
+        end
+    end
+    if depth ~= 0 then return nil end
+    parts[#parts + 1] = s_sub(str, start)
+    return parts
+end
+
+-- Lista de funciones { intent, visual } separadas por \circ; al menos
+-- dos y cada una un nombre completo. nil si algo no es válido.
+local function spintent_fun_comp_funs(str)
+    local parts = spintent_fun_split_circ(str)
+    if not parts or #parts < 2 then return nil end
+    local funs = {}
+    for i = 1, #parts do
+        local nombre, inv, rest = spintent_fun_parse_name(spintent_trim(parts[i]))
+        if not nombre or not s_match(rest, "^%s*$") then return nil end
+        local intent = spintent_geo_build_body_nombre(nombre)
+        local visual = spintent_geo_build_visual_nombre(nombre)
+        if inv then
+            intent = intent .. "-inversa"
+            visual = visual .. "^{-1}"
+        end
+        funs[i] = { intent, visual, nombre[1], nombre[2] or "", nombre[3] or "", inv }
+    end
+    return funs
+end
+
+local function spintent_fun_comp_error()
+    token_set_macro("l__spintent_spfuncomp_luaset_error_str", "true")
+end
+
+register_tex_cmd("luafun_spfuncomp_parse_and_set", function(raw)
+    raw = spintent_trim(raw)
+    raw = spintent_geo_normalize_primes(raw)
+
+    local funs, args, paren
+    if s_sub(raw, 1, 1) == "(" then
+        local close = spintent_fun_match_paren(raw, 1)
+        if not close then spintent_fun_comp_error() return end
+        paren = true
+        funs = spintent_fun_comp_funs(s_sub(raw, 2, close - 1))
+        local rest = spintent_trim(s_sub(raw, close + 1))
+        if rest ~= "" then
+            if s_sub(rest, 1, 1) ~= "(" then spintent_fun_comp_error() return end
+            local c2 = spintent_fun_match_paren(rest, 1)
+            if c2 ~= #rest then spintent_fun_comp_error() return end
+            args = spintent_fun_split_args(s_sub(rest, 2, c2 - 1))
+            if not args then spintent_fun_comp_error() return end
+            args = spintent_fun_classify_args(args)
+            if not args then spintent_fun_comp_error() return end
+        end
+    else
+        paren = false
+        funs = spintent_fun_comp_funs(raw)
+    end
+    if not funs then spintent_fun_comp_error() return end
+
+    token_set_macro("l__spintent_spfuncomp_luaset_error_str", "false")
+    token_set_macro("l__spintent_spfuncomp_luaset_n_str", tostring(#funs))
+    token_set_macro("l__spintent_spfuncomp_luaset_paren_str", paren and "true" or "false")
+    token_set_macro("l__spintent_spfuncomp_luaset_apply_str", args and "true" or "false")
+    for i = 1, #funs do
+        token_set_macro("l__spintent_spfuncomp_luaset_intent_" .. i .. "_str", funs[i][1])
+        token_set_macro("l__spintent_spfuncomp_luaset_print_" .. i .. "_tl",  funs[i][2])
+        token_set_macro("l__spintent_spfuncomp_luaset_letra_" .. i .. "_str", funs[i][3])
+        token_set_macro("l__spintent_spfuncomp_luaset_sub_" .. i .. "_str",   funs[i][4])
+        token_set_macro("l__spintent_spfuncomp_luaset_tipo_" .. i .. "_str",  funs[i][5])
+        token_set_macro("l__spintent_spfuncomp_luaset_inv_" .. i .. "_str",   funs[i][6] and "true" or "false")
+    end
+    if args then
+        token_set_macro("l__spintent_spfun_luaset_nargs_str", tostring(#args))
+        for i = 1, #args do
+            token_set_macro("l__spintent_spfun_luaset_arg_" .. i .. "_tl", args[i][1])
+            token_set_macro("l__spintent_spfun_luaset_simple_" .. i .. "_str", args[i][2])
+        end
+    end
 end, { "string" })

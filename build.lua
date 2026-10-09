@@ -12,7 +12,8 @@
    * upload     : Upload the package to ctan, you must add
                   -F ctan.ann in conjunction with [--debug]
    * tagcheck   : Check version and date in files
-   * testpkg    : Compile all example files included in /test-pkg
+   * testpkg    : Compile all example files included in /tagged-test
+   * testAF     : Compile all example files included in /tagged-test
    * examples   : Compile all example files included in .dtx file
    * release    : It performs the checks before generating a public
                   release (on git and ctan).
@@ -21,7 +22,7 @@
 -- General package identification
 module     = "spintent"
 pkgversion = "0.99"
-pkgdate    = "2026-10-07"
+pkgdate    = "2026-10-09"
 ltxrelease = "2026-11-01"
 
 -- Configuration of files for build and installation

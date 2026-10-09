@@ -22,6 +22,7 @@ jobs:
           - "check -q -H"
           - doc
           - testpkg
+          - testAF
 
     steps:
       - name: Checkout
