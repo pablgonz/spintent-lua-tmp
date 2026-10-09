@@ -1,0 +1,123 @@
+% test-025.tex -- comandos \spProm, \spmedia, \spmediana, \spmoda, \spdesv y \spvarz
+%
+% Compilar:  lualatex-dev test-025.tex
+% Validar:   show-pdf-tags --xml test-025.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-025.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al
+% escuchar el PDF. Los comentarios "doc:" indican la lectura que
+% documenta el manual de usuario; en el resto, la lectura se revisa
+% escuchando. Las entradas invalidas (que detienen la compilacion)
+% no van aqui.
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-025: estadistica},
+  }
+\pagestyle{empty}
+\begin{document}
+
+\section*{A. El comando spProm}
+
+% doc: «promedio de x»
+1. Una letra: $\spProm{x}$.
+
+% doc: «promedio de y»
+2. Otra letra: $\spProm{y}$.
+
+% doc: «promedio de x sub uno»
+3. Una letra con subíndice: $\spProm{x_{1}}$.
+
+% doc: «promedio de x más y»
+4. Una expresión: $\spProm{x+y}$.
+
+% doc: «media de x»
+5. Con read-arg: $\spProm[read-arg={media de}]{x}$.
+
+% doc: sin lectura
+6. Con silent: $\spProm[silent=true]{x}$.
+
+\section*{B. Los símbolos}
+
+% doc: «media aritmética»
+7. Media aritmética: $\spmedia$.
+
+% doc: «mediana»
+8. Mediana: $\spmediana$.
+
+% doc: «moda»
+9. Moda: $\spmoda$.
+
+% doc: «desviación estándar»
+10. Desviación estándar: $\spdesv$.
+
+% doc: «varianza»
+11. Varianza: $\spvarz$.
+
+\section*{C. Llave sigma}
+
+% doc: «desviación estándar»
+12. Con sigma en spdesv: $\spdesv[sigma=true]$.
+
+% doc: «varianza»
+13. Con sigma en spvarz: $\spvarz[sigma=true]$.
+
+\section*{D. Llaves sub-index y read-sub}
+
+% doc: «media aritmética de x»
+14. Con sub-index: $\spmedia[sub-index={x}]$.
+
+% doc: «media aritmética sub x»
+15. Con sub-index y read-sub: $\spmedia[sub-index={x},read-sub=true]$.
+
+% doc: «mediana de x»
+16. Mediana con sub-index: $\spmediana[sub-index={x}]$.
+
+% doc: «moda de x»
+17. Moda con sub-index: $\spmoda[sub-index={x}]$.
+
+% doc: «desviación estándar de x»
+18. Desviación estándar con sub-index: $\spdesv[sub-index={x}]$.
+
+% doc: «varianza de x»
+19. Varianza con sub-index y sigma: $\spvarz[sub-index={x},sigma=true]$.
+
+\section*{E. Llaves read-arg y silent}
+
+% doc: «desviación estándar poblacional»
+20. Con read-arg: $\spdesv[read-arg={desviación estándar poblacional}]$.
+
+% doc: «varianza muestral»
+21. Con read-arg y sub-index (el subíndice no se lee): $\spvarz[read-arg={varianza muestral},sub-index={x}]$.
+
+% doc: sin lectura
+22. Con silent: $\spmedia[silent=true]$.
+
+\section*{F. Dentro de fórmulas}
+
+% doc: «promedio de x es igual a x sub uno más x sub dos más x sub tres, partido por tres»
+23. Promedio: $\spProm{x} = \dfrac{x_{1}+x_{2}+x_{3}}{3}$.
+
+% doc: «desviación estándar es igual a la raíz cuadrada de varianza»
+24. Desviación estándar y varianza: $\spdesv = \sqrt{\spvarz}$.
+
+% doc: «media aritmética es igual a promedio de x»
+25. Media aritmética y promedio: $\spmedia = \spProm{x}$.
+
+% doc: «media aritmética, mediana y moda»
+26. Los tres juntos: $\spmedia$, $\spmediana$ y $\spmoda$.
+
+\end{document}

@@ -197,6 +197,7 @@ end, "shekel_fallback_patch")
         spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle,
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
         spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
+        spProm, spmedia, spmediana, spmoda, spdesv, spvarz, %
       }
   }
 % Colors
@@ -637,7 +638,8 @@ end, "shekel_fallback_patch")
                         spdate, spread, spdsym, spmsym, spusep, spdiv, spmul, spnM, spnD, spmcd, spmcm, spnZ, %
                         spang, spmQ, spPoint, sprecta, sprayo, spside, spmside, spangle, spmangle, sparc, spmarc,%
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
-                        spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, },%
+                        spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
+                        spProm, spmedia, spmediana, spmoda, spdesv, spvarz, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -649,7 +651,7 @@ end, "shekel_fallback_patch")
                     read-period-sep, read-sign, notation-sym, partido-por, Numbers, Lining, OldStyle, size, read-sty, segmento,%
                     lado, trazo, mathcat,school, rayo, semirrecta, print-m, print-sym, recto, silent, en-US, math, mathml-SE, es-CL, on, off, %
                     setup, tagging, tagging-setup, lang, pdfversion, pdfstandard, arg, auto, read-sub, radio-sty, diameter, %
-                    circun, circle, side, mside, usual, sub-index, odot, concept, upper-case, prefix, big, Big, bigg, Bigg, },%
+                    circun, circle, side, mside, usual, sub-index, odot, concept, upper-case, prefix, big, Big, bigg, Bigg, sigma, },%
 % Reserved words 9 (intent values)
     keywordstyle  = [9]{\color{ltcmd_arg}},%
     keywords      = [9]{number,intent,test,sample,above,below, ActualText, Span, E, cal,bfcal, silent, number, %
@@ -6022,6 +6024,167 @@ end, "shekel_fallback_patch")
 % palabra de concepto y su lectura es fija. Los nombres se verbalizan sin
 % anunciar la mayúscula.
 %
+%
+% \section{Utilidades para estadística}
+%
+% El paquete \mypkg*[no-index]{spintent} provee utilidades para trabajar con estadística
+% descritas en esta sección.
+%
+% \subsection*{El comando \cs[no-index]{spProm}}\label{subsec:spProm}
+%
+% \vspace*{-0.5\baselineskip}
+%
+% \begin{function}{\spProm}
+%   \begin{syntax}
+%     |\spProm|\mymarg{argumento} \qquad\qquad |\spProm|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{argumento}
+%   \end{syntax}
+%   El comando \ics*{spProm} trabaja en \emph{modo matemático} y recibe el
+%   \emph{argumento} obligatorio \mymarg{argumento}: cualquier expresión
+%   matemática, como una letra, una letra con subíndice o una expresión.
+%   Lo tipografía con una barra encima, la notación usual del
+%   \emph{«promedio»}.
+% \end{function}
+%
+% \smallskip
+%
+% |$\spProm{x}$| imprimirá `$\bar{x}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«promedio de x»};
+% |$\spProm{x_{1}}$| imprimirá `$\bar{x_{1}}$' y verbalizará
+% \emph{«promedio de x sub uno»}.
+%
+% \begin{important}*
+%   El \mymarg{argumento} se tipografía directamente, sin procesamiento
+%   semántico adicional, y \mynvmath{NVDA/MathCAT} lo verbaliza con sus
+%   propias reglas.
+% \end{important}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spProm}}
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spProm]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} del \mymarg{argumento} pasado al comando sin
+% modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se
+% establece en |false|, sí verbalizará la salida del comando.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spProm]
+% \smallskip
+% Sobrescribe las palabras \emph{«promedio de»} que verbaliza
+% \mynvmath{NVDA/MathCAT} antes del \mymarg{argumento}, sin modificar la
+% impresión del comando. El valor de esta llave \emph{siempre} debe pasarse
+% entre llaves `|{ }|'. Por ejemplo: |$\spProm[read-arg={media de}]{x}$|
+% imprimirá `$\bar{x}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«media de x»}.
+%
+% \subsection*{Los comandos \cs[no-index]{spmedia}, \cs[no-index]{spmediana}, \cs[no-index]{spmoda}, \cs[no-index]{spdesv} y \cs[no-index]{spvarz}}\label{subsec:spmedia}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spmedia, \spmediana, \spmoda, \spdesv, \spvarz}
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.15\mydpstrut}\small
+%     |\spmedia|\par
+%     |\spmediana|\par
+%     |\spmoda|\par
+%     |\spdesv|\par
+%     |\spvarz|
+%   \end{minipage}\hfill
+%   \begin{minipage}[t]{0.5\linewidth}\vspace*{-0.15\mydpstrut}\small
+%     |\spmedia|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
+%     |\spmediana|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
+%     |\spmoda|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
+%     |\spdesv|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\par
+%     |\spvarz|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   \end{minipage}
+%
+%   \medskip
+%
+%   Los comandos \ics*{spmedia}, \ics*{spmediana}, \ics*{spmoda},
+%   \ics*{spdesv} y \ics*{spvarz} trabajan en \emph{modo matemático} y
+%   reciben el \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   mediante el cual se establece la \emph{«forma»} en la que se
+%   verbalizarán en \mynvmath{NVDA/MathCAT} los símbolos de la estadística
+%   descriptiva.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}, |$\spmedia$|
+%   imprimirá `$\mathrm{MA}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«media aritmética»};
+%   |$\spmediana$| imprimirá `$\mathrm{MD}$' y verbalizará
+%   \emph{«mediana»}; |$\spmoda$| imprimirá `$\mathrm{MO}$' y verbalizará
+%   \emph{«moda»}; |$\spdesv$| imprimirá `$s$' y verbalizará
+%   \emph{«desviación estándar»}; |$\spvarz$| imprimirá `$s^{2}$' y
+%   verbalizará \emph{«varianza»}.
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spmedia}, \cs[no-index]{spmediana}, \cs[no-index]{spmoda}, \cs[no-index]{spdesv} y \cs[no-index]{spvarz}}
+%
+% \keyexampcmd{sigma}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spdesv,spvarz]
+% \smallskip
+% Establece si se \emph{imprime} la letra `$\sigma$' en lugar de la letra
+% `$s$'. Si se establece en |true|, |$\spdesv[sigma=true]$| imprimirá
+% `$\sigma$' y |$\spvarz[sigma=true]$| imprimirá `$\sigma^{2}$' en la
+% salida \texttt{PDF}; la verbalización no cambia. Esta llave solo existe
+% para |\spdesv| y |\spvarz|.
+%
+% \smallskip
+%
+% \keyexampcmd{sub-index}{subíndice}{no usado}[spmedia,spmediana,spmoda,spdesv,spvarz]
+% \smallskip
+% Establece un \emph{subíndice} sobre el símbolo del comando, que
+% \mynvmath{NVDA/MathCAT} verbaliza después del concepto con la palabra
+% \emph{«de»}. El valor de esta llave \emph{siempre} debe pasarse entre
+% llaves `|{ }|'. Por ejemplo: |$\spmedia[sub-index={x}]$| imprimirá
+% `$\mathrm{MA}_{x}$' en la salida \texttt{PDF} y
+% \mynvmath{NVDA/MathCAT} verbalizará \emph{«media aritmética de x»};
+% |$\spvarz[sub-index={x}]$| imprimirá `$s_{x}^{2}$' y verbalizará
+% \emph{«varianza de x»}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spmedia,spmediana,spmoda,spdesv,spvarz]
+% \smallskip
+% Establece si se \emph{usa} la palabra \emph{«sub»} en lugar de
+% \emph{«de»} al verbalizar el subíndice establecido por la llave
+% \mykey{sub-index}, sin modificar la impresión del comando. Si se
+% establece en |true|, |$\spmedia[sub-index={x},read-sub=true]$| se
+% verbalizará \emph{«media aritmética sub x»} en \mynvmath{NVDA/MathCAT};
+% si se establece en |false|, \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«media aritmética de x»}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spmedia,spmediana,spmoda,spdesv,spvarz]
+% \smallskip
+% Sobrescribe el \emph{concepto} que verbalizará \mynvmath{NVDA/MathCAT} al
+% ejecutar el comando sin modificar la impresión de este. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
+% |$\spdesv[read-arg={desviación estándar poblacional}]$| imprimirá `$s$' en
+% la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«desviación estándar poblacional»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%  Las llaves \mykey{sub-index} y \mykey{read-sub} no tienen efecto al usar |read-arg|.
+% \end{important}
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spmedia,spmediana,spmoda,spdesv,spvarz]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} del símbolo al ejecutar el comando sin modificar
+% la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará la salida del comando; si se establece en |false|,
+% \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
 %
 % \newpage
 %
@@ -19037,6 +19200,392 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spVol } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spProm}}\label{cmd:spProm}
+%
+% The user command |\spProm| typesets its \mymarg{argument} with a bar
+% on top (|\bar|), the usual notation for a mean, and reads it
+% \emph{«promedio de»} followed by the argument. The argument is not
+% parsed: it is typeset as given and read by \mynvmath{MathCAT} with its
+% own rules.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spProm}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spProm_silent_bool,
+%     \l_@@_spProm_read_arg_tl,
+%     \l_@@_spProm_intent_tl,
+%   }
+%   The variable \myhlc|\l_@@_spProm_silent_bool| holds the state of the
+%   \mykey{silent} key. The variable \myhlc|\l_@@_spProm_read_arg_tl|
+%   holds the normalized text of the \mykey{read-arg} key, and
+%   \myhlc|\l_@@_spProm_intent_tl| holds the name of the intent used by
+%   \myhlc|\@@_spProm_exec:nn|.
+%    \begin{macrocode}
+\bool_new:N \l_@@_spProm_silent_bool
+\tl_new:N   \l_@@_spProm_read_arg_tl
+\tl_new:N   \l_@@_spProm_intent_tl
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spProm}}
+%
+% \begin{macro}[int]{silent, read-arg, unknown}
+%   We define the \mymeta{keys} \mykey[spProm]{silent} and
+%   \mykey[spProm]{read-arg}. The value of \mykey[spProm]{read-arg} goes
+%   through \myhlc|\@@_sanitize_affix:Nn|, so spaces and underscores
+%   become hyphens.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spProm }
+  {
+    silent     .bool_set:N = \l_@@_spProm_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
+    read-arg   .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spProm_read_arg_tl {#1} },
+    read-arg   .initial:n  = ,
+    read-arg   .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spProm }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spProm}}
+%
+% \begin{macro}[int]{\@@_spProm_exec:nn}
+%   The function \myhlc|\@@_spProm_exec:nn| receives the optional
+%   \mymeta{keys} in `|#1|' and the \mymarg{argument} in `|#2|'. Under
+%   \mykey{silent} the whole expression is silenced as one unit with the
+%   intent |_-|.
+%
+%   \smallskip
+%
+%   Otherwise the \mymarg{argument} is tagged through a native
+%   |\MathMLarg| (|a|) inside |\bar|, and the outer |\MathMLintent|
+%   reads \myhlc|_promedio-de:prefix($a)|. When \mykey{read-arg} is not
+%   empty, its text replaces |promedio-de|. The inner ghost
+%   \myhlc|\@@_inner_sep:| keeps the content of the intent from
+%   collapsing into a single child.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spProm_exec:nn
+  {
+    \keys_set:nn { spintent / spProm } {#1}
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_spProm_silent_bool
+      {
+        \MathMLintent { _- }
+          {
+            \@@_inner_sep:
+            \bar { #2 }
+          }
+      }
+      {
+        \tl_if_empty:NTF \l_@@_spProm_read_arg_tl
+          { \tl_set:Nn \l_@@_spProm_intent_tl { promedio-de } }
+          { \tl_set_eq:NN \l_@@_spProm_intent_tl \l_@@_spProm_read_arg_tl }
+        \MathMLintent { _ \l_@@_spProm_intent_tl :prefix($a) }
+          {
+            \@@_inner_sep:
+            \bar { \MathMLarg { a } { #2 } }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spProm}
+%   The public command |\spProm| enforces \emph{math mode}, opens a
+%   local group, and delegates execution to \myhlc|\@@_spProm_exec:nn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spProm { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \@@_spProm_exec:nn { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spProm } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The commands of the \texttt{stat} family}\label{cmd:stat}
+%
+% The user commands |\spmedia|, |\spmediana|, |\spmoda|, |\spdesv| and
+% |\spvarz| typeset the usual symbols of descriptive statistics: |MA|
+% (arithmetic mean), |MD| (median), |MO| (mode), |s| (standard
+% deviation) and |s^{2}| (variance). Each one is read with the name of
+% the concept, not with the letters.
+%
+% \subsubsection{Definition of variables for the \texttt{stat} family}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spmedia_silent_bool,
+%     \l_@@_spmedia_read_sub_bool,
+%     \l_@@_spmedia_sub_index_str,
+%     \l_@@_spmedia_read_arg_tl,
+%     \l_@@_spdesv_sigma_bool,
+%   }
+%   Each command of the family has its own copy of the variables
+%   \myhlc|\l_@@_|\mymeta{name}\myhlc|_silent_bool|,
+%   \myhlc|\l_@@_|\mymeta{name}\myhlc|_read_sub_bool|,
+%   \myhlc|\l_@@_|\mymeta{name}\myhlc|_sub_index_str| and
+%   \myhlc|\l_@@_|\mymeta{name}\myhlc|_read_arg_tl|, so each command can be
+%   configured separately with |\setspintent|. The variables are shown
+%   here for |\spmedia|. |\spdesv| and |\spvarz| also have
+%   \myhlc|\l_@@_|\mymeta{name}\myhlc|_sigma_bool|.
+%    \begin{macrocode}
+\clist_map_inline:nn { spmedia , spmediana , spmoda , spdesv , spvarz }
+  {
+    \bool_new:c { l_@@_ #1 _silent_bool }
+    \bool_new:c { l_@@_ #1 _read_sub_bool }
+    \str_new:c  { l_@@_ #1 _sub_index_str }
+    \tl_new:c   { l_@@_ #1 _read_arg_tl }
+  }
+\clist_map_inline:nn { spdesv , spvarz }
+  { \bool_new:c { l_@@_ #1 _sigma_bool } }
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of keys for the \texttt{stat} family}
+%
+% \begin{macro}[int]
+%   {
+%     silent,
+%     sub-index,
+%     read-sub,
+%     read-arg,
+%     sigma,
+%     unknown,
+%   }
+%   We define the \mymeta{keys} \mykey[spmedia,spmediana,spmoda,spdesv,spvarz]{silent},
+%   \mykey[spmedia,spmediana,spmoda,spdesv,spvarz]{sub-index},
+%   \mykey[spmedia,spmediana,spmoda,spdesv,spvarz]{read-sub} and
+%   \mykey[spmedia,spmediana,spmoda,spdesv,spvarz]{read-arg} for the five
+%   commands, and \mykey[spdesv,spvarz]{sigma} only for |\spdesv| and
+%   |\spvarz|. As elsewhere, \mykey{sub-index} is kept as a string and
+%   \mykey{read-arg} goes through \myhlc|\@@_sanitize_affix:cn|.
+%    \begin{macrocode}
+\clist_map_inline:nn { spmedia , spmediana , spmoda , spdesv , spvarz }
+  {
+    \keys_define:nn { spintent / #1 }
+      {
+        silent     .bool_set:c = { l_@@_ #1 _silent_bool },
+        silent     .initial:n  = false,
+        silent     .value_required:n = true,
+        sub-index  .code:n =
+          { \str_set:cn { l_@@_ #1 _sub_index_str } {##1} },
+        sub-index  .initial:n  = ,
+        sub-index  .value_required:n = true,
+        read-sub   .bool_set:c = { l_@@_ #1 _read_sub_bool },
+        read-sub   .initial:n  = false,
+        read-sub   .value_required:n = true,
+        read-arg   .code:n =
+          { \@@_sanitize_affix:cn { l_@@_ #1 _read_arg_tl } {##1} },
+        read-arg   .initial:n  = ,
+        read-arg   .value_required:n = true,
+        unknown    .code:n =
+          {
+            \str_set:Nn \l_@@_command_name_str { #1 }
+            \@@_unknown_keys_cmd:n {##1}
+          },
+      }
+  }
+\clist_map_inline:nn { spdesv , spvarz }
+  {
+    \keys_define:nn { spintent / #1 }
+      {
+        sigma      .bool_set:c = { l_@@_ #1 _sigma_bool },
+        sigma      .initial:n  = false,
+        sigma      .value_required:n = true,
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for the \texttt{stat} family}
+%
+% \begin{macro}[int]{\@@_stat_typeset:nnn}
+%   The function \myhlc|\@@_stat_typeset:nnn| typesets the symbol. It
+%   receives the short name of the command in `|#1|', the symbol in `|#2|'
+%   and the exponent in `|#3|' (empty when there is none). The symbol is
+%   followed by the \mykey{sub-index}, if present, with its own
+%   |\MathMLintent| set to |:silent|, and then by the exponent.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_stat_typeset:nnn
+  {
+    #2
+    \str_if_empty:cF { l_@@_ #1 _sub_index_str }
+      {
+        \c_math_subscript_token
+          {
+            \MathMLintent { :silent }
+              { \str_use:c { l_@@_ #1 _sub_index_str } }
+          }
+      }
+    \tl_if_blank:nF {#3}
+      { \c_math_superscript_token {#3} }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_stat_print:nnnn}
+%   The function \myhlc|\@@_stat_print:nnnn| receives the short name of the
+%   command in `|#1|', the symbol in `|#2|', the exponent in `|#3|' and
+%   the name of the concept in `|#4|', already written as it goes in the
+%   intent (with hyphens). The symbol, with its subscript and exponent,
+%   is always typeset by \myhlc|\@@_stat_typeset:nnn| inside one native
+%   |\MathMLintent|, preceded by the inner ghost
+%   \myhlc|\@@_inner_sep:|.
+%
+%   \smallskip
+%
+%   With \mykey{silent} |true|, the intent is |_-|. With \mykey{read-arg}
+%   given, the intent is |_|\mymeta{read-arg}|:nofix| and
+%   \mykey{sub-index} and \mykey{read-sub} are ignored for the spoken
+%   content (the subscript, if any, still displays, silenced). With no
+%   \mykey{sub-index}, the intent is |_|\mymeta{concept}|:nofix|; with
+%   one, it is |_|\mymeta{concept}|-de-|\mymeta{value}, or
+%   |_|\mymeta{concept}|-sub-|\mymeta{value} when \mykey{read-sub} is
+%   |true|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_stat_print:nnnn
+  {
+    \@@_invisible_sep:
+    \bool_if:cTF { l_@@_ #1 _silent_bool }
+      {
+        \MathMLintent { _- }
+          {
+            \@@_inner_sep:
+            \@@_stat_typeset:nnn {#1} {#2} {#3}
+          }
+      }
+      {
+        \tl_if_empty:cTF { l_@@_ #1 _read_arg_tl }
+          {
+            \str_if_empty:cTF { l_@@_ #1 _sub_index_str }
+              {
+                \MathMLintent { _ #4 :nofix }
+                  {
+                    \@@_inner_sep:
+                    \@@_stat_typeset:nnn {#1} {#2} {#3}
+                  }
+              }
+              {
+                \MathMLintent
+                  {
+                    _ #4 -
+                    \bool_if:cTF { l_@@_ #1 _read_sub_bool } { sub } { de }
+                    - \str_use:c { l_@@_ #1 _sub_index_str }
+                  }
+                  {
+                    \@@_inner_sep:
+                    \@@_stat_typeset:nnn {#1} {#2} {#3}
+                  }
+              }
+          }
+          {
+            \MathMLintent { _ \tl_use:c { l_@@_ #1 _read_arg_tl } :nofix }
+              {
+                \@@_inner_sep:
+                \@@_stat_typeset:nnn {#1} {#2} {#3}
+              }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spmedia, \spmediana, \spmoda}
+%   The public commands |\spmedia|, |\spmediana| and |\spmoda| enforce
+%   \emph{math mode}, open a local group, set the \mymeta{keys} and
+%   delegate execution to \myhlc|\@@_stat_print:nnnn| with the symbols
+%   |MA|, |MD| and |MO| and the concepts |media-aritmética|, |mediana|
+%   and |moda|.
+%    \begin{macrocode}
+\NewDocumentCommand \spmedia { O{} }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \keys_set:nn { spintent / spmedia } {#1}
+          \@@_stat_print:nnnn { spmedia } { \mathrm{MA} } { } { media-aritmética }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spmedia } }
+  }
+\NewDocumentCommand \spmediana { O{} }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \keys_set:nn { spintent / spmediana } {#1}
+          \@@_stat_print:nnnn { spmediana } { \mathrm{MD} } { } { mediana }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spmediana } }
+  }
+\NewDocumentCommand \spmoda { O{} }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \keys_set:nn { spintent / spmoda } {#1}
+          \@@_stat_print:nnnn { spmoda } { \mathrm{MO} } { } { moda }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spmoda } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spdesv, \spvarz}
+%   The public commands |\spdesv| and |\spvarz| work the same way. The
+%   symbol is |s|, or |\sigma| when \mykey{sigma} is |true|; |\spvarz|
+%   adds the exponent |2|. The concepts are |desviación-estándar| and
+%   |varianza|.
+%    \begin{macrocode}
+\NewDocumentCommand \spdesv { O{} }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \keys_set:nn { spintent / spdesv } {#1}
+          \@@_stat_print:nnnn { spdesv }
+            { \bool_if:NTF \l_@@_spdesv_sigma_bool { \sigma } { s } }
+            { } { desviación-estándar }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spdesv } }
+  }
+\NewDocumentCommand \spvarz { O{} }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \keys_set:nn { spintent / spvarz } {#1}
+          \@@_stat_print:nnnn { spvarz }
+            { \bool_if:NTF \l_@@_spvarz_sigma_bool { \sigma } { s } }
+            { 2 } { varianza }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spvarz } }
   }
 %    \end{macrocode}
 % \end{macro}
