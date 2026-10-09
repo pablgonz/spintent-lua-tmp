@@ -1,0 +1,80 @@
+% test-026.tex -- regresion de \spcoord y \spmQ
+%
+% Regresion:  l3build save test-026
+%             l3build check test-026
+%
+% Los "doc:" son lecturas reales de NVDA con MathCAT (2026-10-09).
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-026: regresion},
+  }
+\begin{document}
+
+\section*{A. El comando spcoord}
+
+% doc: «menos 3 coma 4»
+1. Numérica: $\spcoord{-3, 4}$.
+
+% doc: «1 coma 5 punto y coma 2 coma 5»
+2. Decimales con punto y coma: $\spcoord{1,5; 2,5}$.
+
+% doc: «a subíndice 1,2 coma b»
+3. Coma dentro de llaves: $\spcoord{a_{1,2}, b}$.
+
+% doc: «x subíndice 1 coma y subíndice 1»
+4. Subíndices: $\spcoord{x_{1},y_{1}}$.
+
+% doc: «1 mitad coma 3 cuartos»
+5. Fracciones: $\spcoord{\frac{1}{2}, \frac{3}{4}}$.
+
+% doc: sin lectura
+6. Con silent: $\spcoord[silent=true]{a_{1,2}, b}$.
+
+\section*{B. El comando spmQ}
+
+% doc: «2 y la fracción con numerador 5 y denominador 7»
+7. Número mixto: $\spmQ{2}{5}{7}$.
+
+% doc: «menos 2 y la fracción con numerador 5 y denominador 7»
+8. Entero negativo: $\spmQ{-2}{5}{7}$.
+
+% doc: «2 enteros la fracción con numerador 5 y denominador 7»
+9. Con join-word: $\spmQ[join-word=enteros]{2}{5}{7}$.
+
+% doc: «se abren paréntesis 2 y la fracción con numerador 5 y denominador 7 se cierran paréntesis»
+10. Con paréntesis: $\spmQ[wrap-parens=true]{2}{5}{7}$.
+
+% doc: sin lectura
+11. Con silent: $\spmQ[silent=true]{2}{5}{7}$.
+
+% doc: «1 y la fracción con numerador 1 y denominador 2 coma 3»
+% limitación conocida: la forma larga de la fracción de MathCAT no tiene cierre (se presta a ambigüedad)
+12. En una coordenada: $\spcoord{\spmQ{1}{1}{2}, 3}$.
+
+% doc: «x es igual a 3 y la fracción con numerador 1 y denominador 4 más 1»
+% limitación conocida: la forma larga de la fracción de MathCAT no tiene cierre (se presta a ambigüedad)
+13. Dentro de una fórmula: $x = \spmQ{3}{1}{4} + 1$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}

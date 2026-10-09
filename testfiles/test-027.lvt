@@ -1,0 +1,141 @@
+% test-027.tex -- regresion de medidas de posicion y frecuencias
+%
+% Regresion:  l3build save test-027
+%             l3build check test-027
+%
+% Los "doc:" son lecturas reales de NVDA con MathCAT (2026-10-09).
+\input{regression-test}
+
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-027: regresion},
+  }
+\begin{document}
+
+\section*{A. Cuartiles, deciles y percentiles}
+
+% doc: «cuartil 1»
+1. Primer cuartil: $\spcuartil{1}$.
+
+% doc: «cuartil 3»
+2. Tercer cuartil: $\spcuartil{3}$.
+
+% doc: «decil 3»
+3. Decil: $\spdecil{3}$.
+
+% doc: «percentil 25»
+4. Percentil: $\spPerc{25}$.
+
+% doc: «percentil 99»
+5. Percentil 99: $\spPerc{99}$.
+
+% doc: «primer cuartil»
+6. Con read-arg: $\spcuartil[read-arg={primer cuartil}]{1}$.
+
+% doc: sin lectura
+7. Con silent: $\spdecil[silent=true]{5}$.
+
+\section*{B. Rango, rango intercuartil, mínimo y máximo}
+
+% doc: «rango»
+8. Rango: $\sprango$.
+
+% doc: «rango intercuartil»
+9. Rango intercuartil: $\spriq$.
+
+% doc: «mínimo»
+10. Mínimo: $\spmin$.
+
+% doc: «máximo»
+11. Máximo: $\spmax$.
+
+% doc: «rango de x»
+12. Rango con sub-index: $\sprango[sub-index={x}]$.
+
+% doc: «máximo valor»
+13. Máximo con read-arg: $\spmax[read-arg={máximo valor}]$.
+
+% doc: sin lectura
+14. Mínimo con silent: $\spmin[silent=true]$.
+
+\section*{C. Dentro de fórmulas}
+
+% doc: «rango intercuartil es igual a cuartil 3 menos cuartil 1»
+15. Rango intercuartil: $\spriq = \spcuartil{3} - \spcuartil{1}$.
+
+% doc: «rango es igual a máximo menos mínimo»
+16. Rango: $\sprango = \spmax - \spmin$.
+
+% doc: «mediana es igual a cuartil 2»
+17. Mediana y segundo cuartil: $\spmediana = \spcuartil{2}$.
+
+% doc: «percentil 50 es igual a mediana»
+18. Percentil 50 y mediana: $\spPerc{50} = \spmediana$.
+
+\section*{D. Frecuencias: símbolos de la tabla}
+
+% doc: «frecuencia absoluta»
+19. Absoluta: $\spFrec{f}$.
+
+% doc: «frecuencia absoluta acumulada»
+20. Absoluta acumulada: $\spFrec{F}$.
+
+% doc: «frecuencia relativa»
+21. Relativa: $\spFrec{f_{r}}$.
+
+% doc: «frecuencia relativa acumulada»
+22. Relativa acumulada: $\spFrec{F_{r}}$.
+
+% doc: «frecuencia porcentual»
+23. Porcentual: $\spFrec{f_{r}\%}$.
+
+% doc: «frecuencia porcentual acumulada»
+24. Porcentual acumulada: $\spFrec{F_{r}\%}$.
+
+\section*{E. Frecuencias: llaves}
+
+% doc: «frecuencia absoluta sub i»
+25. Con sub-index: $\spFrec[sub-index={i}]{f}$.
+
+% doc: «frecuencia absoluta acumulada sub 3»
+26. Acumulada con sub-index: $\spFrec[sub-index={3}]{F}$.
+
+% doc: «frecuencia absoluta de i»
+27. Con read-sub=false: $\spFrec[sub-index={i},read-sub=false]{f}$.
+
+% doc: «frecuencia absoluta»
+28. Símbolo fuera de la tabla con read-arg: $\spFrec[read-arg={frecuencia absoluta}]{n_{i}}$.
+
+% doc: sin lectura
+29. Con silent: $\spFrec[silent=true]{f_{r}}$.
+
+\section*{F. Frecuencias dentro de fórmulas}
+
+% doc: «frecuencia relativa es igual a la fracción con numerador frecuencia absoluta y denominador n»
+% la fracción cierra la fórmula, sin ambigüedad aquí
+30. Relativa: $\spFrec{f_{r}} = \dfrac{\spFrec{f}}{n}$.
+
+% doc: «frecuencia relativa acumulada es igual a frecuencia absoluta sub 1 más frecuencia absoluta sub 2»
+31. Acumulada: $\spFrec{F_{r}} = \spFrec[sub-index={1}]{f} + \spFrec[sub-index={2}]{f}$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
+
+\end{document}
