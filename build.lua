@@ -516,10 +516,46 @@ if options["target"] == "examples" then
 end
 
 -- Clean repo with Git
+-- 'git clean -x' removes EVERYTHING untracked (new files not yet added and
+-- ignored files too), so it lists what would go and asks before deleting.
+-- With --dry-run it only lists.
 if options["target"] == "clean" then
-  os_message("Cleaning untracked repository files with Git")
-  -- Usa 'git clean -dfq' si prefieres conservar archivos del .gitignore
-  os.execute("git clean -xdfq")
+  local function git_out(cmd)
+    local f = io.popen(cmd .. " 2>&1", "r")
+    if not f then return nil end
+    local out = f:read("*a") or ""
+    f:close()
+    return out
+  end
+
+  local inside = git_out("git rev-parse --is-inside-work-tree")
+  if not inside or not inside:match("^true") then
+    os_message("Not a Git work tree: skipping git clean")
+  else
+    local preview = git_out("git clean -xdn")
+    if not preview or preview:match("^%s*$") then
+      os_message("Nothing to clean with Git")
+    else
+      print("** git clean would remove:")
+      io.write(preview)
+      if options["dry-run"] then
+        os_message("Dry run: nothing removed")
+      else
+        io.write("** Remove these files? [y/N] ")
+        io.flush()
+        local answer = (io.read("*l") or ""):lower():match("^%s*(%a*)%s*$") or ""
+        if answer == "y" or answer == "yes" or answer == "s" or answer == "si" then
+          os_message("Cleaning untracked repository files with Git")
+          local res = os.execute("git clean -xdfq")
+          if res ~= 0 and res ~= true then
+            error("** Error!!: git clean failed")
+          end
+        else
+          os_message("Skipping git clean")
+        end
+      end
+    end
+  end
   -- No ponemos os.exit() para que l3build continúe limpiando el directorio build/
 end
 
@@ -579,13 +615,31 @@ if options["target"] == "release" then
     os_message("Unpacking " .. file .. ".ins with luatex")
   end
 
-  -- 6. Tag commit in Git
+  -- 6. Build CTAN package archive if absent
+  if fileexists(ctanzip .. ".zip") then
+    os_message("Checking CTAN package " .. ctanzip .. ".zip")
+  else
+    os_message("Building CTAN package " .. ctanzip .. ".zip")
+    local res = os.execute("l3build ctan > " .. os_null)
+    if res ~= 0 and res ~= true then
+      error("** Error!!: 'l3build ctan' failed; nothing was tagged or pushed")
+    end
+  end
+
+  -- 7. Perform CTAN upload dry run
+  os_message("Running dry-run upload check")
+  local res = os.execute("l3build upload -F ctan.ann --debug > " .. os_null)
+  if res ~= 0 and res ~= true then
+    error("** Error!!: dry-run upload check failed; nothing was tagged or pushed")
+  end
+
+  -- 8. Tag commit in Git (only after everything above succeeded)
   local tag_version = "v" .. pkgversion
   local tagongit = os_capture('git for-each-ref refs/tags --sort=-taggerdate --format="%(refname:short)" --count=1')
   os_message("Checking latest Git tag (latest: " .. (tagongit ~= "" and tagongit or "none") .. ")")
 
   local tag_cmd = string.format('git tag -a %s -m "Release %s %s"', tag_version, tag_version, pkgdate)
-  local res = os.execute(tag_cmd)
+  res = os.execute(tag_cmd)
   if res ~= 0 and res ~= true then
     error("** Error!!: Could not create Git tag " .. tag_version .. ". Verify if it already exists.")
   else
@@ -593,19 +647,10 @@ if options["target"] == "release" then
   end
 
   os_message("Pushing Git tags to remote")
-  os.execute("git push --tags --quiet")
-
-  -- 7. Build CTAN package archive if absent
-  if fileexists(ctanzip .. ".zip") then
-    os_message("Checking CTAN package " .. ctanzip .. ".zip")
-  else
-    os_message("Building CTAN package " .. ctanzip .. ".zip")
-    os.execute("l3build ctan > " .. os_null)
+  res = os.execute("git push --tags --quiet")
+  if res ~= 0 and res ~= true then
+    error("** Error!!: 'git push --tags' failed. The tag " .. tag_version .. " exists locally; push it manually.")
   end
-
-  -- 8. Perform CTAN upload dry run
-  os_message("Running dry-run upload check")
-  os.execute("l3build upload -F ctan.ann --debug > " .. os_null)
 
   print("-----------------------------------------------------------------")
   print("** Pre-release checks completed successfully!")
