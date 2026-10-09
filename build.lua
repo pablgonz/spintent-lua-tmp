@@ -471,48 +471,348 @@ if options["target"] == "testpkg" then
   os.exit(0)
 end
 
--- Custom target: l3build examples
-if options["target"] == "examples" then
+-- Custom target: l3build testAF
+-- Every .tex in ./tagged-test is checked in both forms, inside the temporary
+-- directory: as written (math-SE) with AFghost=true, and, after spitool has
+-- removed the ghosts, in math-AF mode using the cleaned MathML file. Both
+-- PDFs are validated; nothing is copied out.
+if options["target"] == "testAF" then
   make_tmp_dir()
 
-  local file = jobname("spintent.dtx")
-  os_message("Extracting examples from " .. file .. ".dtx")
-
-  local errorlevel = run(tmpdir, "lualatex-dev " .. file .. ".dtx > " .. os_null)
-  if errorlevel ~= 0 then
-    error("** Error!!: Example extraction failed on " .. file .. ".dtx")
-  else
-    os_message("Extracted examples from " .. file .. ".dtx")
+  local srcdir = "tagged-test"
+  if not direxists(srcdir) then
+    error("** Error!!: Directory " .. srcdir .. " not found")
   end
 
-  os_message("Compiling example files with arara")
-  local samples = {"spintent-exa-1", "spintent-exa-2", "spintent-exa-3", "spintent-exa-4", "spintent-exa-5", "spintent-exa-6"}
-  for _, sample in ipairs(samples) do
-    errorlevel = run(tmpdir, "arara " .. sample .. ".tex > " .. os_null)
-    if errorlevel ~= 0 then
-      local f = io.open(tmpdir .. "/" .. sample .. ".log", "r")
-      if f then
-        print(f:read("*all"))
-        f:close()
-      end
-      cp(sample .. ".tex", tmpdir, maindir)
-      cp(sample .. ".log", tmpdir, maindir)
-      error("** Error!!: arara compilation failed for " .. sample .. ".tex")
-    else
-      os_message("Compiled " .. sample .. ".tex")
+  if not fileexists(tmpdir .. "/spitool.lua") then
+    error("** Error!!: spitool.lua was not unpacked in " .. tmpdir)
+  end
+
+  -- Only plain file names are accepted (they end up in shell commands)
+  local samples = {}
+  for file in lfs.dir(srcdir) do
+    local name = file:match("^([%w%-_]+)%.tex$")
+    if name then
+      table.insert(samples, name)
+    elseif file:match("%.tex$") then
+      print("** Warning: skipping " .. file .. " (unsafe file name)")
+    end
+  end
+  table.sort(samples)
+  if #samples == 0 then
+    error("** Error!!: No .tex files found in " .. srcdir)
+  end
+
+  -- Copy a file under another name (cp() cannot rename)
+  local function copy_as(from, to)
+    local fin = io.open(from, "rb")
+    if not fin then return false end
+    local data = fin:read("*a")
+    fin:close()
+    local fout = io.open(to, "wb")
+    if not fout then return false end
+    fout:write(data)
+    fout:close()
+    return true
+  end
+
+  local function show_log(dir, name)
+    local f = io.open(dir .. "/" .. name .. ".log", "r")
+    if f then
+      print(f:read("*all"))
+      f:close()
     end
   end
 
-  errorlevel = cp("spintent-*.pdf", tmpdir, maindir)
-  if errorlevel ~= 0 then
-    error("** Error!!: Failed to copy generated PDF files to main directory")
-  else
-    os_message("Copied generated PDF files to main directory")
+  local function fail(msg)
+    print("** Temporary directory kept for inspection: " .. tmpdir)
+    error(msg)
   end
 
+  -- Validators
+  local run_rnv = has_cmd("rnv-wrapp") and has_cmd("show-pdf-tags")
+  local run_verapdf = has_cmd("verapdf")
+
+  if run_rnv and run_verapdf then
+    os_message("Validators detected: show-pdf-tags, rnv-wrapp & veraPDF")
+  elseif run_rnv then
+    os_message("Validators detected: show-pdf-tags & rnv-wrapp")
+  elseif run_verapdf then
+    os_message("Validator detected: veraPDF")
+  end
+
+  local function validate_pdf(dir, pdf_file)
+    if run_rnv then
+      local cmd_rnv = "show-pdf-tags --xml " .. pdf_file .. " | rnv-wrapp"
+      if run(dir, cmd_rnv .. " > " .. os_null) ~= 0 then
+        print("\n[RNC Validation Error Output]:")
+        run(dir, cmd_rnv)
+        fail("** Error!!: Tag structure validation (rnv-wrapp) failed for " .. pdf_file)
+      end
+    end
+    if run_verapdf then
+      local cmd_vera = "verapdf --flavour ua2 --format text " .. pdf_file
+      if run(dir, cmd_vera .. " > " .. os_null) ~= 0 then
+        print("\n[PDF/UA-2 Validation Error Output]:")
+        run(dir, cmd_vera)
+        fail("** Error!!: veraPDF (PDF/UA-2) validation failed for " .. pdf_file)
+      end
+    end
+    if run_rnv or run_verapdf then
+      print("PASS")
+    end
+  end
+
+  -- The math-AF run happens in its own subdirectory, with the same file name
+  local afdir = tmpdir .. "/af"
+  if mkdir(afdir) ~= 0 then
+    fail("** Error!!: Could not create " .. afdir)
+  end
+  if cp("*.sty", tmpdir, afdir) + cp("*.lua", tmpdir, afdir) ~= 0 then
+    fail("** Error!!: Could not copy the package files to " .. afdir)
+  end
+
+  for _, sample in ipairs(samples) do
+    if cp(sample .. ".tex", srcdir, tmpdir) ~= 0 then
+      fail("** Error!!: Could not copy " .. sample .. ".tex")
+    end
+
+    -- 1. First run with AFghost=true: writes sample-luamml-mathml.html
+    os_message("Compiling " .. sample .. ".tex with AFghost=true")
+    local errorlevel = run(tmpdir,
+      'lualatex-dev -interaction=nonstopmode "\\PassOptionsToPackage{AFghost=true}{spintent}\\input{'
+      .. sample .. '}" > ' .. os_null)
+    if errorlevel ~= 0 then
+      show_log(tmpdir, sample)
+      fail("** Error!!: lualatex-dev compilation failed for " .. sample .. ".tex")
+    end
+    validate_pdf(tmpdir, sample .. ".pdf")
+
+    -- 2. spitool removes the ghosts: writes sample-mathml.html
+    --    (nothing is written when the file has no ghosts)
+    os_message("Removing ghosts from " .. sample .. "-luamml-mathml.html")
+    errorlevel = run(tmpdir, "texlua spitool.lua -o " .. sample .. "-luamml-mathml.html > " .. os_null)
+    if errorlevel ~= 0 then
+      fail("** Error!!: spitool failed for " .. sample .. "-luamml-mathml.html")
+    end
+
+    local clean_html = tmpdir .. "/" .. sample .. "-mathml.html"
+    local af_html = afdir .. "/" .. sample .. "-mathml.html"
+    if fileexists(clean_html) then
+      local content = read_file(clean_html)
+      if content:find("sptmp", 1, true) then
+        fail("** Error!!: Ghost marks (sptmp) left in " .. sample .. "-mathml.html")
+      end
+      copy_as(clean_html, af_html)
+    else
+      -- No ghosts: the luamml file is already the one to embed
+      os_message("No ghosts in " .. sample .. ": using the luamml file as it is")
+      copy_as(tmpdir .. "/" .. sample .. "-luamml-mathml.html", af_html)
+    end
+
+    -- 3. Same source with math-AF instead of math-SE
+    local source = read_file(srcdir .. "/" .. sample .. ".tex")
+    local af_source, count = source:gsub("mathml%-SE", "mathml-AF")
+    if count == 0 then
+      fail("** Error!!: 'mathml-SE' not found in " .. sample .. ".tex")
+    end
+    local fout = io.open(afdir .. "/" .. sample .. ".tex", "wb")
+    if not fout then
+      fail("** Error!!: Could not write " .. afdir .. "/" .. sample .. ".tex")
+    end
+    fout:write(af_source)
+    fout:close()
+
+    -- 4. Second run in math-AF mode
+    os_message("Compiling " .. sample .. ".tex with math-AF")
+    errorlevel = run(afdir, "lualatex-dev -interaction=nonstopmode " .. sample .. ".tex > " .. os_null)
+    if errorlevel ~= 0 then
+      show_log(afdir, sample)
+      fail("** Error!!: lualatex-dev compilation (math-AF) failed for " .. sample .. ".tex")
+    end
+    validate_pdf(afdir, sample .. ".pdf")
+
+    os_message("OK: " .. sample .. ".tex (math-SE and math-AF)")
+  end
+
+  os_message("All " .. #samples .. " files passed in math-SE and math-AF")
+  cleandir(afdir)
+  lfs.rmdir(afdir)
   cleandir(tmpdir)
   lfs.rmdir(tmpdir)
-  os_message("Removed temporary directory ./" .. tmpdir)
+  os_message("Removed temporary directory " .. tmpdir)
+  os.exit(0)
+end
+
+-- Custom target: l3build examples
+-- Compiles every .tex in sources/test-pkg twice, always inside the temporary
+-- directory: first with AFghost=true to obtain the luamml MathML file, then,
+-- once spitool has removed the ghosts, in math-AF mode using that file.
+if options["target"] == "examples" then
+  make_tmp_dir()
+
+  local srcdir = sourcefiledir .. "/test-pkg"
+  if not direxists(srcdir) then
+    error("** Error!!: Directory " .. srcdir .. " not found")
+  end
+
+  if not fileexists(tmpdir .. "/spitool.lua") then
+    error("** Error!!: spitool.lua was not unpacked in " .. tmpdir)
+  end
+
+  -- Only plain file names are accepted (they end up in shell commands)
+  local samples = {}
+  for file in lfs.dir(srcdir) do
+    local name = file:match("^([%w%-_]+)%.tex$")
+    if name then table.insert(samples, name) end
+  end
+  table.sort(samples)
+  if #samples == 0 then
+    error("** Error!!: No .tex files found in " .. srcdir)
+  end
+
+  -- Copy a file under another name (cp() cannot rename)
+  local function copy_as(from, to)
+    local fin = io.open(from, "rb")
+    if not fin then return false end
+    local data = fin:read("*a")
+    fin:close()
+    local fout = io.open(to, "wb")
+    if not fout then return false end
+    fout:write(data)
+    fout:close()
+    return true
+  end
+
+  local function show_log(dir, name)
+    local f = io.open(dir .. "/" .. name .. ".log", "r")
+    if f then
+      print(f:read("*all"))
+      f:close()
+    end
+  end
+
+  local function fail(msg)
+    print("** Temporary directory kept for inspection: " .. tmpdir)
+    error(msg)
+  end
+
+  -- Validators
+  local run_rnv = has_cmd("rnv-wrapp") and has_cmd("show-pdf-tags")
+  local run_verapdf = has_cmd("verapdf")
+
+  if run_rnv and run_verapdf then
+    os_message("Validators detected: show-pdf-tags, rnv-wrapp & veraPDF")
+  elseif run_rnv then
+    os_message("Validators detected: show-pdf-tags & rnv-wrapp")
+  elseif run_verapdf then
+    os_message("Validator detected: veraPDF")
+  end
+
+  local function validate_pdf(dir, pdf_file)
+    if run_rnv then
+      local cmd_rnv = "show-pdf-tags --xml " .. pdf_file .. " | rnv-wrapp"
+      if run(dir, cmd_rnv .. " > " .. os_null) ~= 0 then
+        print("\n[RNC Validation Error Output]:")
+        run(dir, cmd_rnv)
+        fail("** Error!!: Tag structure validation (rnv-wrapp) failed for " .. pdf_file)
+      end
+    end
+    if run_verapdf then
+      local cmd_vera = "verapdf --flavour ua2 --format text " .. pdf_file
+      if run(dir, cmd_vera .. " > " .. os_null) ~= 0 then
+        print("\n[PDF/UA-2 Validation Error Output]:")
+        run(dir, cmd_vera)
+        fail("** Error!!: veraPDF (PDF/UA-2) validation failed for " .. pdf_file)
+      end
+    end
+    if run_rnv or run_verapdf then
+      print("PASS")
+    end
+  end
+
+  -- The math-AF run happens in its own subdirectory, with the same file name
+  local afdir = tmpdir .. "/af"
+  if mkdir(afdir) ~= 0 then
+    fail("** Error!!: Could not create " .. afdir)
+  end
+  if cp("*.sty", tmpdir, afdir) + cp("*.lua", tmpdir, afdir) ~= 0 then
+    fail("** Error!!: Could not copy the package files to " .. afdir)
+  end
+
+  for _, sample in ipairs(samples) do
+    if cp(sample .. ".tex", srcdir, tmpdir) ~= 0 then
+      fail("** Error!!: Could not copy " .. sample .. ".tex")
+    end
+
+    -- 1. First run with AFghost=true: writes sample-luamml-mathml.html
+    os_message("Compiling " .. sample .. ".tex with AFghost=true")
+    local errorlevel = run(tmpdir,
+      'lualatex-dev -interaction=nonstopmode "\\PassOptionsToPackage{AFghost=true}{spintent}\\input{'
+      .. sample .. '}" > ' .. os_null)
+    if errorlevel ~= 0 then
+      show_log(tmpdir, sample)
+      fail("** Error!!: lualatex-dev compilation failed for " .. sample .. ".tex")
+    end
+    validate_pdf(tmpdir, sample .. ".pdf")
+
+    -- 2. spitool removes the ghosts: writes sample-mathml.html
+    --    (nothing is written when the file has no ghosts)
+    os_message("Removing ghosts from " .. sample .. "-luamml-mathml.html")
+    errorlevel = run(tmpdir, "texlua spitool.lua -o " .. sample .. "-luamml-mathml.html > " .. os_null)
+    if errorlevel ~= 0 then
+      fail("** Error!!: spitool failed for " .. sample .. "-luamml-mathml.html")
+    end
+
+    local clean_html = tmpdir .. "/" .. sample .. "-mathml.html"
+    local af_html = afdir .. "/" .. sample .. "-mathml.html"
+    if fileexists(clean_html) then
+      local content = read_file(clean_html)
+      if content:find("sptmp", 1, true) then
+        fail("** Error!!: Ghost marks (sptmp) left in " .. sample .. "-mathml.html")
+      end
+      copy_as(clean_html, af_html)
+    else
+      -- No ghosts: the luamml file is already the one to embed
+      os_message("No ghosts in " .. sample .. ": using the luamml file as it is")
+      copy_as(tmpdir .. "/" .. sample .. "-luamml-mathml.html", af_html)
+    end
+
+    -- 3. Same source with math-AF instead of math-SE
+    local source = read_file(srcdir .. "/" .. sample .. ".tex")
+    local af_source, count = source:gsub("mathml%-SE", "mathml-AF")
+    if count == 0 then
+      fail("** Error!!: 'mathml-SE' not found in " .. sample .. ".tex")
+    end
+    local fout = io.open(afdir .. "/" .. sample .. ".tex", "wb")
+    if not fout then
+      fail("** Error!!: Could not write " .. afdir .. "/" .. sample .. ".tex")
+    end
+    fout:write(af_source)
+    fout:close()
+
+    -- 4. Second run in math-AF mode
+    os_message("Compiling " .. sample .. ".tex with math-AF")
+    errorlevel = run(afdir, "lualatex-dev -interaction=nonstopmode " .. sample .. ".tex > " .. os_null)
+    if errorlevel ~= 0 then
+      show_log(afdir, sample)
+      fail("** Error!!: lualatex-dev compilation (math-AF) failed for " .. sample .. ".tex")
+    end
+    validate_pdf(afdir, sample .. ".pdf")
+
+    -- 5. Results: sample.pdf (math-SE) and sample-AF.pdf (math-AF)
+    if cp(sample .. ".pdf", tmpdir, maindir) ~= 0
+        or not copy_as(afdir .. "/" .. sample .. ".pdf", maindir .. "/" .. sample .. "-AF.pdf") then
+      fail("** Error!!: Failed to copy generated PDF files to main directory")
+    end
+    os_message("Copied " .. sample .. ".pdf and " .. sample .. "-AF.pdf to main directory")
+  end
+
+  cleandir(afdir)
+  lfs.rmdir(afdir)
+  cleandir(tmpdir)
+  lfs.rmdir(tmpdir)
+  os_message("Removed temporary directory " .. tmpdir)
   os.exit(0)
 end
 
