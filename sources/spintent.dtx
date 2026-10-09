@@ -198,7 +198,7 @@ end, "shekel_fallback_patch")
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
         spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
         spProm, spmedia, spmediana, spmoda, spdesv, spvarz, %
-        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, %
+        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, %
       }
   }
 % Colors
@@ -641,7 +641,7 @@ end, "shekel_fallback_patch")
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
                         spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
                         spProm, spmedia, spmediana, spmoda, spdesv, spvarz, %
-                        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, },%
+                        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -6390,6 +6390,135 @@ end, "shekel_fallback_patch")
 % NO verbalizará la salida del comando; si se establece en |false|, sí
 % verbalizará la salida del comando. El símbolo inválido se rechaza
 % siempre, también con |silent=true|.
+%
+% \subsection*{El comando \cs[no-index]{spcase}}\label{subsec:spcase}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spcase}
+%   \begin{syntax}
+%     |\spcase|\mymarg{letra} \qquad\qquad |\spcase|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{letra}
+%   \end{syntax}
+%   El comando \ics*{spcase} trabaja en \emph{modo matemático} y recibe el
+%   \emph{argumento obligatorio} \mymarg{letra}: la letra que acompaña a los
+%   casos de una probabilidad. Las letras válidas son |f|, |p| y |t|;
+%   cualquier otra se rechaza con un error y no se imprime nada.
+%
+%   \smallskip
+%
+%   |$\spcase{f}$| imprimirá `$C_{f}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«casos favorables»};
+%   |$\spcase{p}$| imprimirá `$C_{p}$' y verbalizará \emph{«casos
+%   posibles»}; |$\spcase{t}$| imprimirá `$C_{t}$' y verbalizará
+%   \emph{«casos totales»}.
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spcase}}
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spcase]
+% \smallskip
+% Sobrescribe el \emph{nombre de los casos} que verbalizará
+% \mynvmath{NVDA/MathCAT} al ejecutar el comando sin modificar la
+% impresión de este. El valor de esta llave \emph{siempre} debe pasarse
+% entre llaves `|{ }|'. Por ejemplo:
+% |$\spcase[read-arg={casos que cumplen}]{f}$| imprimirá `$C_{f}$' en la
+% salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«casos
+% que cumplen»}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcase]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} del símbolo al ejecutar el comando sin modificar
+% la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará la salida del comando; si se establece en |false|, sí
+% verbalizará la salida del comando. La letra inválida se rechaza siempre,
+% también con |silent=true|.
+%
+% \subsection*{El comando \cs[no-index]{spOmega}}\label{subsec:spOmega}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spOmega}
+%   \begin{syntax}
+%     |\spOmega| \qquad\qquad |\spOmega|\myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   \end{syntax}
+%   El comando \ics*{spOmega} trabaja en \emph{modo matemático} y recibe el
+%   \emph{argumento opcional} \myoarg{key \textnormal{\textcolor{gray}{=}} val}
+%   mediante el cual se establece la \emph{«forma»} en la que se
+%   verbalizará en \mynvmath{NVDA/MathCAT} el espacio muestral.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}, |$\spOmega$|
+%   imprimirá `$\Omega$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«espacio muestral»}.
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spOmega}}
+%
+% \keyexampcmd{card}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spOmega]
+% \smallskip
+% Establece si se \emph{imprime} el símbolo `$\#$' antes de la letra, para
+% representar la cardinalidad del espacio muestral. Si se establece en |true|,
+% |$\spOmega[card=true]$| imprimirá `$\#\Omega$' en la salida \texttt{PDF}
+% y \mynvmath{NVDA/MathCAT} verbalizará \emph{«cardinalidad del espacio
+% muestral»}.
+%
+% \smallskip
+%
+% \keyexampcmd{sub-index}{subíndice}{no usado}[spOmega]
+% \smallskip
+% Establece un \emph{subíndice} sobre la letra, que
+% \mynvmath{NVDA/MathCAT} verbaliza después del nombre con la palabra
+% \emph{«sub»} (vea la llave \mykey{read-sub}). El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
+% |$\spOmega[sub-index={1}]$| imprimirá `$\Omega_{1}$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«espacio muestral
+% sub 1»}; |$\spOmega[card=true,sub-index={1}]$| imprimirá
+% `$\#\Omega_{1}$' y verbalizará \emph{«cardinalidad del espacio muestral sub
+% 1»}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{true}[spOmega]
+% \smallskip
+% Establece si se \emph{usa} la palabra \emph{«sub»} en lugar de
+% \emph{«de»} al verbalizar el subíndice establecido por la llave
+% \mykey{sub-index}, sin modificar la impresión del comando. Con
+% |$\spOmega[sub-index={1},read-sub=false]$|, \mynvmath{NVDA/MathCAT}
+% verbalizará \emph{«espacio muestral de 1»}.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spOmega]
+% \smallskip
+% Sobrescribe el \emph{nombre} que verbalizará \mynvmath{NVDA/MathCAT} al
+% ejecutar el comando sin modificar la impresión de este. El valor de esta
+% llave \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
+% |$\spOmega[read-arg={universo}]$| imprimirá `$\Omega$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«universo»}.
+%
+% \smallskip
+%
+% \begin{important}*
+%  Las llaves \mykey{sub-index} y \mykey{read-sub} no tienen efecto al usar |read-arg|.
+% \end{important}
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spOmega]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} del símbolo al ejecutar el comando sin modificar
+% la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
+% NO verbalizará la salida del comando; si se establece en |false|, sí
+% verbalizará la salida del comando.
 %
 % \newpage
 %
@@ -19631,7 +19760,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \clist_map_inline:nn
   {
     spmedia , spmediana , spmoda , spdesv , spvarz , sprango , spriq ,
-    spmin , spmax , spFrec
+    spmin , spmax , spFrec , spcase , spOmega
   }
   {
     \bool_new:c { l_@@_ #1 _silent_bool }
@@ -19664,8 +19793,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   \mykey[sprango,spriq]{read-arg} for |\sprango| and |\spriq|.
 %   |\spmin| and |\spmax| only get \mykey[spmin,spmax]{silent} and
 %   \mykey[spmin,spmax]{read-arg}, since their symbol already carries a
-%   subscript. The command |\spFrec| (see its own section) shares the
-%   variables and the keys of the first block. The key
+%   subscript. The commands |\spFrec| and |\spOmega| (see their own
+%   sections) share the variables and the keys of the first block, and
+%   |\spcase| those of |\spmin| and |\spmax|. The key
 %   \mykey[spdesv,spvarz]{sigma} exists only for
 %   |\spdesv| and |\spvarz|. For these two, which read a letter,
 %   \mykey{read-sub} starts in |true| (|s sub x| sounds more natural than
@@ -19674,7 +19804,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   \mykey{read-arg} goes through \myhlc|\@@_sanitize_affix:cn|.
 %    \begin{macrocode}
 \clist_map_inline:nn
-  { spmedia , spmediana , spmoda , spdesv , spvarz , sprango , spriq , spFrec }
+  {
+    spmedia , spmediana , spmoda , spdesv , spvarz , sprango , spriq ,
+    spFrec , spOmega
+  }
   {
     \keys_define:nn { spintent / #1 }
       {
@@ -19711,7 +19844,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   }
 \keys_define:nn { spintent / spFrec }
   { read-sub .initial:n = true }
-\clist_map_inline:nn { spmin , spmax }
+\clist_map_inline:nn { spmin , spmax , spcase }
   {
     \keys_define:nn { spintent / #1 }
       {
@@ -20370,6 +20503,166 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spFrec } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spcase}}\label{cmd:spcase}
+%
+% The user command |\spcase| typesets the symbols of the cases of a
+% probability: |C_{f}| (favorable), |C_{p}| (possible) and |C_{t}| (total).
+% The letter is the \mymarg{argument}, and the symbol is read with the name
+% of the cases, for example \emph{«casos favorables»}.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spcase}}
+%
+% \begin{variable}[int]{\l_@@_spcase_letter_str, \l_@@_spcase_concept_tl}
+%   The variables of the keys are those of the \texttt{stat} family. The
+%   string variable \myhlc|\l_@@_spcase_letter_str| holds the
+%   \mymarg{argument} without spaces, and the token list variable
+%   \myhlc|\l_@@_spcase_concept_tl| the name of the cases, empty while the
+%   letter is not in the table.
+%    \begin{macrocode}
+\str_new:N \l_@@_spcase_letter_str
+\tl_new:N  \l_@@_spcase_concept_tl
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spcase}}
+%
+% \begin{macro}[int]{spcase-invalid-letter}
+%   The error message |spcase-invalid-letter| is raised when the
+%   \mymarg{argument} is not one of the letters |f|, |p| or |t|.
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spcase-invalid-letter }
+  {
+    Invalid~letter~'#1'~for~\token_to_str:N \spcase~\msg_line_context:.
+  }
+  {
+    The~letter~must~be~f,~p~or~t.\\
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spcase}}
+%
+% \begin{macro}[int]{\@@_spcase_exec:n}
+%   The function \myhlc|\@@_spcase_exec:n| receives the letter in `|#1|'.
+%   It removes the spaces and looks the result up in the table, setting
+%   \cs{l_@@_spcase_concept_tl} to |casos-favorables|, |casos-posibles| or
+%   |casos-totales|. If the letter is not in the table, it is rejected with
+%   |spcase-invalid-letter| whatever the value of the keys
+%   \mykey[spcase]{silent} and \mykey[spcase]{read-arg}. Otherwise the
+%   function delegates the printing of the symbol, with the letter as its
+%   subscript, to \myhlc|\@@_stat_print:nnnnnn|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcase_exec:n
+  {
+    \str_set:Ne \l_@@_spcase_letter_str { \tl_to_str:n {#1} }
+    \str_remove_all:Nn \l_@@_spcase_letter_str { ~ }
+    \tl_clear:N \l_@@_spcase_concept_tl
+    \str_case:Vn \l_@@_spcase_letter_str
+      {
+        { f } { \tl_set:Nn \l_@@_spcase_concept_tl { casos-favorables } }
+        { p } { \tl_set:Nn \l_@@_spcase_concept_tl { casos-posibles } }
+        { t } { \tl_set:Nn \l_@@_spcase_concept_tl { casos-totales } }
+      }
+    \tl_if_empty:NTF \l_@@_spcase_concept_tl
+      { \msg_error:nnn { spintent } { spcase-invalid-letter } {#1} }
+      {
+        \@@_stat_print:nnnnnn { spcase }
+          { C \c_math_subscript_token { \str_use:N \l_@@_spcase_letter_str } }
+          { } { \l_@@_spcase_concept_tl } { } { }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spcase}
+%   The public command |\spcase| enforces \emph{math mode}, opens a local
+%   group, sets the \mymeta{keys} and delegates execution to
+%   \myhlc|\@@_spcase_exec:n|.
+%    \begin{macrocode}
+\NewDocumentCommand \spcase { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \keys_set:nn { spintent / spcase } {#1}
+          \@@_spcase_exec:n {#2}
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spcase } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spOmega}}\label{cmd:spOmega}
+%
+% The user command |\spOmega| typesets the symbol |\Omega| of the sample
+% space, or |\#\Omega| (its cardinality) with the key \mykey[spOmega]{card}.
+% It is read \emph{«espacio muestral»} or \emph{«cardinalidad del espacio
+% muestral»}.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spOmega}}
+%
+% \begin{variable}[int]{\l_@@_spOmega_card_bool}
+%   The variables of the keys \mykey[spOmega]{silent},
+%   \mykey[spOmega]{sub-index}, \mykey[spOmega]{read-sub} and
+%   \mykey[spOmega]{read-arg} are those of the \texttt{stat} family. The
+%   boolean variable \myhlc|\l_@@_spOmega_card_bool| stores the key
+%   \mykey[spOmega]{card}.
+%    \begin{macrocode}
+\bool_new:N \l_@@_spOmega_card_bool
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spOmega}}
+%
+% \begin{macro}[int]{card}
+%   We define the \mymeta{key} \mykey[spOmega]{card}, which starts in
+%   |false|. \mykey[spOmega]{read-sub} starts in |true|, since the
+%   subscript is read after a name that is not a letter.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spOmega }
+  {
+    card       .bool_set:N = \l_@@_spOmega_card_bool,
+    card       .initial:n  = false,
+    card       .value_required:n = true,
+    read-sub   .initial:n  = true,
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spOmega}}
+%
+% \begin{macro}{\spOmega}
+%   The public command |\spOmega| enforces \emph{math mode}, opens a local
+%   group, sets the \mymeta{keys} and delegates the printing to
+%   \myhlc|\@@_stat_print:nnnnnn|, with the symbol |\Omega| and the concept
+%   |espacio-muestral|, or the symbol |\#\Omega| and the concept
+%   |cardinalidad-del-espacio-muestral| when \mykey[spOmega]{card} is |true|.
+%    \begin{macrocode}
+\NewDocumentCommand \spOmega { O{} }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \keys_set:nn { spintent / spOmega } {#1}
+          \bool_if:NTF \l_@@_spOmega_card_bool
+            {
+              \@@_stat_print:nnnnnn { spOmega } { \# \Omega } { }
+                { cardinalidad-del-espacio-muestral } { } { }
+            }
+            {
+              \@@_stat_print:nnnnnn { spOmega } { \Omega } { }
+                { espacio-muestral } { } { }
+            }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spOmega } }
   }
 %    \end{macrocode}
 % \end{macro}

@@ -1,0 +1,84 @@
+% test-028.tex -- comandos \spcase y \spOmega
+%
+% Compilar:  lualatex-dev test-028.tex
+% Validar:   show-pdf-tags --xml test-028.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-028.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al
+% escuchar el PDF. Los comentarios "doc:" indican la lectura que
+% documenta el manual de usuario; en el resto, la lectura se revisa
+% escuchando. Las entradas invalidas (que detienen la compilacion)
+% no van aqui.
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-028: probabilidad},
+  }
+\pagestyle{empty}
+\begin{document}
+
+\section*{A. El comando spcase}
+
+% doc: «casos favorables»
+1. Favorables: $\spcase{f}$.
+
+% doc: «casos posibles»
+2. Posibles: $\spcase{p}$.
+
+% doc: «casos totales»
+3. Totales: $\spcase{t}$.
+
+% doc: «casos que cumplen»
+4. Con read-arg: $\spcase[read-arg={casos que cumplen}]{f}$.
+
+% doc: sin lectura
+5. Con silent: $\spcase[silent=true]{p}$.
+
+\section*{B. El comando spOmega}
+
+% doc: «espacio muestral»
+6. Espacio muestral: $\spOmega$.
+
+% doc: «cardinalidad del espacio muestral»
+7. Cardinalidad: $\spOmega[card=true]$.
+
+% doc: «espacio muestral sub 1»
+8. Con sub-index: $\spOmega[sub-index={1}]$.
+
+% doc: «cardinalidad del espacio muestral sub 1»
+9. Cardinalidad con sub-index: $\spOmega[card=true,sub-index={1}]$.
+
+% doc: «espacio muestral de 1»
+10. Con read-sub=false: $\spOmega[sub-index={1},read-sub=false]$.
+
+% doc: «universo»
+11. Con read-arg: $\spOmega[read-arg={universo}]$.
+
+% doc: sin lectura
+12. Con silent: $\spOmega[silent=true]$.
+
+\section*{C. Dentro de fórmulas}
+
+% doc: «p es igual a la fracción con numerador casos favorables y denominador casos posibles»
+13. Regla de Laplace: $P = \dfrac{\spcase{f}}{\spcase{p}}$.
+
+% doc: «p es igual a la fracción con numerador casos favorables y denominador cardinalidad del espacio muestral»
+14. Con la cardinalidad: $P = \dfrac{\spcase{f}}{\spOmega[card=true]}$.
+
+% doc: «casos totales es igual a cardinalidad del espacio muestral»
+15. Casos totales: $\spcase{t} = \spOmega[card=true]$.
+
+\end{document}
