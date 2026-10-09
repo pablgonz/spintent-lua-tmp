@@ -35,8 +35,9 @@ tdslocations  = {
   "tex/lualatex/spintent/spintent.lua",
   "doc/lualatex/spintent/spintent.pdf",
   "doc/lualatex/spintent/README.md",
+  "scripts/spitool/spitool.lua",
   "source/lualatex/spintent/spintent.dtx",
-  "source/lualatex/spintent/spintent.ins"
+  "source/lualatex/spintent/spintent.ins",
 }
 
 -- Unpacking files from spintent.ins
