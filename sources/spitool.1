@@ -1,0 +1,292 @@
+.\" spitool.1 -- manual page for spitool (part of the spintent package)
+.\" Copyright (C) 2026 Pablo Gonzalez L <pablgonz@educarchile.cl>
+.TH SPITOOL 1 "2026-10-09" "spitool 0.99" "spintent"
+.SH NAME
+spitool \- clean luamml ghost characters and validate tagged PDF files
+.SH SYNOPSIS
+.B spitool
+.RI [ options ]
+.IR file ...
+.br
+.B spitool
+.B \-h
+|
+.B \-\-help
+.br
+.B spitool
+.B \-v
+|
+.B \-\-version
+.SH DESCRIPTION
+.B spitool
+is a
+.BR texlua (1)
+script distributed with the
+.B spintent
+LaTeX package.
+It prepares the MathML produced by
+.B luamml
+for the associated-files (math-AF) mode of a tagged PDF, and checks
+that the tag structure and the PDF/UA-2 conformance of a document are
+correct.
+.PP
+The package
+.B spintent
+can write invisible marker characters (U+2063, with the attribute
+.B sptmp
+set to
+.B outer
+or
+.BR inner )
+in the MathML that
+.B luamml
+produces.
+They protect the structure of the formulas, but must not remain in the
+MathML file that is attached to the PDF.
+.B spitool
+removes them from the HTML file written by
+.BR luamml ,
+which is named
+.IB name \-luamml\-mathml.html \fR,
+and leaves the result as
+.IB name \-mathml.html \fR.
+.PP
+What
+.B spitool
+does with each
+.I file
+depends on its extension; see
+.BR MODES .
+Several files may be given; they are processed in order.
+.SH MODES
+.TP
+.B .pdf
+The file is only validated; nothing is compiled and nothing is written.
+Two checks are run, each one only if its tools are found in
+.BR PATH :
+the tag structure is dumped with
+.B show-pdf-tags \-\-xml
+and verified with
+.BR rnv-wrapp ,
+and the PDF/UA-2 conformance is verified with
+.B verapdf \-\-flavour ua2.
+The result is reported as
+.B PASS
+or
+.BR FAIL ,
+and the output of the failing validator is shown.
+If neither pair of tools is found, the run ends with an error.
+.TP
+.B .html
+The file must be named
+.IB name \-luamml\-mathml.html \fR.
+The ghost characters are removed and the result is written as
+.IB name \-mathml.html \fR.
+.TP
+.BR .tex ", " .ltx
+The document is compiled once with the TeX engine, in a private temporary
+directory, with the option
+.B AFghost=true
+passed to the package
+.BR spintent ,
+so that
+.B luamml
+writes the ghost characters in the HTML file.
+The HTML file is then cleaned as in the
+.B .html
+mode.
+Afterwards, if the validators are available, the PDF just produced is
+validated as in the
+.B .pdf
+mode.
+That PDF stays in the temporary directory and is discarded; only the
+cleaned HTML file is kept.
+.SH OPTIONS
+.TP
+.BR \-c ", " \-\-check\-only ", " \-\-test\-only
+Do not compile anything; only validate PDF files.
+With this option every
+.I file
+must be a PDF file.
+.TP
+.BR \-o ", " \-\-overwrite
+Replace the output file
+.IB name \-mathml.html
+if it already exists.
+Without this option
+.B spitool
+refuses to overwrite it and stops with an error.
+It has no effect together with
+.BR \-c ,
+and a warning is printed.
+.TP
+.BR \-p ", " \-\-path =\fIpath\fR
+Write the output file in the directory
+.IR path ,
+which is created, with its parents, if it does not exist.
+The file is named after the document alone, without the directory of the
+input file.
+It has no effect together with
+.BR \-c ,
+and a warning is printed.
+The forms
+.BI \-p\  path
+and
+.BI \-\-path\  path
+are also accepted.
+.TP
+.BR \-e ", " \-\-engine =\fIcmd\fR
+TeX engine used to compile the
+.B .tex
+and
+.B .ltx
+files.
+By default it is
+.B lualatex\-dev
+if it is found in
+.BR PATH ,
+and
+.B lualatex
+otherwise.
+The name may contain only letters, digits, dots, underscores and hyphens.
+.TP
+.BR \-s ", " \-\-strict
+Stop at the first failure, either of the compilation or of a validation.
+Without this option all the files are processed.
+In both cases the exit status is not zero if anything failed.
+.TP
+.BR \-h ", " \-\-help
+Show a summary of the usage and exit.
+This is also what happens when
+.B spitool
+is run without arguments from an interactive terminal.
+.TP
+.BR \-v ", " \-\-version
+Show the version number and exit.
+.TP
+.B \-\-
+End of options; the remaining arguments are file names.
+.SH FILE NAMES
+If a
+.I file
+does not exist as given, its extension may be omitted: with
+.B \-c
+the extension
+.B .pdf
+is tried; otherwise
+.BR .tex ,
+.BR .ltx ,
+.BR .pdf ,
+.B \-luamml\-mathml.html
+and
+.BR .html ,
+in this order.
+.PP
+For safety, a file name containing spaces, quotes or any of the
+characters
+.B % & | < > ^ ` $ { } [ ] ! # ~
+is rejected, since the name is passed to the shell and to TeX.
+.SH FILES
+.TP
+.IB name \-mathml.html
+Output file with the ghost characters removed.
+It is written next to the input file, or in the directory given with
+.BR \-\-path .
+If no ghost character is found a warning is printed and the file is not
+kept; it usually means that
+.B spintent
+was not loaded or that the HTML file was not produced with
+.BR AFghost=true .
+.TP
+.IB name \-luamml\-mathml.html
+Input of the
+.B .html
+mode; it is written by
+.B luamml
+and is never modified.
+.TP
+.BI spitool\- XXXXXX
+Temporary directory of the
+.B .tex
+and
+.B .ltx
+modes, created with mode 700 inside
+.BR $TMPDIR .
+It is removed at the end.
+If the compilation fails it is kept, and its location is shown, so that
+the log file can be read.
+.SH ENVIRONMENT
+.TP
+.B TMPDIR
+Directory where the temporary directory is created on POSIX systems
+(default
+.BR /tmp ).
+On Windows
+.B TEMP
+or
+.BR TMP
+is used instead.
+.SH EXIT STATUS
+.TP
+.B 0
+All the files were processed and no compilation or validation failed.
+Finding no ghost character is only a warning.
+.TP
+.B 1
+A file could not be found or is not valid, an option is wrong, an
+output file already exists and
+.B \-\-overwrite
+was not given, or a compilation or a validation failed.
+.SH EXAMPLES
+Validate a PDF file, without compiling:
+.PP
+.RS
+.nf
+$ spitool \-c sample.pdf
+.fi
+.RE
+.PP
+The same, with the extension omitted and stopping at the first failure:
+.PP
+.RS
+.nf
+$ spitool \-c \-s sample
+.fi
+.RE
+.PP
+Compile a document with the ghost characters enabled, write the cleaned
+MathML in the directory
+.B build
+(replacing it if it exists) and validate the PDF:
+.PP
+.RS
+.nf
+$ spitool \-o \-p build/ sample.tex
+.fi
+.RE
+.PP
+Clean an HTML file that was already written by
+.BR luamml :
+.PP
+.RS
+.nf
+$ spitool sample\-luamml\-mathml.html
+.fi
+.RE
+.SH SEE ALSO
+.BR lualatex (1),
+.BR texlua (1),
+.BR verapdf (1)
+.PP
+The documentation of the
+.B spintent
+package, which can be read with
+.B texdoc spintent
+.SH REPORTING BUGS
+Repository: https://github.com/pablgonz/spintent
+.br
+Bug tracker: https://github.com/pablgonz/spintent/issues
+.SH AUTHOR
+Pablo Gonzalez L <pablgonz@educarchile.cl>
+.SH COPYRIGHT
+Copyright (C) 2026 Pablo Gonzalez L.

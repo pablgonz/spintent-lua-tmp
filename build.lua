@@ -26,16 +26,19 @@ pkgdate    = "2026-10-09"
 ltxrelease = "2026-11-01"
 
 -- Configuration of files for build and installation
-maindir       = "."
-sourcefiledir = "./sources"
-textfiledir   = "./sources"
-sourcefiles   = {"**/*.dtx", "**/*.ins"}
-installfiles  = {"**/*.sty", "**/*.lua"}
-tdslocations  = {
+maindir        = "."
+sourcefiledir  = "./sources"
+textfiledir    = "./sources"
+sourcefiles    = {"**/*.dtx", "**/*.ins"}
+installfiles   = {"**/*.sty", "**/*.lua"}
+scriptmanfiles = {"spitool.1", "spitool.man1.pdf"}
+tdslocations   = {
   "tex/lualatex/spintent/spintent.sty",
   "tex/lualatex/spintent/spintent.lua",
   "doc/lualatex/spintent/spintent.pdf",
   "doc/lualatex/spintent/README.md",
+  "doc/man/man1/spitool.1",
+  "doc/man/man1/spitool.man1.pdf",
   "scripts/spitool/spitool.lua",
   "source/lualatex/spintent/spintent.dtx",
   "source/lualatex/spintent/spintent.ins",

@@ -28,6 +28,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Install system dependencies (groff)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y groff
+
       - name: Setup TeX Live ${{ matrix.version }}
         uses: zauguin/install-texlive@v4
         with:
@@ -37,15 +42,32 @@ jobs:
       - name: Install show-pdf-tags RNC schemas
         run: tlmgr install --with-doc show-pdf-tags
 
+      - name: Cache RNV
+        id: cache-rnv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/bin/rnv
+            ~/.local/bin/rnv-wrapp
+          key: rnv-${{ runner.os }}-v1
+
       - name: Install rnv-wrapp
+        if: steps.cache-rnv.outputs.cache-hit != 'true'
         run: |
           curl -sSL https://raw.githubusercontent.com/pablgonz/rnv-vera-pdf-cli/main/install-rnv.sh | bash -s -- --unattended
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install veraPDF CLI
         run: |
           curl -sSL https://raw.githubusercontent.com/pablgonz/rnv-vera-pdf-cli/main/install-verapdf.sh | bash -s -- --unattended
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Add ~/.local/bin to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install spitool CLI
+        run: |
+          chmod +x ./spitool
+          mkdir -p $HOME/.local/bin
+          cp ./spitool $HOME/.local/bin/spitool
 
       - name: Install spintent package
         run: l3build install
