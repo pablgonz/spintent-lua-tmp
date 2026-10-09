@@ -6117,8 +6117,8 @@ end, "shekel_fallback_patch")
 %   |$\spmediana$| imprimirá `$\mathrm{MD}$' y verbalizará
 %   \emph{«mediana»}; |$\spmoda$| imprimirá `$\mathrm{MO}$' y verbalizará
 %   \emph{«moda»}; |$\spdesv$| imprimirá `$s$' y verbalizará
-%   \emph{«desviación estándar»}; |$\spvarz$| imprimirá `$s^{2}$' y
-%   verbalizará \emph{«varianza»}.
+%   \emph{«desviación estándar s»}; |$\spvarz$| imprimirá `$s^{2}$' y
+%   verbalizará \emph{«varianza s al cuadrado»}.
 % \end{function}
 %
 % \subsubsection*{Llaves para \cs[no-index]{spmedia}, \cs[no-index]{spmediana}, \cs[no-index]{spmoda}, \cs[no-index]{spdesv} y \cs[no-index]{spvarz}}
@@ -6129,8 +6129,9 @@ end, "shekel_fallback_patch")
 % Establece si se \emph{imprime} la letra `$\sigma$' en lugar de la letra
 % `$s$'. Si se establece en |true|, |$\spdesv[sigma=true]$| imprimirá
 % `$\sigma$' y |$\spvarz[sigma=true]$| imprimirá `$\sigma^{2}$' en la
-% salida \texttt{PDF}; la verbalización no cambia. Esta llave solo existe
-% para |\spdesv| y |\spvarz|.
+% salida \texttt{PDF}, y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«desviación estándar sigma»} y \emph{«varianza sigma al cuadrado»}.
+% Esta llave solo existe para |\spdesv| y |\spvarz|.
 %
 % \smallskip
 %
@@ -6138,12 +6139,14 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece un \emph{subíndice} sobre el símbolo del comando, que
 % \mynvmath{NVDA/MathCAT} verbaliza después del concepto con la palabra
-% \emph{«de»}. El valor de esta llave \emph{siempre} debe pasarse entre
+% \emph{«de»} (o \emph{«sub»} en \ics*{spdesv} y \ics*{spvarz}, vea la llave
+% \mykey{read-sub}). El valor de esta llave \emph{siempre} debe pasarse entre
 % llaves `|{ }|'. Por ejemplo: |$\spmedia[sub-index={x}]$| imprimirá
 % `$\mathrm{MA}_{x}$' en la salida \texttt{PDF} y
 % \mynvmath{NVDA/MathCAT} verbalizará \emph{«media aritmética de x»};
-% |$\spvarz[sub-index={x}]$| imprimirá `$s_{x}^{2}$' y verbalizará
-% \emph{«varianza de x»}.
+% |$\spdesv[sub-index={x}]$| imprimirá `$s_{x}$' y verbalizará
+% \emph{«desviación estándar s sub x»}; |$\spvarz[sub-index={x}]$| imprimirá
+% `$s_{x}^{2}$' y verbalizará \emph{«varianza s sub x al cuadrado»}.
 %
 % \smallskip
 %
@@ -6156,7 +6159,12 @@ end, "shekel_fallback_patch")
 % establece en |true|, |$\spmedia[sub-index={x},read-sub=true]$| se
 % verbalizará \emph{«media aritmética sub x»} en \mynvmath{NVDA/MathCAT};
 % si se establece en |false|, \mynvmath{NVDA/MathCAT} verbalizará
-% \emph{«media aritmética de x»}.
+% \emph{«media aritmética de x»}. El valor por defecto es |false|, salvo en
+% \ics*{spdesv} y \ics*{spvarz}, donde es |true| porque estos comandos
+% leen su letra y «s sub x» es más claro que «s de x» (en
+% \emph{«varianza s de x al cuadrado»}, la «x» podría entenderse como parte
+% del exponente). Así, |$\spvarz[sub-index={x},read-sub=false]$| verbalizará
+% \emph{«varianza s de x al cuadrado»}.
 %
 % \smallskip
 %
@@ -19273,7 +19281,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   reads \myhlc|_promedio-de:prefix($a)|. When \mykey{read-arg} is not
 %   empty, its text replaces |promedio-de|. The inner ghost
 %   \myhlc|\@@_inner_sep:| keeps the content of the intent from
-%   collapsing into a single child.
+%   collapsing into a single child; a second one inside the
+%   |\MathMLarg| does the same for the argument, whose |arg| attribute
+%   would otherwise be lost when the argument is a single compound
+%   element, such as a letter with a subscript.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spProm_exec:nn
   {
@@ -19294,7 +19305,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \MathMLintent { _ \l_@@_spProm_intent_tl :prefix($a) }
           {
             \@@_inner_sep:
-            \bar { \MathMLarg { a } { #2 } }
+            \bar { \MathMLarg { a } { \@@_inner_sep: #2 } }
           }
       }
   }
@@ -19325,7 +19336,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % |\spvarz| typeset the usual symbols of descriptive statistics: |MA|
 % (arithmetic mean), |MD| (median), |MO| (mode), |s| (standard
 % deviation) and |s^{2}| (variance). Each one is read with the name of
-% the concept, not with the letters.
+% the concept; |\spdesv| and |\spvarz| also read their letter.
 %
 % \subsubsection{Definition of variables for the \texttt{stat} family}
 %
@@ -19374,7 +19385,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   \mykey[spmedia,spmediana,spmoda,spdesv,spvarz]{read-sub} and
 %   \mykey[spmedia,spmediana,spmoda,spdesv,spvarz]{read-arg} for the five
 %   commands, and \mykey[spdesv,spvarz]{sigma} only for |\spdesv| and
-%   |\spvarz|. As elsewhere, \mykey{sub-index} is kept as a string and
+%   |\spvarz|. For |\spdesv| and |\spvarz|, which read a letter,
+%   \mykey{read-sub} starts in |true| (|s sub x| sounds more natural than
+%   |s de x|, and it avoids hearing the \mymeta{x} as part of the exponent
+%   in |varianza s de x al cuadrado|); for the other three it starts in
+%   |false|. As elsewhere, \mykey{sub-index} is kept as a string and
 %   \mykey{read-arg} goes through \myhlc|\@@_sanitize_affix:cn|.
 %    \begin{macrocode}
 \clist_map_inline:nn { spmedia , spmediana , spmoda , spdesv , spvarz }
@@ -19409,6 +19424,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         sigma      .bool_set:c = { l_@@_ #1 _sigma_bool },
         sigma      .initial:n  = false,
         sigma      .value_required:n = true,
+        read-sub   .initial:n  = true,
       }
   }
 %    \end{macrocode}
@@ -19440,13 +19456,15 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}[int]{\@@_stat_print:nnnn}
-%   The function \myhlc|\@@_stat_print:nnnn| receives the short name of the
-%   command in `|#1|', the symbol in `|#2|', the exponent in `|#3|' and
-%   the name of the concept in `|#4|', already written as it goes in the
-%   intent (with hyphens). The symbol, with its subscript and exponent,
-%   is always typeset by \myhlc|\@@_stat_typeset:nnn| inside one native
-%   |\MathMLintent|, preceded by the inner ghost
+% \begin{macro}[int]{\@@_stat_print:nnnnnn}
+%   The function \myhlc|\@@_stat_print:nnnnnn| receives the short name of the
+%   command in `|#1|', the symbol in `|#2|', the exponent in `|#3|', the
+%   name of the concept in `|#4|', the name of the letter in `|#5|' (empty
+%   when the symbol is not a letter) and the spoken form of the exponent in
+%   `|#6|' (empty when there is none), the last three already written as
+%   they go in the intent (with hyphens). The symbol, with its subscript and
+%   exponent, is always typeset by \myhlc|\@@_stat_typeset:nnn| inside one
+%   native |\MathMLintent|, preceded by the inner ghost
 %   \myhlc|\@@_inner_sep:|.
 %
 %   \smallskip
@@ -19454,13 +19472,14 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   With \mykey{silent} |true|, the intent is |_-|. With \mykey{read-arg}
 %   given, the intent is |_|\mymeta{read-arg}|:nofix| and
 %   \mykey{sub-index} and \mykey{read-sub} are ignored for the spoken
-%   content (the subscript, if any, still displays, silenced). With no
-%   \mykey{sub-index}, the intent is |_|\mymeta{concept}|:nofix|; with
-%   one, it is |_|\mymeta{concept}|-de-|\mymeta{value}, or
-%   |_|\mymeta{concept}|-sub-|\mymeta{value} when \mykey{read-sub} is
-%   |true|.
+%   content (the subscript, if any, still displays, silenced). Otherwise
+%   the spoken content is the concept, followed by the letter and, when
+%   there is a \mykey{sub-index}, by |de-|\mymeta{value} (|sub-|\mymeta{value}
+%   when \mykey{read-sub} is |true|, its default for |\spdesv| and
+%   |\spvarz|), and last by the exponent. With no
+%   \mykey{sub-index} the intent ends in |:nofix|.
 %    \begin{macrocode}
-\cs_new_protected:Nn \@@_stat_print:nnnn
+\cs_new_protected:Nn \@@_stat_print:nnnnnn
   {
     \@@_invisible_sep:
     \bool_if:cTF { l_@@_ #1 _silent_bool }
@@ -19476,7 +19495,13 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
           {
             \str_if_empty:cTF { l_@@_ #1 _sub_index_str }
               {
-                \MathMLintent { _ #4 :nofix }
+                \MathMLintent
+                  {
+                    _ #4
+                    \tl_if_blank:nF {#5} { - #5 }
+                    \tl_if_blank:nF {#6} { - #6 }
+                    :nofix
+                  }
                   {
                     \@@_inner_sep:
                     \@@_stat_typeset:nnn {#1} {#2} {#3}
@@ -19485,9 +19510,12 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
               {
                 \MathMLintent
                   {
-                    _ #4 -
+                    _ #4
+                    \tl_if_blank:nF {#5} { - #5 }
+                    -
                     \bool_if:cTF { l_@@_ #1 _read_sub_bool } { sub } { de }
                     - \str_use:c { l_@@_ #1 _sub_index_str }
+                    \tl_if_blank:nF {#6} { - #6 }
                   }
                   {
                     \@@_inner_sep:
@@ -19510,7 +19538,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \begin{macro}{\spmedia, \spmediana, \spmoda}
 %   The public commands |\spmedia|, |\spmediana| and |\spmoda| enforce
 %   \emph{math mode}, open a local group, set the \mymeta{keys} and
-%   delegate execution to \myhlc|\@@_stat_print:nnnn| with the symbols
+%   delegate execution to \myhlc|\@@_stat_print:nnnnnn| with the symbols
 %   |MA|, |MD| and |MO| and the concepts |media-aritmética|, |mediana|
 %   and |moda|.
 %    \begin{macrocode}
@@ -19521,7 +19549,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_begin:
           \attribute \l_@@_scope_attr_int = 1
           \keys_set:nn { spintent / spmedia } {#1}
-          \@@_stat_print:nnnn { spmedia } { \mathrm{MA} } { } { media-aritmética }
+          \@@_stat_print:nnnnnn { spmedia } { \mathrm{MA} } { } { media-aritmética } { } { }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmedia } }
@@ -19533,7 +19561,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_begin:
           \attribute \l_@@_scope_attr_int = 1
           \keys_set:nn { spintent / spmediana } {#1}
-          \@@_stat_print:nnnn { spmediana } { \mathrm{MD} } { } { mediana }
+          \@@_stat_print:nnnnnn { spmediana } { \mathrm{MD} } { } { mediana } { } { }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmediana } }
@@ -19545,7 +19573,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_begin:
           \attribute \l_@@_scope_attr_int = 1
           \keys_set:nn { spintent / spmoda } {#1}
-          \@@_stat_print:nnnn { spmoda } { \mathrm{MO} } { } { moda }
+          \@@_stat_print:nnnnnn { spmoda } { \mathrm{MO} } { } { moda } { } { }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spmoda } }
@@ -19555,8 +19583,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %
 % \begin{macro}{\spdesv, \spvarz}
 %   The public commands |\spdesv| and |\spvarz| work the same way. The
-%   symbol is |s|, or |\sigma| when \mykey{sigma} is |true|; |\spvarz|
-%   adds the exponent |2|. The concepts are |desviación-estándar| and
+%   symbol is |s|, or |\sigma| when \mykey{sigma} is |true|, and its
+%   name is part of the spoken content; |\spvarz| adds the exponent |2|,
+%   spoken |al-cuadrado|. The concepts are |desviación-estándar| and
 %   |varianza|.
 %    \begin{macrocode}
 \NewDocumentCommand \spdesv { O{} }
@@ -19566,9 +19595,15 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_begin:
           \attribute \l_@@_scope_attr_int = 1
           \keys_set:nn { spintent / spdesv } {#1}
-          \@@_stat_print:nnnn { spdesv }
-            { \bool_if:NTF \l_@@_spdesv_sigma_bool { \sigma } { s } }
-            { } { desviación-estándar }
+          \bool_if:NTF \l_@@_spdesv_sigma_bool
+            {
+              \@@_stat_print:nnnnnn { spdesv } { \sigma } { }
+                { desviación-estándar } { sigma } { }
+            }
+            {
+              \@@_stat_print:nnnnnn { spdesv } { s } { }
+                { desviación-estándar } { s } { }
+            }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spdesv } }
@@ -19580,9 +19615,15 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_begin:
           \attribute \l_@@_scope_attr_int = 1
           \keys_set:nn { spintent / spvarz } {#1}
-          \@@_stat_print:nnnn { spvarz }
-            { \bool_if:NTF \l_@@_spvarz_sigma_bool { \sigma } { s } }
-            { 2 } { varianza }
+          \bool_if:NTF \l_@@_spvarz_sigma_bool
+            {
+              \@@_stat_print:nnnnnn { spvarz } { \sigma } { 2 }
+                { varianza } { sigma } { al-cuadrado }
+            }
+            {
+              \@@_stat_print:nnnnnn { spvarz } { s } { 2 }
+                { varianza } { s } { al-cuadrado }
+            }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spvarz } }

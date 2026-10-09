@@ -1,14 +1,11 @@
-% test-025.tex -- comandos \spProm, \spmedia, \spmediana, \spmoda, \spdesv y \spvarz
+% test-025.tex -- \spProm, \spmedia, \spmediana, \spmoda, \spdesv y \spvarz
 %
-% Compilar:  lualatex-dev test-025.tex
-% Validar:   show-pdf-tags --xml test-025.pdf | rnv-wrapp
-%            verapdf --flavour ua2 --format text test-025.pdf
+% Regresion:  l3build save test-025
+%             l3build check test-025
 %
-% Cada caso es un parrafo numerado, para poder referirse a el al
-% escuchar el PDF. Los comentarios "doc:" indican la lectura que
-% documenta el manual de usuario; en el resto, la lectura se revisa
-% escuchando. Las entradas invalidas (que detienen la compilacion)
-% no van aqui.
+% Los "doc:" son lecturas reales de NVDA con MathCAT (2026-10-09).
+\input{regression-test}
+
 \DocumentMetadata
   {
     lang=es-CL,
@@ -122,5 +119,11 @@
 
 % doc: «media aritmética, mediana y moda»
 26. Los tres juntos: $\spmedia$, $\spmediana$ y $\spmoda$.
+
+\START
+
+\SHOWPDFTAGS
+
+\OMIT
 
 \end{document}
