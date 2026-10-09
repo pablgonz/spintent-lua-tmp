@@ -198,7 +198,7 @@ end, "shekel_fallback_patch")
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
         spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
         spProm, spmedia, spmediana, spmoda, spdesv, spvarz, %
-        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, %
+        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, %
       }
   }
 % Colors
@@ -641,7 +641,7 @@ end, "shekel_fallback_patch")
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
                         spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
                         spProm, spmedia, spmediana, spmoda, spdesv, spvarz, %
-                        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, },%
+                        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -6474,24 +6474,13 @@ end, "shekel_fallback_patch")
 % \smallskip
 % Establece un \emph{subíndice} sobre la letra, que
 % \mynvmath{NVDA/MathCAT} verbaliza después del nombre con la palabra
-% \emph{«sub»} (vea la llave \mykey{read-sub}). El valor de esta llave
+% \emph{«sub»}. El valor de esta llave
 % \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
 % |$\spOmega[sub-index={1}]$| imprimirá `$\Omega_{1}$' en la salida
 % \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«espacio muestral
 % sub 1»}; |$\spOmega[card=true,sub-index={1}]$| imprimirá
 % `$\#\Omega_{1}$' y verbalizará \emph{«cardinalidad del espacio muestral sub
 % 1»}.
-%
-% \smallskip
-%
-% \keyexampcmd{read-sub}{true \textnormal{\textcolor{lightgray}{\textbar}}
-%   false}{true}[spOmega]
-% \smallskip
-% Establece si se \emph{usa} la palabra \emph{«sub»} en lugar de
-% \emph{«de»} al verbalizar el subíndice establecido por la llave
-% \mykey{sub-index}, sin modificar la impresión del comando. Con
-% |$\spOmega[sub-index={1},read-sub=false]$|, \mynvmath{NVDA/MathCAT}
-% verbalizará \emph{«espacio muestral de 1»}.
 %
 % \smallskip
 %
@@ -6506,7 +6495,7 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%  Las llaves \mykey{sub-index} y \mykey{read-sub} no tienen efecto al usar |read-arg|.
+%  La llave \mykey{sub-index} no tiene efecto al usar |read-arg|.
 % \end{important}
 %
 % \smallskip
@@ -6519,6 +6508,58 @@ end, "shekel_fallback_patch")
 % la impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT}
 % NO verbalizará la salida del comando; si se establece en |false|, sí
 % verbalizará la salida del comando.
+%
+% \subsection*{El comando \cs[no-index]{spPval}}\label{subsec:spPval}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spPval}
+%   \begin{syntax}
+%     |\spPval|\mymarg{casos}\mymarg{total} \hfill |\spPval|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{casos}\mymarg{total}
+%   \end{syntax}
+%   El comando \ics*{spPval} trabaja en \emph{modo matemático} y recibe
+%   \emph{dos argumentos obligatorios}: \mymarg{casos} y \mymarg{total}, los
+%   tipografía como una fracción y devuelve el \emph{«valor de una
+%   probabilidad»}.
+%
+%   \smallskip
+%
+%   Si no se proporciona el \emph{argumento opcional}
+%   \myoarg{key \textnormal{\textcolor{gray}{=}} val},
+%   |$\spPval{1}{5}$| imprimirá `$\frac{1}{5}$' en la salida
+%   \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+%   \emph{«1 de 5»}.
+% \end{function}
+%
+% \smallskip
+%
+% \begin{important}*
+%   Los argumentos \mymarg{casos} y \mymarg{total} se tipografían
+%   directamente, sin procesamiento semántico adicional.
+% \end{important}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spPval}}
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spPval]
+% \smallskip
+% Establece si se \emph{silencia} en \mynvmath{NVDA/MathCAT} la verbalización
+% del \emph{valor de la probabilidad} pasado al comando sin modificar la
+% impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO
+% verbalizará la salida del comando; si se establece en |false|,
+% \mynvmath{NVDA/MathCAT} sí verbalizará la salida del comando.
+%
+% \smallskip
+%
+% \keyexampcmd{use-dfrac}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spPval]
+% \smallskip
+% Establece si la fracción del \emph{valor de la probabilidad} se imprime
+% usando |\dfrac| en lugar de |\frac|. Si se establece en |true|, al usar
+% |$\spPval[use-dfrac=true]{1}{5}$| imprimirá la fracción en tamaño
+% \emph{display} `$\dfrac{1}{5}$' en la salida \texttt{PDF}; si se establece
+% en |false|, la fracción se imprime con |\frac| siguiendo el tamaño
+% matemático del contexto en curso.
 %
 % \newpage
 %
@@ -19770,6 +19811,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   }
 \clist_map_inline:nn { spdesv , spvarz }
   { \bool_new:c { l_@@_ #1 _sigma_bool } }
+\bool_set_true:N \l_@@_spOmega_read_sub_bool
 %    \end{macrocode}
 % \end{variable}
 %
@@ -19806,7 +19848,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \clist_map_inline:nn
   {
     spmedia , spmediana , spmoda , spdesv , spvarz , sprango , spriq ,
-    spFrec , spOmega
+    spFrec
   }
   {
     \keys_define:nn { spintent / #1 }
@@ -20609,9 +20651,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %
 % \begin{variable}[int]{\l_@@_spOmega_card_bool}
 %   The variables of the keys \mykey[spOmega]{silent},
-%   \mykey[spOmega]{sub-index}, \mykey[spOmega]{read-sub} and
-%   \mykey[spOmega]{read-arg} are those of the \texttt{stat} family. The
-%   boolean variable \myhlc|\l_@@_spOmega_card_bool| stores the key
+%   \mykey[spOmega]{sub-index} and \mykey[spOmega]{read-arg} are those of
+%   the \texttt{stat} family. The variable
+%   \myhlc|\l_@@_spOmega_read_sub_bool| of that family has no key here and
+%   is set to |true|, so the subscript is always spoken with \emph{«sub»}.
+%   The boolean variable \myhlc|\l_@@_spOmega_card_bool| stores the key
 %   \mykey[spOmega]{card}.
 %    \begin{macrocode}
 \bool_new:N \l_@@_spOmega_card_bool
@@ -20620,17 +20664,34 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %
 % \subsubsection{Definition of keys for \cs[no-index]{spOmega}}
 %
-% \begin{macro}[int]{card}
-%   We define the \mymeta{key} \mykey[spOmega]{card}, which starts in
-%   |false|. \mykey[spOmega]{read-sub} starts in |true|, since the
-%   subscript is read after a name that is not a letter.
+% \begin{macro}[int]{silent, sub-index, read-arg, card, unknown}
+%   We define the \mymeta{keys} \mykey[spOmega]{silent},
+%   \mykey[spOmega]{sub-index}, \mykey[spOmega]{read-arg} and
+%   \mykey[spOmega]{card}, the last one starting in |false|. As elsewhere,
+%   \mykey{sub-index} is kept as a string and \mykey{read-arg} goes through
+%   \myhlc|\@@_sanitize_affix:cn|.
 %    \begin{macrocode}
 \keys_define:nn { spintent / spOmega }
   {
+    silent     .bool_set:N = \l_@@_spOmega_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
+    sub-index  .code:n =
+      { \str_set:Nn \l_@@_spOmega_sub_index_str {#1} },
+    sub-index  .initial:n  = ,
+    sub-index  .value_required:n = true,
+    read-arg   .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spOmega_read_arg_tl {#1} },
+    read-arg   .initial:n  = ,
+    read-arg   .value_required:n = true,
     card       .bool_set:N = \l_@@_spOmega_card_bool,
     card       .initial:n  = false,
     card       .value_required:n = true,
-    read-sub   .initial:n  = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spOmega }
+        \@@_unknown_keys_cmd:n {#1}
+      },
   }
 %    \end{macrocode}
 % \end{macro}
@@ -20663,6 +20724,90 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spOmega } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spPval}}\label{cmd:spPval}
+%
+% The user command |\spPval| typesets the value of a probability as a
+% fraction |a|/|b| (|\dfrac| or |\frac|, per \mykey[spPval]{use-dfrac}),
+% read natively as \emph{«a de b»} — no Lua parsing involved.
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spPval}}
+%
+% \begin{macro}[int]{silent, use-dfrac, unknown}
+%   We define the \mymeta{keys} \mykey[spPval]{silent} and
+%   \mykey[spPval]{use-dfrac}.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spPval }
+  {
+    silent     .bool_set:N = \l_@@_spPval_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
+    use-dfrac  .bool_set:N = \l_@@_spPval_use_dfrac_bool,
+    use-dfrac  .initial:n  = false,
+    use-dfrac  .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spPval }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spPval_exec:nnn}
+%   The function \myhlc|\@@_spPval_exec:nnn| receives the optional
+%   \mymeta{keys} in `|#1|', the numerator in `|#2|' and the denominator in
+%   `|#3|'. Under \mykey{silent}, the fraction (|\frac| or |\dfrac|, per
+%   \mykey{use-dfrac}) is silenced as one unit. Otherwise numerator and
+%   denominator are each tagged through a native |\MathMLarg|
+%   (|num|/|denom|) inside the fraction, and the outer |\MathMLintent|
+%   reads \myhlc|_de:infix($num,$denom)|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spPval_exec:nnn
+  {
+    \keys_set:nn { spintent / spPval } { #1 }
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_spPval_silent_bool
+      {
+        \MathMLintent { _- }
+          {
+            \@@_inner_sep:
+            \bool_if:NTF \l_@@_spPval_use_dfrac_bool
+              { \dfrac { #2 } { #3 } }
+              { \frac  { #2 } { #3 } }
+          }
+      }
+      {
+        \MathMLintent { _de:infix($num,$denom) }
+          {
+            \@@_inner_sep:
+            \bool_if:NTF \l_@@_spPval_use_dfrac_bool
+              {
+                \dfrac { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } }
+              }
+              { \frac  { \MathMLarg { num } { #2 } } { \MathMLarg { denom } { #3 } } }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spPval}
+%   The public command |\spPval| enforces \emph{math mode}, opens a local
+%   group and delegates execution to \myhlc|\@@_spPval_exec:nnn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spPval { O{} m m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \@@_spPval_exec:nnn { #1 } { #2 } { #3 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spPval } }
   }
 %    \end{macrocode}
 % \end{macro}

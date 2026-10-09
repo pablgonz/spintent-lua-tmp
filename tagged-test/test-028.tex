@@ -1,4 +1,4 @@
-% test-028.tex -- comandos \spcase y \spOmega
+% test-028.tex -- comandos \spcase, \spOmega y \spPval
 %
 % Compilar:  lualatex-dev test-028.tex
 % Validar:   show-pdf-tags --xml test-028.pdf | rnv-wrapp
@@ -61,24 +61,41 @@
 % doc: «cardinalidad del espacio muestral sub 1»
 9. Cardinalidad con sub-index: $\spOmega[card=true,sub-index={1}]$.
 
-% doc: «espacio muestral de 1»
-10. Con read-sub=false: $\spOmega[sub-index={1},read-sub=false]$.
-
 % doc: «universo»
-11. Con read-arg: $\spOmega[read-arg={universo}]$.
+10. Con read-arg: $\spOmega[read-arg={universo}]$.
 
 % doc: sin lectura
-12. Con silent: $\spOmega[silent=true]$.
+11. Con silent: $\spOmega[silent=true]$.
 
 \section*{C. Dentro de fórmulas}
 
 % doc: «p es igual a la fracción con numerador casos favorables y denominador casos posibles»
-13. Regla de Laplace: $P = \dfrac{\spcase{f}}{\spcase{p}}$.
+12. Regla de Laplace: $P = \dfrac{\spcase{f}}{\spcase{p}}$.
 
 % doc: «p es igual a la fracción con numerador casos favorables y denominador cardinalidad del espacio muestral»
-14. Con la cardinalidad: $P = \dfrac{\spcase{f}}{\spOmega[card=true]}$.
+13. Con la cardinalidad: $P = \dfrac{\spcase{f}}{\spOmega[card=true]}$.
 
 % doc: «casos totales es igual a cardinalidad del espacio muestral»
-15. Casos totales: $\spcase{t} = \spOmega[card=true]$.
+14. Casos totales: $\spcase{t} = \spOmega[card=true]$.
+
+\section*{D. El comando spPval}
+
+% doc: «1 de 5»
+15. Valor de una probabilidad: $\spPval{1}{5}$.
+
+% doc: «1 de 5»
+16. Con use-dfrac: $\spPval[use-dfrac=true]{1}{5}$.
+
+% doc: sin lectura
+17. Con silent: $\spPval[silent=true]{1}{5}$.
+
+% doc: «p de a es igual a 1 de 5»
+18. En una igualdad: $P(A) = \spPval{1}{5}$.
+
+% doc: «1 de 5 más 2 de 5»
+19. Dos valores sumados: $\spPval{1}{5} + \spPval{2}{5}$.
+
+% doc: «casos favorables de casos posibles»
+20. Con los casos: $\spPval{\spcase{f}}{\spcase{p}}$.
 
 \end{document}
