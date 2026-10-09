@@ -2572,6 +2572,32 @@ local function spintent_spcoord_classify(part)
     return sign, type_, value, has_frac, comp
 end
 
+-- profundidad final de llaves y posiciones de ";" y "," a profundidad 0
+local function spintent_interval_scan(inner)
+    local depth, semis, commas = 0, {}, {}
+    local i, n = 1, #inner
+    while i <= n do
+        local c = s_sub(inner, i, i)
+        if c == "\\" then
+            i = i + 2
+        else
+            if c == "{" then
+                depth = depth + 1
+            elseif c == "}" then
+                depth = depth - 1
+            elseif depth == 0 then
+                if c == ";" then
+                    semis[#semis + 1] = i
+                elseif c == "," then
+                    commas[#commas + 1] = i
+                end
+            end
+            i = i + 1
+        end
+    end
+    return depth, semis, commas
+end
+
 local function spintent_spcoord_set_error()
     token_set_macro("l__spintent_spcoord_luaset_error_str", "true")
     token_set_macro("l__spintent_spcoord_luaset_sep_str",   "")
@@ -2590,36 +2616,32 @@ end
 register_tex_cmd("luafun_spcoord_parse_and_set", function(raw_content)
     raw_content = spintent_trim(raw_content)
 
-    local sep_char, x_raw, y_raw
-
-    if s_match(raw_content, ";") then
-        sep_char = ";"
-        x_raw, y_raw = raw_content:match("^([^;]*);([^;]*)$")
+    -- el separador es un ";" o, si no hay, una unica "," a profundidad
+    -- de llaves 0 (a_{1,2}, b es valido); con ";" las comas son decimales
+    local depth, semis, commas = spintent_interval_scan(raw_content)
+    local pos, sep_char
+    if depth ~= 0 then
+        spintent_spcoord_set_error()
+        return
+    elseif #semis > 0 then
+        if #semis > 1 then
+            spintent_spcoord_set_error()
+            return
+        end
+        pos, sep_char = semis[1], ";"
+    elseif #commas == 1 then
+        pos, sep_char = commas[1], ","
     else
-        sep_char = ","
-        x_raw, y_raw = raw_content:match("^([^,]*),([^,]*)$")
-    end
-
-    if not x_raw or not y_raw then
         spintent_spcoord_set_error()
         return
     end
 
-    x_raw = spintent_trim(x_raw)
-    y_raw = spintent_trim(y_raw)
+    local x_raw = spintent_trim(s_sub(raw_content, 1, pos - 1))
+    local y_raw = spintent_trim(s_sub(raw_content, pos + 1))
 
     if x_raw == "" or y_raw == "" then
         spintent_spcoord_set_error()
         return
-    end
-
-    -- si el separador es coma, ninguna mitad puede tener OTRA coma
-    -- (ambiguedad con un decimal) -- con punto y coma no hay problema
-    if sep_char == "," then
-        if s_match(x_raw, ",") or s_match(y_raw, ",") then
-            spintent_spcoord_set_error()
-            return
-        end
     end
 
     local x_sign, x_type, x_value, x_has_frac, x_comp = spintent_spcoord_classify(x_raw)
@@ -2663,32 +2685,6 @@ local function spintent_interval_set_error(code)
             token_set_macro("l__spintent_spinterval_luaset_" .. p .. "_" .. k .. "_str", "")
         end
     end
-end
-
--- profundidad final de llaves y posiciones de ";" y "," a profundidad 0
-local function spintent_interval_scan(inner)
-    local depth, semis, commas = 0, {}, {}
-    local i, n = 1, #inner
-    while i <= n do
-        local c = s_sub(inner, i, i)
-        if c == "\\" then
-            i = i + 2
-        else
-            if c == "{" then
-                depth = depth + 1
-            elseif c == "}" then
-                depth = depth - 1
-            elseif depth == 0 then
-                if c == ";" then
-                    semis[#semis + 1] = i
-                elseif c == "," then
-                    commas[#commas + 1] = i
-                end
-            end
-            i = i + 1
-        end
-    end
-    return depth, semis, commas
 end
 
 local function spintent_interval_infinity(part)
@@ -2816,6 +2812,89 @@ register_tex_cmd("luafun_spinterval_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spinterval_luaset_b_inf_str",       b_inf)
     token_set_macro("l__spintent_spinterval_luaset_b_tall_str",      b_tall)
     token_set_macro("l__spintent_spinterval_luaset_b_composite_str", b_comp)
+end, { "string" })
+
+-- ------------------------------------------------------------
+-- \spProb: separa  A \cap B,  A \cup B  o  A \mid B  (también A | B).
+-- Solo cuenta el nivel superior: lo que está entre llaves, paréntesis
+-- o corchetes (también \left...\right) no se examina.
+-- ------------------------------------------------------------
+local spintent_prob_words = { cap = "cap", cup = "cup", mid = "mid", vert = "mid" }
+
+local function spintent_prob_set_error()
+    token_set_macro("l__spintent_spProb_luaset_error_str", "true")
+    token_set_macro("l__spintent_spProb_luaset_op_str",    "")
+    token_set_macro("l__spintent_spProb_luaset_a_str",     "")
+    token_set_macro("l__spintent_spProb_luaset_b_str",     "")
+end
+
+register_tex_cmd("luafun_spProb_parse_and_set", function(raw_content)
+    raw_content = spintent_trim(raw_content)
+    local depth, ops = 0, {}
+    local i, n = 1, #raw_content
+    while i <= n do
+        local c = s_sub(raw_content, i, i)
+        if c == "\\" then
+            local word = s_match(raw_content, "^\\(%a+)", i)
+            if word == "left" or word == "right" then
+                local j = i + 1 + #word
+                while s_sub(raw_content, j, j) == " " do j = j + 1 end
+                local d = s_sub(raw_content, j, j)
+                if word == "left" and (d == "(" or d == "[") then
+                    depth = depth + 1
+                elseif word == "right" and (d == ")" or d == "]") then
+                    depth = depth - 1
+                end
+                i = j + 1
+            elseif word and depth == 0 and spintent_prob_words[word] then
+                ops[#ops + 1] = { i, 1 + #word, spintent_prob_words[word] }
+                i = i + 1 + #word
+            elseif word then
+                i = i + 1 + #word
+            else
+                local d = s_sub(raw_content, i + 1, i + 1)
+                if d == "{" then
+                    depth = depth + 1
+                elseif d == "}" then
+                    depth = depth - 1
+                end
+                i = i + 2
+            end
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+            elseif c == "|" and depth == 0 then
+                ops[#ops + 1] = { i, 1, "mid" }
+            end
+            if depth < 0 then
+                spintent_prob_set_error()
+                return
+            end
+            i = i + 1
+        end
+    end
+    if depth ~= 0 or raw_content == "" or #ops > 1 then
+        spintent_prob_set_error()
+        return
+    end
+
+    local a_raw, b_raw, op = raw_content, "", "none"
+    if #ops == 1 then
+        op = ops[1][3]
+        a_raw = spintent_trim(s_sub(raw_content, 1, ops[1][1] - 1))
+        b_raw = spintent_trim(s_sub(raw_content, ops[1][1] + ops[1][2]))
+        if a_raw == "" or b_raw == "" then
+            spintent_prob_set_error()
+            return
+        end
+    end
+
+    token_set_macro("l__spintent_spProb_luaset_error_str", "false")
+    token_set_macro("l__spintent_spProb_luaset_op_str",    op)
+    token_set_macro("l__spintent_spProb_luaset_a_str",     a_raw)
+    token_set_macro("l__spintent_spProb_luaset_b_str",     b_raw)
 end, { "string" })
 
 -- ------------------------------------------------------------

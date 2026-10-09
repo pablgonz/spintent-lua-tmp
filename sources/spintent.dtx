@@ -198,7 +198,7 @@ end, "shekel_fallback_patch")
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
         spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
         spProm, spmedia, spmediana, spmoda, spdesv, spvarz, %
-        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, %
+        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, spProb, spcomp, %
       }
   }
 % Colors
@@ -641,7 +641,7 @@ end, "shekel_fallback_patch")
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
                         spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
                         spProm, spmedia, spmediana, spmoda, spdesv, spvarz, %
-                        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, },%
+                        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, spProb, spcomp, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -6560,6 +6560,140 @@ end, "shekel_fallback_patch")
 % \emph{display} `$\dfrac{1}{5}$' en la salida \texttt{PDF}; si se establece
 % en |false|, la fracción se imprime con |\frac| siguiendo el tamaño
 % matemático del contexto en curso.
+%
+% \subsection*{El comando \cs[no-index]{spProb}}\label{subsec:spProb}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spProb}
+%   \begin{syntax}
+%     |\spProb|\mymarg{evento} \hfill |\spProb|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{evento}
+%   \end{syntax}
+%   El comando \ics*{spProb} trabaja en \emph{modo matemático} y recibe el
+%   \emph{argumento obligatorio} \mymarg{evento}: un evento, o dos eventos
+%   unidos por \emph{exactamente uno} de los operadores |\cap|, |\cup|,
+%   |\mid| o el carácter `\texttt{\textbar}', escritos tal como se imprimen. El
+%   comando imprime la probabilidad entre paréntesis precedida de la letra
+%   `$P$'. Cualquier otro argumento (vacío, con llaves o paréntesis sin
+%   cerrar, con un evento vacío o con más de un operador a la vez) se
+%   rechaza con un error y no se imprime nada. Lo que va entre llaves,
+%   paréntesis o corchetes no se examina, de modo que
+%   |\spProb{A \cap (B \cup C)}| es válido.
+%
+%   \smallskip
+%
+%   |$\spProb{A}$| imprimirá `$P(A)$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«probabilidad de A»};
+%   |$\spProb{A \cap B}$| imprimirá `$P(A \cap B)$' y verbalizará
+%   \emph{«probabilidad de A y B»}; |$\spProb{A \cup B}$| imprimirá
+%   `$P(A \cup B)$' y verbalizará \emph{«probabilidad de A o B»};
+%   |$\spProb{A \mid B}$| (o |$\spProb{A | B}$|) imprimirá `$P(A \mid B)$' y
+%   verbalizará \emph{«probabilidad de A dado B»}.
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spProb}}
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spProb]
+% \smallskip
+% Sobrescribe lo que verbalizará \mynvmath{NVDA/MathCAT} al ejecutar el
+% comando sin modificar la impresión de este. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
+% |$\spProb[read-arg={probabilidad del suceso}]{A}$| imprimirá `$P(A)$' en
+% la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará
+% \emph{«probabilidad del suceso»}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spProb]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} de la probabilidad al ejecutar el comando sin
+% modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se
+% establece en |false|, sí verbalizará la salida del comando. El argumento
+% inválido se rechaza siempre, también con |silent=true|.
+%
+% \begin{important}*
+%   Dentro del argumento de \ics*{spProb}, los operadores |\cap|, |\cup| y
+%   |\mid| que quedan entre llaves o paréntesis (por ejemplo en
+%   |\spProb{A \cap (B \cup C)}|) también se verbalizan como «y», «o» y
+%   «dado», respectivamente.
+% \end{important}
+%
+% \subsection*{El comando \cs[no-index]{spcomp}}\label{subsec:spcomp}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spcomp}
+%   \begin{syntax}
+%     |\spcomp|\mymarg{evento} \hfill |\spcomp|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{evento}
+%   \end{syntax}
+%   El comando \ics*{spcomp} trabaja en \emph{modo matemático} y recibe el
+%   \emph{argumento obligatorio} \mymarg{evento}: el evento del que se
+%   quiere el complemento, escrito tal como se imprime. El comando imprime el
+%   complemento con el exponente `$c$' y se puede usar solo o dentro del
+%   argumento de \ics*{spProb}. Si el evento contiene una operación entre
+%   conjuntos (|\cap|, |\cup|, |\setminus| o |\mid|), se imprime entre
+%   paréntesis y se verbaliza entre paréntesis para no confundir el
+%   complemento de toda la operación con el de su primer evento.
+%
+%   \smallskip
+%
+%   |$\spcomp{A}$| imprimirá `$A^{c}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«complemento de A»};
+%   |$\spProb{A \cap \spcomp{B}}$| imprimirá `$P(A \cap B^{c})$' y
+%   verbalizará \emph{«probabilidad de A y complemento de B»};
+%   |$\spcomp{A \cup B}$| imprimirá `$(A \cup B)^{c}$' y verbalizará
+%   \emph{«complemento de se abren paréntesis A o B se cierran
+%   paréntesis»}.
+% \end{function}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spcomp}}
+%
+% \keyexampcmd{bar}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcomp]
+% \smallskip
+% Establece si el complemento se imprime con una \emph{barra horizontal}
+% sobre el evento en lugar del exponente `$c$'. Si se establece en |true|,
+% |$\spcomp[bar=true]{A}$| imprimirá `$\overline{A}$' en la salida
+% \texttt{PDF}; la verbalización es la misma en ambos casos.
+%
+% \smallskip
+%
+% \keyexampcmd{paren}{auto \textnormal{\textcolor{lightgray}{\textbar}}
+%   true \textnormal{\textcolor{lightgray}{\textbar}} false}{auto}[spcomp]
+% \smallskip
+% Establece si el evento se imprime entre paréntesis cuando se usa el
+% exponente `$c$'. Con |auto| se agregan solo si el evento contiene |\cap|,
+% |\cup|, |\setminus| o |\mid|; con |true| siempre, y con |false| nunca. Con
+% |bar=true| la barra cubre el evento y no se agregan paréntesis. Como
+% \mynvmath{NVDA/MathCAT} no verbaliza la barra, cuando el evento es compuesto
+% y se usa |bar=true| el complemento se verbaliza \emph{«complemento de la
+% expresión»} (por ejemplo, |$\spcomp[bar=true]{A \cup B}$| se verbaliza
+% \emph{«complemento de la expresión A o B»}), para dejar claro que abarca
+% todo el evento.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spcomp]
+% \smallskip
+% Sobrescribe lo que verbalizará \mynvmath{NVDA/MathCAT} al ejecutar el
+% comando sin modificar la impresión de este. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
+% |$\spcomp[read-arg={no ocurre A}]{A}$| imprimirá `$A^{c}$' en la salida
+% \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«no ocurre A»}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcomp]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} del complemento al ejecutar el comando sin
+% modificar la impresión de este. Si se establece en |true|,
+% \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se
+% establece en |false|, sí verbalizará la salida del comando.
 %
 % \newpage
 %
@@ -20812,6 +20946,480 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \end{macrocode}
 % \end{macro}
 %
+% \subsection{The command \cs{spProb}}\label{cmd:spProb}
+%
+% The user command |\spProb| typesets the probability of an event as
+% |P(|\mymarg{event}|)|. The \mymarg{argument} is written as it is printed:
+% a single event, or two events joined by exactly one of |\cap|, |\cup|,
+% |\mid| or the character `\texttt{\textbar}', which are read \emph{«probabilidad de
+% A»}, \emph{«probabilidad de A y B»}, \emph{«probabilidad de A o B»} and
+% \emph{«probabilidad de A dado B»}.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spProb}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spProb_luaset_error_str,
+%     \l_@@_spProb_luaset_op_str,
+%     \l_@@_spProb_luaset_a_str,
+%     \l_@@_spProb_luaset_b_str,
+%   }
+%   Variables set by the function \myhlc|\@@_luafun_spProb_parse_and_set:n|.
+%   The string variable \myhlc|\l_@@_spProb_luaset_error_str| is |true| when
+%   the \mymarg{argument} is invalid. The string variable
+%   \myhlc|\l_@@_spProb_luaset_op_str| is |none|, |cap|, |cup| or |mid|, and
+%   \myhlc|\l_@@_spProb_luaset_a_str| and \myhlc|\l_@@_spProb_luaset_b_str|
+%   hold the event before and after the operator (the second one is empty
+%   when there is no operator).
+%    \begin{macrocode}
+\str_new:N \l_@@_spProb_luaset_error_str
+\str_new:N \l_@@_spProb_luaset_op_str
+\str_new:N \l_@@_spProb_luaset_a_str
+\str_new:N \l_@@_spProb_luaset_b_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{variable}[int]{\l_@@_spProb_silent_bool, \l_@@_spProb_read_arg_tl}
+%   The boolean variable \myhlc|\l_@@_spProb_silent_bool| stores the key
+%   \mykey[spProb]{silent}, and the token list variable
+%   \myhlc|\l_@@_spProb_read_arg_tl| the key \mykey[spProb]{read-arg}.
+%    \begin{macrocode}
+\bool_new:N \l_@@_spProb_silent_bool
+\tl_new:N   \l_@@_spProb_read_arg_tl
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spProb}}
+%
+% \begin{macro}[int]{spProb-invalid-argument}
+%   The error message |spProb-invalid-argument| is raised when the
+%   \mymarg{argument} is empty, has unbalanced braces or parentheses, has an
+%   empty event, or has more than one operator.
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spProb-invalid-argument }
+  {
+    Invalid~argument~'#1'~for~\token_to_str:N \spProb~\msg_line_context:.
+  }
+  {
+    The~argument~must~be~an~event,~or~two~events~joined~by~exactly~one~of~
+    \token_to_str:N \cap,~\token_to_str:N \cup,~\token_to_str:N \mid~or~|,~
+    outside~any~braces~or~parentheses.\\
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spProb}}
+%
+% \begin{macro}[int]{silent, read-arg, unknown}
+%   We define the \mymeta{keys} \mykey[spProb]{silent} and
+%   \mykey[spProb]{read-arg}. As elsewhere, \mykey{read-arg} goes through
+%   \myhlc|\@@_sanitize_affix:Nn|.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spProb }
+  {
+    silent     .bool_set:N = \l_@@_spProb_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
+    read-arg   .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spProb_read_arg_tl {#1} },
+    read-arg   .initial:n  = ,
+    read-arg   .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spProb }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spProb}}
+%
+% \begin{macro}[int]{\@@_spProb_nested_ops:, \@@_spProb_event:N}
+%   The function \myhlc|\@@_spProb_nested_ops:| redefines, locally, |\cap|,
+%   |\cup| and |\mid| so that each one is wrapped in its own
+%   |\MathMLintent| (|_y|, |_o| and |_dado|) while keeping its math class
+%   (|\mathbin| or |\mathrel|) and therefore its spacing. The function
+%   \myhlc|\@@_spProb_event:N| typesets the event stored in its argument
+%   inside a group with these definitions, so the operators nested in
+%   braces or parentheses are also read; the operators at the top level never
+%   go through it, they are printed by \myhlc|\@@_spProb_print:|. The boolean
+%   variable \myhlc|\l_@@_spProb_nested_bool| makes the redefinition happen
+%   only once when the groups are nested (for instance a |\spcomp| inside
+%   |\spProb|), so that the saved meanings are the original ones.
+%    \begin{macrocode}
+\bool_new:N \l_@@_spProb_nested_bool
+\cs_new_protected:Nn \@@_spProb_nested_ops:
+  {
+    \bool_if:NF \l_@@_spProb_nested_bool
+      {
+        \bool_set_true:N \l_@@_spProb_nested_bool
+        \cs_set_eq:NN \@@_spProb_cap_orig: \cap
+        \cs_set_eq:NN \@@_spProb_cup_orig: \cup
+        \cs_set_eq:NN \@@_spProb_mid_orig: \mid
+        \cs_set_protected:Npn \cap
+          { \mathbin { \MathMLintent { _y } { \@@_spProb_cap_orig: } } }
+        \cs_set_protected:Npn \cup
+          { \mathbin { \MathMLintent { _o } { \@@_spProb_cup_orig: } } }
+        \cs_set_protected:Npn \mid
+          { \mathrel { \MathMLintent { _dado } { \@@_spProb_mid_orig: } } }
+      }
+  }
+\cs_new_protected:Nn \@@_spProb_event:N
+  {
+    \group_begin:
+      \@@_spProb_nested_ops:
+      \str_use:N #1
+    \group_end:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spProb_content:}
+%   The function \myhlc|\@@_spProb_content:| typesets the event, or the two
+%   events and the operator, without any annotation.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spProb_content:
+  {
+    \str_use:N \l_@@_spProb_luaset_a_str
+    \str_case:Vn \l_@@_spProb_luaset_op_str
+      {
+        { cap } { \cap \str_use:N \l_@@_spProb_luaset_b_str }
+        { cup } { \cup \str_use:N \l_@@_spProb_luaset_b_str }
+        { mid } { \mid \str_use:N \l_@@_spProb_luaset_b_str }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spProb_print:}
+%   The function \myhlc|\@@_spProb_print:| prints |P(|\mymeta{content}|)|
+%   inside one native |\MathMLintent|, preceded by the outer ghost
+%   \myhlc|\@@_invisible_sep:| and by the inner ghost
+%   \myhlc|\@@_inner_sep:|.
+%
+%   \smallskip
+%
+%   With \mykey{silent} |true|, the intent is |_-|. With \mykey{read-arg}
+%   given, the intent is |_|\mymeta{read-arg}|:nofix|. Otherwise the
+%   intent is |_probabilidad-de:prefix($a)| with the single event tagged as
+%   |a|; with an operator, the intent is |_probabilidad-de:prefix($p)|, where
+%   |p| is the group of the two events, which carries its own intent
+%   |_y:infix($a,$b)|, |_o:infix($a,$b)| or |_dado:infix($a,$b)| according to
+%   the operator, with the two events tagged as |a| and |b|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spProb_print:
+  {
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_spProb_silent_bool
+      {
+        \MathMLintent { _- }
+          {
+            \@@_inner_sep:
+            P ( \@@_spProb_content: )
+          }
+      }
+      {
+        \tl_if_empty:NTF \l_@@_spProb_read_arg_tl
+          {
+            \str_if_eq:VnTF \l_@@_spProb_luaset_op_str { none }
+              {
+                \MathMLintent { _probabilidad-de:prefix($a) }
+                  {
+                    \@@_inner_sep:
+                    P
+                    (
+                      \MathMLarg { a }
+                        { \@@_inner_sep: \@@_spProb_event:N \l_@@_spProb_luaset_a_str }
+                    )
+                  }
+              }
+              {
+                \MathMLintent { _probabilidad-de:prefix($p) }
+                  {
+                    \@@_inner_sep:
+                    P
+                    (
+                      \MathMLarg { p }
+                        {
+                          \MathMLintent
+                            {
+                              _
+                              \str_case:Vn \l_@@_spProb_luaset_op_str
+                                { { cap } { y } { cup } { o } { mid } { dado } }
+                              :infix($a,$b)
+                            }
+                            {
+                              \@@_inner_sep:
+                              \MathMLarg { a }
+                                { \@@_inner_sep: \@@_spProb_event:N \l_@@_spProb_luaset_a_str }
+                              \str_case:Vn \l_@@_spProb_luaset_op_str
+                                { { cap } { \cap } { cup } { \cup } { mid } { \mid } }
+                              \MathMLarg { b }
+                                { \@@_inner_sep: \@@_spProb_event:N \l_@@_spProb_luaset_b_str }
+                            }
+                        }
+                    )
+                  }
+              }
+          }
+          {
+            \MathMLintent { _ \tl_use:N \l_@@_spProb_read_arg_tl :nofix }
+              {
+                \@@_inner_sep:
+                P ( \@@_spProb_content: )
+              }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spProb_exec:nn}
+%   The function \myhlc|\@@_spProb_exec:nn| sets the \mymeta{keys} in
+%   `|#1|' and calls \myhlc|\@@_luafun_spProb_parse_and_set:n| with the
+%   \mymarg{argument} in `|#2|'. If the Lua module reports an error, it is
+%   rejected with |spProb-invalid-argument| whatever the value of the key
+%   \mykey{silent}, and nothing is printed; otherwise it delegates the
+%   printing to \myhlc|\@@_spProb_print:|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spProb_exec:nn
+  {
+    \keys_set:nn { spintent / spProb } {#1}
+    \@@_luafun_spProb_parse_and_set:n { \exp_not:n {#2} }
+    \str_if_eq:VnTF \l_@@_spProb_luaset_error_str { true }
+      { \msg_error:nnn { spintent } { spProb-invalid-argument } {#2} }
+      { \@@_spProb_print: }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spProb}
+%   The public command |\spProb| enforces \emph{math mode}, opens a local
+%   group and delegates execution to \myhlc|\@@_spProb_exec:nn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spProb { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \@@_spProb_exec:nn { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spProb } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{The command \cs{spcomp}}\label{cmd:spcomp}
+%
+% The user command |\spcomp| typesets the complement of an event, as
+% \mymeta{event}|^{c}| or, with the key \mykey[spcomp]{bar}, as
+% |\overline{|\mymeta{event}|}|, and reads it \emph{«complemento de»} the
+% event.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spcomp}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spcomp_silent_bool,
+%     \l_@@_spcomp_bar_bool,
+%     \l_@@_spcomp_read_arg_tl,
+%     \l_@@_spcomp_paren_str,
+%     \l_@@_spcomp_do_paren_bool,
+%     \l_@@_spcomp_compound_bool,
+%   }
+%   The boolean variables \myhlc|\l_@@_spcomp_silent_bool| and
+%   \myhlc|\l_@@_spcomp_bar_bool| store the keys \mykey[spcomp]{silent} and
+%   \mykey[spcomp]{bar}, the token list variable
+%   \myhlc|\l_@@_spcomp_read_arg_tl| the key \mykey[spcomp]{read-arg}, and
+%   the string variable \myhlc|\l_@@_spcomp_paren_str| the key
+%   \mykey[spcomp]{paren}. The boolean variable
+%   \myhlc|\l_@@_spcomp_do_paren_bool| tells whether the event is printed
+%   in parentheses once the key and the event have been examined. The
+%   boolean variable \myhlc|\l_@@_spcomp_compound_bool| is true when the
+%   event contains |\cap|, |\cup|, |\setminus| or |\mid|, whatever the
+%   keys are.
+%    \begin{macrocode}
+\bool_new:N \l_@@_spcomp_silent_bool
+\bool_new:N \l_@@_spcomp_bar_bool
+\tl_new:N   \l_@@_spcomp_read_arg_tl
+\str_new:N  \l_@@_spcomp_paren_str
+\bool_new:N \l_@@_spcomp_do_paren_bool
+\bool_new:N \l_@@_spcomp_compound_bool
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spcomp}}
+%
+% \begin{macro}[int]{silent, bar, paren, read-arg, unknown}
+%   We define the \mymeta{keys} \mykey[spcomp]{silent}, \mykey[spcomp]{bar},
+%   \mykey[spcomp]{paren} and \mykey[spcomp]{read-arg}. As elsewhere, \mykey{read-arg} goes
+%   through \myhlc|\@@_sanitize_affix:Nn|.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spcomp }
+  {
+    silent     .bool_set:N = \l_@@_spcomp_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
+    bar        .bool_set:N = \l_@@_spcomp_bar_bool,
+    bar        .initial:n  = false,
+    bar        .value_required:n = true,
+    paren      .choices:nn = { auto , true , false }
+      { \str_set:Nx \l_@@_spcomp_paren_str { \l_keys_choice_tl } },
+    paren      .initial:n  = auto,
+    paren      .value_required:n = true,
+    read-arg   .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spcomp_read_arg_tl {#1} },
+    read-arg   .initial:n  = ,
+    read-arg   .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spcomp }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spcomp}}
+%
+% \begin{macro}[int]{\@@_spcomp_set_paren:n, \@@_spcomp_event:n}
+%   The function \myhlc|\@@_spcomp_set_paren:n| sets
+%   \myhlc|\l_@@_spcomp_compound_bool| and
+%   \myhlc|\l_@@_spcomp_do_paren_bool|. The first one is true when the
+%   event contains |\cap|, |\cup|, |\setminus| or |\mid|. The second one
+%   follows the key \mykey[spcomp]{paren}: with |auto| it is true when the
+%   event is compound, and it is always false when the key
+%   \mykey[spcomp]{bar} is set (the overline already covers the event). The
+%   function
+%   \myhlc|\@@_spcomp_event:n| typesets the event in a group where the
+%   operators nested in it are read as in \myhlc|\@@_spProb_event:N|, and
+%   in parentheses when \myhlc|\l_@@_spcomp_do_paren_bool| is true. The
+%   parentheses belong to the event, so that they are inside the
+%   |\MathMLarg| and are read.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcomp_set_paren:n
+  {
+    \bool_set_false:N \l_@@_spcomp_do_paren_bool
+    \bool_set_false:N \l_@@_spcomp_compound_bool
+    \tl_map_inline:nn { \cap \cup \setminus \mid }
+      {
+        \tl_if_in:nnT {#1} {##1}
+          { \bool_set_true:N \l_@@_spcomp_compound_bool }
+      }
+    \bool_if:NF \l_@@_spcomp_bar_bool
+      {
+        \str_case:Vn \l_@@_spcomp_paren_str
+          {
+            { true } { \bool_set_true:N \l_@@_spcomp_do_paren_bool }
+            { auto }
+              {
+                \bool_if:NT \l_@@_spcomp_compound_bool
+                  { \bool_set_true:N \l_@@_spcomp_do_paren_bool }
+              }
+          }
+      }
+  }
+\cs_new_protected:Nn \@@_spcomp_event:n
+  {
+    \group_begin:
+      \@@_spProb_nested_ops:
+      \bool_if:NTF \l_@@_spcomp_do_paren_bool
+        { ( #1 ) }
+        { #1 }
+    \group_end:
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcomp_typeset:n}
+%   The function \myhlc|\@@_spcomp_typeset:n| typesets its argument as the
+%   complement of the event, with the exponent |c| or with an overline
+%   according to the key \mykey[spcomp]{bar}.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcomp_typeset:n
+  {
+    \bool_if:NTF \l_@@_spcomp_bar_bool
+      { \overline { #1 } }
+      { { #1 } ^ { c } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcomp_exec:nn}
+%   The function \myhlc|\@@_spcomp_exec:nn| sets the \mymeta{keys} in
+%   `|#1|' and prints the complement of the event `|#2|' inside one native
+%   |\MathMLintent|, preceded by the outer ghost \myhlc|\@@_invisible_sep:|
+%   and by the inner ghost \myhlc|\@@_inner_sep:|. With \mykey{silent}
+%   |true| the intent is |_-|; with \mykey{read-arg} given it is
+%   |_|\mymeta{read-arg}|:nofix|; otherwise it is
+%   |_complemento-de:prefix($a)| with the event tagged as |a|; when the
+%   key \mykey[spcomp]{bar} is set and the event is compound, the intent is
+%   |_complemento-de-la-expresión:prefix($a)|, because the overline is not
+%   read and the reading would not tell what the complement covers.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcomp_exec:nn
+  {
+    \keys_set:nn { spintent / spcomp } {#1}
+    \@@_spcomp_set_paren:n {#2}
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_spcomp_silent_bool
+      {
+        \MathMLintent { _- }
+          {
+            \@@_inner_sep:
+            \@@_spcomp_typeset:n { \@@_spcomp_event:n {#2} }
+          }
+      }
+      {
+        \tl_if_empty:NTF \l_@@_spcomp_read_arg_tl
+          {
+            \MathMLintent
+              {
+                \bool_lazy_and:nnTF
+                  { \bool_if_p:N \l_@@_spcomp_bar_bool }
+                  { \bool_if_p:N \l_@@_spcomp_compound_bool }
+                  { _complemento-de-la-expresión:prefix($a) }
+                  { _complemento-de:prefix($a) }
+              }
+              {
+                \@@_inner_sep:
+                \@@_spcomp_typeset:n
+                  { \MathMLarg { a } { \@@_inner_sep: \@@_spcomp_event:n {#2} } }
+              }
+          }
+          {
+            \MathMLintent { _ \tl_use:N \l_@@_spcomp_read_arg_tl :nofix }
+              {
+                \@@_inner_sep:
+                \@@_spcomp_typeset:n { \@@_spcomp_event:n {#2} }
+              }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spcomp}
+%   The public command |\spcomp| enforces \emph{math mode}, opens a local
+%   group and delegates execution to \myhlc|\@@_spcomp_exec:nn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spcomp { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \@@_spcomp_exec:nn { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spcomp } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \subsection{Finish package}
 %
 % Finish package implementation.
@@ -23639,6 +24247,89 @@ register_tex_cmd("luafun_spinterval_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spinterval_luaset_b_inf_str",       b_inf)
     token_set_macro("l__spintent_spinterval_luaset_b_tall_str",      b_tall)
     token_set_macro("l__spintent_spinterval_luaset_b_composite_str", b_comp)
+end, { "string" })
+
+-- ------------------------------------------------------------
+-- \spProb: separa  A \cap B,  A \cup B  o  A \mid B  (también A | B).
+-- Solo cuenta el nivel superior: lo que está entre llaves, paréntesis
+-- o corchetes (también \left...\right) no se examina.
+-- ------------------------------------------------------------
+local spintent_prob_words = { cap = "cap", cup = "cup", mid = "mid", vert = "mid" }
+
+local function spintent_prob_set_error()
+    token_set_macro("l__spintent_spProb_luaset_error_str", "true")
+    token_set_macro("l__spintent_spProb_luaset_op_str",    "")
+    token_set_macro("l__spintent_spProb_luaset_a_str",     "")
+    token_set_macro("l__spintent_spProb_luaset_b_str",     "")
+end
+
+register_tex_cmd("luafun_spProb_parse_and_set", function(raw_content)
+    raw_content = spintent_trim(raw_content)
+    local depth, ops = 0, {}
+    local i, n = 1, #raw_content
+    while i <= n do
+        local c = s_sub(raw_content, i, i)
+        if c == "\\" then
+            local word = s_match(raw_content, "^\\(%a+)", i)
+            if word == "left" or word == "right" then
+                local j = i + 1 + #word
+                while s_sub(raw_content, j, j) == " " do j = j + 1 end
+                local d = s_sub(raw_content, j, j)
+                if word == "left" and (d == "(" or d == "[") then
+                    depth = depth + 1
+                elseif word == "right" and (d == ")" or d == "]") then
+                    depth = depth - 1
+                end
+                i = j + 1
+            elseif word and depth == 0 and spintent_prob_words[word] then
+                ops[#ops + 1] = { i, 1 + #word, spintent_prob_words[word] }
+                i = i + 1 + #word
+            elseif word then
+                i = i + 1 + #word
+            else
+                local d = s_sub(raw_content, i + 1, i + 1)
+                if d == "{" then
+                    depth = depth + 1
+                elseif d == "}" then
+                    depth = depth - 1
+                end
+                i = i + 2
+            end
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+            elseif c == "|" and depth == 0 then
+                ops[#ops + 1] = { i, 1, "mid" }
+            end
+            if depth < 0 then
+                spintent_prob_set_error()
+                return
+            end
+            i = i + 1
+        end
+    end
+    if depth ~= 0 or raw_content == "" or #ops > 1 then
+        spintent_prob_set_error()
+        return
+    end
+
+    local a_raw, b_raw, op = raw_content, "", "none"
+    if #ops == 1 then
+        op = ops[1][3]
+        a_raw = spintent_trim(s_sub(raw_content, 1, ops[1][1] - 1))
+        b_raw = spintent_trim(s_sub(raw_content, ops[1][1] + ops[1][2]))
+        if a_raw == "" or b_raw == "" then
+            spintent_prob_set_error()
+            return
+        end
+    end
+
+    token_set_macro("l__spintent_spProb_luaset_error_str", "false")
+    token_set_macro("l__spintent_spProb_luaset_op_str",    op)
+    token_set_macro("l__spintent_spProb_luaset_a_str",     a_raw)
+    token_set_macro("l__spintent_spProb_luaset_b_str",     b_raw)
 end, { "string" })
 
 -- ------------------------------------------------------------

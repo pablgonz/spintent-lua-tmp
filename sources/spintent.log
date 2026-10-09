@@ -1,7 +1,7 @@
-This is LuaTeX, Version 1.24.0 (TeX Live 2026)  (format=luatex 2026.9.26)  9 OCT 2026 09:10
+This is LuaTeX, Version 1.24.0 (TeX Live 2026)  (format=luatex 2026.9.28)  9 OCT 2026 20:07
  restricted system commands enabled.
 **spintent.ins
-(./spintent.ins (/usr/local/texlive/2026/texmf-dist/tex/latex/base/docstrip.tex
+(./spintent.ins (c:/texlive/2026/texmf-dist/tex/latex/base/docstrip.tex
 \blockLevel=\count27
 \emptyLines=\count28
 \processedLines=\count29
@@ -35,6 +35,7 @@ This is LuaTeX, Version 1.24.0 (TeX Live 2026)  (format=luatex 2026.9.26)  9 OCT
 \@temptokena=\toks13
 \@maxfiles=\count55
 \@maxoutfiles=\count56
+
 Utility: `docstrip' v2.6c <2024-12-23>
 English documentation    <2025-09-23>
 
@@ -54,10 +55,10 @@ Generating file(s) spintent.sty
 \openout0 = spintent.sty
 
 Processing file spintent.dtx (package) -> spintent.sty
-Lines  processed: 22952
-Comments removed: 11164
+Lines  processed: 25347
+Comments removed: 12576
 Comments  passed: 14
-Codelines passed: 11746
+Codelines passed: 12729
 
 
 Generating file(s) spintent.lua spitool.lua 
@@ -68,10 +69,10 @@ Generating file(s) spintent.lua spitool.lua
 
 Processing file spintent.dtx (spintentlua) -> spintent.lua
                              (spitool) -> spitool.lua
-Lines  processed: 22952
-Comments removed: 11164
+Lines  processed: 25347
+Comments removed: 12576
 Comments  passed: 14
-Codelines passed: 11746
+Codelines passed: 12729
 
 *****************************************************************
 *
@@ -86,10 +87,10 @@ Codelines passed: 11746
 *****************************************************************
 Overall statistics:
 Files  processed: 2
-Lines  processed: 45904
-Comments removed: 22328
+Lines  processed: 50694
+Comments removed: 25152
 Comments  passed: 28
-Codelines passed: 23492
+Codelines passed: 25458
 )
 warning  (pdf backend): no pages of output.
 

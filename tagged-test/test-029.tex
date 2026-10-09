@@ -1,0 +1,130 @@
+% test-029.tex -- comandos \spProb y \spcomp
+%
+% Compilar:  lualatex-dev test-029.tex
+% Validar:   show-pdf-tags --xml test-029.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-029.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al
+% escuchar el PDF. Los comentarios "doc:" son lecturas reales de
+% NVDA con MathCAT (2026-10-09). Las entradas invalidas (que detienen la compilacion)
+% no van aqui.
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-029: probabilidad de eventos},
+  }
+\pagestyle{empty}
+\begin{document}
+
+\section*{A. Un evento y dos eventos}
+
+% doc: «probabilidad de A»
+1. Un evento: $\spProb{A}$.
+
+% doc: «probabilidad de A y B»
+2. Intersección: $\spProb{A \cap B}$.
+
+% doc: «probabilidad de A o B»
+3. Unión: $\spProb{A \cup B}$.
+
+% doc: «probabilidad de A dado B»
+4. Condicional con mid: $\spProb{A \mid B}$.
+
+% doc: «probabilidad de A dado B»
+5. Condicional con barra: $\spProb{A | B}$.
+
+\section*{B. Eventos con estructura}
+
+% doc: «probabilidad de a subíndice 1 y a subíndice 2»
+6. Con subíndices: $\spProb{A_{1} \cap A_{2}}$.
+
+% doc: «probabilidad de a y complemento de b»
+7. Con complemento: $\spProb{A \cap \spcomp{B}}$.
+
+% doc: «probabilidad de complemento de a»
+8. Complemento solo: $\spProb{\spcomp{A}}$.
+
+% doc: «probabilidad de a y se abren paréntesis b o c se cierran paréntesis»
+9. Con paréntesis: $\spProb{A \cap (B \cup C)}$.
+
+% doc: «probabilidad de se abren paréntesis a o b se cierran paréntesis y c»
+10. Con left y right: $\spProb{\left( A \cup B \right) \cap C}$.
+
+\section*{C. Llaves}
+
+% doc: «probabilidad del suceso»
+11. Con read-arg: $\spProb[read-arg={probabilidad del suceso}]{A}$.
+
+% doc: sin lectura
+12. Con silent: $\spProb[silent=true]{A \cap B}$.
+
+\section*{D. Dentro de fórmulas}
+
+% doc: «probabilidad de a es igual a 1 de 5»
+13. Con valor: $\spProb{A} = \spPval{1}{5}$.
+
+% doc: «probabilidad de a es igual a casos favorables partido por casos posibles»
+14. Regla de Laplace: $\spProb{A} = \dfrac{\spcase{f}}{\spcase{p}}$.
+
+% doc: «probabilidad de a o b es igual a probabilidad de a más probabilidad de b menos probabilidad de a y b»
+15. Unión de dos eventos: $\spProb{A \cup B} = \spProb{A} + \spProb{B} - \spProb{A \cap B}$.
+
+% doc: «probabilidad de a y b es igual a probabilidad de a punto probabilidad de b dado a»
+16. Producto: $\spProb{A \cap B} = \spProb{A} \cdot \spProb{B \mid A}$.
+
+\section*{E. El comando spcomp}
+
+% doc: «complemento de a»
+17. Complemento: $\spcomp{A}$.
+
+% doc: «complemento de a»
+18. Con barra: $\spcomp[bar=true]{A}$.
+
+% doc: «complemento de se abren paréntesis a o b se cierran paréntesis»
+19. Complemento de una unión: $\spcomp{A \cup B}$.
+
+% doc: «no ocurre A»
+20. Con read-arg: $\spcomp[read-arg={no ocurre A}]{A}$.
+
+% doc: sin lectura
+21. Con silent: $\spcomp[silent=true]{A}$.
+
+% doc: «probabilidad de a y complemento de b»
+22. Con barra dentro de spProb: $\spProb{A \cap \spcomp[bar=true]{B}}$.
+
+% doc: «probabilidad de complemento de a es igual a 1 menos probabilidad de a»
+23. Regla del complemento: $\spProb{\spcomp{A}} = 1 - \spProb{A}$.
+
+% doc: «probabilidad de complemento de se abren paréntesis a o b se cierran paréntesis es igual a probabilidad de complemento de a y complemento de b»
+24. Complemento de la unión: $\spProb{\spcomp{A \cup B}} = \spProb{\spcomp{A} \cap \spcomp{B}}$.
+
+% doc: «complemento de a o b»
+25. Sin paréntesis: $\spcomp[paren=false]{A \cup B}$.
+
+% doc: «complemento de a»
+% limitación conocida: MathCAT omite los paréntesis alrededor de un solo símbolo
+26. Con paréntesis forzados: $\spcomp[paren=true]{A}$.
+
+% doc: «complemento de la expresión a o b»
+27. Barra sobre una unión: $\spcomp[bar=true]{A \cup B}$.
+
+% doc: «probabilidad de complemento de se abren paréntesis a y b se cierran paréntesis es igual a 1 menos probabilidad de a y b»
+28. Complemento de una intersección: $\spProb{\spcomp{A \cap B}} = 1 - \spProb{A \cap B}$.
+
+% doc: «probabilidad de complemento de la expresión a y b es igual a 1 menos probabilidad de a y b»
+29. Barra sobre una intersección: $\spProb{\spcomp[bar=true]{A \cap B}} = 1 - \spProb{A \cap B}$.
+
+\end{document}
