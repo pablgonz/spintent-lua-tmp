@@ -13143,11 +13143,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % functions: |f\circ g|, |f\circ g\circ h|, |(f\circ g)| and the
 % composition applied to arguments, |(f\circ g)(x)|. The Lua function
 % \myhlc|\@@_luafun_spfuncomp_parse_and_set:n| splits the \mymarg{argument}
-% at the top-level |\circ| (or |∘|); every function is a name as in
-% \cs{spfun} and gets its literal |intent| (|_f-|, |_f-inversa-|, \ldots), so
-% \mynvmath{MathCAT} neither announces a capital letter nor reads |ℎ| as
+% at the top-level |\circ| (or the Unicode character U+2218); every function is a name as in
+% |\spfun| and gets its literal |intent| (|_f-|, |_f-inversa-|, \ldots), so
+% \mynvmath{MathCAT} neither announces a capital letter nor reads the letter h (U+210E) as
 % Planck's constant. The arguments of the application, if any, are left in
-% the \cs{spfun} variables and typeset with its own functions, so an
+% the |\spfun| variables and typeset with its own functions, so an
 % argument may be a call. The whole is tagged with a native
 % |\MathMLintent| whose |intent| is |_compuesta-con:infix($k1,$k2,...)|; the
 % application adds |$c($a1,...)| around it, with the composition tagged
@@ -13226,7 +13226,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   Function number |#1| of the chain. Its first letter is tagged
 %   |arg="k<i>"| with the literal |intent| of the name (|_f-|,
 %   |_f-inversa-|, \ldots) through the shared queue, exactly as
-%   \cs{spfun} does with its name: a native |\MathMLintent| around the
+%   |\spfun| does with its name: a native |\MathMLintent| around the
 %   name would leave its letter free for the queue to claim by mistake when
 %   the arguments contain calls. A subscript is typeset silenced; a prime is
 %   not; the inverse exponent |^{-1}| is silenced too.
@@ -13324,7 +13324,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % \begin{macro}[int]{\@@_spfuncomp_mathml:}
 %   Calls \myhlc|\@@_invisible_sep:| first. With \mykey{silent} the |intent|
 %   is |_-|. Otherwise an application wraps the composition (|arg="c"|) and
-%   the arguments in |$c($a1,...)|; the arguments reuse the \cs{spfun}
+%   the arguments in |$c($a1,...)|; the arguments reuse the |\spfun|
 %   machinery, including calls nested in them.
 %    \begin{macrocode}
 \cs_new_protected:Nn \@@_spfuncomp_mathml:
@@ -13435,7 +13435,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 % implementation, \myhlc|\@@_spdom_exec:nnnnn|, which receives the command
 % name, the operator, the spoken word, the \mymeta{keys} and the
 % \mymarg{argument}. The Lua function \myhlc|\@@_luafun_spdom_parse_and_set:n|
-% accepts exactly a function name, as \cs{spfun} does (a letter with an
+% accepts exactly a function name, as |\spfun| does (a letter with an
 % optional subscript or primes, and the optional exponent |^{-1}|), and
 % leaves it in the shared |\l_@@_geo_luaset_*| variables. The whole is tagged
 % with a native |\MathMLintent| whose |intent| is
