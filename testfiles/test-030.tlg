@@ -59,63 +59,67 @@ TEST 1: Show PDF Tags
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
-         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
             id="ID.00015"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
            >
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00016"
-             lspace="0"
-             rspace="0"
-            >
-           <?MarkedContent page="1" ?>(
-          </mo>
-          <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
+          <?MarkedContent page="1" ?>(
+         </mo>
+         <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00016"
+            linethickness="0"
+           >
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
              id="ID.00017"
-             linethickness="0"
+             arg="n"
             >
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
               id="ID.00018"
-              arg="n"
+              intent=":silent"
+              mathvariant="normal"
              >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00019"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00020"
-              >
-             <?MarkedContent page="1" ?>5
-            </mn>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00021"
-              arg="k"
+            <?MarkedContent page="1" ?>⁣
+           </mi>
+           <mn xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00019"
              >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00022"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00023"
-              >
-             <?MarkedContent page="1" ?>2
-            </mn>
-           </mrow>
-          </mfrac>
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00024"
-             lspace="0"
-             rspace="0"
+            <?MarkedContent page="1" ?>5
+           </mn>
+          </mrow>
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00020"
+             arg="k"
             >
-           <?MarkedContent page="1" ?>)
-          </mo>
-         </mrow>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00021"
+              intent=":silent"
+              mathvariant="normal"
+             >
+            <?MarkedContent page="1" ?>⁣
+           </mi>
+           <mn xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00022"
+             >
+            <?MarkedContent page="1" ?>2
+           </mn>
+          </mrow>
+         </mfrac>
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00023"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
+           >
+          <?MarkedContent page="1" ?>)
+         </mo>
         </mrow>
        </math>
        <?MarkedContent page="1" ?>
@@ -124,101 +128,105 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00025"
+       id="ID.00024"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00026"
+        id="ID.00025"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>2. Combinación con símbolos: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00027"
+         id="ID.00026"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00028"
+          id="ID.00027"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00029"
+           id="ID.00028"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00030"
+           id="ID.00029"
            intent="_sobre:infix($n,$k)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00031"
+            id="ID.00030"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
-         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00032"
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00031"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
            >
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
+          <?MarkedContent page="1" ?>(
+         </mo>
+         <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00032"
+            linethickness="0"
+           >
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
              id="ID.00033"
-             lspace="0"
-             rspace="0"
+             arg="n"
             >
-           <?MarkedContent page="1" ?>(
-          </mo>
-          <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00034"
-             linethickness="0"
-            >
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00034"
+              intent=":silent"
+              mathvariant="normal"
+             >
+            <?MarkedContent page="1" ?>⁣
+           </mi>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
               id="ID.00035"
-              arg="n"
              >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00036"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00037"
-              >
-             <?MarkedContent page="1" ?>𝑛
-            </mi>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00038"
-              arg="k"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00039"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00040"
-              >
-             <?MarkedContent page="1" ?>𝑘
-            </mi>
-           </mrow>
-          </mfrac>
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00041"
-             lspace="0"
-             rspace="0"
+            <?MarkedContent page="1" ?>𝑛
+           </mi>
+          </mrow>
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00036"
+             arg="k"
             >
-           <?MarkedContent page="1" ?>)
-          </mo>
-         </mrow>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00037"
+              intent=":silent"
+              mathvariant="normal"
+             >
+            <?MarkedContent page="1" ?>⁣
+           </mi>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00038"
+             >
+            <?MarkedContent page="1" ?>𝑘
+           </mi>
+          </mrow>
+         </mfrac>
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00039"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
+           >
+          <?MarkedContent page="1" ?>)
+         </mo>
         </mrow>
        </math>
        <?MarkedContent page="1" ?>
@@ -227,94 +235,94 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00042"
+       id="ID.00040"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00043"
+        id="ID.00041"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>3. Estilo letra: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00044"
+         id="ID.00042"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00045"
+          id="ID.00043"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00046"
+           id="ID.00044"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00047"
+           id="ID.00045"
            intent="_combinaciones-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00048"
+            id="ID.00046"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00049"
+            id="ID.00047"
             arg="c"
             intent="_en:infix($n,$k)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00050"
+             id="ID.00048"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00051"
+             id="ID.00049"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00052"
+              id="ID.00050"
              >
             <?MarkedContent page="1" ?>𝐶
            </mi>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00053"
+              id="ID.00051"
               arg="k"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00054"
+               id="ID.00052"
                intent=":silent"
                mathvariant="normal"
               >
              <?MarkedContent page="1" ?>⁣
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00055"
+               id="ID.00053"
               >
              <?MarkedContent page="1" ?>𝑘
             </mi>
            </mrow>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00056"
+              id="ID.00054"
               arg="n"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00057"
+               id="ID.00055"
                intent=":silent"
                mathvariant="normal"
               >
              <?MarkedContent page="1" ?>⁣
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00058"
+               id="ID.00056"
               >
              <?MarkedContent page="1" ?>𝑛
             </mi>
@@ -329,101 +337,105 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00059"
+       id="ID.00057"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00060"
+        id="ID.00058"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>4. Estilo binomial explícito: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00061"
+         id="ID.00059"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00062"
+          id="ID.00060"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00063"
+           id="ID.00061"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00064"
+           id="ID.00062"
            intent="_sobre:infix($n,$k)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00065"
+            id="ID.00063"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
-         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00066"
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00064"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
            >
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00067"
-             lspace="0"
-             rspace="0"
+          <?MarkedContent page="1" ?>(
+         </mo>
+         <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00065"
+            linethickness="0"
+           >
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00066"
+             arg="n"
             >
-           <?MarkedContent page="1" ?>(
-          </mo>
-          <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00068"
-             linethickness="0"
-            >
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00069"
-              arg="n"
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00067"
+              intent=":silent"
+              mathvariant="normal"
              >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00070"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00071"
-              >
-             <?MarkedContent page="1" ?>5
-            </mn>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00072"
-              arg="k"
+            <?MarkedContent page="1" ?>⁣
+           </mi>
+           <mn xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00068"
              >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00073"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00074"
-              >
-             <?MarkedContent page="1" ?>2
-            </mn>
-           </mrow>
-          </mfrac>
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00075"
-             lspace="0"
-             rspace="0"
+            <?MarkedContent page="1" ?>5
+           </mn>
+          </mrow>
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00069"
+             arg="k"
             >
-           <?MarkedContent page="1" ?>)
-          </mo>
-         </mrow>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00070"
+              intent=":silent"
+              mathvariant="normal"
+             >
+            <?MarkedContent page="1" ?>⁣
+           </mi>
+           <mn xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00071"
+             >
+            <?MarkedContent page="1" ?>2
+           </mn>
+          </mrow>
+         </mfrac>
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00072"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
+           >
+          <?MarkedContent page="1" ?>)
+         </mo>
         </mrow>
        </math>
        <?MarkedContent page="1" ?>
@@ -432,76 +444,93 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00076"
+       id="ID.00073"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00077"
+        id="ID.00074"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>5. Combinación con repetición: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00078"
+         id="ID.00075"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00079"
+          id="ID.00076"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00080"
+           id="ID.00077"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00081"
+           id="ID.00078"
            intent="_combinaciones-con-repetición-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00082"
+            id="ID.00079"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00083"
+            id="ID.00080"
             arg="c"
             intent="_en:infix($n,$k)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00084"
+             id="ID.00081"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00085"
+             id="ID.00082"
             >
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00086"
+              id="ID.00083"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00087"
+               id="ID.00084"
               >
              <?MarkedContent page="1" ?>𝐶
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00088"
+               id="ID.00085"
               >
              <?MarkedContent page="1" ?>𝑅
             </mi>
            </mrow>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00089"
+              id="ID.00086"
               arg="k"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00087"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mn xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00088"
+              >
+             <?MarkedContent page="1" ?>2
+            </mn>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00089"
+              arg="n"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00090"
@@ -513,23 +542,6 @@ TEST 1: Show PDF Tags
             <mn xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00091"
               >
-             <?MarkedContent page="1" ?>2
-            </mn>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00092"
-              arg="n"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00093"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00094"
-              >
              <?MarkedContent page="1" ?>5
             </mn>
            </mrow>
@@ -543,76 +555,93 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00095"
+       id="ID.00092"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00096"
+        id="ID.00093"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>6. Con repetición k puede superar a n: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00097"
+         id="ID.00094"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00098"
+          id="ID.00095"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00099"
+           id="ID.00096"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00100"
+           id="ID.00097"
            intent="_combinaciones-con-repetición-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00101"
+            id="ID.00098"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00102"
+            id="ID.00099"
             arg="c"
             intent="_en:infix($n,$k)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00103"
+             id="ID.00100"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00104"
+             id="ID.00101"
             >
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00105"
+              id="ID.00102"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00106"
+               id="ID.00103"
               >
              <?MarkedContent page="1" ?>𝐶
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00107"
+               id="ID.00104"
               >
              <?MarkedContent page="1" ?>𝑅
             </mi>
            </mrow>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00108"
+              id="ID.00105"
               arg="k"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00106"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mn xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00107"
+              >
+             <?MarkedContent page="1" ?>5
+            </mn>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00108"
+              arg="n"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00109"
@@ -623,23 +652,6 @@ TEST 1: Show PDF Tags
             </mi>
             <mn xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00110"
-              >
-             <?MarkedContent page="1" ?>5
-            </mn>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00111"
-              arg="n"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00112"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00113"
               >
              <?MarkedContent page="1" ?>3
             </mn>
@@ -655,78 +667,95 @@ TEST 1: Show PDF Tags
     </semantic-para>
    </section>
    <section xmlns="https://www.latex-project.org/ns/dflt"
-      id="ID.00114"
+      id="ID.00111"
       rolemaps-to="Sect"
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00115"
+       id="ID.00112"
        title="B. Variaciones y arreglos"
        rolemaps-to="H1"
       >
      <?MarkedContent page="1" ?>B. Variaciones y arreglos
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00116"
+       id="ID.00113"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00117"
+        id="ID.00114"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>7. Variación: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00118"
+         id="ID.00115"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00119"
+          id="ID.00116"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00120"
+           id="ID.00117"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00121"
+           id="ID.00118"
            intent="_variaciones-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00122"
+            id="ID.00119"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00123"
+            id="ID.00120"
             arg="c"
             intent="_en:infix($n,$k)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00124"
+             id="ID.00121"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00125"
+             id="ID.00122"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00126"
+              id="ID.00123"
              >
             <?MarkedContent page="1" ?>𝑉
            </mi>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00127"
+              id="ID.00124"
               arg="k"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00125"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mn xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00126"
+              >
+             <?MarkedContent page="1" ?>2
+            </mn>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00127"
+              arg="n"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00128"
@@ -737,23 +766,6 @@ TEST 1: Show PDF Tags
             </mi>
             <mn xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00129"
-              >
-             <?MarkedContent page="1" ?>2
-            </mn>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00130"
-              arg="n"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00131"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00132"
               >
              <?MarkedContent page="1" ?>5
             </mn>
@@ -768,76 +780,93 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00133"
+       id="ID.00130"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00134"
+        id="ID.00131"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>8. Variación con repetición: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00135"
+         id="ID.00132"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00136"
+          id="ID.00133"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00137"
+           id="ID.00134"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00138"
+           id="ID.00135"
            intent="_variaciones-con-repetición-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00139"
+            id="ID.00136"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00140"
+            id="ID.00137"
             arg="c"
             intent="_en:infix($n,$k)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00141"
+             id="ID.00138"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00142"
+             id="ID.00139"
             >
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00143"
+              id="ID.00140"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00144"
+               id="ID.00141"
               >
              <?MarkedContent page="1" ?>𝑉
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00145"
+               id="ID.00142"
               >
              <?MarkedContent page="1" ?>𝑅
             </mi>
            </mrow>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00146"
+              id="ID.00143"
               arg="k"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00144"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00145"
+              >
+             <?MarkedContent page="1" ?>𝑘
+            </mi>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00146"
+              arg="n"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00147"
@@ -848,23 +877,6 @@ TEST 1: Show PDF Tags
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00148"
-              >
-             <?MarkedContent page="1" ?>𝑘
-            </mi>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00149"
-              arg="n"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00150"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00151"
               >
              <?MarkedContent page="1" ?>𝑛
             </mi>
@@ -879,67 +891,84 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00152"
+       id="ID.00149"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00153"
+        id="ID.00150"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>9. Arreglo: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00154"
+         id="ID.00151"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00155"
+          id="ID.00152"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00156"
+           id="ID.00153"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00157"
+           id="ID.00154"
            intent="_arreglos-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00158"
+            id="ID.00155"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00159"
+            id="ID.00156"
             arg="c"
             intent="_en:infix($n,$k)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00160"
+             id="ID.00157"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00161"
+             id="ID.00158"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00162"
+              id="ID.00159"
              >
             <?MarkedContent page="1" ?>𝐴
            </mi>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00163"
+              id="ID.00160"
               arg="k"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00161"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mn xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00162"
+              >
+             <?MarkedContent page="1" ?>3
+            </mn>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00163"
+              arg="n"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00164"
@@ -950,23 +979,6 @@ TEST 1: Show PDF Tags
             </mi>
             <mn xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00165"
-              >
-             <?MarkedContent page="1" ?>3
-            </mn>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00166"
-              arg="n"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00167"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00168"
               >
              <?MarkedContent page="1" ?>7
             </mn>
@@ -981,76 +993,93 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00169"
+       id="ID.00166"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00170"
+        id="ID.00167"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>10. Arreglo con repetición: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00171"
+         id="ID.00168"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00172"
+          id="ID.00169"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00173"
+           id="ID.00170"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00174"
+           id="ID.00171"
            intent="_arreglos-con-repetición-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00175"
+            id="ID.00172"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00176"
+            id="ID.00173"
             arg="c"
             intent="_en:infix($n,$k)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00177"
+             id="ID.00174"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00178"
+             id="ID.00175"
             >
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00179"
+              id="ID.00176"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00180"
+               id="ID.00177"
               >
              <?MarkedContent page="1" ?>𝐴
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00181"
+               id="ID.00178"
               >
              <?MarkedContent page="1" ?>𝑅
             </mi>
            </mrow>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00182"
+              id="ID.00179"
               arg="k"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00180"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mn xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00181"
+              >
+             <?MarkedContent page="1" ?>3
+            </mn>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00182"
+              arg="n"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00183"
@@ -1061,23 +1090,6 @@ TEST 1: Show PDF Tags
             </mi>
             <mn xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00184"
-              >
-             <?MarkedContent page="1" ?>3
-            </mn>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00185"
-              arg="n"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00186"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00187"
               >
              <?MarkedContent page="1" ?>7
             </mn>
@@ -1093,76 +1105,76 @@ TEST 1: Show PDF Tags
     </semantic-para>
    </section>
    <section xmlns="https://www.latex-project.org/ns/dflt"
-      id="ID.00188"
+      id="ID.00185"
       rolemaps-to="Sect"
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00189"
+       id="ID.00186"
        title="C. Permutaciones"
        rolemaps-to="H1"
       >
      <?MarkedContent page="1" ?>C. Permutaciones
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00190"
+       id="ID.00187"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00191"
+        id="ID.00188"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>11. Permutación de n elementos: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00192"
+         id="ID.00189"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00193"
+          id="ID.00190"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00194"
+           id="ID.00191"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00195"
+           id="ID.00192"
            intent="_permutaciones-de:prefix($n)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00196"
+            id="ID.00193"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <msub xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00197"
+            id="ID.00194"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00198"
+             id="ID.00195"
             >
            <?MarkedContent page="1" ?>𝑃
           </mi>
           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00199"
+             id="ID.00196"
              arg="n"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00200"
+              id="ID.00197"
               intent=":silent"
               mathvariant="normal"
              >
             <?MarkedContent page="1" ?>⁣
            </mi>
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00201"
+              id="ID.00198"
              >
             <?MarkedContent page="1" ?>𝑛
            </mi>
@@ -1176,65 +1188,65 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00202"
+       id="ID.00199"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00203"
+        id="ID.00200"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>12. Permutación numérica: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00204"
+         id="ID.00201"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00205"
+          id="ID.00202"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00206"
+           id="ID.00203"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00207"
+           id="ID.00204"
            intent="_permutaciones-de:prefix($n)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00208"
+            id="ID.00205"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <msub xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00209"
+            id="ID.00206"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00210"
+             id="ID.00207"
             >
            <?MarkedContent page="1" ?>𝑃
           </mi>
           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00211"
+             id="ID.00208"
              arg="n"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00212"
+              id="ID.00209"
               intent=":silent"
               mathvariant="normal"
              >
             <?MarkedContent page="1" ?>⁣
            </mi>
            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00213"
+              id="ID.00210"
              >
             <?MarkedContent page="1" ?>5
            </mn>
@@ -1248,67 +1260,84 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00214"
+       id="ID.00211"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00215"
+        id="ID.00212"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>13. Permutación de n tomando k: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00216"
+         id="ID.00213"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00217"
+          id="ID.00214"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00218"
+           id="ID.00215"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00219"
+           id="ID.00216"
            intent="_permutaciones-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00220"
+            id="ID.00217"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00221"
+            id="ID.00218"
             arg="c"
             intent="_en:infix($n,$k)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00222"
+             id="ID.00219"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00223"
+             id="ID.00220"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00224"
+              id="ID.00221"
              >
             <?MarkedContent page="1" ?>𝑃
            </mi>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00225"
+              id="ID.00222"
               arg="k"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00223"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00224"
+              >
+             <?MarkedContent page="1" ?>𝑘
+            </mi>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00225"
+              arg="n"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00226"
@@ -1319,23 +1348,6 @@ TEST 1: Show PDF Tags
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00227"
-              >
-             <?MarkedContent page="1" ?>𝑘
-            </mi>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00228"
-              arg="n"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00229"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00230"
               >
              <?MarkedContent page="1" ?>𝑛
             </mi>
@@ -1350,74 +1362,74 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00231"
+       id="ID.00228"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00232"
+        id="ID.00229"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>14. Permutación circular: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00233"
+         id="ID.00230"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00234"
+          id="ID.00231"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00235"
+           id="ID.00232"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00236"
+           id="ID.00233"
            intent="_permutaciones-circulares-de:prefix($n)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00237"
+            id="ID.00234"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <msub xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00238"
+            id="ID.00235"
            >
           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00239"
+             id="ID.00236"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00240"
+              id="ID.00237"
              >
             <?MarkedContent page="1" ?>𝑃
            </mi>
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00241"
+              id="ID.00238"
              >
             <?MarkedContent page="1" ?>𝐶
            </mi>
           </mrow>
           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00242"
+             id="ID.00239"
              arg="n"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00243"
+              id="ID.00240"
               intent=":silent"
               mathvariant="normal"
              >
             <?MarkedContent page="1" ?>⁣
            </mi>
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00244"
+              id="ID.00241"
              >
             <?MarkedContent page="1" ?>𝑛
            </mi>
@@ -1431,76 +1443,93 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00245"
+       id="ID.00242"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00246"
+        id="ID.00243"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>15. Con repetición, lista numérica: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00247"
+         id="ID.00244"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00248"
+          id="ID.00245"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00249"
+           id="ID.00246"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00250"
+           id="ID.00247"
            intent="_permutaciones-con-repetición-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00251"
+            id="ID.00248"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00252"
+            id="ID.00249"
             arg="c"
             intent="_con-repeticiones:infix($n,$m)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00253"
+             id="ID.00250"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00254"
+             id="ID.00251"
             >
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00255"
+              id="ID.00252"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00256"
+               id="ID.00253"
               >
              <?MarkedContent page="1" ?>𝑃
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00257"
+               id="ID.00254"
               >
              <?MarkedContent page="1" ?>𝑅
             </mi>
            </mrow>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00258"
+              id="ID.00255"
               arg="n"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00256"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mn xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00257"
+              >
+             <?MarkedContent page="1" ?>10
+            </mn>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00258"
+              arg="m"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00259"
@@ -1509,95 +1538,78 @@ TEST 1: Show PDF Tags
               >
              <?MarkedContent page="1" ?>⁣
             </mi>
-            <mn xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00260"
-              >
-             <?MarkedContent page="1" ?>10
-            </mn>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00261"
-              arg="m"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00262"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
             <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00263"
+               id="ID.00260"
                intent="_y:infix($m1,$m2,$m3)"
               >
              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00264"
+                id="ID.00261"
                 intent=":silent"
                 mathvariant="normal"
                >
               <?MarkedContent page="1" ?>⁣
              </mi>
              <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00265"
+                id="ID.00262"
                 arg="m1"
                >
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00266"
+                 id="ID.00263"
                  intent=":silent"
                  mathvariant="normal"
                 >
                <?MarkedContent page="1" ?>⁣
               </mi>
               <mn xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00267"
+                 id="ID.00264"
                 >
                <?MarkedContent page="1" ?>3
               </mn>
              </mrow>
              <mo xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00268"
+                id="ID.00265"
                 lspace="0"
                 rspace="0"
                >
               <?MarkedContent page="1" ?>,
              </mo>
              <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00269"
+                id="ID.00266"
                 arg="m2"
                >
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00270"
+                 id="ID.00267"
                  intent=":silent"
                  mathvariant="normal"
                 >
                <?MarkedContent page="1" ?>⁣
               </mi>
               <mn xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00271"
+                 id="ID.00268"
                 >
                <?MarkedContent page="1" ?>3
               </mn>
              </mrow>
              <mo xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00272"
+                id="ID.00269"
                 lspace="0"
                 rspace="0"
                >
               <?MarkedContent page="1" ?>,
              </mo>
              <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00273"
+                id="ID.00270"
                 arg="m3"
                >
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00274"
+                 id="ID.00271"
                  intent=":silent"
                  mathvariant="normal"
                 >
                <?MarkedContent page="1" ?>⁣
               </mi>
               <mn xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00275"
+                 id="ID.00272"
                 >
                <?MarkedContent page="1" ?>4
               </mn>
@@ -1614,76 +1626,93 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00276"
+       id="ID.00273"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00277"
+        id="ID.00274"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>16. Con repetición, dos grupos: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00278"
+         id="ID.00275"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00279"
+          id="ID.00276"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00280"
+           id="ID.00277"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00281"
+           id="ID.00278"
            intent="_permutaciones-con-repetición-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00282"
+            id="ID.00279"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00283"
+            id="ID.00280"
             arg="c"
             intent="_con-repeticiones:infix($n,$m)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00284"
+             id="ID.00281"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00285"
+             id="ID.00282"
             >
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00286"
+              id="ID.00283"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00287"
+               id="ID.00284"
               >
              <?MarkedContent page="1" ?>𝑃
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00288"
+               id="ID.00285"
               >
              <?MarkedContent page="1" ?>𝑅
             </mi>
            </mrow>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00289"
+              id="ID.00286"
               arg="n"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00287"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00288"
+              >
+             <?MarkedContent page="1" ?>𝑛
+            </mi>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00289"
+              arg="m"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00290"
@@ -1692,88 +1721,71 @@ TEST 1: Show PDF Tags
               >
              <?MarkedContent page="1" ?>⁣
             </mi>
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00291"
-              >
-             <?MarkedContent page="1" ?>𝑛
-            </mi>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00292"
-              arg="m"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00293"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
             <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00294"
+               id="ID.00291"
                intent="_y:infix($m1,$m2)"
               >
              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00295"
+                id="ID.00292"
                 intent=":silent"
                 mathvariant="normal"
                >
               <?MarkedContent page="1" ?>⁣
              </mi>
              <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00296"
+                id="ID.00293"
                 arg="m1"
                >
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00297"
+                 id="ID.00294"
                  intent=":silent"
                  mathvariant="normal"
                 >
                <?MarkedContent page="1" ?>⁣
               </mi>
               <msub xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00298"
+                 id="ID.00295"
                 >
                <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                  id="ID.00299"
+                  id="ID.00296"
                  >
                 <?MarkedContent page="1" ?>𝑛
                </mi>
                <mn xmlns="http://www.w3.org/1998/Math/MathML"
-                  id="ID.00300"
+                  id="ID.00297"
                  >
                 <?MarkedContent page="1" ?>1
                </mn>
               </msub>
              </mrow>
              <mo xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00301"
+                id="ID.00298"
                 lspace="0"
                 rspace="0"
                >
               <?MarkedContent page="1" ?>,
              </mo>
              <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00302"
+                id="ID.00299"
                 arg="m2"
                >
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00303"
+                 id="ID.00300"
                  intent=":silent"
                  mathvariant="normal"
                 >
                <?MarkedContent page="1" ?>⁣
               </mi>
               <msub xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00304"
+                 id="ID.00301"
                 >
                <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                  id="ID.00305"
+                  id="ID.00302"
                  >
                 <?MarkedContent page="1" ?>𝑛
                </mi>
                <mn xmlns="http://www.w3.org/1998/Math/MathML"
-                  id="ID.00306"
+                  id="ID.00303"
                  >
                 <?MarkedContent page="1" ?>2
                </mn>
@@ -1791,76 +1803,93 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00307"
+       id="ID.00304"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00308"
+        id="ID.00305"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>17. Con repetición, tres símbolos: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00309"
+         id="ID.00306"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00310"
+          id="ID.00307"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00311"
+           id="ID.00308"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00312"
+           id="ID.00309"
            intent="_permutaciones-con-repetición-de:prefix($c)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00313"
+            id="ID.00310"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00314"
+            id="ID.00311"
             arg="c"
             intent="_con-repeticiones:infix($n,$m)"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00315"
+             id="ID.00312"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <msubsup xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00316"
+             id="ID.00313"
             >
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00317"
+              id="ID.00314"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00318"
+               id="ID.00315"
               >
              <?MarkedContent page="1" ?>𝑃
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00319"
+               id="ID.00316"
               >
              <?MarkedContent page="1" ?>𝑅
             </mi>
            </mrow>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00320"
+              id="ID.00317"
               arg="n"
+             >
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00318"
+               intent=":silent"
+               mathvariant="normal"
+              >
+             <?MarkedContent page="1" ?>⁣
+            </mi>
+            <mi xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00319"
+              >
+             <?MarkedContent page="1" ?>𝑛
+            </mi>
+           </mrow>
+           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00320"
+              arg="m"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
                id="ID.00321"
@@ -1869,95 +1898,78 @@ TEST 1: Show PDF Tags
               >
              <?MarkedContent page="1" ?>⁣
             </mi>
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00322"
-              >
-             <?MarkedContent page="1" ?>𝑛
-            </mi>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00323"
-              arg="m"
-             >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00324"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="1" ?>⁣
-            </mi>
             <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00325"
+               id="ID.00322"
                intent="_y:infix($m1,$m2,$m3)"
               >
              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00326"
+                id="ID.00323"
                 intent=":silent"
                 mathvariant="normal"
                >
               <?MarkedContent page="1" ?>⁣
              </mi>
              <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00327"
+                id="ID.00324"
                 arg="m1"
                >
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00328"
+                 id="ID.00325"
                  intent=":silent"
                  mathvariant="normal"
                 >
                <?MarkedContent page="1" ?>⁣
               </mi>
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00329"
+                 id="ID.00326"
                 >
                <?MarkedContent page="1" ?>𝑎
               </mi>
              </mrow>
              <mo xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00330"
+                id="ID.00327"
                 lspace="0"
                 rspace="0"
                >
               <?MarkedContent page="1" ?>,
              </mo>
              <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00331"
+                id="ID.00328"
                 arg="m2"
                >
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00332"
+                 id="ID.00329"
                  intent=":silent"
                  mathvariant="normal"
                 >
                <?MarkedContent page="1" ?>⁣
               </mi>
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00333"
+                 id="ID.00330"
                 >
                <?MarkedContent page="1" ?>𝑏
               </mi>
              </mrow>
              <mo xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00334"
+                id="ID.00331"
                 lspace="0"
                 rspace="0"
                >
               <?MarkedContent page="1" ?>,
              </mo>
              <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00335"
+                id="ID.00332"
                 arg="m3"
                >
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00336"
+                 id="ID.00333"
                  intent=":silent"
                  mathvariant="normal"
                 >
                <?MarkedContent page="1" ?>⁣
               </mi>
               <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00337"
+                 id="ID.00334"
                 >
                <?MarkedContent page="1" ?>𝑐
               </mi>
@@ -1975,88 +1987,92 @@ TEST 1: Show PDF Tags
     </semantic-para>
    </section>
    <section xmlns="https://www.latex-project.org/ns/dflt"
-      id="ID.00338"
+      id="ID.00335"
       rolemaps-to="Sect"
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00339"
+       id="ID.00336"
        title="D. Lectura y silencio"
        rolemaps-to="H1"
       >
      <?MarkedContent page="1" ?>D. Lectura y silencio
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00340"
+       id="ID.00337"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00341"
+        id="ID.00338"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>18. Lectura propia: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00342"
+         id="ID.00339"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00343"
+          id="ID.00340"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00344"
+           id="ID.00341"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00345"
+           id="ID.00342"
            intent="_cinco-sobre-dos:nofix"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00346"
+            id="ID.00343"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
-         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00347"
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00344"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
            >
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00348"
-             lspace="0"
-             rspace="0"
+          <?MarkedContent page="1" ?>(
+         </mo>
+         <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00345"
+            linethickness="0"
+           >
+          <mn xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00346"
             >
-           <?MarkedContent page="1" ?>(
-          </mo>
-          <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00349"
-             linethickness="0"
+           <?MarkedContent page="1" ?>5
+          </mn>
+          <mn xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00347"
             >
-           <mn xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00350"
-             >
-            <?MarkedContent page="1" ?>5
-           </mn>
-           <mn xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00351"
-             >
-            <?MarkedContent page="1" ?>2
-           </mn>
-          </mfrac>
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00352"
-             lspace="0"
-             rspace="0"
-            >
-           <?MarkedContent page="1" ?>)
-          </mo>
-         </mrow>
+           <?MarkedContent page="1" ?>2
+          </mn>
+         </mfrac>
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00348"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
+           >
+          <?MarkedContent page="1" ?>)
+         </mo>
         </mrow>
        </math>
        <?MarkedContent page="1" ?>
@@ -2065,77 +2081,81 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00353"
+       id="ID.00349"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00354"
+        id="ID.00350"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>19. Silenciado: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00355"
+         id="ID.00351"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00356"
+          id="ID.00352"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00357"
+           id="ID.00353"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00358"
+           id="ID.00354"
            intent="_-"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00359"
+            id="ID.00355"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
-         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00360"
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00356"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
            >
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00361"
-             lspace="0"
-             rspace="0"
+          <?MarkedContent page="1" ?>(
+         </mo>
+         <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00357"
+            linethickness="0"
+           >
+          <mn xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00358"
             >
-           <?MarkedContent page="1" ?>(
-          </mo>
-          <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00362"
-             linethickness="0"
+           <?MarkedContent page="1" ?>5
+          </mn>
+          <mn xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00359"
             >
-           <mn xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00363"
-             >
-            <?MarkedContent page="1" ?>5
-           </mn>
-           <mn xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00364"
-             >
-            <?MarkedContent page="1" ?>2
-           </mn>
-          </mfrac>
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00365"
-             lspace="0"
-             rspace="0"
-            >
-           <?MarkedContent page="1" ?>)
-          </mo>
-         </mrow>
+           <?MarkedContent page="1" ?>2
+          </mn>
+         </mfrac>
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00360"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
+           >
+          <?MarkedContent page="1" ?>)
+         </mo>
         </mrow>
        </math>
        <?MarkedContent page="1" ?>
@@ -2145,74 +2165,74 @@ TEST 1: Show PDF Tags
     </semantic-para>
    </section>
    <section xmlns="https://www.latex-project.org/ns/dflt"
-      id="ID.00366"
+      id="ID.00361"
       rolemaps-to="Sect"
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00367"
+       id="ID.00362"
        title="E. Factorial"
        rolemaps-to="H1"
       >
      <?MarkedContent page="1" ?>E. Factorial
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00368"
+       id="ID.00363"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00369"
+        id="ID.00364"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>20. Factorial simbólico: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00370"
+         id="ID.00365"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00371"
+          id="ID.00366"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00372"
+           id="ID.00367"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00373"
+           id="ID.00368"
            intent="_factorial:postfix($n)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00374"
+            id="ID.00369"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00375"
+            id="ID.00370"
             arg="n"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00376"
+             id="ID.00371"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00377"
+             id="ID.00372"
             >
            <?MarkedContent page="1" ?>𝑛
           </mi>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00378"
+            id="ID.00373"
             lspace="0"
             rspace="0"
            >
@@ -2226,63 +2246,63 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00379"
+       id="ID.00374"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00380"
+        id="ID.00375"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>21. Factorial numérico: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00381"
+         id="ID.00376"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00382"
+          id="ID.00377"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00383"
+           id="ID.00378"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00384"
+           id="ID.00379"
            intent="_factorial:postfix($n)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00385"
+            id="ID.00380"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00386"
+            id="ID.00381"
             arg="n"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00387"
+             id="ID.00382"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <mn xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00388"
+             id="ID.00383"
             >
            <?MarkedContent page="1" ?>5
           </mn>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00389"
+            id="ID.00384"
             lspace="0"
             rspace="0"
            >
@@ -2296,57 +2316,57 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00390"
+       id="ID.00385"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00391"
+        id="ID.00386"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>22. Factorial de una expresión: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00392"
+         id="ID.00387"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00393"
+          id="ID.00388"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00394"
+           id="ID.00389"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00395"
+           id="ID.00390"
            intent="_factorial:postfix($n)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00396"
+            id="ID.00391"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00397"
+            id="ID.00392"
             arg="n"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00398"
+             id="ID.00393"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="1" ?>⁣
           </mi>
           <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00399"
+             id="ID.00394"
              lspace="0"
              rspace="0"
              stretchy="false"
@@ -2354,24 +2374,24 @@ TEST 1: Show PDF Tags
            <?MarkedContent page="1" ?>(
           </mo>
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00400"
+             id="ID.00395"
             >
            <?MarkedContent page="1" ?>𝑛
           </mi>
           <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00401"
+             id="ID.00396"
              lspace="0.222em"
              rspace="0.222em"
             >
            <?MarkedContent page="1" ?>−
           </mo>
           <mn xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00402"
+             id="ID.00397"
             >
            <?MarkedContent page="1" ?>1
           </mn>
           <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00403"
+             id="ID.00398"
              lspace="0"
              rspace="0"
              stretchy="false"
@@ -2380,7 +2400,7 @@ TEST 1: Show PDF Tags
           </mo>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00404"
+            id="ID.00399"
             lspace="0"
             rspace="0"
            >
@@ -2394,51 +2414,51 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00405"
+       id="ID.00400"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00406"
+        id="ID.00401"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>23. Factorial silenciado: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00407"
+         id="ID.00402"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00408"
+          id="ID.00403"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00409"
+           id="ID.00404"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00410"
+           id="ID.00405"
            intent="_-"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00411"
+            id="ID.00406"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mn xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00412"
+            id="ID.00407"
            >
           <?MarkedContent page="1" ?>5
          </mn>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00413"
+            id="ID.00408"
             lspace="0"
             rspace="0"
            >
@@ -2452,63 +2472,63 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00414"
+       id="ID.00409"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00415"
+        id="ID.00410"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="1" ?>24. Factorial con lectura propia: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00416"
+         id="ID.00411"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="1" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00417"
+          id="ID.00412"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00418"
+           id="ID.00413"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="1" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00419"
+           id="ID.00414"
            intent="_n-factorial:nofix"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00420"
+            id="ID.00415"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="1" ?>⁣
          </mi>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00421"
+            id="ID.00416"
            >
           <?MarkedContent page="1" ?>𝑛
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00422"
+            id="ID.00417"
             lspace="0.222em"
             rspace="0.222em"
            >
           <?MarkedContent page="1" ?>−
          </mo>
          <mn xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00423"
+            id="ID.00418"
            >
           <?MarkedContent page="1" ?>1
          </mn>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00424"
+            id="ID.00419"
             lspace="0"
             rspace="0"
            >
@@ -2523,158 +2543,162 @@ TEST 1: Show PDF Tags
     </semantic-para>
    </section>
    <section xmlns="https://www.latex-project.org/ns/dflt"
-      id="ID.00425"
+      id="ID.00420"
       rolemaps-to="Sect"
      >
     <section-heading xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00426"
+       id="ID.00421"
        title="F. Fórmulas"
        rolemaps-to="H1"
       >
      <?MarkedContent page="2" ?>F. Fórmulas
     </section-heading>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00427"
+       id="ID.00422"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00428"
+        id="ID.00423"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>25. Fórmula de la combinación: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00429"
+         id="ID.00424"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00430"
+          id="ID.00425"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00431"
+           id="ID.00426"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00432"
+           id="ID.00427"
            intent="_sobre:infix($n,$k)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00433"
+            id="ID.00428"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="2" ?>⁣
          </mi>
-         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00434"
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00429"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
            >
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00435"
-             lspace="0"
-             rspace="0"
+          <?MarkedContent page="2" ?>(
+         </mo>
+         <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00430"
+            linethickness="0"
+           >
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00431"
+             arg="n"
             >
-           <?MarkedContent page="2" ?>(
-          </mo>
-          <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00436"
-             linethickness="0"
-            >
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00437"
-              arg="n"
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00432"
+              intent=":silent"
+              mathvariant="normal"
              >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00438"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="2" ?>⁣
-            </mi>
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00439"
-              >
-             <?MarkedContent page="2" ?>𝑛
-            </mi>
-           </mrow>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00440"
-              arg="k"
+            <?MarkedContent page="2" ?>⁣
+           </mi>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00433"
              >
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00441"
-               intent=":silent"
-               mathvariant="normal"
-              >
-             <?MarkedContent page="2" ?>⁣
-            </mi>
-            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00442"
-              >
-             <?MarkedContent page="2" ?>𝑘
-            </mi>
-           </mrow>
-          </mfrac>
-          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00443"
-             lspace="0"
-             rspace="0"
+            <?MarkedContent page="2" ?>𝑛
+           </mi>
+          </mrow>
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00434"
+             arg="k"
             >
-           <?MarkedContent page="2" ?>)
-          </mo>
-         </mrow>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00435"
+              intent=":silent"
+              mathvariant="normal"
+             >
+            <?MarkedContent page="2" ?>⁣
+           </mi>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00436"
+             >
+            <?MarkedContent page="2" ?>𝑘
+           </mi>
+          </mrow>
+         </mfrac>
+         <mo xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00437"
+            fence="true"
+            lspace="0"
+            maxsize="11.907pt"
+            minsize="11.907pt"
+            rspace="0"
+            symmetric="true"
+           >
+          <?MarkedContent page="2" ?>)
+         </mo>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00444"
+           id="ID.00438"
            lspace="0.278em"
            rspace="0.278em"
           >
          <?MarkedContent page="2" ?>=
         </mo>
         <mstyle xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00445"
+           id="ID.00439"
            displaystyle="true"
            scriptlevel="0"
           >
          <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00446"
+            id="ID.00440"
            >
           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00447"
+             id="ID.00441"
              intent="_factorial:postfix($n)"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00448"
+              id="ID.00442"
               intent=":silent"
               mathvariant="normal"
              >
             <?MarkedContent page="2" ?>⁣
            </mi>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00449"
+              id="ID.00443"
               arg="n"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00450"
+               id="ID.00444"
                intent=":silent"
                mathvariant="normal"
               >
              <?MarkedContent page="2" ?>⁣
             </mi>
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00451"
+               id="ID.00445"
               >
              <?MarkedContent page="2" ?>𝑛
             </mi>
            </mrow>
            <mo xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00452"
+              id="ID.00446"
               lspace="0"
               rspace="0"
              >
@@ -2682,38 +2706,38 @@ TEST 1: Show PDF Tags
            </mo>
           </mrow>
           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00453"
+             id="ID.00447"
             >
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00454"
+              id="ID.00448"
               intent="_factorial:postfix($n)"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00455"
+               id="ID.00449"
                intent=":silent"
                mathvariant="normal"
               >
              <?MarkedContent page="2" ?>⁣
             </mi>
             <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00456"
+               id="ID.00450"
                arg="n"
               >
              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00457"
+                id="ID.00451"
                 intent=":silent"
                 mathvariant="normal"
                >
               <?MarkedContent page="2" ?>⁣
              </mi>
              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00458"
+                id="ID.00452"
                >
               <?MarkedContent page="2" ?>𝑘
              </mi>
             </mrow>
             <mo xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00459"
+               id="ID.00453"
                lspace="0"
                rspace="0"
               >
@@ -2721,34 +2745,34 @@ TEST 1: Show PDF Tags
             </mo>
            </mrow>
            <mspace xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00460"
+              id="ID.00454"
               width="0.167em"
              >
            </mspace>
            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00461"
+              id="ID.00455"
               intent="_factorial:postfix($n)"
              >
             <mi xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00462"
+               id="ID.00456"
                intent=":silent"
                mathvariant="normal"
               >
              <?MarkedContent page="2" ?>⁣
             </mi>
             <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00463"
+               id="ID.00457"
                arg="n"
               >
              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00464"
+                id="ID.00458"
                 intent=":silent"
                 mathvariant="normal"
                >
               <?MarkedContent page="2" ?>⁣
              </mi>
              <mo xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00465"
+                id="ID.00459"
                 lspace="0"
                 rspace="0"
                 stretchy="false"
@@ -2756,24 +2780,24 @@ TEST 1: Show PDF Tags
               <?MarkedContent page="2" ?>(
              </mo>
              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00466"
+                id="ID.00460"
                >
               <?MarkedContent page="2" ?>𝑛
              </mi>
              <mo xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00467"
+                id="ID.00461"
                 lspace="0.222em"
                 rspace="0.222em"
                >
               <?MarkedContent page="2" ?>−
              </mo>
              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00468"
+                id="ID.00462"
                >
               <?MarkedContent page="2" ?>𝑘
              </mi>
              <mo xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00469"
+                id="ID.00463"
                 lspace="0"
                 rspace="0"
                 stretchy="false"
@@ -2782,7 +2806,7 @@ TEST 1: Show PDF Tags
              </mo>
             </mrow>
             <mo xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00470"
+               id="ID.00464"
                lspace="0"
                rspace="0"
               >
@@ -2799,51 +2823,51 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00471"
+       id="ID.00465"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00472"
+        id="ID.00466"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>26. Probabilidad clásica: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00473"
+         id="ID.00467"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00474"
+          id="ID.00468"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00475"
+           id="ID.00469"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00476"
+           id="ID.00470"
            intent="_probabilidad-de:prefix($a)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00477"
+            id="ID.00471"
             intent=":silent"
             mathvariant="normal"
            >
           <?MarkedContent page="2" ?>⁣
          </mi>
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00478"
+            id="ID.00472"
            >
           <?MarkedContent page="2" ?>𝑃
          </mi>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00479"
+            id="ID.00473"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -2851,24 +2875,24 @@ TEST 1: Show PDF Tags
           <?MarkedContent page="2" ?>(
          </mo>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00480"
+            id="ID.00474"
             arg="a"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00481"
+             id="ID.00475"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="2" ?>⁣
           </mi>
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00482"
+             id="ID.00476"
             >
            <?MarkedContent page="2" ?>𝐴
           </mi>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00483"
+            id="ID.00477"
             lspace="0"
             rspace="0"
             stretchy="false"
@@ -2877,157 +2901,165 @@ TEST 1: Show PDF Tags
          </mo>
         </mrow>
         <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00484"
+           id="ID.00478"
            lspace="0.278em"
            rspace="0.278em"
           >
          <?MarkedContent page="2" ?>=
         </mo>
         <mstyle xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00485"
+           id="ID.00479"
            displaystyle="true"
            scriptlevel="0"
           >
          <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00486"
+            id="ID.00480"
            >
           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00487"
+             id="ID.00481"
              intent="_sobre:infix($n,$k)"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00488"
+              id="ID.00482"
               intent=":silent"
               mathvariant="normal"
              >
             <?MarkedContent page="2" ?>⁣
            </mi>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00489"
+           <mo xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00483"
+              fence="true"
+              lspace="0"
+              maxsize="11.907pt"
+              minsize="11.907pt"
+              rspace="0"
+              symmetric="true"
              >
-            <mo xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00490"
-               lspace="0"
-               rspace="0"
+            <?MarkedContent page="2" ?>(
+           </mo>
+           <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00484"
+              linethickness="0"
+             >
+            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00485"
+               arg="n"
               >
-             <?MarkedContent page="2" ?>(
-            </mo>
-            <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00491"
-               linethickness="0"
-              >
-             <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00492"
-                arg="n"
+             <mi xmlns="http://www.w3.org/1998/Math/MathML"
+                id="ID.00486"
+                intent=":silent"
+                mathvariant="normal"
                >
-              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00493"
-                 intent=":silent"
-                 mathvariant="normal"
-                >
-               <?MarkedContent page="2" ?>⁣
-              </mi>
-              <mn xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00494"
-                >
-               <?MarkedContent page="2" ?>5
-              </mn>
-             </mrow>
-             <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00495"
-                arg="k"
+              <?MarkedContent page="2" ?>⁣
+             </mi>
+             <mn xmlns="http://www.w3.org/1998/Math/MathML"
+                id="ID.00487"
                >
-              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00496"
-                 intent=":silent"
-                 mathvariant="normal"
-                >
-               <?MarkedContent page="2" ?>⁣
-              </mi>
-              <mn xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00497"
-                >
-               <?MarkedContent page="2" ?>2
-              </mn>
-             </mrow>
-            </mfrac>
-            <mo xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00498"
-               lspace="0"
-               rspace="0"
+              <?MarkedContent page="2" ?>5
+             </mn>
+            </mrow>
+            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00488"
+               arg="k"
               >
-             <?MarkedContent page="2" ?>)
-            </mo>
-           </mrow>
+             <mi xmlns="http://www.w3.org/1998/Math/MathML"
+                id="ID.00489"
+                intent=":silent"
+                mathvariant="normal"
+               >
+              <?MarkedContent page="2" ?>⁣
+             </mi>
+             <mn xmlns="http://www.w3.org/1998/Math/MathML"
+                id="ID.00490"
+               >
+              <?MarkedContent page="2" ?>2
+             </mn>
+            </mrow>
+           </mfrac>
+           <mo xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00491"
+              fence="true"
+              lspace="0"
+              maxsize="11.907pt"
+              minsize="11.907pt"
+              rspace="0"
+              symmetric="true"
+             >
+            <?MarkedContent page="2" ?>)
+           </mo>
           </mrow>
           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00499"
+             id="ID.00492"
              intent="_sobre:infix($n,$k)"
             >
            <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00500"
+              id="ID.00493"
               intent=":silent"
               mathvariant="normal"
              >
             <?MarkedContent page="2" ?>⁣
            </mi>
-           <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00501"
+           <mo xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00494"
+              fence="true"
+              lspace="0"
+              maxsize="11.907pt"
+              minsize="11.907pt"
+              rspace="0"
+              symmetric="true"
              >
-            <mo xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00502"
-               lspace="0"
-               rspace="0"
+            <?MarkedContent page="2" ?>(
+           </mo>
+           <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00495"
+              linethickness="0"
+             >
+            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00496"
+               arg="n"
               >
-             <?MarkedContent page="2" ?>(
-            </mo>
-            <mfrac xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00503"
-               linethickness="0"
-              >
-             <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00504"
-                arg="n"
+             <mi xmlns="http://www.w3.org/1998/Math/MathML"
+                id="ID.00497"
+                intent=":silent"
+                mathvariant="normal"
                >
-              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00505"
-                 intent=":silent"
-                 mathvariant="normal"
-                >
-               <?MarkedContent page="2" ?>⁣
-              </mi>
-              <mn xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00506"
-                >
-               <?MarkedContent page="2" ?>10
-              </mn>
-             </mrow>
-             <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-                id="ID.00507"
-                arg="k"
+              <?MarkedContent page="2" ?>⁣
+             </mi>
+             <mn xmlns="http://www.w3.org/1998/Math/MathML"
+                id="ID.00498"
                >
-              <mi xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00508"
-                 intent=":silent"
-                 mathvariant="normal"
-                >
-               <?MarkedContent page="2" ?>⁣
-              </mi>
-              <mn xmlns="http://www.w3.org/1998/Math/MathML"
-                 id="ID.00509"
-                >
-               <?MarkedContent page="2" ?>2
-              </mn>
-             </mrow>
-            </mfrac>
-            <mo xmlns="http://www.w3.org/1998/Math/MathML"
-               id="ID.00510"
-               lspace="0"
-               rspace="0"
+              <?MarkedContent page="2" ?>10
+             </mn>
+            </mrow>
+            <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+               id="ID.00499"
+               arg="k"
               >
-             <?MarkedContent page="2" ?>)
-            </mo>
-           </mrow>
+             <mi xmlns="http://www.w3.org/1998/Math/MathML"
+                id="ID.00500"
+                intent=":silent"
+                mathvariant="normal"
+               >
+              <?MarkedContent page="2" ?>⁣
+             </mi>
+             <mn xmlns="http://www.w3.org/1998/Math/MathML"
+                id="ID.00501"
+               >
+              <?MarkedContent page="2" ?>2
+             </mn>
+            </mrow>
+           </mfrac>
+           <mo xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00502"
+              fence="true"
+              lspace="0"
+              maxsize="11.907pt"
+              minsize="11.907pt"
+              rspace="0"
+              symmetric="true"
+             >
+            <?MarkedContent page="2" ?>)
+           </mo>
           </mrow>
          </mfrac>
         </mstyle>
@@ -3038,36 +3070,81 @@ TEST 1: Show PDF Tags
      </text-block>
     </semantic-para>
     <semantic-para xmlns="https://www.latex-project.org/ns/dflt"
-       id="ID.00511"
+       id="ID.00503"
        rolemaps-to="Part"
       >
      <text-block xmlns="https://www.latex-project.org/ns/dflt"
-        id="ID.00512"
+        id="ID.00504"
         xmlns:Layout="http://iso.org/pdf/ssn/Layout"
         Layout:TextAlign="Justify"
         rolemaps-to="P"
        >
       <?MarkedContent page="2" ?>27. Permutaciones y factorial: 
       <Formula xmlns="http://iso.org/pdf2/ssn"
-         id="ID.00513"
+         id="ID.00505"
          title="math"
          xmlns:Layout="http://iso.org/pdf/ssn/Layout"
          Layout:Placement="Inline"
         >
        <?MarkedContent page="2" ?>
        <math xmlns="http://www.w3.org/1998/Math/MathML"
-          id="ID.00514"
+          id="ID.00506"
          >
         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00515"
+           id="ID.00507"
            intent=":silent"
            mathvariant="normal"
           >
          <?MarkedContent page="2" ?>⁣
         </mi>
         <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00516"
+           id="ID.00508"
            intent="_permutaciones-de:prefix($n)"
+          >
+         <mi xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00509"
+            intent=":silent"
+            mathvariant="normal"
+           >
+          <?MarkedContent page="2" ?>⁣
+         </mi>
+         <msub xmlns="http://www.w3.org/1998/Math/MathML"
+            id="ID.00510"
+           >
+          <mi xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00511"
+            >
+           <?MarkedContent page="2" ?>𝑃
+          </mi>
+          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+             id="ID.00512"
+             arg="n"
+            >
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00513"
+              intent=":silent"
+              mathvariant="normal"
+             >
+            <?MarkedContent page="2" ?>⁣
+           </mi>
+           <mi xmlns="http://www.w3.org/1998/Math/MathML"
+              id="ID.00514"
+             >
+            <?MarkedContent page="2" ?>𝑛
+           </mi>
+          </mrow>
+         </msub>
+        </mrow>
+        <mo xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00515"
+           lspace="0.278em"
+           rspace="0.278em"
+          >
+         <?MarkedContent page="2" ?>=
+        </mo>
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
+           id="ID.00516"
+           intent="_factorial:postfix($n)"
           >
          <mi xmlns="http://www.w3.org/1998/Math/MathML"
             id="ID.00517"
@@ -3076,70 +3153,25 @@ TEST 1: Show PDF Tags
            >
           <?MarkedContent page="2" ?>⁣
          </mi>
-         <msub xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00518"
-           >
-          <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00519"
-            >
-           <?MarkedContent page="2" ?>𝑃
-          </mi>
-          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00520"
-             arg="n"
-            >
-           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00521"
-              intent=":silent"
-              mathvariant="normal"
-             >
-            <?MarkedContent page="2" ?>⁣
-           </mi>
-           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-              id="ID.00522"
-             >
-            <?MarkedContent page="2" ?>𝑛
-           </mi>
-          </mrow>
-         </msub>
-        </mrow>
-        <mo xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00523"
-           lspace="0.278em"
-           rspace="0.278em"
-          >
-         <?MarkedContent page="2" ?>=
-        </mo>
-        <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-           id="ID.00524"
-           intent="_factorial:postfix($n)"
-          >
-         <mi xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00525"
-            intent=":silent"
-            mathvariant="normal"
-           >
-          <?MarkedContent page="2" ?>⁣
-         </mi>
          <mrow xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00526"
+            id="ID.00518"
             arg="n"
            >
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00527"
+             id="ID.00519"
              intent=":silent"
              mathvariant="normal"
             >
            <?MarkedContent page="2" ?>⁣
           </mi>
           <mi xmlns="http://www.w3.org/1998/Math/MathML"
-             id="ID.00528"
+             id="ID.00520"
             >
            <?MarkedContent page="2" ?>𝑛
           </mi>
          </mrow>
          <mo xmlns="http://www.w3.org/1998/Math/MathML"
-            id="ID.00529"
+            id="ID.00521"
             lspace="0"
             rspace="0"
            >

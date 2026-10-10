@@ -21889,9 +21889,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \bool_if:NTF \l_@@_spcomb_use_binom_bool
       {
-        \genfrac { \lparen } { \rparen } { 0pt } { }
+        \int_compare:nTF { \mathstyle < 2 } { \Bigl } { \bigl } \lparen
+        \genfrac { } { } { 0pt } { }
           { \@@_spcomb_arg:nn { n } { \str_use:N \l_@@_spcomb_luaset_n_str } }
           { \@@_spcomb_arg:nn { k } { \str_use:N \l_@@_spcomb_luaset_k_str } }
+        \int_compare:nTF { \mathstyle < 2 } { \Bigr } { \bigr } \rparen
       }
       {
         { \tl_use:N \l_@@_spcomb_letter_tl }
