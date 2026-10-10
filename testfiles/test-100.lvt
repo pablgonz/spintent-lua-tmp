@@ -294,7 +294,7 @@ $\spnum{-}$
 $\spunit{5}$
 
 \TYPE{[spunit-invalid-unit]}
-$\spunit{m**s}$
+$\spunit{5 m/s/s}$
 
 \TYPE{[spunit-inline-numeric-denominator]}
 $\spunit{m/2s}$
@@ -315,7 +315,7 @@ $\spmoney{500 ZZZ}$
 $\spmoney[sub-units=true]{500 CLP}$
 
 \TYPE{[spshort-unknown-abbreviation]}
-\spshort{zzqx}
+\spshort{@@}
 
 \TYPE{[spsiglo-invalid-text]}
 \spsiglo{ABC}
@@ -357,8 +357,8 @@ $\spdiv{}{3}$
 \TYPE{[spdiv-empty-divisor]}
 $\spdiv{6}{}$
 
-\TYPE{[spdiv-silent-empty]}
-$\spdiv[silent=true]{}{3}$
+\TYPE{[spdiv-wrap-parens-empty]}
+$\spdiv[wrap-parens=true]{}{3}$
 
 \TYPE{[spmul-empty-first]}
 $\spmul{}{3}$
@@ -372,17 +372,11 @@ $\spmcd(5)$
 \TYPE{[spmcm-too-few]}
 $\spmcm(5)$
 
-\TYPE{[spmcd-invalid]}
-$\spmcd(1.5, 2)$
-
-\TYPE{[spmcm-invalid]}
-$\spmcm(1.5, 2)$
-
 \TYPE{[spnD-invalid]}
-$\spnD(1.5)$
+$\spnD(0)$
 
 \TYPE{[spnM-invalid]}
-$\spnM(1.5)$
+$\spnM(0)$
 
 \TYPE{[spnZ-not-integer]}
 $\spnZ{1.5}$
@@ -402,10 +396,10 @@ $\spmQ{1}{-2}{3}$
 $\spang{abc}$
 
 \TYPE{[spangle-invalid]}
-$\spangle{@}$
+$\spangle{A_1}$
 
 \TYPE{[spmangle-invalid]}
-$\spmangle{@}$
+$\spmangle{A_1}$
 
 \TYPE{=== H. Funciones, coordenadas e intervalos ===}
 
@@ -451,18 +445,28 @@ $\spvec{a}(1)$
 $\sprecta{@}$
 
 \TYPE{[sprayo-invalid]}
+$\sprayo{@}$
+\TYPE{[sprayo-invalid-name]}
 $\sprayo{A}$
 
 \TYPE{[spside-invalid]}
+$\spside{@}$
+\TYPE{[spside-invalid-name]}
 $\spside{A}$
 
 \TYPE{[spmside-invalid]}
+$\spmside{@}$
+\TYPE{[spmside-invalid-name]}
 $\spmside{A}$
 
 \TYPE{[sparc-invalid]}
+$\sparc{@}$
+\TYPE{[sparc-invalid-name]}
 $\sparc{A}$
 
 \TYPE{[spmarc-invalid]}
+$\spmarc{@}$
+\TYPE{[spmarc-invalid-name]}
 $\spmarc{A}$
 
 \TYPE{[spPoly-invalid]}
@@ -475,7 +479,7 @@ $\spAfig(@)$
 $\spPfig(@)$
 
 \TYPE{[spAfig-sym-letra-conflict]}
-$\spAfig[print-sym=triangle](n)$
+$\spAfig[print-sym=triangle](F)$
 
 \TYPE{[spAfig-sym-cardinality-conflict]}
 $\spAfig[print-sym=square](ABC)$

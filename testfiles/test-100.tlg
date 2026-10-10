@@ -431,17 +431,17 @@ l. ...$\spnewread{zzmathsym}{lectura}$
 Use outside of $...$ or math environment.
 === C. Configuraci^^f3n y llaves ===
 [setup-unknown-command]
-! Package spintent Error: Cannot configure unknown command '\spzzzz ' on line ....
+! Package spintent Error: Cannot configure unknown command '\spzzzz' on line ....
 For immediate help type H <return>.
  ...                                              
 l. ...\setspintent{spzzzz}{silent=true}
-You attempted to use \setspintent{spzzzz}{...}, but the command \spzzzz  is not defined. Please check for typos.
+You attempted to use \setspintent{spzzzz}{...}, but the command \spzzzz is not defined. Please check for typos.
 [setup-empty-command]
-! Package spintent Error: Cannot configure unknown command '\<empty> ' on line ....
+! Package spintent Error: Cannot configure unknown command '\<empty>' on line ....
 For immediate help type H <return>.
  ...                                              
 l. ...\setspintent{}{silent=true}
-You attempted to use \setspintent{<empty>}{...}, but the command \<empty>  is not defined. Please check for typos.
+You attempted to use \setspintent{<empty>}{...}, but the command \<empty> is not defined. Please check for typos.
 [unknown-key-spProb]
 ! Package spintent Error: The key 'foo' is unknown by command \spProb and is being ignored on line ....
 For immediate help type H <return>.
@@ -454,7 +454,7 @@ Check that you have spelled the key name correctly.
 For immediate help type H <return>.
  ...                                              
 l. ...$\spProb[foo=bar]{A}$
-The command \spProb does not have a key called 'foo'.
+The command \spProb does not have a key called 'foo=bar'.
 Check that you have spelled the key name correctly.
 [unknown-key-spcomb]
 ! Package spintent Error: The key 'foo' is unknown by command \spcomb and is being ignored on line ....
@@ -468,32 +468,26 @@ Check that you have spelled the key name correctly.
 For immediate help type H <return>.
  ...                                              
 l. ...$\spfact[foo=bar]{5}$
-The command \spfact does not have a key called 'foo'.
+The command \spfact does not have a key called 'foo=bar'.
 Check that you have spelled the key name correctly.
 [unknown-choice-read-sign]
 ! Package spintent Error: Invalid value 'foo' for key 'read-sign'; use one of: terse, clear on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\spnum[read-sign=foo]{5}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+The key 'read-sign' only accepts one of: terse, clear.
 [unknown-choice-read-period-sep]
 ! Package spintent Error: Invalid value 'foo' for key 'read-period-sep'; use one of: coma, punto on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\spnum[read-period-sep=foo]{1.5}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+The key 'read-period-sep' only accepts one of: coma, punto.
 [unknown-choice-notation-sym]
 ! Package spintent Error: Invalid value 'foo' for key 'notation-sym'; use one of: times, cdot on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\spnum[notation-sym=foo]{5}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+The key 'notation-sym' only accepts one of: times, cdot.
 === D. N^^fameros, unidades, dinero, fechas y siglos ===
 [spnum-has-units]
 ! Package spintent Error: The \spnum command does not accept units ('5 m') on line ....
@@ -520,6 +514,11 @@ For immediate help type H <return>.
 l. ...$\spunit{5}$
 Use \spnum if you only need to format a pure number.
 [spunit-invalid-unit]
+! Package spintent Error: The expression '5 m/s/s' contains an unknown or malformed unit structure on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spunit{5 m/s/s}$
+Check spelling or verify the unit is defined in the dictionary.
 [spunit-inline-numeric-denominator]
 ! Package spintent Error: Illegal numeric coefficient in inline denominator 'm/2s' on line ....
 For immediate help type H <return>.
@@ -551,8 +550,13 @@ For immediate help type H <return>.
 l. ...$\spmoney{500 ZZZ}$
 The provided symbol, alias, or ISO code does not exist in the Lua module.
 [spmoney-no-subunits-warning]
-Package spintent Warning: The currency 'CLP' does not support subunits. The option 'sub-units=true' is ignored.
+Package spintent Warning: The currency 'CLP' does not support subunits. The option 'sub-units=true' is ignored on line ....
 [spshort-unknown-abbreviation]
+! Package spintent Error: The abbreviation or ordinal '@@' is invalid or not recognized on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...\spshort{@@}
+Verify the spelling or check the grammar rules for ordinals.
 [spsiglo-invalid-text]
 ! Package spintent Error: Invalid argument 'ABC' for \spsiglo on line ....
 For immediate help type H <return>.
@@ -588,21 +592,12 @@ For immediate help type H <return>.
  ...                                              
 l. ...$\spusep{}$
 \spusep requires a non-empty argument.
-! Package spintent Error: Invalid argument '' for \spusep on line ....
-Type <return> to continue.
- ...                                              
-l. ...$\spusep{}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
 [spusep-invalid]
 ! Package spintent Error: Invalid argument 'x' for \spusep on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\spusep{x}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+\spusep accepts only the delimiters listed in its documentation.
 [spnewread-empty-args]
 ! Package spintent Error: Empty argument in \spnewread on line ....
 For immediate help type H <return>.
@@ -634,81 +629,30 @@ For immediate help type H <return>.
  ...                                              
 l. ...$\spdiv{}{3}$
 You must provide both a dividend and a divisor.
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l. ...$\spdiv{}{3}$
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
 [spdiv-empty-divisor]
 ! Package spintent Error: The arguments for \spdiv cannot be empty on line ....
 For immediate help type H <return>.
  ...                                              
 l. ...$\spdiv{6}{}$
 You must provide both a dividend and a divisor.
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l. ...$\spdiv{6}{}$
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-[spdiv-silent-empty]
-! Package spintent Error: The key 'silent=true' is unknown by command \spdiv and is being ignored on line ....
-For immediate help type H <return>.
- ...                                              
-l. ...$\spdiv[silent=true]{}{3}$
-The command \spdiv does not have a key called 'silent'.
-Check that you have spelled the key name correctly.
+[spdiv-wrap-parens-empty]
 ! Package spintent Error: The arguments for \spdiv cannot be empty on line ....
 For immediate help type H <return>.
  ...                                              
-l. ...$\spdiv[silent=true]{}{3}$
+l. ...$\spdiv[wrap-parens=true]{}{3}$
 You must provide both a dividend and a divisor.
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l. ...$\spdiv[silent=true]{}{3}$
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
 [spmul-empty-first]
 ! Package spintent Error: The arguments for \spmul cannot be empty on line ....
 For immediate help type H <return>.
  ...                                              
 l. ...$\spmul{}{3}$
 You must provide both first factor and second factor.
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l. ...$\spmul{}{3}$
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
 [spmul-empty-second]
 ! Package spintent Error: The arguments for \spmul cannot be empty on line ....
 For immediate help type H <return>.
  ...                                              
 l. ...$\spmul{2}{}$
 You must provide both first factor and second factor.
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l. ...$\spmul{2}{}$
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
 [spmcd-too-few]
 ! Package spintent Error: Too few arguments for \spmcd on line ....
 For immediate help type H <return>.
@@ -721,10 +665,18 @@ For immediate help type H <return>.
  ...                                              
 l. ...$\spmcm(5)$
 At least two arguments are required.
-[spmcd-invalid]
-[spmcm-invalid]
 [spnD-invalid]
+! Package spintent Error: Invalid argument for \spnD on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spnD(0)$
+The argument must be a single positive integer.
 [spnM-invalid]
+! Package spintent Error: Invalid argument for \spnM on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spnM(0)$
+The argument must be a single positive integer.
 [spnZ-not-integer]
 ! Package spintent Error: The value '1.5' is not a valid integer on line ....
 For immediate help type H <return>.
@@ -757,19 +709,27 @@ For immediate help type H <return>.
 l. ...$\spang{abc}$
 The argument 'abc' could not be parsed.
 [spangle-invalid]
+! Package spintent Error: Invalid argument 'A_1' for \spangle on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spangle{A_1}$
+See the documentation of \spangle for the accepted argument forms.
 [spmangle-invalid]
-[1
-]
+! Package spintent Error: Invalid argument 'A_1' for \spmangle on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spmangle{A_1}$
+See the documentation of \spmangle for the accepted argument forms.
 === H. Funciones, coordenadas e intervalos ===
 [spcoord-invalid]
-! Package spintent Error: Invalid argument '\exp_not:n {1}' for \spcoord on line ....
-Type <return> to continue.
+! Package spintent Error: Invalid argument '1' for \spcoord on line ....
+For immediate help type H <return>.
  ...                                              
 l. ...$\spcoord{1}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+See the documentation of \spcoord for the accepted argument forms.
 [spinterval-invalid-structure]
+[1
+]
 ! Package spintent Error: Invalid argument '[1,2,3]' for \spinterval (more than one separator: use a single semicolon and the commas are decimal) on line ....
 For immediate help type H <return>.
  ...                                              
@@ -783,44 +743,34 @@ l. ...$\spinterval{abc}$
 See the documentation of \spinterval for the accepted argument forms.
 [spfun-invalid]
 ! Package spintent Error: Invalid argument '???' for \spfun on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\spfun{???}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+See the documentation of \spfun for the accepted argument forms.
 [spfuncomp-invalid]
 ! Package spintent Error: Invalid argument '???' for \spfuncomp on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\spfuncomp{???}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+See the documentation of \spfuncomp for the accepted argument forms.
 [spdom-invalid]
 ! Package spintent Error: Invalid argument '???' for \spdom on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\spdom{???}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+See the documentation of \spdom for the accepted argument forms.
 [sprec-invalid]
 ! Package spintent Error: Invalid argument '???' for \sprec on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\sprec{???}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+See the documentation of \sprec for the accepted argument forms.
 [spcod-invalid]
 ! Package spintent Error: Invalid argument '???' for \spcod on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\spcod{???}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+See the documentation of \spcod for the accepted argument forms.
 === I. Geometr^^eda ===
 [spPoint-invalid-point]
 ! Package spintent Error: Invalid argument '@' for \spPoint on line ....
@@ -829,29 +779,23 @@ For immediate help type H <return>.
 l. ...$\spPoint{@}$
 The argument must be a single uppercase letter with an optional subscript (\_{...}) or prime (').
 [spPoint-invalid-coord]
-! Package spintent Error: Invalid argument '\exp_not:n {1}' for \spcoord on line ....
-Type <return> to continue.
+! Package spintent Error: Invalid argument '1' for \spcoord on line ....
+For immediate help type H <return>.
  ...                                              
 l. ...$\spPoint{A}(1)$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+See the documentation of \spcoord for the accepted argument forms.
 [spvec-invalid]
 ! Package spintent Error: Invalid argument '@' for \spvec on line ....
-Type <return> to continue.
+For immediate help type H <return>.
  ...                                              
 l. ...$\spvec{@}$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+See the documentation of \spvec for the accepted argument forms.
 [spvec-invalid-coord]
-! Package spintent Error: Invalid argument '\exp_not:n {1}' for \spcoord on line ....
-Type <return> to continue.
+! Package spintent Error: Invalid argument '1' for \spcoord on line ....
+For immediate help type H <return>.
  ...                                              
 l. ...$\spvec{a}(1)$
-LaTeX does not know anything more about this error, sorry.
-Try typing <return> to proceed.
-If that doesn't work, type X <return> to quit.
+See the documentation of \spcoord for the accepted argument forms.
 [sprecta-invalid]
 ! Package spintent Error: Invalid argument '@' for \sprecta on line ....
 For immediate help type H <return>.
@@ -859,10 +803,65 @@ For immediate help type H <return>.
 l. ...$\sprecta{@}$
 See the documentation of \sprecta for the accepted argument forms.
 [sprayo-invalid]
+! Package spintent Error: Invalid argument '@' for \sprayo on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\sprayo{@}$
+See the documentation of \sprayo for the accepted point formats.
+[sprayo-invalid-name]
+! Package spintent Error: Invalid argument 'A' for \sprayo on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\sprayo{A}$
+See the documentation of \sprayo for the accepted point formats.
 [spside-invalid]
+! Package spintent Error: Invalid argument '@' for \spside on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spside{@}$
+See the documentation of \spside for the accepted point formats.
+[spside-invalid-name]
+! Package spintent Error: Invalid argument 'A' for \spside on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spside{A}$
+See the documentation of \spside for the accepted point formats.
 [spmside-invalid]
+! Package spintent Error: Invalid argument '@' for \spmside on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spmside{@}$
+See the documentation of \spmside for the accepted point formats.
+[spmside-invalid-name]
+! Package spintent Error: Invalid argument 'A' for \spmside on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spmside{A}$
+See the documentation of \spmside for the accepted point formats.
 [sparc-invalid]
+! Package spintent Error: Invalid argument '@' for \sparc on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\sparc{@}$
+See the documentation of \sparc for the accepted point formats.
+[sparc-invalid-name]
+! Package spintent Error: Invalid argument 'A' for \sparc on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\sparc{A}$
+See the documentation of \sparc for the accepted point formats.
 [spmarc-invalid]
+! Package spintent Error: Invalid argument '@' for \spmarc on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spmarc{@}$
+See the documentation of \spmarc for the accepted point formats.
+[spmarc-invalid-name]
+! Package spintent Error: Invalid argument 'A' for \spmarc on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spmarc{A}$
+See the documentation of \spmarc for the accepted point formats.
 [spPoly-invalid]
 ! Package spintent Error: Invalid argument 'A,B' for \spPoly on line ....
 For immediate help type H <return>.
@@ -882,6 +881,11 @@ For immediate help type H <return>.
 l. ...$\spPfig(@)$
 See the documentation of \spPfig for the accepted argument forms.
 [spAfig-sym-letra-conflict]
+! Package spintent Error: print-sym cannot be combined with a lettered argument in '\spAfig' on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spAfig[print-sym=triangle](F)$
+See the documentation of \spAfig for details on print-sym.
 [spAfig-sym-cardinality-conflict]
 ! Package spintent Error: print-sym does not match the vertex count in '\spAfig' on line ....
 For immediate help type H <return>.
@@ -903,13 +907,13 @@ See the documentation of \spcirc for the accepted argument forms.
 For immediate help type H <return>.
  ...                                              
 l. ...$\spAcirc(@)$
-See the documentation of \spAcirc for the accepted argument.
+See the documentation of \spAcirc for the accepted argument forms.
 [spPcirc-invalid]
 ! Package spintent Error: Invalid argument '@' for \spPcirc on line ....
 For immediate help type H <return>.
  ...                                              
 l. ...$\spPcirc(@)$
-See the documentation of \spPcirc for the accepted argument.
+See the documentation of \spPcirc for the accepted argument forms.
 === J. Estad^^edstica ===
 [spPerc-invalid-index]
 ! Package spintent Error: Invalid index '150' for \spPerc on line ....
@@ -1011,7 +1015,6 @@ For immediate help type H <return>.
 l. ......comb[type=permutation,rep=true]{10}{6,5}$
 The arguments cannot be empty; the repetitions must be a list of at least two elements separated by commas; if they are integers, k cannot be greater than n and the repetitions cannot add more than n.
 [spcomb-repetitions-single]
-[2]
 ! Package spintent Error: Invalid arguments 'n' and 'a' for \spcomb on line ....
 For immediate help type H <return>.
  ...                                              
@@ -1024,6 +1027,7 @@ For immediate help type H <return>.
 l. ...$\spcomb[type=permutation,rep=true]{n}{a,}$
 The arguments cannot be empty; the repetitions must be a list of at least two elements separated by commas; if they are integers, k cannot be greater than n and the repetitions cannot add more than n.
 [spcomb-empty-n]
+[2]
 ! Package spintent Error: Invalid arguments '' and '2' for \spcomb on line ....
 For immediate help type H <return>.
  ...                                              

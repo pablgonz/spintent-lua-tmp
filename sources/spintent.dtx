@@ -7534,11 +7534,11 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { unknown-command-setup }
   {
-    Cannot~configure~unknown~command~'\exp_not:c{#1}'~\msg_line_context:.
+    Cannot~configure~unknown~command~'\c_backslash_str #1'~\msg_line_context:.
   }
   {
     You~attempted~to~use~\token_to_str:N \setspintent{#1}{...},~but~the~
-    command~\exp_not:c{#1}~is~not~defined.~Please~check~for~typos.
+    command~\c_backslash_str #1~is~not~defined.~Please~check~for~typos.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -7625,9 +7625,12 @@ end, "shekel_fallback_patch")
 % \fi
 %    \begin{macrocode}
 \str_new:N  \l_@@_command_name_str
-\msg_new:nnn { spintent } { unknown-choice }
+\msg_new:nnnn { spintent } { unknown-choice }
   {
     Invalid~value~'#3'~for~key~'#1';~use~one~of:~#2~\msg_line_context:.
+  }
+  {
+    The~key~'#1'~only~accepts~one~of:~#2.
   }
 \msg_new:nnnn { spintent } { cmd-key-unknown }
   {
@@ -7648,7 +7651,7 @@ end, "shekel_fallback_patch")
   }
   {
     The~command~\c_backslash_str \l_@@_command_name_str \c_space_tl
-    does~not~have~a~key~called~'#1'.\\
+    does~not~have~a~key~called~'#1=#2'.\\
     Check~that~you~have~spelled~the~key~name~correctly.
   }
 %    \end{macrocode}
@@ -8923,7 +8926,7 @@ end, "shekel_fallback_patch")
 \msg_new:nnnn { spintent } { currency-no-subunits }
   {
     The~currency~'#1'~does~not~support~subunits.~
-    The~option~'sub-units=true'~is~ignored.
+    The~option~'sub-units=true'~is~ignored~\msg_line_context:.
   }
   {
     Monies~like~the~Japanese~Yen~(JPY)~or~Chilean~Peso~(CLP)~
@@ -10186,9 +10189,12 @@ end, "shekel_fallback_patch")
   {
     \token_to_str:N \spusep \c_space_tl requires~a~non-empty~argument.
   }
-\msg_new:nnn { spintent } { spusep-invalid-arg }
+\msg_new:nnnn { spintent } { spusep-invalid-arg }
   {
     Invalid~argument~'#1'~for~\token_to_str:N \spusep \c_space_tl \msg_line_context:.
+  }
+  {
+    \c_backslash_str spusep~accepts~only~the~delimiters~listed~in~its~documentation.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -10322,7 +10328,7 @@ end, "shekel_fallback_patch")
           }
       }
       {
-        \msg_error:nnn { spintent } { spusep-invalid-arg } {#1}
+        \tl_if_empty:NF \l_@@_spusep_arg_tl { \msg_error:nnn { spintent } { spusep-invalid-arg } {#1} }
       }
   }
 %    \end{macrocode}
@@ -10842,10 +10848,10 @@ end, "shekel_fallback_patch")
   {
     \keys_set:nn { spintent / spdiv } { #1 }
     \tl_if_blank:nTF { #2 }
-      { \msg_error:nnn { spintent } { spdiv-empty-argument } }
+      { \msg_error:nn { spintent } { spdiv-empty-argument } }
       {
         \tl_if_blank:nTF { #3 }
-          { \msg_error:nnn { spintent } { spdiv-empty-argument } }
+          { \msg_error:nn { spintent } { spdiv-empty-argument } }
           {
             \bool_if:NTF \l_@@_spdiv_wrap_parens_bool
               { \@@_spdiv_render_parens:nn {#2} {#3} }
@@ -10976,10 +10982,10 @@ end, "shekel_fallback_patch")
   {
     \keys_set:nn { spintent / spmul } { #1 }
     \tl_if_blank:nTF { #2 }
-      { \msg_error:nnn { spintent } { spmul-empty-argument } }
+      { \msg_error:nn { spintent } { spmul-empty-argument } }
       {
         \tl_if_blank:nTF { #3 }
-          { \msg_error:nnn { spintent } { spmul-empty-argument } }
+          { \msg_error:nn { spintent } { spmul-empty-argument } }
           {
             \bool_if:NTF \l_@@_spmul_wrap_parens_bool
               { \@@_spmul_render_parens:nn {#2} {#3} }
@@ -12743,9 +12749,12 @@ end, "shekel_fallback_patch")
 %
 % \begin{macro}[int]{spcoord-invalid-arg}
 %    \begin{macrocode}
-\msg_new:nnn { spintent } { spcoord-invalid-arg }
+\msg_new:nnnn { spintent } { spcoord-invalid-arg }
   {
     Invalid~argument~'#1'~for~\token_to_str:N \spcoord \c_space_tl \msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str spcoord~for~the~accepted~argument~forms.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -12968,7 +12977,7 @@ end, "shekel_fallback_patch")
     \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#2}
     \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
-      { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
+      { \msg_error:nne { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
     \@@_spcoord_set_wrap_parens_size:
     \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
       {
@@ -13657,9 +13666,12 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
 %   delimiters, an empty argument or text after the closing parenthesis. It
 %   is raised whatever the value of \mykey{silent}.
 %    \begin{macrocode}
-\msg_new:nnn { spintent } { spfun-invalid-arg }
+\msg_new:nnnn { spintent } { spfun-invalid-arg }
   {
     Invalid~argument~'#1'~for~\token_to_str:N \spfun \c_space_tl \msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str spfun~for~the~accepted~argument~forms.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -14067,9 +14079,12 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
 %   names, optionally in parentheses and optionally applied to arguments
 %   written in parentheses, whatever the value of \mykey{silent}.
 %    \begin{macrocode}
-\msg_new:nnn { spintent } { spfuncomp-invalid-arg }
+\msg_new:nnnn { spintent } { spfuncomp-invalid-arg }
   {
     Invalid~argument~'#1'~for~\token_to_str:N \spfuncomp \c_space_tl \msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str spfuncomp~for~the~accepted~argument~forms.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -14354,9 +14369,12 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
 %   not a function name. It receives the command name and the argument, and
 %   is raised whatever the value of \mykey{silent}.
 %    \begin{macrocode}
-\msg_new:nnn { spintent } { spdom-invalid-arg }
+\msg_new:nnnn { spintent } { spdom-invalid-arg }
   {
     Invalid~argument~'#2'~for~\c_backslash_str #1~\msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str #1~for~the~accepted~argument~forms.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -14831,7 +14849,7 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
         \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
         \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
-          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
+          { \msg_error:nne { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
         \@@_spcoord_set_wrap_parens_size:
         \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
           { \@@_spcoord_mathml: }
@@ -14900,9 +14918,12 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
 %   argument fails to parse, when a one-letter name carries a prime,
 %   or when the point list is not exactly two points.
 %    \begin{macrocode}
-\msg_new:nnn { spintent } { spvec-invalid-arg }
+\msg_new:nnnn { spintent } { spvec-invalid-arg }
   {
     Invalid~argument~'#1'~for~\token_to_str:N \spvec \c_space_tl \msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str spvec~for~the~accepted~argument~forms.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -15188,7 +15209,7 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
         \tl_set:Nn \l_@@_spcoord_raw_arg_tl {#3}
         \@@_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
         \str_if_eq:VnT \l_@@_spcoord_luaset_error_str { true }
-          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
+          { \msg_error:nne { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
         \@@_spcoord_set_wrap_parens_size:
         \str_if_eq:VnF \l_@@_spcoord_luaset_error_str { true }
           { \@@_spcoord_mathml: }
@@ -15714,7 +15735,11 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
 \cs_new_protected:Nn \@@_sprayo_print:n
   {
     \@@_luafun_geo_parse_and_set:n { \exp_not:n {#1} }
-    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+    \bool_if:nT
+      {
+        \str_if_eq_p:Vn \l_@@_geo_luaset_error_str { true } ||
+        \str_if_eq_p:Vn \l_@@_geo_luaset_is_name_str { true }
+      }
       {
         \msg_error:nne { spintent } { sprayo-invalid-points } { \exp_not:n {#1} }
       }
@@ -16033,7 +16058,11 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
 \cs_new_protected:Nn \@@_spside_process:nn
   {
     \@@_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
-    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+    \bool_if:nT
+      {
+        \str_if_eq_p:Vn \l_@@_geo_luaset_error_str { true } ||
+        \str_if_eq_p:Vn \l_@@_geo_luaset_is_name_str { true }
+      }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
@@ -16871,7 +16900,11 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
 \cs_new_protected:Nn \@@_sparc_process:nn
   {
     \@@_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
-    \str_if_eq:VnT \l_@@_geo_luaset_error_str { true }
+    \bool_if:nT
+      {
+        \str_if_eq_p:Vn \l_@@_geo_luaset_error_str { true } ||
+        \str_if_eq_p:Vn \l_@@_geo_luaset_is_name_str { true }
+      }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
@@ -19067,7 +19100,7 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
         Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
-        See~the~documentation~of~##1~for~the~accepted~argument.
+        See~the~documentation~of~##1~for~the~accepted~argument~forms.
       }
 %    \end{macrocode}
 % \end{macro}
