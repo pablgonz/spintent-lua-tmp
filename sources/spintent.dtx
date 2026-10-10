@@ -6718,7 +6718,7 @@ end, "shekel_fallback_patch")
 %   \smallskip
 %
 %   |$\spcomb{5}{2}$| imprimirá `$\binom{5}{2}$' en la salida \texttt{PDF} y
-%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«combinaciones de 5 en 2»};
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«5 sobre 2»};
 %   |$\spcomb[type=variation]{5}{2}$| imprimirá `$V_{2}^{5}$' y verbalizará
 %   \emph{«variaciones de 5 en 2»};
 %   |$\spcomb[type=permutation]{n}$| imprimirá `$P_{n}$' y verbalizará
@@ -6778,7 +6778,7 @@ end, "shekel_fallback_patch")
 % Establece cómo se imprimen las combinaciones sin repetición. Con |auto| (o
 % |binom|) se imprime el coeficiente binomial $\binom{n}{k}$ y con |letter|
 % se imprime la letra: |$\spcomb[style=letter]{5}{2}$| imprimirá `$C_{2}^{5}$'.
-% La verbalización es la misma en ambos casos. El valor |binom| solo es válido
+% El coeficiente binomial se verbaliza \emph{«n sobre k»} y la letra \emph{«combinaciones de n en k»}. El valor |binom| solo es válido
 % para combinaciones sin repetición.
 %
 % \smallskip
@@ -21937,7 +21937,8 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   whole symbol is the concept followed by |-de|: with |one| argument it is
 %   |_|\mymeta{concept}|-de:prefix($n)|; with |pair| it is
 %   |_|\mymeta{concept}|-de:prefix($c)|, where |c| is the symbol, which
-%   carries its own intent |_en:infix($n,$k)|; with |list| it is
+%   carries its own intent |_en:infix($n,$k)|, except for the binomial
+%   coefficient, whose single intent is |_sobre:infix($n,$k)|; with |list| it is
 %   |_|\mymeta{concept}|-de:prefix($c)|, where |c| is the symbol, which
 %   carries the intent |_con-repeticiones:infix($n,$m)|, and |m| is the
 %   group of the multiplicities, with the intent |_y:infix($m1,$m2,…)|.
@@ -21967,14 +21968,21 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
                   }
                 { pair }
                   {
-                    \MathMLintent
-                      { _ \tl_use:N \l_@@_spcomb_concept_tl -de:prefix($c) }
+                    \bool_if:NTF \l_@@_spcomb_use_binom_bool
                       {
-                        \@@_inner_sep:
-                        \MathMLarg { c }
+                        \MathMLintent { _sobre:infix($n,$k) }
+                          { \@@_inner_sep: \@@_spcomb_symbol: }
+                      }
+                      {
+                        \MathMLintent
+                          { _ \tl_use:N \l_@@_spcomb_concept_tl -de:prefix($c) }
                           {
-                            \MathMLintent { _en:infix($n,$k) }
-                              { \@@_inner_sep: \@@_spcomb_symbol: }
+                            \@@_inner_sep:
+                            \MathMLarg { c }
+                              {
+                                \MathMLintent { _en:infix($n,$k) }
+                                  { \@@_inner_sep: \@@_spcomb_symbol: }
+                              }
                           }
                       }
                   }
