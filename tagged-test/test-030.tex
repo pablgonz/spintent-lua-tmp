@@ -1,0 +1,125 @@
+% test-030.tex -- comandos \spcomb y \spfact
+%
+% Compilar:  lualatex-dev test-030.tex
+% Validar:   show-pdf-tags --xml test-030.pdf | rnv-wrapp
+%            verapdf --flavour ua2 --format text test-030.pdf
+%
+% Cada caso es un parrafo numerado, para poder referirse a el al
+% escuchar el PDF. Los comentarios "esperado" son las lecturas previstas,
+% aun NO verificadas con NVDA; reemplazarlas por "doc:" al escuchar.
+% Las entradas invalidas (que detienen la compilacion) no van aqui.
+\DocumentMetadata
+  {
+    lang=es-CL,
+    pdfversion=2.0,
+    pdfstandard=ua-2,
+    tagging=on,
+    tagging-setup={math/setup={mathml-SE}},
+  }
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{unicode-math}
+\usepackage{spintent}
+\usepackage{hyperref}
+\hypersetup
+  {
+    pdfdisplaydoctitle = true,
+    pdftitle           = {test-030: combinatoria y factorial},
+  }
+\pagestyle{empty}
+\begin{document}
+
+\section*{A. Combinaciones}
+
+% esperado (sin verificar en NVDA): «combinaciones de 5 en 2»
+1. Combinación numérica (binomial): $\spcomb{5}{2}$.
+
+% esperado (sin verificar en NVDA): «combinaciones de n en k»
+2. Combinación con símbolos: $\spcomb{n}{k}$.
+
+% esperado (sin verificar en NVDA): «combinaciones de n en k»
+3. Estilo letra: $\spcomb[style=letter]{n}{k}$.
+
+% esperado (sin verificar en NVDA): «combinaciones de 5 en 2»
+4. Estilo binomial explícito: $\spcomb[style=binom]{5}{2}$.
+
+% esperado (sin verificar en NVDA): «combinaciones con repetición de 5 en 2»
+5. Combinación con repetición: $\spcomb[rep=true]{5}{2}$.
+
+% esperado (sin verificar en NVDA): «combinaciones con repetición de 3 en 5»
+6. Con repetición k puede superar a n: $\spcomb[rep=true]{3}{5}$.
+
+\section*{B. Variaciones y arreglos}
+
+% esperado (sin verificar en NVDA): «variaciones de 5 en 2»
+7. Variación: $\spcomb[type=variation]{5}{2}$.
+
+% esperado (sin verificar en NVDA): «variaciones con repetición de n en k»
+8. Variación con repetición: $\spcomb[type=variation,rep=true]{n}{k}$.
+
+% esperado (sin verificar en NVDA): «arreglos de 7 en 3»
+9. Arreglo: $\spcomb[type=arrangement]{7}{3}$.
+
+% esperado (sin verificar en NVDA): «arreglos con repetición de 7 en 3»
+10. Arreglo con repetición: $\spcomb[type=arrangement,rep=true]{7}{3}$.
+
+\section*{C. Permutaciones}
+
+% esperado (sin verificar en NVDA): «permutaciones de n»
+11. Permutación de n elementos: $\spcomb[type=permutation]{n}$.
+
+% esperado (sin verificar en NVDA): «permutaciones de 5»
+12. Permutación numérica: $\spcomb[type=permutation]{5}$.
+
+% esperado (sin verificar en NVDA): «permutaciones de n en k»
+13. Permutación de n tomando k: $\spcomb[type=permutation]{n}{k}$.
+
+% esperado (sin verificar en NVDA): «permutaciones circulares de n»
+14. Permutación circular: $\spcomb[type=permutation,circ=true]{n}$.
+
+% esperado (sin verificar en NVDA): «permutaciones con repetición de 10 con repeticiones 3, 3 y 4»
+15. Con repetición, lista numérica: $\spcomb[type=permutation,rep=true]{10}{3,3,4}$.
+
+% esperado (sin verificar en NVDA): «permutaciones con repetición de n con repeticiones n sub 1 y n sub 2»
+16. Con repetición, dos grupos: $\spcomb[type=permutation,rep=true]{n}{n_{1},n_{2}}$.
+
+% esperado (sin verificar en NVDA): «permutaciones con repetición de n con repeticiones a, b y c»
+17. Con repetición, tres símbolos: $\spcomb[type=permutation,rep=true]{n}{a,b,c}$.
+
+\section*{D. Lectura y silencio}
+
+% esperado (sin verificar en NVDA): «cinco sobre dos»
+18. Lectura propia: $\spcomb[read-arg={cinco sobre dos}]{5}{2}$.
+
+% esperado (sin verificar en NVDA): «(silencio)»
+19. Silenciado: $\spcomb[silent=true]{5}{2}$.
+
+\section*{E. Factorial}
+
+% esperado (sin verificar en NVDA): «n factorial»
+20. Factorial simbólico: $\spfact{n}$.
+
+% esperado (sin verificar en NVDA): «5 factorial»
+21. Factorial numérico: $\spfact{5}$.
+
+% esperado (sin verificar en NVDA): «n menos 1 factorial (por verificar)»
+22. Factorial de una expresión: $\spfact{(n-1)}$.
+
+% esperado (sin verificar en NVDA): «(silencio)»
+23. Factorial silenciado: $\spfact[silent=true]{5}$.
+
+% esperado (sin verificar en NVDA): «n factorial»
+24. Factorial con lectura propia: $\spfact[read-arg={n factorial}]{n-1}$.
+
+\section*{F. Fórmulas}
+
+% esperado (sin verificar en NVDA): «combinaciones de n en k es igual a n factorial entre k factorial por n menos k factorial (por verificar)»
+25. Fórmula de la combinación: $\spcomb{n}{k} = \dfrac{\spfact{n}}{\spfact{k}\,\spfact{(n-k)}}$.
+
+% esperado (sin verificar en NVDA): «probabilidad de A es igual a combinaciones de 5 en 2 entre combinaciones de 10 en 2 (por verificar)»
+26. Probabilidad clásica: $\spProb{A} = \dfrac{\spcomb{5}{2}}{\spcomb{10}{2}}$.
+
+% esperado (sin verificar en NVDA): «permutaciones de n es igual a n factorial (por verificar)»
+27. Permutaciones y factorial: $\spcomb[type=permutation]{n} = \spfact{n}$.
+
+\end{document}

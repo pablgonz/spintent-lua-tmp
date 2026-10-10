@@ -198,7 +198,7 @@ end, "shekel_fallback_patch")
         sparc, spmarc, spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc,
         spPcirc, spcoord, spvec, sprazon, spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
         spProm, spmedia, spmediana, spmoda, spdesv, spvarz, %
-        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, spProb, spcomp, %
+        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, spProb, spcomp, spcomb, spfact, %
       }
   }
 % Colors
@@ -641,7 +641,7 @@ end, "shekel_fallback_patch")
                         spPoly, spAfig, spPfig, sprad, spdiam, spcirc, spAcirc, spPcirc, spcoord, spvec, sprazon,%
                         spProp, spnewread, spVol, spinterval, spfun, spfuncomp, spdom, sprec, spcod, %
                         spProm, spmedia, spmediana, spmoda, spdesv, spvarz, %
-                        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, spProb, spcomp, },%
+                        spcuartil, spdecil, spPerc, sprango, spriq, spmin, spmax, spFrec, spcase, spOmega, spPval, spProb, spcomp, spcomb, spfact, },%
 % Reserved words 8 (keyname) KEYS
     keywordstyle  = [8]{\color{keyname}},%
     keywords      = [8]{print-era, none, ac, dc, currency, sub-units, clear, terse, times, cdot, true, false, unknown, valid, %
@@ -6694,6 +6694,142 @@ end, "shekel_fallback_patch")
 % modificar la impresión de este. Si se establece en |true|,
 % \mynvmath{NVDA/MathCAT} NO verbalizará la salida del comando; si se
 % establece en |false|, sí verbalizará la salida del comando.
+%
+% \subsection*{Los comandos \cs[no-index]{spcomb} y \cs[no-index]{spfact}}\label{subsec:spcomb}
+%
+% \vspace*{-\baselineskip}
+%
+% \begin{function}{\spcomb}
+%   \begin{syntax}
+%     |\spcomb|\mymarg{n}\mymarg{k} \hfill |\spcomb|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{n}\mymarg{k}
+%   \end{syntax}
+%   El comando \ics*{spcomb} trabaja en \emph{modo matemático} y escribe los
+%   símbolos de conteo: combinaciones, variaciones, arreglos y permutaciones,
+%   con o sin repetición, y las permutaciones circulares. Recibe el
+%   \emph{argumento obligatorio} \mymarg{n} (el total de elementos) y un
+%   \emph{segundo argumento entre llaves} \mymarg{k} (los elementos que se
+%   toman). Según el símbolo, el segundo argumento puede ser \emph{la lista
+%   de repeticiones} (permutaciones con repetición) o puede no escribirse
+%   (permutaciones sin repetición y circulares, que solo llevan \mymarg{n}).
+%   Los argumentos aceptan números o símbolos; si ambos son números enteros,
+%   el comando comprueba que $k \leq n$ (salvo cuando hay repetición) y que
+%   las repeticiones no sumen más de $n$.
+%
+%   \smallskip
+%
+%   |$\spcomb{5}{2}$| imprimirá `$\binom{5}{2}$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«combinaciones de 5 en 2»};
+%   |$\spcomb[type=variation]{5}{2}$| imprimirá `$V_{2}^{5}$' y verbalizará
+%   \emph{«variaciones de 5 en 2»};
+%   |$\spcomb[type=permutation]{n}$| imprimirá `$P_{n}$' y verbalizará
+%   \emph{«permutaciones de n»}.
+% \end{function}
+%
+% \begin{important}*
+%   El segundo argumento no va entre corchetes: el comando mira si el
+%   siguiente símbolo abre un grupo `|{ }|' y, si es así, lo lee como segundo
+%   argumento. Por eso, para una permutación sin segundo argumento, no se debe
+%   escribir inmediatamente una llave después del comando
+%   (|$\spcomb[type=permutation]{n}\,{x}$| lo leería como \mymarg{k}).
+% \end{important}
+%
+% \subsubsection*{Llaves para \cs[no-index]{spcomb}}
+%
+% \keyexampcmd{type}{combination \textnormal{\textcolor{lightgray}{\textbar}}
+%   variation \textnormal{\textcolor{lightgray}{\textbar}} arrangement
+%   \textnormal{\textcolor{lightgray}{\textbar}} permutation}{combination}[spcomb]
+% \smallskip
+% Establece el tipo de símbolo: combinaciones ($C$ o $\binom{n}{k}$),
+% variaciones ($V$), arreglos ($A$) o permutaciones ($P$). Las variaciones y
+% los arreglos se escriben distinto pero se verbalizan según su nombre
+% (\emph{«variaciones»} y \emph{«arreglos»}). Con |type=permutation| el
+% segundo argumento es opcional: sin él se imprime $P_{n}$ (\emph{«permutaciones
+% de n»}) y con él $P_{k}^{n}$ (\emph{«permutaciones de n en k»}).
+%
+% \smallskip
+%
+% \keyexampcmd{rep}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcomb]
+% \smallskip
+% Establece si los elementos pueden repetirse. Con |rep=true| se agrega una
+% \emph{R} a la letra y a la verbalización se agrega \emph{«con repetición»}:
+% |$\spcomb[type=variation,rep=true]{5}{2}$| imprimirá `$VR_{2}^{5}$' y verbalizará
+% \emph{«variaciones con repetición de 5 en 2»}. Con |type=permutation| y
+% |rep=true| el segundo argumento es la \emph{lista de repeticiones} separada
+% por comas, con al menos dos elementos: |$\spcomb[type=permutation,rep=true]{10}{3,3,4}$|
+% imprimirá `$PR_{10}^{3,3,4}$' y verbalizará \emph{«permutaciones con
+% repetición de 10 con repeticiones 3, 3 y 4»}.
+%
+% \smallskip
+%
+% \keyexampcmd{circ}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcomb]
+% \smallskip
+% Establece si se trata de una \emph{permutación circular}. Solo es válida con
+% |type=permutation| y |rep=false|, y entonces solo recibe \mymarg{n}:
+% |$\spcomb[type=permutation,circ=true]{n}$| imprimirá `$PC_{n}$' y verbalizará
+% \emph{«permutaciones circulares de n»}.
+%
+% \smallskip
+%
+% \keyexampcmd{style}{auto \textnormal{\textcolor{lightgray}{\textbar}}
+%   binom \textnormal{\textcolor{lightgray}{\textbar}} letter}{auto}[spcomb]
+% \smallskip
+% Establece cómo se imprimen las combinaciones sin repetición. Con |auto| (o
+% |binom|) se imprime el coeficiente binomial $\binom{n}{k}$ y con |letter|
+% se imprime la letra: |$\spcomb[style=letter]{5}{2}$| imprimirá `$C_{2}^{5}$'.
+% La verbalización es la misma en ambos casos. El valor |binom| solo es válido
+% para combinaciones sin repetición.
+%
+% \smallskip
+%
+% \keyexampcmd{read-arg}{verbalización \textnormal{NVDA}}{no usado}[spcomb]
+% \smallskip
+% Sobrescribe lo que verbalizará \mynvmath{NVDA/MathCAT} al ejecutar el
+% comando sin modificar la impresión de este. El valor de esta llave
+% \emph{siempre} debe pasarse entre llaves `|{ }|'. Por ejemplo:
+% |$\spcomb[read-arg={cinco sobre dos}]{5}{2}$| imprimirá `$\binom{5}{2}$' en
+% la salida \texttt{PDF} y \mynvmath{NVDA/MathCAT} verbalizará \emph{«cinco
+% sobre dos»}.
+%
+% \smallskip
+%
+% \keyexampcmd{silent}{true \textnormal{\textcolor{lightgray}{\textbar}}
+%   false}{false}[spcomb]
+% \smallskip
+% Establece si se \emph{silencia} la verbalización en
+% \mynvmath{NVDA/MathCAT} del símbolo al ejecutar el comando sin modificar la
+% impresión de este. Si se establece en |true|, \mynvmath{NVDA/MathCAT} NO
+% verbalizará la salida del comando; si se establece en |false|, sí
+% verbalizará la salida del comando.
+%
+% \begin{important}*
+%   Un argumento inválido se rechaza siempre, también con |silent=true|, con
+%   un mensaje de error y sin imprimir nada: argumentos vacíos, una lista de
+%   repeticiones con menos de dos elementos o con un elemento vacío, $k > n$
+%   (sin repetición), repeticiones que suman más de $n$, segundo argumento
+%   ausente cuando el símbolo lo necesita o presente cuando no lo admite, y
+%   combinaciones de llaves que no existen (|circ| sin |type=permutation| o
+%   con |rep|, |style=binom| fuera de las combinaciones sin repetición).
+% \end{important}
+%
+% \begin{function}{\spfact}
+%   \begin{syntax}
+%     |\spfact|\mymarg{n} \hfill |\spfact|\myoarg{key \textnormal{\textcolor{gray}{=}} val}\mymarg{n}
+%   \end{syntax}
+%   El comando \ics*{spfact} trabaja en \emph{modo matemático} y recibe el
+%   \emph{argumento obligatorio} \mymarg{n}. Imprime el factorial de \mymarg{n}
+%   y \mynvmath{NVDA/MathCAT} lo verbaliza como \emph{«n factorial»}. Si
+%   \mymarg{n} es una expresión, los paréntesis se escriben en el
+%   argumento (|$\spfact{(n-1)}$| imprimirá `$(n-1)!$'). Tiene las llaves \mykey[spfact]{silent} y
+%   \mykey[spfact]{read-arg}, con el mismo significado que en
+%   \ics*{spcomb}.
+%
+%   \smallskip
+%
+%   |$\spfact{5}$| imprimirá `$5!$' en la salida \texttt{PDF} y
+%   \mynvmath{NVDA/MathCAT} verbalizará \emph{«5 factorial»}.
+% \end{function}
 %
 % \newpage
 %
@@ -21420,6 +21556,660 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \end{macrocode}
 % \end{macro}
 %
+% \subsection{The commands \cs{spcomb} and \cs{spfact}}\label{cmd:spcomb}
+%
+% The user command |\spcomb| typesets the counting symbols of
+% combinatorics: combinations, variations, arrangements and permutations,
+% with or without repetition, and circular permutations. The keys
+% \mykey[spcomb]{type}, \mykey[spcomb]{rep} and \mykey[spcomb]{circ} choose
+% the symbol and the reading; the key \mykey[spcomb]{style} chooses between
+% the binomial coefficient and the letter form. The user command |\spfact|
+% typesets the factorial.
+%
+% \subsubsection{Definition of variables for \cs[no-index]{spcomb}}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spcomb_luaset_error_str,
+%     \l_@@_spcomb_luaset_n_str,
+%     \l_@@_spcomb_luaset_k_str,
+%     \l_@@_spcomb_luaset_list_tl,
+%     \l_@@_spcomb_luaset_count_str,
+%   }
+%   Variables set by the function \myhlc|\@@_luafun_spcomb_prepare:nnnn|.
+%   The string variable \myhlc|\l_@@_spcomb_luaset_error_str| is |true| when
+%   the arguments are invalid. The string variables
+%   \myhlc|\l_@@_spcomb_luaset_n_str| and \myhlc|\l_@@_spcomb_luaset_k_str|
+%   hold the arguments without the surrounding spaces. In the |list| mode,
+%   \myhlc|\l_@@_spcomb_luaset_list_tl| holds the multiplicities, each one
+%   in its own braces, and \myhlc|\l_@@_spcomb_luaset_count_str| how many
+%   they are.
+%    \begin{macrocode}
+\str_new:N \l_@@_spcomb_luaset_error_str
+\str_new:N \l_@@_spcomb_luaset_n_str
+\str_new:N \l_@@_spcomb_luaset_k_str
+\tl_new:N  \l_@@_spcomb_luaset_list_tl
+\str_new:N \l_@@_spcomb_luaset_count_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spcomb_silent_bool,
+%     \l_@@_spcomb_rep_bool,
+%     \l_@@_spcomb_circ_bool,
+%     \l_@@_spcomb_read_arg_tl,
+%     \l_@@_spcomb_type_str,
+%     \l_@@_spcomb_style_str,
+%   }
+%   The boolean variables store the keys \mykey[spcomb]{silent},
+%   \mykey[spcomb]{rep} and \mykey[spcomb]{circ}; the token list variable
+%   \myhlc|\l_@@_spcomb_read_arg_tl| stores the key \mykey[spcomb]{read-arg};
+%   and the string variables store the keys \mykey[spcomb]{type} and
+%   \mykey[spcomb]{style}.
+%    \begin{macrocode}
+\bool_new:N \l_@@_spcomb_silent_bool
+\bool_new:N \l_@@_spcomb_rep_bool
+\bool_new:N \l_@@_spcomb_circ_bool
+\tl_new:N   \l_@@_spcomb_read_arg_tl
+\str_new:N  \l_@@_spcomb_type_str
+\str_new:N  \l_@@_spcomb_style_str
+%    \end{macrocode}
+% \end{variable}
+%
+% \begin{variable}[int]
+%   {
+%     \l_@@_spcomb_letter_tl,
+%     \l_@@_spcomb_concept_tl,
+%     \l_@@_spcomb_mode_str,
+%     \l_@@_spcomb_problem_str,
+%     \l_@@_spcomb_use_binom_bool,
+%     \l_@@_spcomb_i_int,
+%     \l_@@_spcomb_listargs_tl,
+%   }
+%   Variables computed from the keys. The token list variable
+%   \myhlc|\l_@@_spcomb_letter_tl| holds the letters of the symbol (|C|,
+%   |V|, |A| or |P|, followed by |R| and/or |C|), and
+%   \myhlc|\l_@@_spcomb_concept_tl| the name of the concept that is read
+%   (before the final |-de|). The string variable
+%   \myhlc|\l_@@_spcomb_mode_str| is |one|, |pair| or |list| according to
+%   the arguments the symbol takes, and \myhlc|\l_@@_spcomb_problem_str|
+%   describes an incompatible combination of keys (it is empty when there is
+%   none). The boolean variable \myhlc|\l_@@_spcomb_use_binom_bool| is true
+%   when the symbol is printed with |\binom|. The integer
+%   \myhlc|\l_@@_spcomb_i_int| and the token list
+%   \myhlc|\l_@@_spcomb_listargs_tl| are used to number the multiplicities.
+%    \begin{macrocode}
+\tl_new:N   \l_@@_spcomb_letter_tl
+\tl_new:N   \l_@@_spcomb_concept_tl
+\str_new:N  \l_@@_spcomb_mode_str
+\str_new:N  \l_@@_spcomb_problem_str
+\bool_new:N \l_@@_spcomb_use_binom_bool
+\int_new:N  \l_@@_spcomb_i_int
+\tl_new:N   \l_@@_spcomb_listargs_tl
+%    \end{macrocode}
+% \end{variable}
+%
+% \subsubsection{Definition of error messages for \cs[no-index]{spcomb}}
+%
+% \begin{macro}[int]
+%   {
+%     spcomb-invalid-keys,
+%     spcomb-missing-arg,
+%     spcomb-extra-arg,
+%     spcomb-invalid-argument,
+%   }
+%   The message |spcomb-invalid-keys| is raised for a combination of keys that
+%   does not exist (|circ| without |type=permutation|, or with |rep|;
+%   |style=binom| for anything but combinations without repetition). The
+%   message |spcomb-missing-arg| is raised when the second argument is
+%   missing and the symbol needs it, and |spcomb-extra-arg| when it is given
+%   and the symbol does not take it. The message |spcomb-invalid-argument| is
+%   raised when the arguments are empty, when the list of multiplicities has
+%   fewer than two elements or an empty one, or when integers are not
+%   possible (|k| greater than |n|, or multiplicities that add more than |n|).
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spcomb-invalid-keys }
+  {
+    Incompatible~keys~for~\token_to_str:N \spcomb:~#1~\msg_line_context:.
+  }
+  {
+    The~key~circ~needs~type=permutation~and~rep=false;~the~value~binom~of~
+    the~key~style~needs~type=combination~and~rep=false.\\
+  }
+\msg_new:nnnn { spintent } { spcomb-missing-arg }
+  {
+    Missing~second~argument~for~\token_to_str:N \spcomb~\msg_line_context:.
+  }
+  {
+    This~kind~of~symbol~needs~a~second~argument:~k,~or~the~list~of~
+    repetitions.\\
+  }
+\msg_new:nnnn { spintent } { spcomb-extra-arg }
+  {
+    Unexpected~second~argument~for~\token_to_str:N \spcomb~\msg_line_context:.
+  }
+  {
+    Circular~permutations~take~only~n.\\
+  }
+\msg_new:nnnn { spintent } { spcomb-invalid-argument }
+  {
+    Invalid~arguments~'#1'~and~'#2'~for~\token_to_str:N \spcomb~\msg_line_context:.
+  }
+  {
+    The~arguments~cannot~be~empty;~the~repetitions~must~be~a~list~of~at~
+    least~two~elements~separated~by~commas;~if~they~are~integers,~k~cannot~
+    be~greater~than~n~and~the~repetitions~cannot~add~more~than~n.\\
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Definition of keys for \cs[no-index]{spcomb}}
+%
+% \begin{macro}[int]{silent, type, rep, circ, style, read-arg, unknown}
+%   We define the \mymeta{keys} \mykey[spcomb]{silent},
+%   \mykey[spcomb]{type}, \mykey[spcomb]{rep}, \mykey[spcomb]{circ},
+%   \mykey[spcomb]{style} and \mykey[spcomb]{read-arg}. As elsewhere,
+%   \mykey{read-arg} goes through \myhlc|\@@_sanitize_affix:Nn|. The key
+%   \mykey[spcomb]{style} is |auto| by default: |binom| for combinations
+%   without repetition and |letter| otherwise.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spcomb }
+  {
+    silent     .bool_set:N = \l_@@_spcomb_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
+    rep        .bool_set:N = \l_@@_spcomb_rep_bool,
+    rep        .initial:n  = false,
+    rep        .value_required:n = true,
+    circ       .bool_set:N = \l_@@_spcomb_circ_bool,
+    circ       .initial:n  = false,
+    circ       .value_required:n = true,
+    type       .choices:nn =
+      { combination , variation , arrangement , permutation }
+      { \str_set:Nx \l_@@_spcomb_type_str { \l_keys_choice_tl } },
+    type       .initial:n  = combination,
+    type       .value_required:n = true,
+    style      .choices:nn = { auto , binom , letter }
+      { \str_set:Nx \l_@@_spcomb_style_str { \l_keys_choice_tl } },
+    style      .initial:n  = auto,
+    style      .value_required:n = true,
+    read-arg   .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spcomb_read_arg_tl {#1} },
+    read-arg   .initial:n  = ,
+    read-arg   .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spcomb }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{Internal functions for \cs[no-index]{spcomb}}
+%
+% \begin{macro}[int]{\@@_spcomb_setup:}
+%   The function \myhlc|\@@_spcomb_setup:| computes the letters and the
+%   concept from the keys, decides whether |\binom| is used, and leaves in
+%   \myhlc|\l_@@_spcomb_problem_str| the description of an incompatible
+%   combination of keys, if any.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcomb_setup:
+  {
+    \str_clear:N \l_@@_spcomb_problem_str
+    \str_case:Vn \l_@@_spcomb_type_str
+      {
+        { combination }
+          {
+            \tl_set:Nn \l_@@_spcomb_letter_tl  { C }
+            \tl_set:Nn \l_@@_spcomb_concept_tl { combinaciones }
+          }
+        { variation }
+          {
+            \tl_set:Nn \l_@@_spcomb_letter_tl  { V }
+            \tl_set:Nn \l_@@_spcomb_concept_tl { variaciones }
+          }
+        { arrangement }
+          {
+            \tl_set:Nn \l_@@_spcomb_letter_tl  { A }
+            \tl_set:Nn \l_@@_spcomb_concept_tl { arreglos }
+          }
+        { permutation }
+          {
+            \tl_set:Nn \l_@@_spcomb_letter_tl  { P }
+            \tl_set:Nn \l_@@_spcomb_concept_tl { permutaciones }
+          }
+      }
+    \bool_if:NT \l_@@_spcomb_circ_bool
+      {
+        \bool_lazy_and:nnTF
+          { \str_if_eq_p:Vn \l_@@_spcomb_type_str { permutation } }
+          { ! \bool_if_p:N \l_@@_spcomb_rep_bool }
+          {
+            \tl_put_right:Nn \l_@@_spcomb_letter_tl  { C }
+            \tl_put_right:Nn \l_@@_spcomb_concept_tl { -circulares }
+          }
+          {
+            \str_set:Nn \l_@@_spcomb_problem_str
+              { circ~requires~type=permutation~and~rep=false }
+          }
+      }
+    \bool_if:NT \l_@@_spcomb_rep_bool
+      {
+        \tl_put_right:Nn \l_@@_spcomb_letter_tl  { R }
+        \tl_put_right:Nn \l_@@_spcomb_concept_tl { -con-repetición }
+      }
+    \bool_set_false:N \l_@@_spcomb_use_binom_bool
+    \bool_lazy_and:nnTF
+      { \str_if_eq_p:Vn \l_@@_spcomb_type_str { combination } }
+      { ! \bool_if_p:N \l_@@_spcomb_rep_bool }
+      {
+        \str_if_eq:VnF \l_@@_spcomb_style_str { letter }
+          { \bool_set_true:N \l_@@_spcomb_use_binom_bool }
+      }
+      {
+        \str_if_eq:VnT \l_@@_spcomb_style_str { binom }
+          {
+            \str_if_empty:NT \l_@@_spcomb_problem_str
+              {
+                \str_set:Nn \l_@@_spcomb_problem_str
+                  { style=binom~requires~type=combination~and~rep=false }
+              }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]
+%   {
+%     \@@_spcomb_arg:nn,
+%     \@@_spcomb_arg_ann:nn,
+%     \@@_spcomb_arg_plain:nn,
+%     \@@_spcomb_list_wrap:n,
+%     \@@_spcomb_list_wrap_ann:n,
+%     \@@_spcomb_list_wrap_plain:n,
+%   }
+%   The functions \myhlc|\@@_spcomb_arg:nn| and
+%   \myhlc|\@@_spcomb_list_wrap:n| are the two places where the symbol is
+%   annotated. They are set locally to the annotated versions (an
+%   |\MathMLarg| with the inner ghost, and the intent that joins the
+%   multiplicities) or to the plain ones, so that the same function
+%   \myhlc|\@@_spcomb_symbol:| prints the symbol in both cases.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcomb_arg_ann:nn
+  { \MathMLarg {#1} { \@@_inner_sep: #2 } }
+\cs_new_protected:Nn \@@_spcomb_arg_plain:nn { #2 }
+\cs_new_eq:NN \@@_spcomb_arg:nn \@@_spcomb_arg_plain:nn
+\cs_new_protected:Nn \@@_spcomb_list_wrap_ann:n
+  {
+    \MathMLintent { _y:infix ( \l_@@_spcomb_listargs_tl ) }
+      { \@@_inner_sep: #1 }
+  }
+\cs_new_protected:Nn \@@_spcomb_list_wrap_plain:n { #1 }
+\cs_new_eq:NN \@@_spcomb_list_wrap:n \@@_spcomb_list_wrap_plain:n
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcomb_listarg:n, \@@_spcomb_list:}
+%   The function \myhlc|\@@_spcomb_listarg:n| expands to the argument
+%   reference |$m|\mymeta{i}, preceded by a comma from the second one on;
+%   it builds the argument list of the intent that joins the multiplicities.
+%   The function \myhlc|\@@_spcomb_list:| typesets the multiplicities
+%   separated by commas, each one tagged as |m|\mymeta{i}.
+%    \begin{macrocode}
+\cs_new:Nn \@@_spcomb_listarg:n
+  {
+    \int_compare:nT { #1 > 1 } { , }
+    $ m #1
+  }
+\cs_new_protected:Nn \@@_spcomb_list:
+  {
+    \int_zero:N \l_@@_spcomb_i_int
+    \tl_map_inline:Nn \l_@@_spcomb_luaset_list_tl
+      {
+        \int_incr:N \l_@@_spcomb_i_int
+        \int_compare:nT { \l_@@_spcomb_i_int > 1 } { , }
+        \exp_args:Nx \@@_spcomb_arg:nn
+          { m \int_use:N \l_@@_spcomb_i_int } {##1}
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcomb_symbol:}
+%   The function \myhlc|\@@_spcomb_symbol:| typesets the symbol: |\binom|
+%   with |n| and |k|, or the letters with |k| as the subscript and |n| as the
+%   superscript. With one argument |n| is the subscript, and with a list of
+%   multiplicities they form the superscript. The letters are grouped so the
+%   scripts belong to all of them.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcomb_symbol:
+  {
+    \bool_if:NTF \l_@@_spcomb_use_binom_bool
+      {
+        \binom
+          { \@@_spcomb_arg:nn { n } { \str_use:N \l_@@_spcomb_luaset_n_str } }
+          { \@@_spcomb_arg:nn { k } { \str_use:N \l_@@_spcomb_luaset_k_str } }
+      }
+      {
+        { \tl_use:N \l_@@_spcomb_letter_tl }
+        \str_case:Vn \l_@@_spcomb_mode_str
+          {
+            { pair }
+              {
+                \c_math_subscript_token
+                  { \@@_spcomb_arg:nn { k } { \str_use:N \l_@@_spcomb_luaset_k_str } }
+                ^
+                  { \@@_spcomb_arg:nn { n } { \str_use:N \l_@@_spcomb_luaset_n_str } }
+              }
+            { one }
+              {
+                \c_math_subscript_token
+                  { \@@_spcomb_arg:nn { n } { \str_use:N \l_@@_spcomb_luaset_n_str } }
+              }
+            { list }
+              {
+                \c_math_subscript_token
+                  { \@@_spcomb_arg:nn { n } { \str_use:N \l_@@_spcomb_luaset_n_str } }
+                ^
+                  {
+                    \@@_spcomb_arg:nn { m }
+                      { \@@_spcomb_list_wrap:n { \@@_spcomb_list: } }
+                  }
+              }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcomb_print:}
+%   The function \myhlc|\@@_spcomb_print:| prints the symbol inside one native
+%   |\MathMLintent|, preceded by the outer ghost \myhlc|\@@_invisible_sep:|
+%   and by the inner ghost \myhlc|\@@_inner_sep:|.
+%
+%   \smallskip
+%
+%   With \mykey{silent} |true| the intent is |_-|. With \mykey{read-arg}
+%   given it is |_|\mymeta{read-arg}|:nofix|. Otherwise the intent of the
+%   whole symbol is the concept followed by |-de|: with |one| argument it is
+%   |_|\mymeta{concept}|-de:prefix($n)|; with |pair| it is
+%   |_|\mymeta{concept}|-de:prefix($c)|, where |c| is the symbol, which
+%   carries its own intent |_en:infix($n,$k)|; with |list| it is
+%   |_|\mymeta{concept}|-de:prefix($c)|, where |c| is the symbol, which
+%   carries the intent |_con-repeticiones:infix($n,$m)|, and |m| is the
+%   group of the multiplicities, with the intent |_y:infix($m1,$m2,…)|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcomb_print:
+  {
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_spcomb_silent_bool
+      {
+        \cs_set_eq:NN \@@_spcomb_arg:nn \@@_spcomb_arg_plain:nn
+        \cs_set_eq:NN \@@_spcomb_list_wrap:n \@@_spcomb_list_wrap_plain:n
+        \MathMLintent { _- }
+          { \@@_inner_sep: \@@_spcomb_symbol: }
+      }
+      {
+        \tl_if_empty:NTF \l_@@_spcomb_read_arg_tl
+          {
+            \cs_set_eq:NN \@@_spcomb_arg:nn \@@_spcomb_arg_ann:nn
+            \cs_set_eq:NN \@@_spcomb_list_wrap:n \@@_spcomb_list_wrap_ann:n
+            \str_case:Vn \l_@@_spcomb_mode_str
+              {
+                { one }
+                  {
+                    \MathMLintent
+                      { _ \tl_use:N \l_@@_spcomb_concept_tl -de:prefix($n) }
+                      { \@@_inner_sep: \@@_spcomb_symbol: }
+                  }
+                { pair }
+                  {
+                    \MathMLintent
+                      { _ \tl_use:N \l_@@_spcomb_concept_tl -de:prefix($c) }
+                      {
+                        \@@_inner_sep:
+                        \MathMLarg { c }
+                          {
+                            \MathMLintent { _en:infix($n,$k) }
+                              { \@@_inner_sep: \@@_spcomb_symbol: }
+                          }
+                      }
+                  }
+                { list }
+                  {
+                    \tl_set:Nx \l_@@_spcomb_listargs_tl
+                      {
+                        \int_step_function:nN
+                          { \l_@@_spcomb_luaset_count_str }
+                          \@@_spcomb_listarg:n
+                      }
+                    \MathMLintent
+                      { _ \tl_use:N \l_@@_spcomb_concept_tl -de:prefix($c) }
+                      {
+                        \@@_inner_sep:
+                        \MathMLarg { c }
+                          {
+                            \MathMLintent { _con-repeticiones:infix($n,$m) }
+                              { \@@_inner_sep: \@@_spcomb_symbol: }
+                          }
+                      }
+                  }
+              }
+          }
+          {
+            \cs_set_eq:NN \@@_spcomb_arg:nn \@@_spcomb_arg_plain:nn
+            \cs_set_eq:NN \@@_spcomb_list_wrap:n \@@_spcomb_list_wrap_plain:n
+            \MathMLintent { _ \tl_use:N \l_@@_spcomb_read_arg_tl :nofix }
+              { \@@_inner_sep: \@@_spcomb_symbol: }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcomb_exec:nnn}
+%   The function \myhlc|\@@_spcomb_exec:nnn| sets the \mymeta{keys} in `|#1|',
+%   rejects an incompatible combination of keys, decides the mode from the
+%   keys and from the presence of the second argument `|#3|', and calls
+%   \myhlc|\@@_luafun_spcomb_prepare:nnnn| with the arguments. Whatever the
+%   value of \mykey{silent}, an invalid case is rejected with its error
+%   message and nothing is printed; otherwise the printing is delegated to
+%   \myhlc|\@@_spcomb_print:|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcomb_exec:nnn
+  {
+    \keys_set:nn { spintent / spcomb } {#1}
+    \@@_spcomb_setup:
+    \str_if_empty:NTF \l_@@_spcomb_problem_str
+      {
+        \bool_if:NTF \l_@@_spcomb_circ_bool
+          {
+            \tl_if_novalue:nTF {#3}
+              { \str_set:Nn \l_@@_spcomb_mode_str { one } }
+              { \str_set:Nn \l_@@_spcomb_mode_str { extra } }
+          }
+          {
+            \bool_lazy_and:nnTF
+              { \str_if_eq_p:Vn \l_@@_spcomb_type_str { permutation } }
+              { \bool_if_p:N \l_@@_spcomb_rep_bool }
+              {
+                \tl_if_novalue:nTF {#3}
+                  { \str_set:Nn \l_@@_spcomb_mode_str { missing } }
+                  { \str_set:Nn \l_@@_spcomb_mode_str { list } }
+              }
+              {
+                \tl_if_novalue:nTF {#3}
+                  {
+                    \str_if_eq:VnTF \l_@@_spcomb_type_str { permutation }
+                      { \str_set:Nn \l_@@_spcomb_mode_str { one } }
+                      { \str_set:Nn \l_@@_spcomb_mode_str { missing } }
+                  }
+                  { \str_set:Nn \l_@@_spcomb_mode_str { pair } }
+              }
+          }
+        \str_case:VnF \l_@@_spcomb_mode_str
+          {
+            { extra }
+              { \msg_error:nn { spintent } { spcomb-extra-arg } }
+            { missing }
+              { \msg_error:nn { spintent } { spcomb-missing-arg } }
+          }
+          {
+            \@@_luafun_spcomb_prepare:nnnn
+              { \l_@@_spcomb_mode_str }
+              { \exp_not:n {#2} }
+              { \tl_if_novalue:nF {#3} { \exp_not:n {#3} } }
+              {
+                \bool_if:NTF \l_@@_spcomb_rep_bool
+                  { false } { true }
+              }
+            \str_if_eq:VnTF \l_@@_spcomb_luaset_error_str { true }
+              {
+                \tl_if_novalue:nTF {#3}
+                  { \msg_error:nnnn { spintent } { spcomb-invalid-argument } {#2} { } }
+                  { \msg_error:nnnn { spintent } { spcomb-invalid-argument } {#2} {#3} }
+              }
+              { \@@_spcomb_print: }
+          }
+      }
+      {
+        \msg_error:nnx { spintent } { spcomb-invalid-keys }
+          { \l_@@_spcomb_problem_str }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spcomb_begin:nnn, \@@_spcomb_with_k:nnn}
+%   The function \myhlc|\@@_spcomb_begin:nnn| opens a local group, activates
+%   the scope attribute and delegates execution to
+%   \myhlc|\@@_spcomb_exec:nnn|; its variant |nnV| is used when the second
+%   argument is absent, passing the marker \myhlc|\c_novalue_tl| that
+%   \myhlc|\tl_if_novalue:nTF| recognises. The function
+%   \myhlc|\@@_spcomb_with_k:nnn| reads the second argument, which is
+%   present, and passes it on.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spcomb_begin:nnn
+  {
+    \group_begin:
+      \attribute \l_@@_scope_attr_int = 1
+      \@@_spcomb_exec:nnn { #1 } { #2 } { #3 }
+    \group_end:
+  }
+\cs_new_protected:Npn \@@_spcomb_with_k:nnn #1#2#3
+  { \@@_spcomb_begin:nnn {#1} {#2} {#3} }
+\cs_generate_variant:Nn \@@_spcomb_begin:nnn { nnV }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spcomb}
+%   The public command |\spcomb| enforces \emph{math mode}. The second
+%   argument is optional and it is not delimited by brackets but by its
+%   braces: the command looks at the next token and, if it opens a group,
+%   reads it as the second argument (|k| or the list of repetitions);
+%   otherwise the second argument is absent, as for the permutations that
+%   take only |n|.
+%    \begin{macrocode}
+\NewDocumentCommand \spcomb { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \peek_catcode_ignore_spaces:NTF \c_group_begin_token
+          { \@@_spcomb_with_k:nnn { #1 } { #2 } }
+          { \@@_spcomb_begin:nnV { #1 } { #2 } \c_novalue_tl }
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spcomb } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsubsection{The command \cs[no-index]{spfact}}
+%
+% The user command |\spfact| typesets the factorial |n!| and reads it
+% \emph{«n factorial»}. It has the keys \mykey[spfact]{silent} and
+% \mykey[spfact]{read-arg}.
+%
+% \begin{macro}[int]{\l_@@_spfact_silent_bool, \l_@@_spfact_read_arg_tl}
+%   The boolean variable \myhlc|\l_@@_spfact_silent_bool| stores the key
+%   \mykey[spfact]{silent}, and the token list variable
+%   \myhlc|\l_@@_spfact_read_arg_tl| the key \mykey[spfact]{read-arg}.
+%    \begin{macrocode}
+\bool_new:N \l_@@_spfact_silent_bool
+\tl_new:N   \l_@@_spfact_read_arg_tl
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{silent, read-arg, unknown}
+%   The \mymeta{keys} of |\spfact|.
+%    \begin{macrocode}
+\keys_define:nn { spintent / spfact }
+  {
+    silent     .bool_set:N = \l_@@_spfact_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
+    read-arg   .code:n =
+      { \@@_sanitize_affix:Nn \l_@@_spfact_read_arg_tl {#1} },
+    read-arg   .initial:n  = ,
+    read-arg   .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l_@@_command_name_str { spfact }
+        \@@_unknown_keys_cmd:n {#1}
+      },
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}[int]{\@@_spfact_exec:nn}
+%   The function \myhlc|\@@_spfact_exec:nn| sets the \mymeta{keys} in `|#1|'
+%   and prints the factorial of `|#2|' inside one native |\MathMLintent|,
+%   preceded by the outer ghost \myhlc|\@@_invisible_sep:| and followed by
+%   the inner ghost \myhlc|\@@_inner_sep:|. With \mykey{silent} |true| the
+%   intent is |_-|; with \mykey{read-arg} given it is
+%   |_|\mymeta{read-arg}|:nofix|; otherwise it is |_factorial:postfix($n)|.
+%    \begin{macrocode}
+\cs_new_protected:Nn \@@_spfact_exec:nn
+  {
+    \keys_set:nn { spintent / spfact } {#1}
+    \@@_invisible_sep:
+    \bool_if:NTF \l_@@_spfact_silent_bool
+      { \MathMLintent { _- } { \@@_inner_sep: #2 ! } }
+      {
+        \tl_if_empty:NTF \l_@@_spfact_read_arg_tl
+          {
+            \MathMLintent { _factorial:postfix($n) }
+              { \@@_inner_sep: \MathMLarg { n } { \@@_inner_sep: #2 } ! }
+          }
+          {
+            \MathMLintent { _ \tl_use:N \l_@@_spfact_read_arg_tl :nofix }
+              { \@@_inner_sep: #2 ! }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\spfact}
+%   The public command |\spfact| enforces \emph{math mode}, opens a local
+%   group and delegates execution to \myhlc|\@@_spfact_exec:nn|.
+%    \begin{macrocode}
+\NewDocumentCommand \spfact { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l_@@_scope_attr_int = 1
+          \@@_spfact_exec:nn { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spfact } }
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \subsection{Finish package}
 %
 % Finish package implementation.
@@ -24331,6 +25121,107 @@ register_tex_cmd("luafun_spProb_parse_and_set", function(raw_content)
     token_set_macro("l__spintent_spProb_luaset_a_str",     a_raw)
     token_set_macro("l__spintent_spProb_luaset_b_str",     b_raw)
 end, { "string" })
+
+-- ------------------------------------------------------------
+-- \spcomb: combinatoria. Esta función valida y deja listos los
+-- argumentos de \spcomb según el modo que decide expl3:
+--   pair  n y k (k <= n si ambos son enteros y check_le es "true")
+--   list  n y una lista de multiplicidades separadas por comas
+--         (permutaciones con repetición); queda como {a}{b}{c}
+--   one   solo n
+-- Las comas que quedan dentro de llaves, paréntesis o corchetes
+-- (también \left...\right) no separan elementos. Si todo es entero,
+-- la suma de las multiplicidades no puede pasar de n.
+-- ------------------------------------------------------------
+local function spintent_comb_set_error()
+    token_set_macro("l__spintent_spcomb_luaset_error_str", "true")
+    token_set_macro("l__spintent_spcomb_luaset_n_str",     "")
+    token_set_macro("l__spintent_spcomb_luaset_k_str",     "")
+    token_set_macro("l__spintent_spcomb_luaset_list_tl",   "")
+    token_set_macro("l__spintent_spcomb_luaset_count_str", "0")
+end
+
+local function spintent_comb_split(raw)
+    local items, depth, start = {}, 0, 1
+    local i, n = 1, #raw
+    while i <= n do
+        local c = s_sub(raw, i, i)
+        if c == "\\" then
+            local word = s_match(raw, "^\\(%a+)", i)
+            if word == "left" or word == "right" then
+                local j = i + 1 + #word
+                while s_sub(raw, j, j) == " " do j = j + 1 end
+                local d = s_sub(raw, j, j)
+                if word == "left" and (d == "(" or d == "[") then
+                    depth = depth + 1
+                elseif word == "right" and (d == ")" or d == "]") then
+                    depth = depth - 1
+                end
+                i = j + 1
+            elseif word then
+                i = i + 1 + #word
+            else
+                local d = s_sub(raw, i + 1, i + 1)
+                if d == "{" then
+                    depth = depth + 1
+                elseif d == "}" then
+                    depth = depth - 1
+                end
+                i = i + 2
+            end
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+            elseif c == "," and depth == 0 then
+                items[#items + 1] = s_sub(raw, start, i - 1)
+                start = i + 1
+            end
+            if depth < 0 then return nil end
+            i = i + 1
+        end
+    end
+    if depth ~= 0 then return nil end
+    items[#items + 1] = s_sub(raw, start)
+    return items
+end
+
+register_tex_cmd("luafun_spcomb_prepare", function(mode, raw_n, raw_k, check_le)
+    local n_s = spintent_trim(raw_n)
+    local k_s = spintent_trim(raw_k)
+    if n_s == "" then return spintent_comb_set_error() end
+    local list, count = "", 0
+    if mode == "pair" then
+        if k_s == "" then return spintent_comb_set_error() end
+        if check_le == "true" and s_match(n_s, "^%d+$") and s_match(k_s, "^%d+$")
+                and tonumber(k_s) > tonumber(n_s) then
+            return spintent_comb_set_error()
+        end
+    elseif mode == "list" then
+        local items = spintent_comb_split(k_s)
+        if not items or #items < 2 then return spintent_comb_set_error() end
+        local numeric = s_match(n_s, "^%d+$") ~= nil
+        local sum, parts = 0, {}
+        for _, item in ipairs(items) do
+            item = spintent_trim(item)
+            if item == "" then return spintent_comb_set_error() end
+            if numeric and s_match(item, "^%d+$") then
+                sum = sum + tonumber(item)
+            else
+                numeric = false
+            end
+            parts[#parts + 1] = "{" .. item .. "}"
+        end
+        if numeric and sum > tonumber(n_s) then return spintent_comb_set_error() end
+        list, count = t_concat(parts), #items
+    end
+    token_set_macro("l__spintent_spcomb_luaset_error_str", "false")
+    token_set_macro("l__spintent_spcomb_luaset_n_str",     n_s)
+    token_set_macro("l__spintent_spcomb_luaset_k_str",     k_s)
+    token_set_macro("l__spintent_spcomb_luaset_list_tl",   list)
+    token_set_macro("l__spintent_spcomb_luaset_count_str", tostring(count))
+end, { "string", "string", "string", "string" })
 
 -- ------------------------------------------------------------
 -- §13  FUNCIONES — \spfun, \spdom, \sprec, \spcod
