@@ -1,0 +1,12 @@
+*.pdf binary
+*.lvt eol=lf
+*.tlg eol=lf
+
+# git archive: lo que NO va en el paquete
+/.github/          export-ignore
+/.gitignore        export-ignore
+/.gitattributes    export-ignore
+/tagged-test/      export-ignore
+/testfiles/        export-ignore
+/sources/test-pkg/ export-ignore
+/ctan.ann          export-ignore

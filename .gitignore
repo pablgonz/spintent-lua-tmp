@@ -10,11 +10,10 @@ build/*
 *.out
 *.toc
 *.tmp
-*.out
 *.glo
 *.hd
 *.xdv
-*.txt
+# *.txt (comentado: ocultaba LICENSE/README .txt)
 
 ## atach
 *.atfi
@@ -53,3 +52,7 @@ _minted*
 **/sources/test-pkg/spintent.dtx
 **/sources/test-pkg/spintent.sty
 **/sources/test-pkg/spintent.lua
+
+## Excepciones: estos si se versionan
+!/spintent.pdf
+!/sources/spitool.man1.pdf
