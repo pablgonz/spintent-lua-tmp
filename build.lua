@@ -1,7 +1,8 @@
 --[[
    Configuration script for l3build from the spintent package.
    At the moment the possible targets that can be passed are:
-   * tag        : Update the version and date
+   * tag        : Update the version and date (package, spitool and its
+                  man page); regenerates spitool.man1.pdf if groff is found
    * doc        : Generate the documentation [-q]
    * unpack     : Unpacks the source files [-q]
    * install    : Install the package locally, you can use
@@ -22,7 +23,7 @@
 -- General package identification
 module     = "spintent"
 pkgversion = "0.99"
-pkgdate    = "2026-10-09"
+pkgdate    = "2026-10-10"
 ltxrelease = "2026-11-01"
 
 -- Configuration of files for build and installation
@@ -120,6 +121,8 @@ tagfiles = {
   "sources/spintent.dtx",
   "sources/spintent.sty",
   "sources/spintent.lua",
+  "sources/spitool.lua",
+  "sources/spitool.1",
   "sources/CTANREADME.md",
   "ctan.ann"
 }
@@ -150,6 +153,10 @@ local function read_file(filepath)
   return content
 end
 
+-- Set by update_tag when spitool.1 is rewritten, so that the PDF version of
+-- the man page is regenerated (see tag_hook)
+local man_changed = false
+
 -- Update function with smart check (avoids redundant rewrites) --
 -- revisa PRIMERO si el archivo ya tiene el tag/fecha correctos antes
 -- de tocar el contenido; si coincide, no ejecuta ningun gsub.
@@ -166,8 +173,10 @@ function update_tag(file, content, tagname, tagdate)
     local pkgd, pkgv = string.match(content, "\\ProvidesExplPackage%s*{spintent}%s*{(.-)}%s*{(.-)}")
     local ltxr = string.match(content, "\\NeedsTeXFormat%s*{LaTeX2e}%s*%[(%d%d%d%d%-%d%d%-%d%d)%]")
     local luav, luad = string.match(content, "%-%s*v(%d+%.%d+%a*)%s*%[(%d%d%d%d%-%d%d%-%d%d)%]")
+    local spv = string.match(content, 'local%s+SPITOOL_VERSION%s*=%s*"(.-)"')
     already_ok = (fver == tagname and fdate == tagdate and pkgv == tagname
-      and pkgd == tagdate and ltxr == ltxrelease and luav == tagname and luad == tagdate)
+      and pkgd == tagdate and ltxr == ltxrelease and luav == tagname and luad == tagdate
+      and spv == tagname)
 
   elseif string.match(file, "spintent%.sty$") then
     local pkgd, pkgv = string.match(content, "\\ProvidesExplPackage%s*{spintent}%s*{(.-)}%s*{(.-)}")
@@ -177,6 +186,14 @@ function update_tag(file, content, tagname, tagdate)
   elseif string.match(file, "spintent%.lua$") then
     local luav, luad = string.match(content, "%-%s*v(%d+%.%d+%a*)%s*%[(%d%d%d%d%-%d%d%-%d%d)%]")
     already_ok = (luav == tagname and luad == tagdate)
+
+  elseif string.match(file, "spitool%.lua$") then
+    local spv = string.match(content, 'local%s+SPITOOL_VERSION%s*=%s*"(.-)"')
+    already_ok = (spv == tagname)
+
+  elseif string.match(file, "spitool%.1$") then
+    local mand, manv = string.match(content, '%.TH%s+SPITOOL%s+1%s+"(%d%d%d%d%-%d%d%-%d%d)"%s+"spitool%s+(.-)"')
+    already_ok = (manv == tagname and mand == tagdate)
 
   elseif string.match(file, "CTANREADME%.md$") then
     local m_readmev, m_readmed = string.match(content, "Release%s+(v%d+%.%d+%a*)%s+\\%[(%d%d%d%d%-%d%d%-%d%d)\\%]")
@@ -201,6 +218,7 @@ function update_tag(file, content, tagname, tagdate)
     content = string.gsub(content, "(\\ProvidesExplPackage%s*{spintent}%s*){[^}]+}%s*{[^}]+}", "%1{" .. tagdate .. "} {" .. tagname .. "}")
     content = string.gsub(content, "(\\NeedsTeXFormat{LaTeX2e})%[%d%d%d%d%-%d%d%-%d%d%]", "%1[" .. ltxrelease .. "]")
     content = string.gsub(content, "(%-%s*v)%d+%.%d+%a*%s*%[%d%d%d%d%-%d%d%-%d%d%]", "%1" .. tagname .. " [" .. tagdate .. "]")
+    content = string.gsub(content, '(local%s+SPITOOL_VERSION%s*=%s*)"[^"]*"', '%1"' .. tagname .. '"')
   end
 
   -- Substitutions in spintent.sty
@@ -212,6 +230,18 @@ function update_tag(file, content, tagname, tagdate)
   -- Substitutions in spintent.lua
   if string.match(file, "spintent%.lua$") then
     content = string.gsub(content, "(%-%s*v)%d+%.%d+%a*%s*%[%d%d%d%d%-%d%d%-%d%d%]", "%1" .. tagname .. " [" .. tagdate .. "]")
+  end
+
+  -- Substitutions in spitool.lua
+  if string.match(file, "spitool%.lua$") then
+    content = string.gsub(content, '(local%s+SPITOOL_VERSION%s*=%s*)"[^"]*"', '%1"' .. tagname .. '"')
+  end
+
+  -- Substitutions in spitool.1 (the man page): date and version of .TH
+  if string.match(file, "spitool%.1$") then
+    content = string.gsub(content, '(%.TH%s+SPITOOL%s+1%s+)"%d%d%d%d%-%d%d%-%d%d"(%s+)"spitool%s+[^"]*"',
+      '%1"' .. tagdate .. '"%2"spitool ' .. tagname .. '"')
+    man_changed = true
   end
 
   -- Substitutions in CTANREADME.md
@@ -239,12 +269,13 @@ local function check_dtx_tags()
   local pkgd, pkgv = string.match(content, "\\ProvidesExplPackage%s*{spintent}%s*{(.-)}%s*{(.-)}")
   local ltxr = string.match(content, "\\NeedsTeXFormat%s*{LaTeX2e}%s*%[(%d%d%d%d%-%d%d%-%d%d)%]")
   local luav, luad = string.match(content, "%-%s*v(%d+%.%d+%a*)%s*%[(%d%d%d%d%-%d%d%-%d%d)%]")
+  local spv = string.match(content, 'local%s+SPITOOL_VERSION%s*=%s*"(.-)"')
 
-  if fver ~= pkgversion or fdate ~= pkgdate or pkgv ~= pkgversion or pkgd ~= pkgdate or ltxr ~= ltxrelease or luav ~= pkgversion or luad ~= pkgdate then
+  if fver ~= pkgversion or fdate ~= pkgdate or pkgv ~= pkgversion or pkgd ~= pkgdate or ltxr ~= ltxrelease or luav ~= pkgversion or luad ~= pkgdate or spv ~= pkgversion then
     print("** Warning: Mismatches found in sources/spintent.dtx")
     return false
   end
-  os_message("Checking version, date, and LaTeX release in spintent.dtx")
+  os_message("Checking version, date, and LaTeX release in spintent.dtx (and spitool)")
   return true
 end
 
@@ -277,6 +308,33 @@ local function check_lua_tags()
   return true
 end
 
+local function check_spitool_tags()
+  local ok = true
+  local lua = read_file("sources/spitool.lua")
+  if lua then
+    local spv = string.match(lua, 'local%s+SPITOOL_VERSION%s*=%s*"(.-)"')
+    if spv ~= pkgversion then
+      print("** Warning: Mismatches found in sources/spitool.lua")
+      ok = false
+    else
+      os_message("Checking version in spitool.lua")
+    end
+  end
+  local man = read_file("sources/spitool.1")
+  if not man then
+    print("** Warning: sources/spitool.1 not found")
+    return false
+  end
+  local mand, manv = string.match(man, '%.TH%s+SPITOOL%s+1%s+"(%d%d%d%d%-%d%d%-%d%d)"%s+"spitool%s+(.-)"')
+  if manv ~= pkgversion or mand ~= pkgdate then
+    print("** Warning: Mismatches found in sources/spitool.1")
+    ok = false
+  else
+    os_message("Checking version and date in spitool.1")
+  end
+  return ok
+end
+
 local function check_readme_tags()
   local content = read_file("sources/CTANREADME.md")
   if not content then return false end
@@ -297,12 +355,35 @@ local function check_all_tags()
   local ok_dtx = check_dtx_tags()
   local ok_sty = check_sty_tags()
   local ok_lua = check_lua_tags()
+  local ok_spitool = check_spitool_tags()
   local ok_readme = check_readme_tags()
-  return ok_dtx and ok_sty and ok_lua and ok_readme
+  return ok_dtx and ok_sty and ok_lua and ok_spitool and ok_readme
 end
 
--- Leave tag_hook empty so 'l3build tag' doesn't execute redundant checks after writing
+-- 'l3build tag' does not run redundant checks after writing; it only
+-- regenerates the PDF version of the man page when spitool.1 was just tagged
+-- (or the PDF is missing). groff -Tpdf needs the full groff package (the pdf
+-- device); without it the PDF is left as it is and a warning is printed.
 function tag_hook(tagname)
+  local manpdf = sourcefiledir .. "/spitool.man1.pdf"
+  if not (man_changed or not fileexists(manpdf)) then
+    return 0
+  end
+  if not has_cmd("groff") then
+    print("** Warning: groff not found: spitool.man1.pdf was not regenerated")
+    return 0
+  end
+  local tmpfile = "spitool.man1.pdf.tmp"
+  local errorlevel = run(sourcefiledir, "groff -man -Tpdf spitool.1 > " .. tmpfile .. " 2> " .. os_null)
+  if errorlevel ~= 0 then
+    rm(sourcefiledir, tmpfile)
+    print("** Warning: 'groff -man -Tpdf' failed (is the groff pdf device installed?): spitool.man1.pdf was not regenerated")
+    return 0
+  end
+  rm(sourcefiledir, "spitool.man1.pdf")
+  ren(sourcefiledir, tmpfile, "spitool.man1.pdf")
+  os_message("Generated spitool.man1.pdf from spitool.1")
+  return 0
 end
 
 -- Standalone audit target: l3build tagcheck
