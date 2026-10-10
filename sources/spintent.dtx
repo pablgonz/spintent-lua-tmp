@@ -4522,7 +4522,7 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%   Esta llave no se puede utilizar con los argumentos
+%   Esta llave no tiene efecto (se ignora y se emite un aviso) con los argumentos
 %   \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}}
 %   \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}}
 %   \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}}
@@ -4752,7 +4752,7 @@ end, "shekel_fallback_patch")
 % \smallskip
 %
 % \begin{important}*
-%   Esta llave no se puede utilizar con los argumentos
+%   Esta llave no tiene efecto (se ignora y se emite un aviso) con los argumentos
 %   \myparg{\textnormal{F} \textnormal{\textcolor{lightgray}{\textbar}}
 %   \textnormal{P} \textnormal{\textcolor{lightgray}{\textbar}}
 %   \textnormal{B} \textnormal{\textcolor{lightgray}{\textbar}}
@@ -17580,9 +17580,9 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %   the \mymarg{argument} in `|#2|'. Calls
 %   \myhlc|\@@_luafun_geo_afig_parse_and_set:n| or
 %   \myhlc|\@@_luafun_geo_pfig_parse_and_set:n|, reports
-%   |sp#1-invalid-arg| on failure, and |sp#1-read-arg-key| when
+%   |sp#1-invalid-arg| on failure, and warns with |sp#1-read-arg-key| when
 %   \mykey[spAfig,spPfig]{read-arg} is given for a bare number/letter
-%   argument (no vertices), where it has no effect. Sets
+%   argument (no vertices), where it has no effect and is ignored. Sets
 %   \myhlc|\l_@@_spfig_op_tl| to |área|/|perímetro|, then delegates to
 %   \myhlc|\@@_spfig_mathml:n|.
 %    \begin{macrocode}
@@ -17600,7 +17600,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
       {
         \tl_if_empty:cF { l_@@_sp #1 _read_arg_tl }
           {
-            \msg_error:nne { spintent } { sp #1 -read-arg-key }
+            \msg_warning:nne { spintent } { sp #1 -read-arg-key }
               { \c_backslash_str sp #1 }
           }
       }
