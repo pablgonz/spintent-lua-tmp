@@ -63,12 +63,6 @@ jobs:
       - name: Add ~/.local/bin to PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Install spitool CLI
-        run: |
-          chmod +x ./spitool
-          mkdir -p $HOME/.local/bin
-          cp ./spitool $HOME/.local/bin/spitool
-
       - name: Install spintent package
         run: l3build install
 
