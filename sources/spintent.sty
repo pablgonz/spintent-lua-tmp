@@ -187,11 +187,11 @@
 \tl_new:N \l__spintent_setspintent_input_arg_cmd_tl
 \msg_new:nnnn { spintent } { unknown-command-setup }
   {
-    Cannot~configure~unknown~command~'\exp_not:c{#1}'.
+    Cannot~configure~unknown~command~'\c_backslash_str #1'~\msg_line_context:.
   }
   {
     You~attempted~to~use~\token_to_str:N \setspintent{#1}{...},~but~the~
-    command~\exp_not:c{#1}~is~not~defined.~Please~check~for~typos.
+    command~\c_backslash_str #1~is~not~defined.~Please~check~for~typos.
   }
 \cs_new_protected:Nn \__spintent_setspintent_set_keys:nn
   {
@@ -235,9 +235,12 @@
   }
 %% Common messages for command in the keys |unknown| and |unknown-choice|.
 \str_new:N  \l__spintent_command_name_str
-\msg_new:nnn { spintent } { unknown-choice }
+\msg_new:nnnn { spintent } { unknown-choice }
   {
-    The~value~'#3'~for~'#1'~key~is~invalid~use~('#2').
+    Invalid~value~'#3'~for~key~'#1';~use~one~of:~#2~\msg_line_context:.
+  }
+  {
+    The~key~'#1'~only~accepts~one~of:~#2.
   }
 \msg_new:nnnn { spintent } { cmd-key-unknown }
   {
@@ -258,7 +261,7 @@
   }
   {
     The~command~\c_backslash_str \l__spintent_command_name_str \c_space_tl
-    does~not~have~a~key~called~'#1'.\\
+    does~not~have~a~key~called~'#1=#2'.\\
     Check~that~you~have~spelled~the~key~name~correctly.
   }
 %% Internal fucnctions for the key |unknown|.
@@ -301,14 +304,14 @@
 %% Common msm for command in math and text mode
 \msg_new:nnnn { spintent } { need-math-mode }
   {
-    Math~mode~required~for~'#1'~\msg_line_context:.
+    Math~mode~required~for~#1\msg_line_context:.
   }
   {
     Use~inside~$...$~or~in~math~environment.
   }
 \msg_new:nnnn { spintent } { need-text-mode }
   {
-    Text~mode~required~for~'#1'~\msg_line_context:.
+    Text~mode~required~for~#1\msg_line_context:.
   }
   {
     Use~outside~of~$...$~or~math~environment.
@@ -541,14 +544,14 @@
 %% messages errors for \spnum
 \msg_new:nnnn { spintent } { spnum-has-units }
   {
-    The~\token_to_str:N \spnum \c_space_tl command~does~not~accept~units~('#1').
+    The~\token_to_str:N \spnum \c_space_tl command~does~not~accept~units~('#1')~\msg_line_context:.
   }
   {
     Use~\token_to_str:N \spunit \c_space_tl if~you~need~to~print~numbers~with~units.
   }
 \msg_new:nnnn { spintent } { spnum-no-digits }
   {
-    The~\token_to_str:N \spnum \c_space_tl command~requires~a~valid~numerical~value.
+    The~\token_to_str:N \spnum \c_space_tl command~requires~a~valid~numerical~value~\msg_line_context:.
   }
   {
     You~provided~'#1',~which~contains~no~digits.
@@ -590,21 +593,21 @@
 %% messages errors for \spunit
 \msg_new:nnnn { spintent } { spunit-invalid-unit }
   {
-    The~expression~'#1'~contains~an~unknown~or~malformed~unit~structure.
+    The~expression~'#1'~contains~an~unknown~or~malformed~unit~structure~\msg_line_context:.
   }
   {
     Check~spelling~or~verify~the~unit~is~defined~in~the~dictionary.
   }
 \msg_new:nnnn { spintent } { spunit-no-units }
   {
-    The~\token_to_str:N \spunit \c_space_tl command~requires~at~least~one~unit~('#1').
+    The~\token_to_str:N \spunit \c_space_tl command~requires~at~least~one~unit~('#1')~\msg_line_context:.
   }
   {
     Use~\token_to_str:N \spnum \c_space_tl if~you~only~need~to~format~a~pure~number.
   }
 \msg_new:nnnn { spintent } { inline-numeric-denominator }
   {
-    Illegal~numeric~coefficient~in~inline~denominator~'#1'.
+    Illegal~numeric~coefficient~in~inline~denominator~'#1'~\msg_line_context:.
   }
   {
     The~inline~mode~of~\token_to_str:N \spunit \c_space_tl
@@ -798,21 +801,21 @@
 %% messages errors for \spnewunit and \spunitalias
 \msg_new:nnnn { spintent } { spnewunit-duplicate }
   {
-    The~unit~symbol~or~alias~'#1'~is~already~defined!
+    The~unit~symbol~or~alias~'#1'~is~already~defined~\msg_line_context:.
   }
   {
     You~cannot~redefine~with~\token_to_str:N \spnewunit.
   }
 \msg_new:nnnn { spintent } { spunitalias-duplicate }
   {
-    The~alias~'#1'~is~already~defined~or~reserved!
+    The~alias~'#1'~is~already~defined~or~reserved~\msg_line_context:.
   }
   {
     You~cannot~redefine~an~existing~unit~or~another~alias.
   }
 \msg_new:nnnn { spintent } { spunitalias-invalid-expr }
   {
-    The~expression~'#2'~for~alias~'#1'~is~invalid.
+    The~expression~'#2'~for~alias~'#1'~is~invalid~\msg_line_context:.
   }
   {
     It~must~contain~only~defined~units,~exponents~and~one~'/'.
@@ -871,7 +874,7 @@
 \msg_new:nnnn { spintent } { currency-no-subunits }
   {
     The~currency~'#1'~does~not~support~subunits.~
-    The~option~'sub-units=true'~is~ignored.
+    The~option~'sub-units=true'~is~ignored~\msg_line_context:.
   }
   {
     Monies~like~the~Japanese~Yen~(JPY)~or~Chilean~Peso~(CLP)~
@@ -879,7 +882,7 @@
   }
 \msg_new:nnnn { spintent } { invalid-currency }
   {
-    Invalid~currency~identifier~'#1'~in~\token_to_str:N \spmoney .
+    Invalid~currency~identifier~'#1'~in~\token_to_str:N \spmoney \c_space_tl \msg_line_context:.
   }
   {
     The~provided~symbol,~alias,~or~ISO~code~does~not~exist~in~
@@ -1157,7 +1160,7 @@
 \str_new:N  \l__spintent_spshort_luaset_base_str
 \str_new:N  \l__spintent_spshort_luaset_suffix_str
 \msg_new:nnnn { spintent } { unknown-abbreviation }
-  { The~abbreviation~or~ordinal~'#1'~is~invalid~or~not~recognized. }
+  { The~abbreviation~or~ordinal~'#1'~is~invalid~or~not~recognized~\msg_line_context:. }
   { Verify~the~spelling~or~check~the~grammar~rules~for~ordinals. }
 \cs_new_protected:Nn \__spintent_spshort_tag_span:nn
   {
@@ -1296,7 +1299,7 @@
 \str_new:N \l__spintent_spsiglo_print_era_str
 \msg_new:nnnn { spintent } { invalid-century-format }
   {
-    Invalid~century~format~in~'#1'.
+    Invalid~argument~'#2'~for~#1\msg_line_context:.
   }
   {
     The~argument~'#2'~is~not~a~valid~Arabic~or~Roman~numeral.~
@@ -1447,8 +1450,8 @@
 \str_new:N \l__spintent_sptime_luaset_base_str
 \msg_new:nnnn { spintent } { invalid-time-format }
   {
-    Invalid~time~format~in~#1. \\
-    The~argument~'#2'~does~not~match~any~supported~time~format.
+    Invalid~argument~'#2'~for~#1\msg_line_context:. \\
+    It~does~not~match~any~supported~time~format.
   }
   {
     Allowed~formats:~HH:MM,~HH:MM:SS,~or~HH:MM:SS.ss. \\
@@ -1526,8 +1529,8 @@
 \str_new:N \l__spintent_spdate_luaset_error_str
 \msg_new:nnnn { spintent } { invalid-date-format }
   {
-    Invalid~date~or~unsupported~format~in~#1. \\
-    The~argument~'#2'~does~not~match~a~supported~format.
+    Invalid~argument~'#2'~for~#1\msg_line_context:. \\
+    It~does~not~match~a~supported~date~format.
   }
   {
     Allowed~formats:~DD\slash MM\slash YYYY,~DD-MM-YYYY,~or~YYYY-MM-DD. \\
@@ -1560,14 +1563,17 @@
   }
 \msg_new:nnnn { spintent } { spusep-empty-arg }
   {
-    Empty~argument~'#1'~for~\token_to_str:N \spusep.
+    Empty~argument~'#1'~for~\token_to_str:N \spusep \c_space_tl \msg_line_context:.
   }
   {
-    \token_to_str:N \spusep~requires~a~non-empty~argument.
+    \token_to_str:N \spusep \c_space_tl requires~a~non-empty~argument.
   }
-\msg_new:nnn { spintent } { spusep-invalid-arg }
+\msg_new:nnnn { spintent } { spusep-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spusep.
+    Invalid~argument~'#1'~for~\token_to_str:N \spusep \c_space_tl \msg_line_context:.
+  }
+  {
+    \c_backslash_str spusep~accepts~only~the~delimiters~listed~in~its~documentation.
   }
 \tl_new:N \l__spintent_spusep_arg_tl
 \tl_new:N \l__spintent_spusep_left_tl
@@ -1666,7 +1672,7 @@
           }
       }
       {
-        \msg_error:nnn { spintent } { spusep-invalid-arg } {#1}
+        \tl_if_empty:NF \l__spintent_spusep_arg_tl { \msg_error:nnn { spintent } { spusep-invalid-arg } {#1} }
       }
   }
 \NewDocumentCommand \spusep { O{} m }
@@ -1682,28 +1688,28 @@
   }
 \msg_new:nnnn { spintent } { spnewread-empty-args }
   {
-    Empty~argument~in~\token_to_str:N \spnewread.
+    Empty~argument~in~\token_to_str:N \spnewread \c_space_tl \msg_line_context:.
   }
   {
-    \token_to_str:N \spnewread~requires~two~non-empty~arguments.
+    \token_to_str:N \spnewread \c_space_tl requires~two~non-empty~arguments.
   }
 \msg_new:nnnn { spintent } { spnewread-duplicate }
   {
-    The~symbol~'#1'~is~already~defined!
+    The~symbol~'#1'~is~already~defined~\msg_line_context:.
   }
   {
     You~cannot~redefine~with~\token_to_str:N \spnewread.
   }
 \msg_new:nnnn { spintent } { spread-empty-sym }
   {
-    Empty~symbol~argument~in~\token_to_str:N \spread.
+    Empty~symbol~argument~in~\token_to_str:N \spread \c_space_tl \msg_line_context:.
   }
   {
-    \token_to_str:N \spread~requires~a~non-empty~symbol.
+    \token_to_str:N \spread \c_space_tl requires~a~non-empty~symbol.
   }
 \msg_new:nnnn { spintent } { spread-unknown-sym }
   {
-    The~symbol~'#1'~is~not~registered~and~no~'read-arg'~was~given.
+    The~symbol~'#1'~is~not~registered~and~no~'read-arg'~was~given~\msg_line_context:.
   }
   {
     Register~it~first~with~\token_to_str:N \spnewread,~or~pass~'read-arg'.
@@ -1959,7 +1965,7 @@
       },
   }
 \msg_new:nnnn { spintent } { spdiv-empty-argument }
-  { The~arguments~for~\token_to_str:N \spdiv~cannot~be~empty. }
+  { The~arguments~for~\token_to_str:N \spdiv \c_space_tl cannot~be~empty~\msg_line_context:. }
   {
     You~must~provide~both~a~dividend~and~a~divisor.\\
   }
@@ -1988,10 +1994,10 @@
   {
     \keys_set:nn { spintent / spdiv } { #1 }
     \tl_if_blank:nTF { #2 }
-      { \msg_error:nnn { spintent } { spdiv-empty-argument } }
+      { \msg_error:nn { spintent } { spdiv-empty-argument } }
       {
         \tl_if_blank:nTF { #3 }
-          { \msg_error:nnn { spintent } { spdiv-empty-argument } }
+          { \msg_error:nn { spintent } { spdiv-empty-argument } }
           {
             \bool_if:NTF \l__spintent_spdiv_wrap_parens_bool
               { \__spintent_spdiv_render_parens:nn {#2} {#3} }
@@ -2030,7 +2036,7 @@
       },
   }
 \msg_new:nnnn { spintent } { spmul-empty-argument }
-  { The~arguments~for~\token_to_str:N \spmul~cannot~be~empty. }
+  { The~arguments~for~\token_to_str:N \spmul \c_space_tl cannot~be~empty~\msg_line_context:. }
   {
     You~must~provide~both~first~factor~and~second~factor.\\
   }
@@ -2059,10 +2065,10 @@
   {
     \keys_set:nn { spintent / spmul } { #1 }
     \tl_if_blank:nTF { #2 }
-      { \msg_error:nnn { spintent } { spmul-empty-argument } }
+      { \msg_error:nn { spintent } { spmul-empty-argument } }
       {
         \tl_if_blank:nTF { #3 }
-          { \msg_error:nnn { spintent } { spmul-empty-argument } }
+          { \msg_error:nn { spintent } { spmul-empty-argument } }
           {
             \bool_if:NTF \l__spintent_spmul_wrap_parens_bool
               { \__spintent_spmul_render_parens:nn {#2} {#3} }
@@ -2095,7 +2101,7 @@
   }
 \msg_new:nnnn { spintent } { mc-invalid-arguments }
   {
-    Invalid~arguments~provided~to~#1.
+    Invalid~arguments~for~#1\msg_line_context:.
   }
   {
     The~arguments~must~be~a~comma-separated~list. \\
@@ -2340,14 +2346,14 @@
   }
 \msg_new:nnnn { spintent } { md-invalid-argument }
   {
-    Invalid~argument~provided~to~#1~\msg_line_context:.
+    Invalid~argument~for~#1\msg_line_context:.
   }
   {
     The~argument~must~be~a~single~positive~integer. \\
   }
 \msg_new:nnnn { spintent } { mc-too-few-arguments }
   {
-    Too~few~arguments~provided~to~#1~\msg_line_context:.
+    Too~few~arguments~for~#1\msg_line_context:.
   }
   {
     At~least~two~arguments~are~required. \\
@@ -2583,7 +2589,7 @@
 \str_new:N  \l__spintent_spang_luaset_segundo_str
 \str_new:N  \l__spintent_spang_luaset_error_str
 \msg_new:nnnn { spintent } { invalid-angle-format }
-  { Invalid~angle~format~in~#1. }
+  { Invalid~argument~'#2'~for~#1\msg_line_context:. }
   {
     The~argument~'#2'~could~not~be~parsed. \\
   }
@@ -2649,9 +2655,9 @@
       },
   }
 \msg_new:nnnn { spintent } { spnz-not-integer }
-  { The~value~'#1'~is~not~a~valid~integer. }
+  { The~value~'#1'~is~not~a~valid~integer~\msg_line_context:. }
   {
-    Command~\token_to_str:N \spnZ~only~accepts~integers.\\
+    Command~\token_to_str:N \spnZ \c_space_tl only~accepts~integers.\\
    }
 \cs_new_protected:Nn \__spintent_spnz_render_parens:
   {
@@ -2701,7 +2707,7 @@
 %% Error messages for \spmQ.
 \msg_new:nnnn { spintent } { spmQ-zero-denominator }
   {
-    Zero~denominator~in~\token_to_str:N \spmQ~\msg_line_context:.
+    Zero~denominator~in~\token_to_str:N \spmQ \c_space_tl \msg_line_context:.
   }
   {
     The~denominator~of~a~fraction~cannot~be~zero.\\
@@ -2967,9 +2973,12 @@
 \str_new:N \l__spintent_spcoord_intent_str
 \tl_new:N  \l__spintent_spcoord_wrap_parens_l_tl
 \tl_new:N  \l__spintent_spcoord_wrap_parens_r_tl
-\msg_new:nnn { spintent } { spcoord-invalid-arg }
+\msg_new:nnnn { spintent } { spcoord-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spcoord.
+    Invalid~argument~'#1'~for~\token_to_str:N \spcoord \c_space_tl \msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str spcoord~for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / spcoord }
   {
@@ -3102,7 +3111,7 @@
     \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#2}
     \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#2} }
     \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
-      { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
+      { \msg_error:nne { spintent } { spcoord-invalid-arg } { \exp_not:n {#2} } }
     \__spintent_spcoord_set_wrap_parens_size:
     \str_if_eq:VnF \l__spintent_spcoord_luaset_error_str { true }
       {
@@ -3161,10 +3170,10 @@
 \tl_new:N  \l__spintent_spinterval_tmp_tl
 \msg_new:nnnn { spintent } { spinterval-invalid-arg }
   {
-Invalid~format~in~\token_to_str:N \spinterval:~'#1'~(#2)~\msg_line_context:.
+Invalid~argument~'#1'~for~\token_to_str:N \spinterval \c_space_tl (#2)~\msg_line_context:.
   }
   {
-See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~forms.
+See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / spinterval }
   {
@@ -3518,9 +3527,12 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \str_new:N  \l__spintent_spfun_luaset_inv_str
 \tl_new:N   \l__spintent_spfun_call_tl
 \int_new:N  \l__spintent_spfun_depth_int
-\msg_new:nnn { spintent } { spfun-invalid-arg }
+\msg_new:nnnn { spintent } { spfun-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spfun.
+    Invalid~argument~'#1'~for~\token_to_str:N \spfun \c_space_tl \msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str spfun~for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / spfun }
   {
@@ -3757,9 +3769,12 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \str_new:N  \l__spintent_spfuncomp_luaset_n_str
 \str_new:N  \l__spintent_spfuncomp_luaset_paren_str
 \str_new:N  \l__spintent_spfuncomp_luaset_apply_str
-\msg_new:nnn { spintent } { spfuncomp-invalid-arg }
+\msg_new:nnnn { spintent } { spfuncomp-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spfuncomp.
+    Invalid~argument~'#1'~for~\token_to_str:N \spfuncomp \c_space_tl \msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str spfuncomp~for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / spfuncomp }
   {
@@ -3934,9 +3949,12 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \tl_new:N   \l__spintent_spdom_intent_arg_tl
 \bool_new:N \l__spintent_spdom_silent_bool
 \str_new:N  \l__spintent_spdom_luaset_error_str
-\msg_new:nnn { spintent } { spdom-invalid-arg }
+\msg_new:nnnn { spintent } { spdom-invalid-arg }
   {
-    Invalid~argument~'#2'~for~\c_backslash_str #1.
+    Invalid~argument~'#2'~for~\c_backslash_str #1~\msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str #1~for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / spdom }
   {
@@ -4140,7 +4158,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \tl_new:N   \l__spintent_spPoint_intent_arg_tl
 \msg_new:nnnn { spintent } { spPoint-invalid-point }
   {
-    Invalid~point~format~in~\token_to_str:N \spPoint:~'#1'.
+    Invalid~argument~'#1'~for~\token_to_str:N \spPoint \c_space_tl \msg_line_context:.
   }
   {
     The~argument~must~be~a~single~uppercase~letter~with~an~optional~
@@ -4230,7 +4248,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
         \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
         \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
-          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
+          { \msg_error:nne { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
         \__spintent_spcoord_set_wrap_parens_size:
         \str_if_eq:VnF \l__spintent_spcoord_luaset_error_str { true }
           { \__spintent_spcoord_mathml: }
@@ -4254,9 +4272,12 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \seq_new:N \l__spintent_spvec_pt_seq
 \tl_new:N  \l__spintent_spvec_refs_tl
 \int_new:N \l__spintent_spvec_pt_idx_int
-\msg_new:nnn { spintent } { spvec-invalid-arg }
+\msg_new:nnnn { spintent } { spvec-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spvec.
+    Invalid~argument~'#1'~for~\token_to_str:N \spvec \c_space_tl \msg_line_context:.
+  }
+  {
+    See~the~documentation~of~\c_backslash_str spvec~for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / spvec }
   {
@@ -4470,7 +4491,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \tl_set:Nn \l__spintent_spcoord_raw_arg_tl {#3}
         \__spintent_luafun_spcoord_parse_and_set:n { \exp_not:n {#3} }
         \str_if_eq:VnT \l__spintent_spcoord_luaset_error_str { true }
-          { \msg_error:nnn { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
+          { \msg_error:nne { spintent } { spcoord-invalid-arg } { \exp_not:n {#3} } }
         \__spintent_spcoord_set_wrap_parens_size:
         \str_if_eq:VnF \l__spintent_spcoord_luaset_error_str { true }
           { \__spintent_spcoord_mathml: }
@@ -4496,10 +4517,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \int_new:N \l__spintent_sprecta_pt_idx_int
 \msg_new:nnnn { spintent } { sprecta-invalid-points }
   {
-    Invalid~format~in~\token_to_str:N \sprecta:~'#1'~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \sprecta \c_space_tl \msg_line_context:.
   }
   {
-    See~the~documentation~of~\token_to_str:N \sprecta~for~the~accepted~argument~forms.
+    See~the~documentation~of~\token_to_str:N \sprecta \c_space_tl for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / sprecta }
   {
@@ -4733,10 +4754,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \str_new:N \l__spintent_sprayo_read_sty_str
 \msg_new:nnnn { spintent } { sprayo-invalid-points }
   {
-    Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \sprayo \c_space_tl \msg_line_context:.
   }
   {
-    See~the~documentation~of~\token_to_str:N \sprayo~for~the~accepted~point~formats.
+    See~the~documentation~of~\token_to_str:N \sprayo \c_space_tl for~the~accepted~point~formats.
   }
 \keys_define:nn { spintent / sprayo }
   {
@@ -4789,7 +4810,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \cs_new_protected:Nn \__spintent_sprayo_print:n
   {
     \__spintent_luafun_geo_parse_and_set:n { \exp_not:n {#1} }
-    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
+    \bool_if:nT
+      {
+        \str_if_eq_p:Vn \l__spintent_geo_luaset_error_str { true } ||
+        \str_if_eq_p:Vn \l__spintent_geo_luaset_is_name_str { true }
+      }
       {
         \msg_error:nne { spintent } { sprayo-invalid-points } { \exp_not:n {#1} }
       }
@@ -4872,7 +4897,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
       {
-        Invalid~point~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~point~formats.
@@ -4943,7 +4968,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \cs_new_protected:Nn \__spintent_spside_process:nn
   {
     \__spintent_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
-    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
+    \bool_if:nT
+      {
+        \str_if_eq_p:Vn \l__spintent_geo_luaset_error_str { true } ||
+        \str_if_eq_p:Vn \l__spintent_geo_luaset_is_name_str { true }
+      }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
@@ -5081,7 +5110,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
       {
-        Invalid~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~argument~forms.
@@ -5368,7 +5397,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
       {
-        Invalid~point~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~point~formats.
@@ -5426,7 +5455,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \cs_new_protected:Nn \__spintent_sparc_process:nn
   {
     \__spintent_luafun_geo_parse_and_set:n { \exp_not:n {#2} }
-    \str_if_eq:VnT \l__spintent_geo_luaset_error_str { true }
+    \bool_if:nT
+      {
+        \str_if_eq_p:Vn \l__spintent_geo_luaset_error_str { true } ||
+        \str_if_eq_p:Vn \l__spintent_geo_luaset_is_name_str { true }
+      }
       {
         \msg_error:nnee { spintent } { sp #1 -invalid-points }
           { \c_backslash_str sp #1 } { \exp_not:n {#2} }
@@ -5523,10 +5556,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \tl_new:N  \l__spintent_spPoly_prefix_tl
 \msg_new:nnnn { spintent } { spPoly-invalid-points }
   {
-    Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \spPoly \c_space_tl \msg_line_context:.
   }
   {
-    See~the~documentation~of~\token_to_str:N \spPoly~for~the~accepted~point~formats.
+    See~the~documentation~of~\token_to_str:N \spPoly \c_space_tl for~the~accepted~point~formats.
   }
 \keys_define:nn { spintent / spPoly }
   {
@@ -5679,14 +5712,14 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
       {
-        Invalid~point~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~point~formats.
       }
     \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
       {
-        Invalid~argument~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~argument~forms.
@@ -5807,7 +5840,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
       {
         \tl_if_empty:cF { l__spintent_sp #1 _read_arg_tl }
           {
-            \msg_error:nne { spintent } { sp #1 -read-arg-key }
+            \msg_warning:nne { spintent } { sp #1 -read-arg-key }
               { \c_backslash_str sp #1 }
           }
       }
@@ -6366,10 +6399,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \tl_new:N  \l__spintent_spcirc_word_tl
 \msg_new:nnnn { spintent } { spcirc-invalid-arg }
   {
-    Invalid~argument~format~in~\token_to_str:N \spcirc:~'#1'~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \spcirc \c_space_tl \msg_line_context:.
   }
   {
-    See~the~documentation~of~\token_to_str:N \spcirc~for~the~accepted~argument~forms.
+    See~the~documentation~of~\token_to_str:N \spcirc \c_space_tl for~the~accepted~argument~forms.
   }
 \keys_define:nn { spintent / spcirc }
   {
@@ -6665,10 +6698,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
       {
-        Invalid~argument~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
-        See~the~documentation~of~##1~for~the~accepted~argument.
+        See~the~documentation~of~##1~for~the~accepted~argument~forms.
       }
     \keys_define:nn { spintent / sp #1 }
       {
@@ -7637,7 +7670,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \tl_new:N  \l__spintent_spFrec_concept_tl
 \msg_new:nnnn { spintent } { spFrec-invalid-symbol }
   {
-    Invalid~symbol~'#1'~for~\token_to_str:N \spFrec~\msg_line_context:.
+    Invalid~symbol~'#1'~for~\token_to_str:N \spFrec \c_space_tl \msg_line_context:.
   }
   {
     The~symbol~must~be~one~of~f,~F,~f_{r},~F_{r},~f_{r}\iow_char:N \%~or~
@@ -7648,7 +7681,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
     The~key~sub-index~is~not~valid~for~'#1'~\msg_line_context:.
   }
   {
-    The~key~sub-index~of~\token_to_str:N \spFrec only~accepts~the~symbols~f~and~F.\\
+    The~key~sub-index~of~\token_to_str:N \spFrec \c_space_tl only~accepts~the~symbols~f~and~F.\\
   }
 \cs_new_protected:Nn \__spintent_spFrec_exec:n
   {
@@ -7712,7 +7745,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \tl_new:N  \l__spintent_spcase_concept_tl
 \msg_new:nnnn { spintent } { spcase-invalid-letter }
   {
-    Invalid~letter~'#1'~for~\token_to_str:N \spcase~\msg_line_context:.
+    Invalid~letter~'#1'~for~\token_to_str:N \spcase \c_space_tl \msg_line_context:.
   }
   {
     The~letter~must~be~f,~p~or~t.\\
@@ -7849,11 +7882,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 \tl_new:N   \l__spintent_spProb_read_arg_tl
 \msg_new:nnnn { spintent } { spProb-invalid-argument }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spProb~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \spProb \c_space_tl \msg_line_context:.
   }
   {
     The~argument~must~be~an~event,~or~two~events~joined~by~exactly~one~of~
-    \token_to_str:N \cap,~\token_to_str:N \cup,~\token_to_str:N \mid~or~|,~
+    \token_to_str:N \cap,~\token_to_str:N \cup,~\token_to_str:N \mid \c_space_tl or~|,~
     outside~any~braces~or~parentheses.\\
   }
 \keys_define:nn { spintent / spProb }
@@ -8102,6 +8135,415 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spcomp } }
+  }
+\str_new:N \l__spintent_spcomb_luaset_error_str
+\str_new:N \l__spintent_spcomb_luaset_n_str
+\str_new:N \l__spintent_spcomb_luaset_k_str
+\tl_new:N  \l__spintent_spcomb_luaset_list_tl
+\str_new:N \l__spintent_spcomb_luaset_count_str
+\bool_new:N \l__spintent_spcomb_silent_bool
+\bool_new:N \l__spintent_spcomb_rep_bool
+\bool_new:N \l__spintent_spcomb_circ_bool
+\tl_new:N   \l__spintent_spcomb_read_arg_tl
+\str_new:N  \l__spintent_spcomb_type_str
+\str_new:N  \l__spintent_spcomb_style_str
+\tl_new:N   \l__spintent_spcomb_letter_tl
+\tl_new:N   \l__spintent_spcomb_concept_tl
+\str_new:N  \l__spintent_spcomb_mode_str
+\str_new:N  \l__spintent_spcomb_problem_str
+\bool_new:N \l__spintent_spcomb_use_binom_bool
+\int_new:N  \l__spintent_spcomb_i_int
+\tl_new:N   \l__spintent_spcomb_listargs_tl
+\msg_new:nnnn { spintent } { spcomb-invalid-keys }
+  {
+    Incompatible~keys~for~\token_to_str:N \spcomb \c_colon_str \c_space_tl #1~\msg_line_context:.
+  }
+  {
+    The~key~circ~needs~type=permutation~and~rep=false;~the~value~binom~of~
+    the~key~style~needs~type=combination~and~rep=false.\\
+  }
+\msg_new:nnnn { spintent } { spcomb-missing-arg }
+  {
+    Missing~second~argument~for~\token_to_str:N \spcomb \c_space_tl \msg_line_context:.
+  }
+  {
+    This~kind~of~symbol~needs~a~second~argument:~k,~or~the~list~of~
+    repetitions.\\
+  }
+\msg_new:nnnn { spintent } { spcomb-extra-arg }
+  {
+    Unexpected~second~argument~for~\token_to_str:N \spcomb \c_space_tl \msg_line_context:.
+  }
+  {
+    Circular~permutations~take~only~n.\\
+  }
+\msg_new:nnnn { spintent } { spcomb-invalid-argument }
+  {
+    Invalid~arguments~'#1'~and~'#2'~for~\token_to_str:N \spcomb \c_space_tl \msg_line_context:.
+  }
+  {
+    The~arguments~cannot~be~empty;~the~repetitions~must~be~a~list~of~at~
+    least~two~elements~separated~by~commas;~if~they~are~integers,~k~cannot~
+    be~greater~than~n~and~the~repetitions~cannot~add~more~than~n.\\
+  }
+\keys_define:nn { spintent / spcomb }
+  {
+    silent     .bool_set:N = \l__spintent_spcomb_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
+    rep        .bool_set:N = \l__spintent_spcomb_rep_bool,
+    rep        .initial:n  = false,
+    rep        .value_required:n = true,
+    circ       .bool_set:N = \l__spintent_spcomb_circ_bool,
+    circ       .initial:n  = false,
+    circ       .value_required:n = true,
+    type       .choices:nn =
+      { combination , variation , arrangement , permutation }
+      { \str_set:Nx \l__spintent_spcomb_type_str { \l_keys_choice_tl } },
+    type       .initial:n  = combination,
+    type       .value_required:n = true,
+    style      .choices:nn = { auto , binom , letter }
+      { \str_set:Nx \l__spintent_spcomb_style_str { \l_keys_choice_tl } },
+    style      .initial:n  = auto,
+    style      .value_required:n = true,
+    read-arg   .code:n =
+      { \__spintent_sanitize_affix:Nn \l__spintent_spcomb_read_arg_tl {#1} },
+    read-arg   .initial:n  = ,
+    read-arg   .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l__spintent_command_name_str { spcomb }
+        \__spintent_unknown_keys_cmd:n {#1}
+      },
+  }
+\cs_new_protected:Nn \__spintent_spcomb_setup:
+  {
+    \str_clear:N \l__spintent_spcomb_problem_str
+    \str_case:Vn \l__spintent_spcomb_type_str
+      {
+        { combination }
+          {
+            \tl_set:Nn \l__spintent_spcomb_letter_tl  { C }
+            \tl_set:Nn \l__spintent_spcomb_concept_tl { combinaciones }
+          }
+        { variation }
+          {
+            \tl_set:Nn \l__spintent_spcomb_letter_tl  { V }
+            \tl_set:Nn \l__spintent_spcomb_concept_tl { variaciones }
+          }
+        { arrangement }
+          {
+            \tl_set:Nn \l__spintent_spcomb_letter_tl  { A }
+            \tl_set:Nn \l__spintent_spcomb_concept_tl { arreglos }
+          }
+        { permutation }
+          {
+            \tl_set:Nn \l__spintent_spcomb_letter_tl  { P }
+            \tl_set:Nn \l__spintent_spcomb_concept_tl { permutaciones }
+          }
+      }
+    \bool_if:NT \l__spintent_spcomb_circ_bool
+      {
+        \bool_lazy_and:nnTF
+          { \str_if_eq_p:Vn \l__spintent_spcomb_type_str { permutation } }
+          { ! \bool_if_p:N \l__spintent_spcomb_rep_bool }
+          {
+            \tl_put_right:Nn \l__spintent_spcomb_letter_tl  { C }
+            \tl_put_right:Nn \l__spintent_spcomb_concept_tl { -circulares }
+          }
+          {
+            \str_set:Nn \l__spintent_spcomb_problem_str
+              { circ~requires~type=permutation~and~rep=false }
+          }
+      }
+    \bool_if:NT \l__spintent_spcomb_rep_bool
+      {
+        \tl_put_right:Nn \l__spintent_spcomb_letter_tl  { R }
+        \tl_put_right:Nn \l__spintent_spcomb_concept_tl { -con-repetición }
+      }
+    \bool_set_false:N \l__spintent_spcomb_use_binom_bool
+    \bool_lazy_and:nnTF
+      { \str_if_eq_p:Vn \l__spintent_spcomb_type_str { combination } }
+      { ! \bool_if_p:N \l__spintent_spcomb_rep_bool }
+      {
+        \str_if_eq:VnF \l__spintent_spcomb_style_str { letter }
+          { \bool_set_true:N \l__spintent_spcomb_use_binom_bool }
+      }
+      {
+        \str_if_eq:VnT \l__spintent_spcomb_style_str { binom }
+          {
+            \str_if_empty:NT \l__spintent_spcomb_problem_str
+              {
+                \str_set:Nn \l__spintent_spcomb_problem_str
+                  { style=binom~requires~type=combination~and~rep=false }
+              }
+          }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spcomb_arg_ann:nn
+  { \MathMLarg {#1} { \__spintent_inner_sep: #2 } }
+\cs_new_protected:Nn \__spintent_spcomb_arg_plain:nn { #2 }
+\cs_new_eq:NN \__spintent_spcomb_arg:nn \__spintent_spcomb_arg_plain:nn
+\cs_new_protected:Nn \__spintent_spcomb_list_wrap_ann:n
+  {
+    \MathMLintent { _y:infix ( \l__spintent_spcomb_listargs_tl ) }
+      { \__spintent_inner_sep: #1 }
+  }
+\cs_new_protected:Nn \__spintent_spcomb_list_wrap_plain:n { #1 }
+\cs_new_eq:NN \__spintent_spcomb_list_wrap:n \__spintent_spcomb_list_wrap_plain:n
+\cs_new:Nn \__spintent_spcomb_listarg:n
+  {
+    \int_compare:nT { #1 > 1 } { , }
+    $ m #1
+  }
+\cs_new_protected:Nn \__spintent_spcomb_list:
+  {
+    \int_zero:N \l__spintent_spcomb_i_int
+    \tl_map_inline:Nn \l__spintent_spcomb_luaset_list_tl
+      {
+        \int_incr:N \l__spintent_spcomb_i_int
+        \int_compare:nT { \l__spintent_spcomb_i_int > 1 } { , }
+        \exp_args:Nx \__spintent_spcomb_arg:nn
+          { m \int_use:N \l__spintent_spcomb_i_int } {##1}
+      }
+  }
+\cs_new_protected:Nn \__spintent_spcomb_symbol:
+  {
+    \bool_if:NTF \l__spintent_spcomb_use_binom_bool
+      {
+        \int_compare:nTF { \mathstyle < 2 } { \Bigl } { \bigl } \lparen
+        \genfrac { } { } { 0pt } { }
+          { \__spintent_spcomb_arg:nn { n } { \str_use:N \l__spintent_spcomb_luaset_n_str } }
+          { \__spintent_spcomb_arg:nn { k } { \str_use:N \l__spintent_spcomb_luaset_k_str } }
+        \int_compare:nTF { \mathstyle < 2 } { \Bigr } { \bigr } \rparen
+      }
+      {
+        { \tl_use:N \l__spintent_spcomb_letter_tl }
+        \str_case:Vn \l__spintent_spcomb_mode_str
+          {
+            { pair }
+              {
+                \c_math_subscript_token
+                  { \__spintent_spcomb_arg:nn { k } { \str_use:N \l__spintent_spcomb_luaset_k_str } }
+                ^
+                  { \__spintent_spcomb_arg:nn { n } { \str_use:N \l__spintent_spcomb_luaset_n_str } }
+              }
+            { one }
+              {
+                \c_math_subscript_token
+                  { \__spintent_spcomb_arg:nn { n } { \str_use:N \l__spintent_spcomb_luaset_n_str } }
+              }
+            { list }
+              {
+                \c_math_subscript_token
+                  { \__spintent_spcomb_arg:nn { n } { \str_use:N \l__spintent_spcomb_luaset_n_str } }
+                ^
+                  {
+                    \__spintent_spcomb_arg:nn { m }
+                      { \__spintent_spcomb_list_wrap:n { \__spintent_spcomb_list: } }
+                  }
+              }
+          }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spcomb_print:
+  {
+    \__spintent_invisible_sep:
+    \bool_if:NTF \l__spintent_spcomb_silent_bool
+      {
+        \cs_set_eq:NN \__spintent_spcomb_arg:nn \__spintent_spcomb_arg_plain:nn
+        \cs_set_eq:NN \__spintent_spcomb_list_wrap:n \__spintent_spcomb_list_wrap_plain:n
+        \MathMLintent { _- }
+          { \__spintent_inner_sep: \__spintent_spcomb_symbol: }
+      }
+      {
+        \tl_if_empty:NTF \l__spintent_spcomb_read_arg_tl
+          {
+            \cs_set_eq:NN \__spintent_spcomb_arg:nn \__spintent_spcomb_arg_ann:nn
+            \cs_set_eq:NN \__spintent_spcomb_list_wrap:n \__spintent_spcomb_list_wrap_ann:n
+            \str_case:Vn \l__spintent_spcomb_mode_str
+              {
+                { one }
+                  {
+                    \MathMLintent
+                      { _ \tl_use:N \l__spintent_spcomb_concept_tl -de:prefix($n) }
+                      { \__spintent_inner_sep: \__spintent_spcomb_symbol: }
+                  }
+                { pair }
+                  {
+                    \bool_if:NTF \l__spintent_spcomb_use_binom_bool
+                      {
+                        \MathMLintent { _sobre:infix($n,$k) }
+                          { \__spintent_inner_sep: \__spintent_spcomb_symbol: }
+                      }
+                      {
+                        \MathMLintent
+                          { _ \tl_use:N \l__spintent_spcomb_concept_tl -de:prefix($c) }
+                          {
+                            \__spintent_inner_sep:
+                            \MathMLarg { c }
+                              {
+                                \MathMLintent { _en:infix($n,$k) }
+                                  { \__spintent_inner_sep: \__spintent_spcomb_symbol: }
+                              }
+                          }
+                      }
+                  }
+                { list }
+                  {
+                    \tl_set:Nx \l__spintent_spcomb_listargs_tl
+                      {
+                        \int_step_function:nN
+                          { \l__spintent_spcomb_luaset_count_str }
+                          \__spintent_spcomb_listarg:n
+                      }
+                    \MathMLintent
+                      { _ \tl_use:N \l__spintent_spcomb_concept_tl -de:prefix($c) }
+                      {
+                        \__spintent_inner_sep:
+                        \MathMLarg { c }
+                          {
+                            \MathMLintent { _con-repeticiones:infix($n,$m) }
+                              { \__spintent_inner_sep: \__spintent_spcomb_symbol: }
+                          }
+                      }
+                  }
+              }
+          }
+          {
+            \cs_set_eq:NN \__spintent_spcomb_arg:nn \__spintent_spcomb_arg_plain:nn
+            \cs_set_eq:NN \__spintent_spcomb_list_wrap:n \__spintent_spcomb_list_wrap_plain:n
+            \MathMLintent { _ \tl_use:N \l__spintent_spcomb_read_arg_tl :nofix }
+              { \__spintent_inner_sep: \__spintent_spcomb_symbol: }
+          }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spcomb_exec:nnn
+  {
+    \keys_set:nn { spintent / spcomb } {#1}
+    \__spintent_spcomb_setup:
+    \str_if_empty:NTF \l__spintent_spcomb_problem_str
+      {
+        \bool_if:NTF \l__spintent_spcomb_circ_bool
+          {
+            \tl_if_novalue:nTF {#3}
+              { \str_set:Nn \l__spintent_spcomb_mode_str { one } }
+              { \str_set:Nn \l__spintent_spcomb_mode_str { extra } }
+          }
+          {
+            \bool_lazy_and:nnTF
+              { \str_if_eq_p:Vn \l__spintent_spcomb_type_str { permutation } }
+              { \bool_if_p:N \l__spintent_spcomb_rep_bool }
+              {
+                \tl_if_novalue:nTF {#3}
+                  { \str_set:Nn \l__spintent_spcomb_mode_str { missing } }
+                  { \str_set:Nn \l__spintent_spcomb_mode_str { list } }
+              }
+              {
+                \tl_if_novalue:nTF {#3}
+                  {
+                    \str_if_eq:VnTF \l__spintent_spcomb_type_str { permutation }
+                      { \str_set:Nn \l__spintent_spcomb_mode_str { one } }
+                      { \str_set:Nn \l__spintent_spcomb_mode_str { missing } }
+                  }
+                  { \str_set:Nn \l__spintent_spcomb_mode_str { pair } }
+              }
+          }
+        \str_case:VnF \l__spintent_spcomb_mode_str
+          {
+            { extra }
+              { \msg_error:nn { spintent } { spcomb-extra-arg } }
+            { missing }
+              { \msg_error:nn { spintent } { spcomb-missing-arg } }
+          }
+          {
+            \__spintent_luafun_spcomb_prepare:nnnn
+              { \l__spintent_spcomb_mode_str }
+              { \exp_not:n {#2} }
+              { \tl_if_novalue:nF {#3} { \exp_not:n {#3} } }
+              {
+                \bool_if:NTF \l__spintent_spcomb_rep_bool
+                  { false } { true }
+              }
+            \str_if_eq:VnTF \l__spintent_spcomb_luaset_error_str { true }
+              {
+                \tl_if_novalue:nTF {#3}
+                  { \msg_error:nnnn { spintent } { spcomb-invalid-argument } {#2} { } }
+                  { \msg_error:nnnn { spintent } { spcomb-invalid-argument } {#2} {#3} }
+              }
+              { \__spintent_spcomb_print: }
+          }
+      }
+      {
+        \msg_error:nnx { spintent } { spcomb-invalid-keys }
+          { \l__spintent_spcomb_problem_str }
+      }
+  }
+\cs_new_protected:Nn \__spintent_spcomb_begin:nnn
+  {
+    \group_begin:
+      \attribute \l__spintent_scope_attr_int = 1
+      \__spintent_spcomb_exec:nnn { #1 } { #2 } { #3 }
+    \group_end:
+  }
+\cs_new_protected:Npn \__spintent_spcomb_with_k:nnn #1#2#3
+  { \__spintent_spcomb_begin:nnn {#1} {#2} {#3} }
+\cs_generate_variant:Nn \__spintent_spcomb_begin:nnn { nnV }
+\NewDocumentCommand \spcomb { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \peek_catcode_ignore_spaces:NTF \c_group_begin_token
+          { \__spintent_spcomb_with_k:nnn { #1 } { #2 } }
+          { \__spintent_spcomb_begin:nnV { #1 } { #2 } \c_novalue_tl }
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spcomb } }
+  }
+\bool_new:N \l__spintent_spfact_silent_bool
+\tl_new:N   \l__spintent_spfact_read_arg_tl
+\keys_define:nn { spintent / spfact }
+  {
+    silent     .bool_set:N = \l__spintent_spfact_silent_bool,
+    silent     .initial:n  = false,
+    silent     .value_required:n = true,
+    read-arg   .code:n =
+      { \__spintent_sanitize_affix:Nn \l__spintent_spfact_read_arg_tl {#1} },
+    read-arg   .initial:n  = ,
+    read-arg   .value_required:n = true,
+    unknown    .code:n =
+      {
+        \str_set:Nn \l__spintent_command_name_str { spfact }
+        \__spintent_unknown_keys_cmd:n {#1}
+      },
+  }
+\cs_new_protected:Nn \__spintent_spfact_exec:nn
+  {
+    \keys_set:nn { spintent / spfact } {#1}
+    \__spintent_invisible_sep:
+    \bool_if:NTF \l__spintent_spfact_silent_bool
+      { \MathMLintent { _- } { \__spintent_inner_sep: #2 ! } }
+      {
+        \tl_if_empty:NTF \l__spintent_spfact_read_arg_tl
+          {
+            \MathMLintent { _factorial:postfix($n) }
+              { \__spintent_inner_sep: \MathMLarg { n } { \__spintent_inner_sep: #2 } ! }
+          }
+          {
+            \MathMLintent { _ \tl_use:N \l__spintent_spfact_read_arg_tl :nofix }
+              { \__spintent_inner_sep: #2 ! }
+          }
+      }
+  }
+\NewDocumentCommand \spfact { O{} m }
+  {
+    \mode_if_math:TF
+      {
+        \group_begin:
+          \attribute \l__spintent_scope_attr_int = 1
+          \__spintent_spfact_exec:nn { #1 } { #2 }
+        \group_end:
+      }
+      { \msg_error:nnn { spintent } { need-math-mode } { \spfact } }
   }
 \file_input_stop:
 %% 

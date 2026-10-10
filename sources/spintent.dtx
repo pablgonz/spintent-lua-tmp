@@ -21571,6 +21571,17 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}[int]{spcomp-empty-argument}
+%   Raised when the argument of |\spcomp| is missing or \emph{blank}.
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spcomp-empty-argument }
+  { The~argument~for~\token_to_str:N \spcomp \c_space_tl cannot~be~empty~\msg_line_context:. }
+  {
+    You~must~provide~the~event.\\
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\spcomp}
 %   The public command |\spcomp| enforces \emph{math mode}, opens a local
 %   group and delegates execution to \myhlc|\@@_spcomp_exec:nn|.
@@ -21581,7 +21592,9 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
       {
         \group_begin:
           \attribute \l_@@_scope_attr_int = 1
-          \@@_spcomp_exec:nn { #1 } { #2 }
+          \tl_if_blank:nTF { #2 }
+            { \msg_error:nn { spintent } { spcomp-empty-argument } }
+            { \@@_spcomp_exec:nn { #1 } { #2 } }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spcomp } }
@@ -22235,6 +22248,17 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}[int]{spfact-empty-argument}
+%   Raised when the argument of |\spfact| is missing or \emph{blank}.
+%    \begin{macrocode}
+\msg_new:nnnn { spintent } { spfact-empty-argument }
+  { The~argument~for~\token_to_str:N \spfact \c_space_tl cannot~be~empty~\msg_line_context:. }
+  {
+    You~must~provide~the~number~n.\\
+  }
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\spfact}
 %   The public command |\spfact| enforces \emph{math mode}, opens a local
 %   group and delegates execution to \myhlc|\@@_spfact_exec:nn|.
@@ -22245,7 +22269,9 @@ See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepte
       {
         \group_begin:
           \attribute \l_@@_scope_attr_int = 1
-          \@@_spfact_exec:nn { #1 } { #2 }
+          \tl_if_blank:nTF { #2 }
+            { \msg_error:nn { spintent } { spfact-empty-argument } }
+            { \@@_spfact_exec:nn { #1 } { #2 } }
         \group_end:
       }
       { \msg_error:nnn { spintent } { need-math-mode } { \spfact } }

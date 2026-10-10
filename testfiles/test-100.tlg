@@ -728,8 +728,6 @@ For immediate help type H <return>.
 l. ...$\spcoord{1}$
 See the documentation of \spcoord for the accepted argument forms.
 [spinterval-invalid-structure]
-[1
-]
 ! Package spintent Error: Invalid argument '[1,2,3]' for \spinterval (more than one separator: use a single semicolon and the commas are decimal) on line ....
 For immediate help type H <return>.
  ...                                              
@@ -977,6 +975,11 @@ For immediate help type H <return>.
 l. ...$\spProb[silent=true]{}$
 The argument must be an event, or two events joined by exactly one of \cap, \cup, \mid or |, outside any braces or parentheses.
 [spcomp-empty]
+! Package spintent Error: The argument for \spcomp cannot be empty on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spcomp{}$
+You must provide the event.
 === L. Combinatoria ===
 [spcomb-missing-second-argument]
 ! Package spintent Error: Missing second argument for \spcomb on line ....
@@ -1027,7 +1030,6 @@ For immediate help type H <return>.
 l. ...$\spcomb[type=permutation,rep=true]{n}{a,}$
 The arguments cannot be empty; the repetitions must be a list of at least two elements separated by commas; if they are integers, k cannot be greater than n and the repetitions cannot add more than n.
 [spcomb-empty-n]
-[2]
 ! Package spintent Error: Invalid arguments '' and '2' for \spcomb on line ....
 For immediate help type H <return>.
  ...                                              
@@ -1040,3 +1042,8 @@ For immediate help type H <return>.
 l. ...$\spcomb[silent=true]{3}{5}$
 The arguments cannot be empty; the repetitions must be a list of at least two elements separated by commas; if they are integers, k cannot be greater than n and the repetitions cannot add more than n.
 [spfact-empty]
+! Package spintent Error: The argument for \spfact cannot be empty on line ....
+For immediate help type H <return>.
+ ...                                              
+l. ...$\spfact{}$
+You must provide the number n.

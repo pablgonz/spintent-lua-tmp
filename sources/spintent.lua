@@ -2898,6 +2898,107 @@ register_tex_cmd("luafun_spProb_parse_and_set", function(raw_content)
 end, { "string" })
 
 -- ------------------------------------------------------------
+-- \spcomb: combinatoria. Esta función valida y deja listos los
+-- argumentos de \spcomb según el modo que decide expl3:
+--   pair  n y k (k <= n si ambos son enteros y check_le es "true")
+--   list  n y una lista de multiplicidades separadas por comas
+--         (permutaciones con repetición); queda como {a}{b}{c}
+--   one   solo n
+-- Las comas que quedan dentro de llaves, paréntesis o corchetes
+-- (también \left...\right) no separan elementos. Si todo es entero,
+-- la suma de las multiplicidades no puede pasar de n.
+-- ------------------------------------------------------------
+local function spintent_comb_set_error()
+    token_set_macro("l__spintent_spcomb_luaset_error_str", "true")
+    token_set_macro("l__spintent_spcomb_luaset_n_str",     "")
+    token_set_macro("l__spintent_spcomb_luaset_k_str",     "")
+    token_set_macro("l__spintent_spcomb_luaset_list_tl",   "")
+    token_set_macro("l__spintent_spcomb_luaset_count_str", "0")
+end
+
+local function spintent_comb_split(raw)
+    local items, depth, start = {}, 0, 1
+    local i, n = 1, #raw
+    while i <= n do
+        local c = s_sub(raw, i, i)
+        if c == "\\" then
+            local word = s_match(raw, "^\\(%a+)", i)
+            if word == "left" or word == "right" then
+                local j = i + 1 + #word
+                while s_sub(raw, j, j) == " " do j = j + 1 end
+                local d = s_sub(raw, j, j)
+                if word == "left" and (d == "(" or d == "[") then
+                    depth = depth + 1
+                elseif word == "right" and (d == ")" or d == "]") then
+                    depth = depth - 1
+                end
+                i = j + 1
+            elseif word then
+                i = i + 1 + #word
+            else
+                local d = s_sub(raw, i + 1, i + 1)
+                if d == "{" then
+                    depth = depth + 1
+                elseif d == "}" then
+                    depth = depth - 1
+                end
+                i = i + 2
+            end
+        else
+            if c == "{" or c == "(" or c == "[" then
+                depth = depth + 1
+            elseif c == "}" or c == ")" or c == "]" then
+                depth = depth - 1
+            elseif c == "," and depth == 0 then
+                items[#items + 1] = s_sub(raw, start, i - 1)
+                start = i + 1
+            end
+            if depth < 0 then return nil end
+            i = i + 1
+        end
+    end
+    if depth ~= 0 then return nil end
+    items[#items + 1] = s_sub(raw, start)
+    return items
+end
+
+register_tex_cmd("luafun_spcomb_prepare", function(mode, raw_n, raw_k, check_le)
+    local n_s = spintent_trim(raw_n)
+    local k_s = spintent_trim(raw_k)
+    if n_s == "" then return spintent_comb_set_error() end
+    local list, count = "", 0
+    if mode == "pair" then
+        if k_s == "" then return spintent_comb_set_error() end
+        if check_le == "true" and s_match(n_s, "^%d+$") and s_match(k_s, "^%d+$")
+                and tonumber(k_s) > tonumber(n_s) then
+            return spintent_comb_set_error()
+        end
+    elseif mode == "list" then
+        local items = spintent_comb_split(k_s)
+        if not items or #items < 2 then return spintent_comb_set_error() end
+        local numeric = s_match(n_s, "^%d+$") ~= nil
+        local sum, parts = 0, {}
+        for _, item in ipairs(items) do
+            item = spintent_trim(item)
+            if item == "" then return spintent_comb_set_error() end
+            if numeric and s_match(item, "^%d+$") then
+                sum = sum + tonumber(item)
+            else
+                numeric = false
+            end
+            parts[#parts + 1] = "{" .. item .. "}"
+        end
+        if numeric and sum > tonumber(n_s) then return spintent_comb_set_error() end
+        list, count = t_concat(parts), #items
+    end
+    token_set_macro("l__spintent_spcomb_luaset_error_str", "false")
+    token_set_macro("l__spintent_spcomb_luaset_n_str",     n_s)
+    token_set_macro("l__spintent_spcomb_luaset_k_str",     k_s)
+    token_set_macro("l__spintent_spcomb_luaset_list_tl",   list)
+    token_set_macro("l__spintent_spcomb_luaset_count_str", tostring(count))
+end, { "string", "string", "string", "string" })
+
+-- ------------------------------------------------------------
 -- §13  FUNCIONES — \spfun, \spdom, \sprec, \spcod
 --
 -- \spfun reconoce  nombre(arg, arg, ...)  donde nombre es una letra
