@@ -7534,7 +7534,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { unknown-command-setup }
   {
-    Cannot~configure~unknown~command~'\exp_not:c{#1}'.
+    Cannot~configure~unknown~command~'\exp_not:c{#1}'~\msg_line_context:.
   }
   {
     You~attempted~to~use~\token_to_str:N \setspintent{#1}{...},~but~the~
@@ -7627,7 +7627,7 @@ end, "shekel_fallback_patch")
 \str_new:N  \l_@@_command_name_str
 \msg_new:nnn { spintent } { unknown-choice }
   {
-    The~value~'#3'~for~'#1'~key~is~invalid~use~('#2').
+    Invalid~value~'#3'~for~key~'#1';~use~one~of:~#2~\msg_line_context:.
   }
 \msg_new:nnnn { spintent } { cmd-key-unknown }
   {
@@ -7848,14 +7848,14 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { need-math-mode }
   {
-    Math~mode~required~for~'#1'~\msg_line_context:.
+    Math~mode~required~for~#1\msg_line_context:.
   }
   {
     Use~inside~$...$~or~in~math~environment.
   }
 \msg_new:nnnn { spintent } { need-text-mode }
   {
-    Text~mode~required~for~'#1'~\msg_line_context:.
+    Text~mode~required~for~#1\msg_line_context:.
   }
   {
     Use~outside~of~$...$~or~math~environment.
@@ -8278,14 +8278,14 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spnum-has-units }
   {
-    The~\token_to_str:N \spnum \c_space_tl command~does~not~accept~units~('#1').
+    The~\token_to_str:N \spnum \c_space_tl command~does~not~accept~units~('#1')~\msg_line_context:.
   }
   {
     Use~\token_to_str:N \spunit \c_space_tl if~you~need~to~print~numbers~with~units.
   }
 \msg_new:nnnn { spintent } { spnum-no-digits }
   {
-    The~\token_to_str:N \spnum \c_space_tl command~requires~a~valid~numerical~value.
+    The~\token_to_str:N \spnum \c_space_tl command~requires~a~valid~numerical~value~\msg_line_context:.
   }
   {
     You~provided~'#1',~which~contains~no~digits.
@@ -8419,21 +8419,21 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spunit-invalid-unit }
   {
-    The~expression~'#1'~contains~an~unknown~or~malformed~unit~structure.
+    The~expression~'#1'~contains~an~unknown~or~malformed~unit~structure~\msg_line_context:.
   }
   {
     Check~spelling~or~verify~the~unit~is~defined~in~the~dictionary.
   }
 \msg_new:nnnn { spintent } { spunit-no-units }
   {
-    The~\token_to_str:N \spunit \c_space_tl command~requires~at~least~one~unit~('#1').
+    The~\token_to_str:N \spunit \c_space_tl command~requires~at~least~one~unit~('#1')~\msg_line_context:.
   }
   {
     Use~\token_to_str:N \spnum \c_space_tl if~you~only~need~to~format~a~pure~number.
   }
 \msg_new:nnnn { spintent } { inline-numeric-denominator }
   {
-    Illegal~numeric~coefficient~in~inline~denominator~'#1'.
+    Illegal~numeric~coefficient~in~inline~denominator~'#1'~\msg_line_context:.
   }
   {
     The~inline~mode~of~\token_to_str:N \spunit \c_space_tl
@@ -8757,21 +8757,21 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spnewunit-duplicate }
   {
-    The~unit~symbol~or~alias~'#1'~is~already~defined!
+    The~unit~symbol~or~alias~'#1'~is~already~defined~\msg_line_context:.
   }
   {
     You~cannot~redefine~with~\token_to_str:N \spnewunit.
   }
 \msg_new:nnnn { spintent } { spunitalias-duplicate }
   {
-    The~alias~'#1'~is~already~defined~or~reserved!
+    The~alias~'#1'~is~already~defined~or~reserved~\msg_line_context:.
   }
   {
     You~cannot~redefine~an~existing~unit~or~another~alias.
   }
 \msg_new:nnnn { spintent } { spunitalias-invalid-expr }
   {
-    The~expression~'#2'~for~alias~'#1'~is~invalid.
+    The~expression~'#2'~for~alias~'#1'~is~invalid~\msg_line_context:.
   }
   {
     It~must~contain~only~defined~units,~exponents~and~one~'/'.
@@ -8931,7 +8931,7 @@ end, "shekel_fallback_patch")
   }
 \msg_new:nnnn { spintent } { invalid-currency }
   {
-    Invalid~currency~identifier~'#1'~in~\token_to_str:N \spmoney .
+    Invalid~currency~identifier~'#1'~in~\token_to_str:N \spmoney \c_space_tl \msg_line_context:.
   }
   {
     The~provided~symbol,~alias,~or~ISO~code~does~not~exist~in~
@@ -9419,7 +9419,7 @@ end, "shekel_fallback_patch")
 % \fi
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { unknown-abbreviation }
-  { The~abbreviation~or~ordinal~'#1'~is~invalid~or~not~recognized. }
+  { The~abbreviation~or~ordinal~'#1'~is~invalid~or~not~recognized~\msg_line_context:. }
   { Verify~the~spelling~or~check~the~grammar~rules~for~ordinals. }
 %    \end{macrocode}
 % \end{macro}
@@ -9698,7 +9698,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { invalid-century-format }
   {
-    Invalid~century~format~in~'#1'.
+    Invalid~argument~'#2'~for~#1\msg_line_context:.
   }
   {
     The~argument~'#2'~is~not~a~valid~Arabic~or~Roman~numeral.~
@@ -9951,8 +9951,8 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { invalid-time-format }
   {
-    Invalid~time~format~in~#1. \\
-    The~argument~'#2'~does~not~match~any~supported~time~format.
+    Invalid~argument~'#2'~for~#1\msg_line_context:. \\
+    It~does~not~match~any~supported~time~format.
   }
   {
     Allowed~formats:~HH:MM,~HH:MM:SS,~or~HH:MM:SS.ss. \\
@@ -10099,8 +10099,8 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { invalid-date-format }
   {
-    Invalid~date~or~unsupported~format~in~#1. \\
-    The~argument~'#2'~does~not~match~a~supported~format.
+    Invalid~argument~'#2'~for~#1\msg_line_context:. \\
+    It~does~not~match~a~supported~date~format.
   }
   {
     Allowed~formats:~DD\slash MM\slash YYYY,~DD-MM-YYYY,~or~YYYY-MM-DD. \\
@@ -10181,14 +10181,14 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spusep-empty-arg }
   {
-    Empty~argument~'#1'~for~\token_to_str:N \spusep.
+    Empty~argument~'#1'~for~\token_to_str:N \spusep \c_space_tl \msg_line_context:.
   }
   {
-    \token_to_str:N \spusep~requires~a~non-empty~argument.
+    \token_to_str:N \spusep \c_space_tl requires~a~non-empty~argument.
   }
 \msg_new:nnn { spintent } { spusep-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spusep.
+    Invalid~argument~'#1'~for~\token_to_str:N \spusep \c_space_tl \msg_line_context:.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -10365,28 +10365,28 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spnewread-empty-args }
   {
-    Empty~argument~in~\token_to_str:N \spnewread.
+    Empty~argument~in~\token_to_str:N \spnewread \c_space_tl \msg_line_context:.
   }
   {
-    \token_to_str:N \spnewread~requires~two~non-empty~arguments.
+    \token_to_str:N \spnewread \c_space_tl requires~two~non-empty~arguments.
   }
 \msg_new:nnnn { spintent } { spnewread-duplicate }
   {
-    The~symbol~'#1'~is~already~defined!
+    The~symbol~'#1'~is~already~defined~\msg_line_context:.
   }
   {
     You~cannot~redefine~with~\token_to_str:N \spnewread.
   }
 \msg_new:nnnn { spintent } { spread-empty-sym }
   {
-    Empty~symbol~argument~in~\token_to_str:N \spread.
+    Empty~symbol~argument~in~\token_to_str:N \spread \c_space_tl \msg_line_context:.
   }
   {
-    \token_to_str:N \spread~requires~a~non-empty~symbol.
+    \token_to_str:N \spread \c_space_tl requires~a~non-empty~symbol.
   }
 \msg_new:nnnn { spintent } { spread-unknown-sym }
   {
-    The~symbol~'#1'~is~not~registered~and~no~'read-arg'~was~given.
+    The~symbol~'#1'~is~not~registered~and~no~'read-arg'~was~given~\msg_line_context:.
   }
   {
     Register~it~first~with~\token_to_str:N \spnewread,~or~pass~'read-arg'.
@@ -10789,7 +10789,7 @@ end, "shekel_fallback_patch")
 %   missing or \emph{blank}.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spdiv-empty-argument }
-  { The~arguments~for~\token_to_str:N \spdiv~cannot~be~empty. }
+  { The~arguments~for~\token_to_str:N \spdiv \c_space_tl cannot~be~empty~\msg_line_context:. }
   {
     You~must~provide~both~a~dividend~and~a~divisor.\\
   }
@@ -10923,7 +10923,7 @@ end, "shekel_fallback_patch")
 %   missing or \emph{blank}.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spmul-empty-argument }
-  { The~arguments~for~\token_to_str:N \spmul~cannot~be~empty. }
+  { The~arguments~for~\token_to_str:N \spmul \c_space_tl cannot~be~empty~\msg_line_context:. }
   {
     You~must~provide~both~first~factor~and~second~factor.\\
   }
@@ -11051,7 +11051,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { mc-invalid-arguments }
   {
-    Invalid~arguments~provided~to~#1.
+    Invalid~arguments~for~#1\msg_line_context:.
   }
   {
     The~arguments~must~be~a~comma-separated~list. \\
@@ -11452,7 +11452,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { md-invalid-argument }
   {
-    Invalid~argument~provided~to~#1~\msg_line_context:.
+    Invalid~argument~for~#1\msg_line_context:.
   }
   {
     The~argument~must~be~a~single~positive~integer. \\
@@ -11462,7 +11462,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { mc-too-few-arguments }
   {
-    Too~few~arguments~provided~to~#1~\msg_line_context:.
+    Too~few~arguments~for~#1\msg_line_context:.
   }
   {
     At~least~two~arguments~are~required. \\
@@ -11881,7 +11881,7 @@ end, "shekel_fallback_patch")
 %   or contains invalid measurement symbols.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { invalid-angle-format }
-  { Invalid~angle~format~in~#1. }
+  { Invalid~argument~'#2'~for~#1\msg_line_context:. }
   {
     The~argument~'#2'~could~not~be~parsed. \\
   }
@@ -12009,9 +12009,9 @@ end, "shekel_fallback_patch")
 %   representation.
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spnz-not-integer }
-  { The~value~'#1'~is~not~a~valid~integer. }
+  { The~value~'#1'~is~not~a~valid~integer~\msg_line_context:. }
   {
-    Command~\token_to_str:N \spnZ~only~accepts~integers.\\
+    Command~\token_to_str:N \spnZ \c_space_tl only~accepts~integers.\\
    }
 %    \end{macrocode}
 % \end{macro}
@@ -12173,7 +12173,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spmQ-zero-denominator }
   {
-    Zero~denominator~in~\token_to_str:N \spmQ~\msg_line_context:.
+    Zero~denominator~in~\token_to_str:N \spmQ \c_space_tl \msg_line_context:.
   }
   {
     The~denominator~of~a~fraction~cannot~be~zero.\\
@@ -12745,7 +12745,7 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnn { spintent } { spcoord-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spcoord.
+    Invalid~argument~'#1'~for~\token_to_str:N \spcoord \c_space_tl \msg_line_context:.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -13126,10 +13126,10 @@ end, "shekel_fallback_patch")
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spinterval-invalid-arg }
   {
-Invalid~format~in~\token_to_str:N \spinterval:~'#1'~(#2)~\msg_line_context:.
+Invalid~argument~'#1'~for~\token_to_str:N \spinterval \c_space_tl (#2)~\msg_line_context:.
   }
   {
-See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~forms.
+See~the~documentation~of~\token_to_str:N \spinterval \c_space_tl for~the~accepted~argument~forms.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -13659,7 +13659,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnn { spintent } { spfun-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spfun.
+    Invalid~argument~'#1'~for~\token_to_str:N \spfun \c_space_tl \msg_line_context:.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -14069,7 +14069,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnn { spintent } { spfuncomp-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spfuncomp.
+    Invalid~argument~'#1'~for~\token_to_str:N \spfuncomp \c_space_tl \msg_line_context:.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -14356,7 +14356,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnn { spintent } { spdom-invalid-arg }
   {
-    Invalid~argument~'#2'~for~\c_backslash_str #1.
+    Invalid~argument~'#2'~for~\c_backslash_str #1~\msg_line_context:.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -14687,7 +14687,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spPoint-invalid-point }
   {
-    Invalid~point~format~in~\token_to_str:N \spPoint:~'#1'.
+    Invalid~argument~'#1'~for~\token_to_str:N \spPoint \c_space_tl \msg_line_context:.
   }
   {
     The~argument~must~be~a~single~uppercase~letter~with~an~optional~
@@ -14902,7 +14902,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnn { spintent } { spvec-invalid-arg }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spvec.
+    Invalid~argument~'#1'~for~\token_to_str:N \spvec \c_space_tl \msg_line_context:.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -15259,10 +15259,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { sprecta-invalid-points }
   {
-    Invalid~format~in~\token_to_str:N \sprecta:~'#1'~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \sprecta \c_space_tl \msg_line_context:.
   }
   {
-    See~the~documentation~of~\token_to_str:N \sprecta~for~the~accepted~argument~forms.
+    See~the~documentation~of~\token_to_str:N \sprecta \c_space_tl for~the~accepted~argument~forms.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -15621,10 +15621,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { sprayo-invalid-points }
   {
-    Invalid~point~format~in~\token_to_str:N \sprayo:~'#1'~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \sprayo \c_space_tl \msg_line_context:.
   }
   {
-    See~the~documentation~of~\token_to_str:N \sprayo~for~the~accepted~point~formats.
+    See~the~documentation~of~\token_to_str:N \sprayo \c_space_tl for~the~accepted~point~formats.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -15899,7 +15899,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
       {
-        Invalid~point~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~point~formats.
@@ -16286,7 +16286,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
       {
-        Invalid~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~argument~forms.
@@ -16750,7 +16750,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
       {
-        Invalid~point~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~point~formats.
@@ -17046,10 +17046,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spPoly-invalid-points }
   {
-    Invalid~point~format~in~\token_to_str:N \spPoly:~'#1'~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \spPoly \c_space_tl \msg_line_context:.
   }
   {
-    See~the~documentation~of~\token_to_str:N \spPoly~for~the~accepted~point~formats.
+    See~the~documentation~of~\token_to_str:N \spPoly \c_space_tl for~the~accepted~point~formats.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -17392,14 +17392,14 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-points }
       {
-        Invalid~point~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~point~formats.
       }
     \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
       {
-        Invalid~argument~format~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~argument~forms.
@@ -18492,10 +18492,10 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spcirc-invalid-arg }
   {
-    Invalid~argument~format~in~\token_to_str:N \spcirc:~'#1'~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \spcirc \c_space_tl \msg_line_context:.
   }
   {
-    See~the~documentation~of~\token_to_str:N \spcirc~for~the~accepted~argument~forms.
+    See~the~documentation~of~\token_to_str:N \spcirc \c_space_tl for~the~accepted~argument~forms.
   }
 %    \end{macrocode}
 % \end{macro}
@@ -19064,7 +19064,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   {
     \msg_new:nnnn { spintent } { sp #1 -invalid-arg }
       {
-        Invalid~argument~in~##1:~'##2'~\msg_line_context:.
+        Invalid~argument~'##2'~for~##1~\msg_line_context:.
       }
       {
         See~the~documentation~of~##1~for~the~accepted~argument.
@@ -20712,7 +20712,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spFrec-invalid-symbol }
   {
-    Invalid~symbol~'#1'~for~\token_to_str:N \spFrec~\msg_line_context:.
+    Invalid~symbol~'#1'~for~\token_to_str:N \spFrec \c_space_tl \msg_line_context:.
   }
   {
     The~symbol~must~be~one~of~f,~F,~f_{r},~F_{r},~f_{r}\iow_char:N \%~or~
@@ -20723,7 +20723,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
     The~key~sub-index~is~not~valid~for~'#1'~\msg_line_context:.
   }
   {
-    The~key~sub-index~of~\token_to_str:N \spFrec only~accepts~the~symbols~f~and~F.\\
+    The~key~sub-index~of~\token_to_str:N \spFrec \c_space_tl only~accepts~the~symbols~f~and~F.\\
   }
 %    \end{macrocode}
 % \end{macro}
@@ -20848,7 +20848,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spcase-invalid-letter }
   {
-    Invalid~letter~'#1'~for~\token_to_str:N \spcase~\msg_line_context:.
+    Invalid~letter~'#1'~for~\token_to_str:N \spcase \c_space_tl \msg_line_context:.
   }
   {
     The~letter~must~be~f,~p~or~t.\\
@@ -21134,11 +21134,11 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spProb-invalid-argument }
   {
-    Invalid~argument~'#1'~for~\token_to_str:N \spProb~\msg_line_context:.
+    Invalid~argument~'#1'~for~\token_to_str:N \spProb \c_space_tl \msg_line_context:.
   }
   {
     The~argument~must~be~an~event,~or~two~events~joined~by~exactly~one~of~
-    \token_to_str:N \cap,~\token_to_str:N \cup,~\token_to_str:N \mid~or~|,~
+    \token_to_str:N \cap,~\token_to_str:N \cup,~\token_to_str:N \mid \c_space_tl or~|,~
     outside~any~braces~or~parentheses.\\
   }
 %    \end{macrocode}
@@ -21671,7 +21671,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
 %    \begin{macrocode}
 \msg_new:nnnn { spintent } { spcomb-invalid-keys }
   {
-    Incompatible~keys~for~\token_to_str:N \spcomb:~#1~\msg_line_context:.
+    Incompatible~keys~for~\token_to_str:N \spcomb \c_colon_str \c_space_tl #1~\msg_line_context:.
   }
   {
     The~key~circ~needs~type=permutation~and~rep=false;~the~value~binom~of~
@@ -21679,7 +21679,7 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   }
 \msg_new:nnnn { spintent } { spcomb-missing-arg }
   {
-    Missing~second~argument~for~\token_to_str:N \spcomb~\msg_line_context:.
+    Missing~second~argument~for~\token_to_str:N \spcomb \c_space_tl \msg_line_context:.
   }
   {
     This~kind~of~symbol~needs~a~second~argument:~k,~or~the~list~of~
@@ -21687,14 +21687,14 @@ See~the~documentation~of~\token_to_str:N \spinterval~for~the~accepted~argument~f
   }
 \msg_new:nnnn { spintent } { spcomb-extra-arg }
   {
-    Unexpected~second~argument~for~\token_to_str:N \spcomb~\msg_line_context:.
+    Unexpected~second~argument~for~\token_to_str:N \spcomb \c_space_tl \msg_line_context:.
   }
   {
     Circular~permutations~take~only~n.\\
   }
 \msg_new:nnnn { spintent } { spcomb-invalid-argument }
   {
-    Invalid~arguments~'#1'~and~'#2'~for~\token_to_str:N \spcomb~\msg_line_context:.
+    Invalid~arguments~'#1'~and~'#2'~for~\token_to_str:N \spcomb \c_space_tl \msg_line_context:.
   }
   {
     The~arguments~cannot~be~empty;~the~repetitions~must~be~a~list~of~at~
